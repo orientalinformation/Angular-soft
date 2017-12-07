@@ -1,0 +1,79 @@
+<div class="container">
+  <div class="card product-container">
+    <div class="card-header">
+      <strong>{{ 'PRODUCT DEFINITION' | translate }}</strong>
+      <div class="card-actions">
+        <button type="button" (click)="modalEditProduct.show()">
+          <i class="fa fa-pencil-square-o"></i>          
+        </button>
+      </div>
+    </div>
+    <div class="card-body">
+      
+    </div> <!-- /.card-body -->    
+  </div> <!-- /.card -->
+
+  <div class="card">
+    <div class="card-header">
+      <strong>PRODUCT COMPONENTS</strong>
+      <div class="float-right">
+        <button type="button" class="btn btn-sm btn-outline-success">
+          <i class="fa fa-plus"></i> Add
+        </button>
+      </div>
+    </div>
+    <jqxGrid [theme]='"metro"' #myGrid [width]="'100%'" [source]="dataAdapter" [columns]="columns">
+    </jqxGrid>
+  </div>
+  
+</div>
+
+<div bsModal class="modal fade" #modalEditProduct="bs-modal" role="dialog" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <strong>EDIT PRODUCT</strong>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="modalEditProduct.hide()">
+          <span aria-hidden="true">×</span>
+        </button>
+      </div>
+      <div class="modal-body">        
+        <div class="form-group row">
+          <label class="col-md-3 col-form-label" for="text-input">Product name</label>
+          <div class="col-md-9">
+            <input type="text" id="text-input" name="text-input" class="form-control" placeholder="Text">
+          </div>
+        </div>
+        <div class="form-group row">
+          <label class="col-md-3 col-form-label" for="email-input">Product shape</label>
+          <div class="col-md-9">
+            <select name="" class="form-control" id="">
+              <option *ngFor="let shape of availShapes" value="shape.ID_SHAPE">{{ shape.SHAPECODE }}</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label class="col-md-3 col-form-label" for="email-input">Dimension 1</label>
+          <div class="col-md-9">
+            <input type="email" id="email-input" name="email-input" class="form-control">
+          </div>
+        </div>
+        <div class="form-group row">
+          <label class="col-md-3 col-form-label" for="email-input">Dimension 2</label>
+          <div class="col-md-9">
+            <input type="email" id="email-input" name="email-input" class="form-control">
+          </div>
+        </div><div class="form-group row">
+          <label class="col-md-3 col-form-label" for="email-input">Dimension 3</label>
+          <div class="col-md-9">
+            <input type="email" id="email-input" name="email-input" class="form-control">
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-dismiss="modal" (click)="modalEditProduct.hide()">Cancel</button>
+        <button class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,16 @@
+#study-list-card {
+    .list-group {
+        .list-group-item {
+            border-left: none;
+            border-right: none;
+            cursor: pointer;
+        }
+        .list-group-item:first-child{
+            border-top: none !important;
+        }
+        .list-group-item:last-child{
+            border-bottom: none !important;
+        }
+
+    }
+}
