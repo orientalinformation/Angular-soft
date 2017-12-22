@@ -1,7 +1,8 @@
 {
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "project": {
-    "name": "app2"
+    "name": "cryosoft-ui",
+    "version": "0.0.1"
   },
   "apps": [
     {
@@ -18,7 +19,7 @@
       "tsconfig": "tsconfig.app.json",
       "testTsconfig": "tsconfig.spec.json",
       "prefix": "app",
-      "serviceWorker": true,
+      "serviceWorker": false,
       "styles": [
         "scss/style.scss",
         "../node_modules/font-awesome/css/font-awesome.css",
@@ -27,7 +28,11 @@
         "../node_modules/jqwidgets-framework/jqwidgets/styles/jqx.metro.css",
         "../node_modules/perfect-scrollbar/css/perfect-scrollbar.css"
       ],
-      "scripts": [],
+      "scripts": [
+        "../node_modules/chart.js/dist/Chart.bundle.min.js",
+        "../node_modules/chart.js/dist/Chart.min.js",
+        "../node_modules/chart.piecelabel.js/build/Chart.PieceLabel.min.js"
+      ],
       "environmentSource": "environments/environment.ts",
       "environments": {
         "dev": "environments/environment.ts",
@@ -61,6 +66,7 @@
   },
   "defaults": {
     "styleExt": "scss",
+    "prefixInterfaces": false,
     "component": {
     }
   }

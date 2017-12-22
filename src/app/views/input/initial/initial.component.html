@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container" *ngIf="productShape != 0 && productView.elements && productView.elements.length>0">
   <div class="card product-container">
     <div class="card-header">
       <strong>Initial temperature of the product</strong>
@@ -8,9 +8,22 @@
         </a>
       </div>
     </div>
-    <div class="card-body">
-
-    </div>
+   
+      <table class="table table-bordered table-sm mb-0" >
+        <tr>
+          <td align="center" width="40%">Product name</td>
+          <td align="center"width="25%">Same temperature throughout product.</td>
+          <td align="center">Initial temperature (°C)</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td align="center">
+            <i class="fa fa-check-square"></i>
+          </td>
+          <td align="center">Product non isothermal</td>
+        </tr>
+      </table>
+   
     <!-- /.card-body -->
   </div>
   <!-- /.card -->
@@ -18,14 +31,67 @@
   <div class="card">
     <div class="card-header">
       <strong>Initial temperatures of the product components</strong>
-      <div class="float-right">
-        <button type="button" class="btn btn-sm btn-outline-success">
-          <i class="fa fa-plus"></i> Add
+    </div>
+    
+      <table class="table table-bordered table-sm mb-0">
+        <tr>
+          <td align="center"width="40%">Product Component</td>
+          <td align="center"width="25%">Description</td>
+          <td align="center">	Same temperature throughout product.</td>
+          <td align="center">Initial temperature (°C)</td>
+          <td align="center">Edit</td>
+        </tr>
+        <tr *ngFor="let element of productView.elements;">
+          <td>{{'components.'+element.ID_COMP|translate}}</td>
+          <td>{{ element.PROD_ELMT_NAME }}</td>
+          <td class="text-center"><i class="fa fa-check-square"></i></td>
+          <td class="text-right">
+            <p class="text-center mb-0">
+              {{'To be defined'|translate}}
+            </p>
+          </td>
+          <td class="text-center"><button class="btn btn-primary btn-sm mb-0" (click)="showModalInitial.show()"><i class="fa fa-pencil"></i></button></td>
+        </tr>
+      </table>
+   
+    <!-- <jqxGrid [theme]='"metro"' #myGrid [width]="'100%'">
+    </jqxGrid> -->
+  </div>
+</div>
+
+<!-- Edit Initial Temp Modal -->
+<div class="modal fade" role="dialog" aria-hidden="true" bsModal #showModalInitial="bs-modal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <strong>PRODUCT COMPONENT</strong>
+        <button type="button" class="close pull-right" aria-label="Close"(click)="showModalInitial.hide()" >
+          <span aria-hidden="true">&times;</span>
         </button>
       </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-6">
+            <p>Product Component</p>
+            <p>Same temperature throughout product.</p>
+            <p>Initial temperature</p>
+          </div>
+          <div class="col-md-6">
+            <p>BEANS - 1.0 (Active)</p>
+            <p>
+              <label class="custom-control custom-checkbox">
+                <input type="checkbox" name="" id="" class="custom-control-input">
+                <span class="custom-control-indicator"></span>
+              </label>
+            </p>
+            <p><input type="text" name="" id="" style="width:100px;"> (°C)</p>
+          </div>
+        </div>        
+      </div>
+      <div class="card-footer text-right">
+        <button class="btn btn-secondary" (click)="showModalInitial.hide()">Cancel</button>
+        <button class="btn btn-primary">Confirm</button>
+      </div>
     </div>
-    <jqxGrid [theme]='"metro"' #myGrid [width]="'100%'">
-    </jqxGrid>
   </div>
-
 </div>

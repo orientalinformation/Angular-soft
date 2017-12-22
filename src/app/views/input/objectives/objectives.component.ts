@@ -12,13 +12,10 @@ export class ObjectivesComponent implements OnInit, AfterViewInit {
 
   public study: Study;
   public production: Study;
-  @Output() subnavChanged: EventEmitter<any> = new EventEmitter();
-  public subnav;
 
   constructor(private api: ApiService) { }
 
   ngOnInit() {
-    this.subnav = InputNavItems;
     if (localStorage.getItem('study')) {
       this.study = JSON.parse(localStorage.getItem('study'));
     }
@@ -33,8 +30,6 @@ export class ObjectivesComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    this.subnavChanged.emit(this.subnav);
-    console.log('ngAfterViewInit');
     if (localStorage.getItem('study')) {
       this.study = JSON.parse(localStorage.getItem('study'));
       this.api.getProductionById(this.study.ID_PRODUCTION).subscribe(

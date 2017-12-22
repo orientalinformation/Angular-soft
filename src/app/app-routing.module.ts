@@ -5,12 +5,13 @@ import { MembersLayoutComponent } from './layouts/members-layout/members-layout.
 import { AuthGuard } from './guards/auth.guard';
 import { StudyRequiredGuard } from './guards/study-required.guard';
 import { DashboardLayoutComponent } from './layouts/dashboard-layout/dashboard-layout.component';
-import { InputModule } from './views/input/input.module';
+import { NoStudyGuard } from './guards/no-study.guard';
+import { ProfileLayoutComponent } from './layouts/profile-layout/profile-layout.component';
 
 const routes: Routes = [
   {
     path: '',
-    redirectTo: '/home',
+    redirectTo: '/open',
     pathMatch: 'full'
   },
   /**
@@ -19,15 +20,30 @@ const routes: Routes = [
   {
     path: '',
     component: DashboardLayoutComponent,
-    canActivate: [AuthGuard],
+    canActivate: [AuthGuard, NoStudyGuard],
     children: [
       {
         path: '',
         loadChildren: './views/dashboard/dashboard.module#DashboardModule'
+      }
+    ]
+  },
+  {
+    path: '',
+    component: ProfileLayoutComponent,
+    canActivate: [AuthGuard],
+    children: [
+      {
+        path: 'profile',
+        loadChildren: './views/profile/profile.module#ProfileModule'
       },
       {
-        path: 'setting',
+        path: 'settings',
         loadChildren: './views/settings/settings.module#SettingsModule'
+      },
+      {
+        path: 'references',
+        loadChildren: './views/references/references.module#ReferencesModule'
       }
     ]
   },
@@ -77,7 +93,7 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+  imports: [RouterModule.forRoot(routes, { useHash: true})],
   exports: [RouterModule]
 })
 export class AppRoutingModule { }

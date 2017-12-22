@@ -12,6 +12,7 @@ import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
 import { PERFECT_SCROLLBAR_CONFIG } from 'ngx-perfect-scrollbar';
 import { PerfectScrollbarConfigInterface } from 'ngx-perfect-scrollbar';
 import { ImportComponent } from './import/import.component';
+import { TranslateModule } from '@ngx-translate/core';
 
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   suppressScrollX: true
@@ -22,7 +23,8 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     CommonModule,
     DashboardRoutingModule,
     SelectModule,
-    PerfectScrollbarModule
+    PerfectScrollbarModule,
+    TranslateModule.forChild()
   ],
   declarations: [StartPageComponent, NewStudyComponent, OpenStudyComponent, ImportComponent],
   providers: [

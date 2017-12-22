@@ -1,7 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
-import { FormsModule } from '@angular/forms';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 
 import { AuthenticationInterceptor } from './authentication/authentication-interceptor';
@@ -13,25 +12,17 @@ import { jqxBarGaugeComponent } from 'jqwidgets-framework/jqwidgets-ts/angular_j
 import { MembersLayoutComponent } from './layouts/members-layout/members-layout.component';
 import { AuthLayoutComponent } from './layouts/auth-layout/auth-layout.component';
 import { AuthGuard } from './guards/auth.guard';
+import { NoStudyGuard } from './guards/no-study.guard';
 import { SweetAlert2Module } from '@toverux/ngx-sweetalert2';
 
 import { SharedModule } from './shared/shared.module';
-import { ApiModule } from './api/api.module';
 
 import { SelectModule } from 'ng-select';
+import { ProfileModule } from './views/profile/profile.module';
+import { ReferencesModule } from './views/references/references.module';
+import { SettingsModule } from './views/settings/settings.module';
 
-import { LOCALE_ID } from '@angular/core';
-
-import localeFr from '@angular/common/locales/fr';
-import localeEs from '@angular/common/locales/es';
-import localeDe from '@angular/common/locales/de';
-import localeIt from '@angular/common/locales/it';
-
-registerLocaleData(localeFr);
-registerLocaleData(localeEs);
-registerLocaleData(localeDe);
-registerLocaleData(localeIt);
-
+import { ProfileLayoutComponent } from './layouts/profile-layout/profile-layout.component';
 
 // Import components
 import {
@@ -86,7 +77,6 @@ import { StatusService } from './shared/status.service';
 import { AuthenticationService } from './authentication/authentication.service';
 import { AppSysUtilzComponent } from './components/app-sys-utilz/app-sys-utilz.component';
 import { HttpClient } from '@angular/common/http';
-import { ApiService } from './api/services';
 import { registerLocaleData } from '@angular/common';
 
 import { jqxBulletChartComponent } from 'jqwidgets-framework/jqwidgets-ts/angular_jqxbulletchart';
@@ -158,8 +148,14 @@ import { jqxTreeMapComponent } from 'jqwidgets-framework/jqwidgets-ts/angular_jq
 import { jqxValidatorComponent } from 'jqwidgets-framework/jqwidgets-ts/angular_jqxvalidator';
 import { jqxWindowComponent } from 'jqwidgets-framework/jqwidgets-ts/angular_jqxwindow';
 
-
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
+import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+import { AuthenticationModule } from './authentication/authentication.module';
+
+// AoT requires an exported function for factories
+export function HttpLoaderFactory(http: HttpClient) {
+  return new TranslateHttpLoader(http);
+}
 
 @NgModule({
   declarations: [
@@ -238,34 +234,35 @@ import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
     jqxTreeGridComponent,
     jqxTreeMapComponent,
     jqxValidatorComponent,
-    jqxWindowComponent
+    jqxWindowComponent,
+    ProfileLayoutComponent
   ],
   imports: [
     AppRoutingModule,
     BrowserModule,
     SelectModule,
-    FormsModule,
     HttpClientModule,
     ChartsModule,
     SharedModule,
-    ApiModule,
-    HttpClientModule,
     BsDropdownModule.forRoot(),
     ModalModule.forRoot(),
     TabsModule.forRoot(),
     SweetAlert2Module.forRoot({
+    }),
+    TranslateModule.forRoot({
+      loader: {
+        provide: TranslateLoader,
+        useFactory: HttpLoaderFactory,
+        deps: [HttpClient]
+      }
     })
   ],
   providers: [
     AuthGuard,
     StudyRequiredGuard,
+    NoStudyGuard,
     StatusService,
-    ApiService,
-    AuthenticationService,
-    AuthenticationInterceptor,
     HttpClientModule,
-    { provide: HTTP_INTERCEPTORS, useClass: AuthenticationInterceptor, multi: true },
-    { provide: LOCALE_ID, useValue: 'en' }
   ],
   bootstrap: [AppComponent]
 })

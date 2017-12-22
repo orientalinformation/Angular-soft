@@ -1,84 +1,86 @@
-<div class="row">
-  <div class="col-md-6">
-    <div class="card" id="study-list-card">
-      <div class="card-header">
-        <strong>STUDIES</strong>
+<div class="container">
+  <div class="row">
+    <div class="col-md-6">
+      <div class="card" id="study-list-card">
+        <div class="card-header">
+          <strong>{{'STUDIES'|translate}}</strong>
+        </div>
+        <perfect-scrollbar style="max-height: 500px;">
+          <div class="list-group">
+            <a *ngFor="let study of studies" class="list-group-item list-group-item-action" [ngClass]="study == selectedStudy? 'active' : ''" (click)="onSelect(study)">
+              <div class="d-flex w-100 justify-content-between">
+                {{study.STUDY_NAME}}
+                <small>{{study.USERNAM}}</small>
+              </div>
+            </a>
+          </div>
+        </perfect-scrollbar>
       </div>
-      <perfect-scrollbar style="max-height: 500px;">
-        <div class="list-group">
-          <a *ngFor="let study of studies" class="list-group-item list-group-item-action" (click)="onSelect(study)">
-            <div class="d-flex w-100 justify-content-between">
-              {{study.STUDY_NAME}}
-              <small>{{study.ID_USER}}</small>
+    </div>
+  
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-header">
+          <strong>FILTERS</strong>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6">
+              Who
+              <ng-select class="bootstrap" [options]="filterUsers" [allowClear]="true"></ng-select>
             </div>
-          </a>
-        </div>
-      </perfect-scrollbar>
-    </div>
-  </div>
-
-  <div class="col-md-6">
-    <div class="card">
-      <div class="card-header">
-        <strong>FILTERS</strong>
-      </div>
-      <div class="card-body">
-        <div class="row">
-          <div class="col-md-6">
-            Who
-            <ng-select class="bootstrap" [options]="filterUsers" [allowClear]="true"></ng-select>
-          </div>
-          <div class="col-md-6">
-            Component family
-            <ng-select class="bootstrap" [options]="filterUsers" [allowClear]="true"></ng-select>
-          </div>
-          <div class="col-md-6">
-            Sub family
-            <ng-select class="bootstrap" [options]="filterUsers" [allowClear]="true"></ng-select>
-          </div>
-          <div class="col-md-6">
-            Component list
-            <ng-select class="bootstrap" [options]="filterUsers" [allowClear]="true"></ng-select>
+            <div class="col-md-6">
+              Component family
+              <ng-select class="bootstrap" [options]="filterUsers" [allowClear]="true"></ng-select>
+            </div>
+            <div class="col-md-6">
+              Sub family
+              <ng-select class="bootstrap" [options]="filterUsers" [allowClear]="true"></ng-select>
+            </div>
+            <div class="col-md-6">
+              Component list
+              <ng-select class="bootstrap" [options]="filterUsers" [allowClear]="true"></ng-select>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-    <div class="card">
-      <div class="card-header">
-        <strong>SELECTED STUDY</strong>
-      </div>
-      <div class="card-body">
-        <ng-template #noSelectedStudy>
-          <div class="text-muted text-center" style="min-height: 200px;padding-top:90px;">
-            Please select a study from the list before process to calculation.
-          </div>
-        </ng-template>
-        <div *ngIf="selectedStudy; else noSelectedStudy">
-          <table class="table table-hover table-striped">
-            <tr>
-              <th>Study Name</th>
-              <td>{{ selectedStudy.STUDY_NAME }}</td>
-            </tr>
-            <tr>
-              <th>Owner</th>
-              <td>{{ selectedStudy.ID_USER }}</td>
-            </tr>
-            <tr>
-              <th colspan="2">Comment</th>              
-            </tr>
-            <tr>
-              <td colspan="2">{{ selectedStudy.COMMENT_TXT }}</td>
-            </tr>
-             
-          </table>
+      <div class="card">
+        <div class="card-header">
+          <strong>SELECTED STUDY</strong>
         </div>
-      </div>
-        
-      <div class="card-footer text-center">
-        <button type="button" class="btn btn-danger"><i class="fa fa-trash-o"></i> Delete</button>
-          <button type="button" class="btn btn-info"><i class="fa fa-chain"></i> Chaining</button>
-          <button type="button" class="btn btn-secondary"><i class="fa fa-copy"></i> Save As</button>
-          <button type="button" class="btn btn-primary" (click)="openStudy()"><i class="fa fa-folder-open-o"> </i>Open</button>
+        <div class="card-body">
+          <ng-template #noSelectedStudy>
+            <div class="text-muted text-center" style="min-height: 200px;padding-top:90px;">
+              Please select a study from the list before process to calculation.
+            </div>
+          </ng-template>
+          <div *ngIf="selectedStudy; else noSelectedStudy">
+            <table class="table table-hover table-striped">
+              <tr>
+                <th>Study Name</th>
+                <td>{{ selectedStudy.STUDY_NAME }}</td>
+              </tr>
+              <tr>
+                <th>Owner</th>
+                <td>{{ selectedStudy.USERNAM }}</td>
+              </tr>
+              <tr>
+                <th colspan="2">Comment</th>              
+              </tr>
+              <tr>
+                <td colspan="2">{{ selectedStudy.COMMENT_TXT }}</td>
+              </tr>
+               
+            </table>
+          </div>
+        </div>
+          
+        <div class="card-footer text-center" *ngIf="selectedStudy">
+          <button type="button" class="btn btn-danger"><i class="fa fa-trash-o"></i> Delete</button>
+            <button type="button" class="btn btn-info"><i class="fa fa-chain"></i> Chaining</button>
+            <button type="button" class="btn btn-secondary"><i class="fa fa-copy"></i> Save As</button>
+            <button type="button" class="btn btn-primary" (click)="openStudy()"><i class="fa fa-folder-open-o"> </i>Open</button>
+        </div>
       </div>
     </div>
   </div>

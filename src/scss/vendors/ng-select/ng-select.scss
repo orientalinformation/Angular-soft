@@ -95,7 +95,7 @@ ng-select.bootstrap {
       >div.option {
         background-color: #f2f9fc;
         @if $enable-rounded {
-          border-radius: $select-input-border-radius;
+          border-radius: $input-border-radius;
         } @else {
           border-radius: 0;
         }

@@ -9,7 +9,6 @@ import { Router } from '@angular/router';
 })
 export class LayoutComponent implements OnInit {
 
-
   public subnav;
 
   constructor(public router: Router) { }
@@ -17,6 +16,4 @@ export class LayoutComponent implements OnInit {
   ngOnInit() {
     this.subnav = SettingsNavItems;
   }
-
-
 }

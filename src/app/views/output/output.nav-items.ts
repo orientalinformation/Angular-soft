@@ -5,8 +5,13 @@ export const OutputNavItems = [
         icon: '',
     },
     {
-        name: 'Product',
+        name: 'Sizing',
         url: '/output/sizing',
+        icon: '',
+    },
+    {
+        name: 'Product charts',
+        url: '/output/charts',
         icon: '',
     }
 ];

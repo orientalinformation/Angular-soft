@@ -1,18 +1,17 @@
 export const SettingsNavItems = [
     {
         name: 'Mesh',
-        url: '/setting/mesh',
+        url: '/settings/mesh',
         icon: '',
     },
     {
         name: 'Calculation',
-        url: '/setting/calculation',
+        url: '/settings/calculation',
         icon: '',
-    }
-    ,
+    },
     {
         name: 'Result',
-        url: '/setting/result',
+        url: '/settings/result',
         icon: '',
     }
 ];

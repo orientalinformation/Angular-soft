@@ -6,18 +6,19 @@ import 'rxjs/add/operator/do';
 import 'rxjs/add/operator/shareReplay';
 import * as moment from 'moment';
 import { Login } from '../api/models/login';
+import { ApiService } from '../api/services/api.service';
 
 
 @Injectable()
 export class AuthenticationService {
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private api: ApiService) {
 
   }
 
   login(username: string, password: string) {
     console.log('auth service send login');
-    return this.http.post<Login>('http://localhost:10010/api/v1/login', { username, password })
+    return this.api.login({ username, password })
       .do(resp => this.setSession(resp));
   }
 
@@ -25,11 +26,12 @@ export class AuthenticationService {
     console.log(authResponse.token);
     // const expiresAt = moment().add(authResponse.expiresIn, 'second');
     localStorage.setItem('token', authResponse.token);
-    localStorage.setItem('user', authResponse.user);
+    localStorage.setItem('user', JSON.stringify(authResponse.user));
     // localStorage.setItem('expires_at', JSON.stringify(expiresAt.valueOf()));
   }
 
   logout() {
+    this.api.logout();
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     localStorage.removeItem('study');

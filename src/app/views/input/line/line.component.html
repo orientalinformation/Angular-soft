@@ -1,3 +1,125 @@
-<p>
-  line works!
-</p>
+<div class="container">
+  <div class="card product-container">
+    <div class="card-body">
+      <form action="" class="form-horizontal">
+        <div class="form-group row">
+          <div class="col-md-2">Insulation type </div>
+          <div class="col-md-2">
+            <select  id="" name="insulationType" id="insulationType" class="form-control">
+              <option value="" selected></option>
+              <option value=""></option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group row">
+          <div class="col-md-2">Insulation Diameter (m) </div>
+          <div class="col-md-2">
+            <select  id="" name="diameter" id="diameter" class="form-control">
+              <option value="" selected></option>
+              <option value="" ></option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group row" name="open1" >
+          <div class="col-md-2">Insulated line</div>
+          <div class="col-md-3">
+            <select  id="" name="insulatedLine" class="form-control" > 
+              <option value="" selected></option>
+              <option value="" onchange="enabled()">aa</option>
+            </select>
+          </div>
+          <div class="col-md-1">Length </div>
+          <div class="col">
+             <input type="text"  id="" style="width:80px;" name="insulatedLineLength" disabled> (m)
+          </div>
+        </div>
+        <div class="form-group row">
+          <div class="col-md-2">Insulated valves</div>
+          <div class="col-md-3">
+            <select  id="" name="insularedValves" class="form-control"> 
+              <option value="" selected></option>
+              <option value=""></option>
+            </select>
+          </div>
+          <div class="col-md-1">Number</div>
+          <div class="col">
+              <input type="text"  id="" style="width:80px;" name="insulatedValvesLength" disabled>
+          </div>
+        </div>
+        <div class="form-group row">
+          <div class="col-md-2">Tees</div>
+          <div class="col-md-3">
+            <select  id="" name="tees" class="form-control"> 
+              <option value="" selected></option>
+              <option value=""></option>
+            </select>
+          </div>
+          <div class="col-md-1">Number</div>
+          <div class="col">
+              <input type="text"  id="" style="width:80px;" name="teesQuantity"disabled>
+          </div>
+        </div>
+        <div class="form-group row">
+          <div class="col-md-2">Elbows</div>
+          <div class="col-md-3">
+            <select  id="" name="elbows"  class="form-control"> 
+              <option value="" selected></option>
+              <option value=""></option>
+            </select>
+          </div>
+          <div class="col-md-1">Number</div>
+          <div class="col">
+              <input type="text"  id="" style="width:80px;" name="elbowsQuantity" disabled>
+          </div>
+        </div>
+        <div class="form-group row">
+          <div class="col-md-2">Non-insulated line</div>
+          <div class="col-md-3">
+            <select  id="" name="nonInsulatedLine" class="form-control"> 
+              <option value="" selected></option>
+              <option value=""></option>
+            </select>
+          </div>
+          <div class="col-md-1">Length </div>
+          <div class="col">
+              <input type="text"  id="" style="width:80px;" name="nonInsulatedLineLength" disabled> (m)
+          </div>
+        </div>
+        <div class="form-group row">
+          <div class="col-md-2">Non-insulated valves</div>
+          <div class="col-md-3">
+            <select  id="" name="nonInsulatedValves" class="form-control"> 
+              <option value="" selected></option>
+              <option value=""></option>
+            </select>
+          </div>
+          <div class="col-md-1">Number </div>
+          <div class="col">
+              <input type="text"  id="" style="width:80px;" name="nonInsulatedValvesQuantity" disabled>
+          </div>
+        </div>
+        <div class="form-group row">
+          <div class="col-md-2">Storage tank  </div>
+          <div class="col-md-4">
+            <select  id="" name="storgageTank"  class="form-control">
+              <option value="" selected></option>
+              <option value=""></option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group row">
+          <div class="col-md-2">Equipment elevation above tank outlet  </div>
+          <div class="col-md-3">
+            <input type="text" style="width:100px;" name="height"> (m)
+          </div>
+        </div>
+        <div class="form-group row">
+          <div class="col-md-2">Tank pressure  </div>
+          <div class="col-md-4">
+            <input type="text" style="width:100px;" name="pressure"> (m)
+          </div>
+        </div>
+      </form>
+    </div> 
+  </div>
+</div>

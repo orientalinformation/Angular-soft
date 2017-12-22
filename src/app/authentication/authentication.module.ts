@@ -9,6 +9,8 @@ import { AuthenticationService } from './authentication.service';
 
 import { FormsModule } from '@angular/forms';
 import { SignoutComponent } from './signout/signout.component';
+import { AuthenticationInterceptor } from './authentication-interceptor';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
 
 @NgModule({
   imports: [
@@ -17,7 +19,9 @@ import { SignoutComponent } from './signout/signout.component';
     FormsModule,
   ],
   providers: [
-    AuthenticationService
+    AuthenticationService,
+    AuthenticationInterceptor,
+    { provide: HTTP_INTERCEPTORS, useClass: AuthenticationInterceptor, multi: true }
   ],
   declarations: [SigninComponent, ForgotComponent, SignoutComponent]
 })

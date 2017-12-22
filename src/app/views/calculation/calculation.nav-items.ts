@@ -5,12 +5,6 @@ export const CalculationNavItems = [
         icon: '',
     },
     {
-        name: 'Calculate',
-        url: '/calculation/calculate',
-        icon: '',
-    }
-    ,
-    {
         name: 'Calculation Status',
         url: '/calculation/calculation-status',
         icon: '',

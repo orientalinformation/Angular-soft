@@ -3,3 +3,13 @@
         cursor: pointer;
     }
 }
+table {
+    td {        
+        a {
+            cursor: pointer !important;
+        }
+    }
+    td.nowrap {
+        white-space: nowrap;
+    }
+}

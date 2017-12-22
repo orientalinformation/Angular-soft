@@ -3,6 +3,7 @@ import { AuthenticationService } from '../authentication.service';
 import { Login } from '../../api/models/login';
 import { Router } from '@angular/router';
 
+import swal from 'sweetalert2';
 
 @Component({
   selector: 'app-signin',
@@ -26,6 +27,7 @@ export class SigninComponent implements OnInit {
         },
         error => {
           console.log('login failed!');
+          swal('Oops...', 'Logged in failed', 'error');
         }
       );
   }

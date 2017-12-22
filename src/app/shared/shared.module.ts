@@ -1,32 +1,42 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { StatusService } from './status.service';
-import { HttpClient } from '@angular/common/http';
-import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
-import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+import { TextService } from './text.service';
+import { ApiModule } from '../api/api.module';
+import { AuthenticationModule } from '../authentication/authentication.module';
+import { NgxLocalizedNumbers } from 'ngx-localized-numbers';
+import { NgxLocalizedNumbersService } from 'ngx-localized-numbers';
+import { FormsModule, FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { LaddaModule } from 'angular2-ladda';
 
-export function createTranslateLoader(http: HttpClient) {
-  return new TranslateHttpLoader(http, '/assets/i18n/', '.json');
-}
 
 @NgModule({
   imports: [
     CommonModule,
-    TranslateModule.forRoot({
-      loader: {
-        provide: TranslateLoader,
-        useFactory: createTranslateLoader,
-        deps: [HttpClient]
-      }
+    LaddaModule.forRoot({
+      style: 'slide-left',
     }),
+    ApiModule,
+    AuthenticationModule,
+    FormsModule,
+    ReactiveFormsModule,
+    NgxLocalizedNumbers.forRoot()
   ],
   declarations: [],
   providers: [
     StatusService,
+    TextService,
+    NgxLocalizedNumbersService,
+    FormBuilder
   ],
   exports: [
     CommonModule,
-    TranslateModule
+    ApiModule,
+    AuthenticationModule,
+    NgxLocalizedNumbers,
+    ReactiveFormsModule,
+    FormsModule,
+    LaddaModule
   ]
 })
 export class SharedModule { }

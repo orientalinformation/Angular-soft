@@ -3,7 +3,7 @@
 /**
  */
 export class Study {
-    ID_PRODUCTION?: number;
+    ID_REPORT?: number;
     CALCULATION_MODE?: number;
     CHAINING_ADD_COMP_ENABLE?: number;
     CHAINING_CONTROLS?: number;
@@ -16,8 +16,8 @@ export class Study {
     ID_PRECALC_LDG_RATE_PRM?: number;
     ID_PRICE?: number;
     ID_PROD?: number;
+    ID_PRODUCTION?: number;
     CALCULATION_STATUS?: number;
-    ID_REPORT?: number;
     ID_STUDY?: number;
     ID_STUDY_RESULTS?: number;
     ID_TEMP_RECORD_PTS?: number;
@@ -30,4 +30,5 @@ export class Study {
     PARENT_STUD_EQP_ID?: number;
     STUDY_NAME?: string;
     TO_RECALCULATE?: number;
+    USERNAM?: string;
 }

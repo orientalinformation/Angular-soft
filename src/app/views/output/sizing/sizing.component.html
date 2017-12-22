@@ -1,3 +1,93 @@
-<p>
-  sizing works!
-</p>
+<div class="container">
+  <div class="card product-contaiber">
+    <div class="card-header">
+      <div style="float:right">
+        <button class="btn btn-primary btn-sm" (click)="openSize()" >Sizing Result</button>
+        <button class="btn btn-success btn-sm" (click)="openTem()" >Temperature Profile</button>
+      </div>
+    </div>
+    <div class="card-body">
+      <div style="display:block;" align="center" id="sizing" >
+        <tabset>
+          <tab>
+            <ng-template tabHeading><i class="icon-graph"></i> Graph</ng-template>
+            <div class="chart-wrapper" style="width:500px;height:300px;">
+              <canvas baseChart class="chart"
+              [datasets]="barChartData"
+              [labels]="barChartLabels"
+              [options]="barChartOptions"
+              [legend]="barChartLegend"
+              [chartType]="barChartType"></canvas>
+            </div>
+          </tab>
+          <tab>
+            <ng-template tabHeading><i class="icon-doc"></i> Value</ng-template>
+            <strong>Equipment</strong>
+            <table class="table table-bordered table-sm">
+              <tr>
+                <th rowspan="2" style="vertical-align:middle">
+                  Equipment
+                </th>
+                <th colspan="4"style="text-align:center">
+                  Chosen product flowrate
+                </th>
+                <th colspan="4"style="text-align:center">
+                  Maximum product flowrate
+                </th>
+              </tr>
+              <tr>
+                <td align="center">Control Temperature (°C)</td>
+                <td align="center">Product flowrate (kg/h</td>
+                <td align="center">Cryogen consumption (product + equipment heat losses)(l /kg)</td>
+                <td align="center">Conveyor coverage or quantity of product per batch</td>
+                <td align="center">Control Temperature (°C)</td>
+                <td align="center">Maximum product flowrate (kg/h)</td>
+                <td align="center">Maximum cryogen consumption (product + equipment heat losses) (l /kg)	</td>
+                <td align="center">Conveyor coverage or quantity of product per batch</td>
+              </tr>
+              <tr></tr>
+            </table>
+          </tab>
+        </tabset>
+      </div>
+      <div style="display:none" id="temPer">
+        <div class="row">
+          <strong class="col-md-2" >Equipment</strong>
+          <select name="" id="" class="form-control" style="width:150px;"></select>
+        </div>
+        <div style="margin-top:20px;"> <strong> Curve</strong></div>
+        <div class="row"style="margin-top:20px;">
+          <div class="col-md-6">
+            <div class="chart-wrapper" style="width:500px;height:300px;">
+              <canvas class="chart" baseChart
+                [datasets]="lineChartData"
+                [labels]="lineChartLabels"
+                [options]="lineChartOptions"
+                [colors]="lineChartColours"
+                [legend]="lineChartLegend"
+                [chartType]="lineChartType">
+              </canvas>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="chart-wrapper" style="width:500px;height:300px;">
+              <canvas class="chart" baseChart
+                [datasets]="lineChartData"
+                [labels]="lineChartLabels"
+                [options]="lineChartOptions"
+                [colors]="lineChartColours"
+                [legend]="lineChartLegend"
+                [chartType]="lineChartType">
+              </canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<button class="btn" (click)="calculator.open()">Open</button>
+
+
+<app-calculator #calculator></app-calculator>

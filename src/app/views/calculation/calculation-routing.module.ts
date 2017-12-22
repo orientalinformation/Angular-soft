@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { LayoutComponent } from './layout/layout.component';
 import { CheckControlComponent } from './check-control/check-control.component';
-import { CalculateComponent } from './calculate/calculate.component';
 import { CalculationStatusComponent } from './calculation-status/calculation-status.component';
 
 const routes: Routes = [
@@ -12,16 +11,12 @@ const routes: Routes = [
     children: [
       {
         path: '',
-        redirectTo: 'calculate',
+        redirectTo: 'check-control',
         pathMatch: 'full',
       },
       {
         path: 'check-control',
         component: CheckControlComponent
-      },
-      {
-        path: 'calculate',
-        component: CalculateComponent
       },
       {
         path: 'calculation-status',
