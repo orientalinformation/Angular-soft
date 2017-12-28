@@ -11,18 +11,6 @@ import { filter } from 'rxjs/operators/filter';
 
 import { ViewLogin } from '../models/view-login';
 import { Login } from '../models/login';
-import { Translation } from '../models/translation';
-import { Study } from '../models/study';
-import { StudyEquipment } from '../models/study-equipment';
-import { Equipment } from '../models/equipment';
-import { Production } from '../models/production';
-import { Product } from '../models/product';
-import { ViewProduct } from '../models/view-product';
-import { ProductElmt } from '../models/product-elmt';
-import { Component } from '../models/component';
-import { Shape } from '../models/shape';
-import { PackingElement } from '../models/packing-element';
-import { PackingLayer } from '../models/packing-layer';
 import { MeshParamDef } from '../models/mesh-param-def';
 import { TempRecordPtsDef } from '../models/temp-record-pts-def';
 import { CalculationParametersDef } from '../models/calculation-parameters-def';
@@ -32,8 +20,8 @@ import { MeshParamDefSave } from '../models/mesh-param-def-save';
 import { TempRecordPtsDefSave } from '../models/temp-record-pts-def-save';
 import { CalculationParametersDefSave } from '../models/calculation-parameters-def-save';
 import { OptimumCalculator } from '../models/optimum-calculator';
-import { ViewPackingLayer } from '../models/view-packing-layer';
-import { SavePackingLayer } from '../models/save-packing-layer';
+import { StartCalculate } from '../models/start-calculate';
+import { StudyEquipment } from '../models/study-equipment';
 import { Symbol } from '../models/symbol';
 import { OptimumResultAna } from '../models/optimum-result-ana';
 import { HeadBalanceResult } from '../models/head-balance-result';
@@ -45,6 +33,21 @@ import { ViewEquipTr } from '../models/view-equip-tr';
 import { ConsumptionResult } from '../models/consumption-result';
 import { EconomicResult } from '../models/economic-result';
 import { ViewSizingResultOptimum } from '../models/view-sizing-result-optimum';
+import { ViewSizingEstimationResult } from '../models/view-sizing-estimation-result';
+import { ViewTemperatureProfile } from '../models/view-temperature-profile';
+import { Translation } from '../models/translation';
+import { Study } from '../models/study';
+import { Equipment } from '../models/equipment';
+import { Production } from '../models/production';
+import { Product } from '../models/product';
+import { ViewProduct } from '../models/view-product';
+import { ProductElmt } from '../models/product-elmt';
+import { Component } from '../models/component';
+import { Shape } from '../models/shape';
+import { PackingElement } from '../models/packing-element';
+import { PackingLayer } from '../models/packing-layer';
+import { ViewPackingLayer } from '../models/view-packing-layer';
+import { SavePackingLayer } from '../models/save-packing-layer';
 import { ViewMesh } from '../models/view-mesh';
 
 
@@ -61,7 +64,7 @@ export class ApiService extends BaseService {
    * @param body - The username/password
    */
   loginResponse(body: Login): Observable<HttpResponse<ViewLogin>> {
-    let __params = new HttpParams();
+    let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
     __body = body;
@@ -97,7 +100,7 @@ export class ApiService extends BaseService {
   /**
    */
   logoutResponse(): Observable<HttpResponse<void>> {
-    let __params = new HttpParams();
+    let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
     let req = new HttpRequest<any>(
@@ -129,10 +132,944 @@ export class ApiService extends BaseService {
     );
   }
   /**
+   */
+  getMyMeshParamDefResponse(): Observable<HttpResponse<MeshParamDef>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    let req = new HttpRequest<any>(
+      "GET",
+      this.rootUrl + `/meshparamdef`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: MeshParamDef = null;
+        _body = _resp.body as MeshParamDef
+        return _resp.clone({body: _body}) as HttpResponse<MeshParamDef>;
+      })
+    );
+  }
+
+  /**
+   */
+  getMyMeshParamDef(): Observable<MeshParamDef> {
+    return this.getMyMeshParamDefResponse().pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   */
+  getMyTempRecordPtsDefResponse(): Observable<HttpResponse<TempRecordPtsDef>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    let req = new HttpRequest<any>(
+      "GET",
+      this.rootUrl + `/temprecordptsdef`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: TempRecordPtsDef = null;
+        _body = _resp.body as TempRecordPtsDef
+        return _resp.clone({body: _body}) as HttpResponse<TempRecordPtsDef>;
+      })
+    );
+  }
+
+  /**
+   */
+  getMyTempRecordPtsDef(): Observable<TempRecordPtsDef> {
+    return this.getMyTempRecordPtsDefResponse().pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   */
+  getMyCalculationParametersDefResponse(): Observable<HttpResponse<CalculationParametersDef>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    let req = new HttpRequest<any>(
+      "GET",
+      this.rootUrl + `/calculationparametersdef`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: CalculationParametersDef = null;
+        _body = _resp.body as CalculationParametersDef
+        return _resp.clone({body: _body}) as HttpResponse<CalculationParametersDef>;
+      })
+    );
+  }
+
+  /**
+   */
+  getMyCalculationParametersDef(): Observable<CalculationParametersDef> {
+    return this.getMyCalculationParametersDefResponse().pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * get array checkcontrol
+   * @param idStudy - undefined
+   * @param idProd - undefined
+   */
+  checkControlViewResponse(params: ApiService.CheckControlViewParams): Observable<HttpResponse<CheckControlView>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    if (params.idStudy != null) __params = __params.set("idStudy", params.idStudy.toString());
+    if (params.idProd != null) __params = __params.set("idProd", params.idProd.toString());
+    let req = new HttpRequest<any>(
+      "GET",
+      this.rootUrl + `/checkcontrolview`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: CheckControlView = null;
+        _body = _resp.body as CheckControlView
+        return _resp.clone({body: _body}) as HttpResponse<CheckControlView>;
+      })
+    );
+  }
+
+  /**
+   * get array checkcontrol
+   * @param idStudy - undefined
+   * @param idProd - undefined
+   */
+  checkControlView(params: ApiService.CheckControlViewParams): Observable<CheckControlView> {
+    return this.checkControlViewResponse(params).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * get checkcontrol
+   * @param idStudy - undefined
+   * @param idProd - undefined
+   */
+  checkControlResponse(params: ApiService.CheckControlParams): Observable<HttpResponse<CheckControl>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    if (params.idStudy != null) __params = __params.set("idStudy", params.idStudy.toString());
+    if (params.idProd != null) __params = __params.set("idProd", params.idProd.toString());
+    let req = new HttpRequest<any>(
+      "GET",
+      this.rootUrl + `/checkcontrol`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: CheckControl = null;
+        _body = _resp.body as CheckControl
+        return _resp.clone({body: _body}) as HttpResponse<CheckControl>;
+      })
+    );
+  }
+
+  /**
+   * get checkcontrol
+   * @param idStudy - undefined
+   * @param idProd - undefined
+   */
+  checkControl(params: ApiService.CheckControlParams): Observable<CheckControl> {
+    return this.checkControlResponse(params).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * save MeshParamDef
+   * @param body - body save meshParamDef
+   */
+  saveMyMeshParamDefResponse(body: MeshParamDefSave): Observable<HttpResponse<void>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    __body = body;
+    let req = new HttpRequest<any>(
+      "POST",
+      this.rootUrl + `/savemeshparamdef`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'text'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: void = null;
+        
+        return _resp.clone({body: _body}) as HttpResponse<void>;
+      })
+    );
+  }
+
+  /**
+   * save MeshParamDef
+   * @param body - body save meshParamDef
+   */
+  saveMyMeshParamDef(body: MeshParamDefSave): Observable<void> {
+    return this.saveMyMeshParamDefResponse(body).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * save TempRecordPtsDef by id
+   * @param body - body save TempRecordPtsDef
+   */
+  saveMyTempRecordPtsDefResponse(body: TempRecordPtsDefSave): Observable<HttpResponse<void>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    __body = body;
+    let req = new HttpRequest<any>(
+      "POST",
+      this.rootUrl + `/savetemprecordptsdef`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'text'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: void = null;
+        
+        return _resp.clone({body: _body}) as HttpResponse<void>;
+      })
+    );
+  }
+
+  /**
+   * save TempRecordPtsDef by id
+   * @param body - body save TempRecordPtsDef
+   */
+  saveMyTempRecordPtsDef(body: TempRecordPtsDefSave): Observable<void> {
+    return this.saveMyTempRecordPtsDefResponse(body).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * save CalculationParametersDef by id
+   * @param body - body save CalculationParametersDef
+   */
+  saveMyCalculationParametersDefResponse(body: CalculationParametersDefSave): Observable<HttpResponse<void>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    __body = body;
+    let req = new HttpRequest<any>(
+      "POST",
+      this.rootUrl + `/savecalculationparametersdef`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'text'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: void = null;
+        
+        return _resp.clone({body: _body}) as HttpResponse<void>;
+      })
+    );
+  }
+
+  /**
+   * save CalculationParametersDef by id
+   * @param body - body save CalculationParametersDef
+   */
+  saveMyCalculationParametersDef(body: CalculationParametersDefSave): Observable<void> {
+    return this.saveMyCalculationParametersDefResponse(body).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * get optimumcalculator
+   * @param idStudyEquipment - undefined
+   * @param idStudy - undefined
+   */
+  getOptimumCalculatorResponse(params: ApiService.GetOptimumCalculatorParams): Observable<HttpResponse<OptimumCalculator>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    if (params.idStudyEquipment != null) __params = __params.set("idStudyEquipment", params.idStudyEquipment.toString());
+    if (params.idStudy != null) __params = __params.set("idStudy", params.idStudy.toString());
+    let req = new HttpRequest<any>(
+      "GET",
+      this.rootUrl + `/optimumcalculator`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: OptimumCalculator = null;
+        _body = _resp.body as OptimumCalculator
+        return _resp.clone({body: _body}) as HttpResponse<OptimumCalculator>;
+      })
+    );
+  }
+
+  /**
+   * get optimumcalculator
+   * @param idStudyEquipment - undefined
+   * @param idStudy - undefined
+   */
+  getOptimumCalculator(params: ApiService.GetOptimumCalculatorParams): Observable<OptimumCalculator> {
+    return this.getOptimumCalculatorResponse(params).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * Run Kernal calculate
+   * @param body - body save startCalculate
+   */
+  startCalculateResponse(body: StartCalculate): Observable<HttpResponse<void>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    __body = body;
+    let req = new HttpRequest<any>(
+      "POST",
+      this.rootUrl + `/startcalculate`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'text'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: void = null;
+        
+        return _resp.clone({body: _body}) as HttpResponse<void>;
+      })
+    );
+  }
+
+  /**
+   * Run Kernal calculate
+   * @param body - body save startCalculate
+   */
+  startCalculate(body: StartCalculate): Observable<void> {
+    return this.startCalculateResponse(body).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * @param id - Study ID
+   */
+  startStudyCalculationResponse(id: number): Observable<HttpResponse<StudyEquipment>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    
+    let req = new HttpRequest<any>(
+      "GET",
+      this.rootUrl + `/studies/${id}/calculate`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: StudyEquipment = null;
+        _body = _resp.body as StudyEquipment
+        return _resp.clone({body: _body}) as HttpResponse<StudyEquipment>;
+      })
+    );
+  }
+
+  /**
+   * @param id - Study ID
+   */
+  startStudyCalculation(id: number): Observable<StudyEquipment> {
+    return this.startStudyCalculationResponse(id).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * get symbol study
+   * @param idStudy - Study ID
+   */
+  getSymbolResponse(idStudy: number): Observable<HttpResponse<Symbol>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    
+    let req = new HttpRequest<any>(
+      "GET",
+      this.rootUrl + `/symbol/${idStudy}`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: Symbol = null;
+        _body = _resp.body as Symbol
+        return _resp.clone({body: _body}) as HttpResponse<Symbol>;
+      })
+    );
+  }
+
+  /**
+   * get symbol study
+   * @param idStudy - Study ID
+   */
+  getSymbol(idStudy: number): Observable<Symbol> {
+    return this.getSymbolResponse(idStudy).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * get pro info study
+   * @param idStudy - Study ID
+   */
+  getProInfoStudyResponse(idStudy: number): Observable<HttpResponse<OptimumResultAna>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    
+    let req = new HttpRequest<any>(
+      "GET",
+      this.rootUrl + `/proInfoStudy/${idStudy}`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: OptimumResultAna = null;
+        _body = _resp.body as OptimumResultAna
+        return _resp.clone({body: _body}) as HttpResponse<OptimumResultAna>;
+      })
+    );
+  }
+
+  /**
+   * get pro info study
+   * @param idStudy - Study ID
+   */
+  getProInfoStudy(idStudy: number): Observable<OptimumResultAna> {
+    return this.getProInfoStudyResponse(idStudy).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * get optimum head balance
+   * @param idStudy - Study ID
+   */
+  getOptimumHeadBalanceResponse(idStudy: number): Observable<HttpResponse<HeadBalanceResult>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    
+    let req = new HttpRequest<any>(
+      "GET",
+      this.rootUrl + `/optimum/headBalance/${idStudy}`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: HeadBalanceResult = null;
+        _body = _resp.body as HeadBalanceResult
+        return _resp.clone({body: _body}) as HttpResponse<HeadBalanceResult>;
+      })
+    );
+  }
+
+  /**
+   * get optimum head balance
+   * @param idStudy - Study ID
+   */
+  getOptimumHeadBalance(idStudy: number): Observable<HeadBalanceResult> {
+    return this.getOptimumHeadBalanceResponse(idStudy).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * get optimum head balance max
+   * @param idStudy - get optimum head balance max results
+   */
+  getOptimumHeadBalanceMaxResponse(idStudy: number): Observable<HttpResponse<HeadBalanceMaxResult>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    
+    let req = new HttpRequest<any>(
+      "GET",
+      this.rootUrl + `/optimum/headBalanceMax/${idStudy}`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: HeadBalanceMaxResult = null;
+        _body = _resp.body as HeadBalanceMaxResult
+        return _resp.clone({body: _body}) as HttpResponse<HeadBalanceMaxResult>;
+      })
+    );
+  }
+
+  /**
+   * get optimum head balance max
+   * @param idStudy - get optimum head balance max results
+   */
+  getOptimumHeadBalanceMax(idStudy: number): Observable<HeadBalanceMaxResult> {
+    return this.getOptimumHeadBalanceMaxResponse(idStudy).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * get equip sizing
+   * @param idStudyEquipment - StudyEquipment ID
+   */
+  getEquipSizingResponse(idStudyEquipment: number): Observable<HttpResponse<EquipSizing>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    
+    let req = new HttpRequest<any>(
+      "GET",
+      this.rootUrl + `/optimum/equipSizing/${idStudyEquipment}`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: EquipSizing = null;
+        _body = _resp.body as EquipSizing
+        return _resp.clone({body: _body}) as HttpResponse<EquipSizing>;
+      })
+    );
+  }
+
+  /**
+   * get equip sizing
+   * @param idStudyEquipment - StudyEquipment ID
+   */
+  getEquipSizing(idStudyEquipment: number): Observable<EquipSizing> {
+    return this.getEquipSizingResponse(idStudyEquipment).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * get estimation head balance
+   * @param idStudy - Study ID
+   * @param tr - Control temperature
+   */
+  getEstimationHeadBalanceResponse(params: ApiService.GetEstimationHeadBalanceParams): Observable<HttpResponse<EstimationHeadBalanceResult>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    if (params.idStudy != null) __params = __params.set("idStudy", params.idStudy.toString());
+    if (params.tr != null) __params = __params.set("tr", params.tr.toString());
+    let req = new HttpRequest<any>(
+      "GET",
+      this.rootUrl + `/estimation/headBalance`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: EstimationHeadBalanceResult = null;
+        _body = _resp.body as EstimationHeadBalanceResult
+        return _resp.clone({body: _body}) as HttpResponse<EstimationHeadBalanceResult>;
+      })
+    );
+  }
+
+  /**
+   * get estimation head balance
+   * @param idStudy - Study ID
+   * @param tr - Control temperature
+   */
+  getEstimationHeadBalance(params: ApiService.GetEstimationHeadBalanceParams): Observable<EstimationHeadBalanceResult> {
+    return this.getEstimationHeadBalanceResponse(params).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * get temperature calculation data
+   * @param idStudyEquipment - StudyEquipment ID
+   */
+  temperatureCalculationResponse(idStudyEquipment: number): Observable<HttpResponse<ViewTrCalculate>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    
+    let req = new HttpRequest<any>(
+      "GET",
+      this.rootUrl + `/estimation/trCalculate/${idStudyEquipment}`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: ViewTrCalculate = null;
+        _body = _resp.body as ViewTrCalculate
+        return _resp.clone({body: _body}) as HttpResponse<ViewTrCalculate>;
+      })
+    );
+  }
+
+  /**
+   * get temperature calculation data
+   * @param idStudyEquipment - StudyEquipment ID
+   */
+  temperatureCalculation(idStudyEquipment: number): Observable<ViewTrCalculate> {
+    return this.temperatureCalculationResponse(idStudyEquipment).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * view Equipment Temperature
+   * @param idStudyEquipment - StudyEquipment ID
+   */
+  viewEquipTrResponse(idStudyEquipment: number): Observable<HttpResponse<ViewEquipTr>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    
+    let req = new HttpRequest<any>(
+      "GET",
+      this.rootUrl + `/estimation/viewEquipTr/${idStudyEquipment}`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: ViewEquipTr = null;
+        _body = _resp.body as ViewEquipTr
+        return _resp.clone({body: _body}) as HttpResponse<ViewEquipTr>;
+      })
+    );
+  }
+
+  /**
+   * view Equipment Temperature
+   * @param idStudyEquipment - StudyEquipment ID
+   */
+  viewEquipTr(idStudyEquipment: number): Observable<ViewEquipTr> {
+    return this.viewEquipTrResponse(idStudyEquipment).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * get consumption results
+   * @param idStudy - Study ID
+   */
+  getAnalyticalConsumptionResponse(idStudy: number): Observable<HttpResponse<ConsumptionResult>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    
+    let req = new HttpRequest<any>(
+      "GET",
+      this.rootUrl + `/common/consumption/${idStudy}`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: ConsumptionResult = null;
+        _body = _resp.body as ConsumptionResult
+        return _resp.clone({body: _body}) as HttpResponse<ConsumptionResult>;
+      })
+    );
+  }
+
+  /**
+   * get consumption results
+   * @param idStudy - Study ID
+   */
+  getAnalyticalConsumption(idStudy: number): Observable<ConsumptionResult> {
+    return this.getAnalyticalConsumptionResponse(idStudy).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * get economic results
+   * @param idStudy - Study ID
+   */
+  getAnalyticalEconomicResponse(idStudy: number): Observable<HttpResponse<EconomicResult>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    
+    let req = new HttpRequest<any>(
+      "GET",
+      this.rootUrl + `/common/economic/${idStudy}`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: EconomicResult = null;
+        _body = _resp.body as EconomicResult
+        return _resp.clone({body: _body}) as HttpResponse<EconomicResult>;
+      })
+    );
+  }
+
+  /**
+   * get economic results
+   * @param idStudy - Study ID
+   */
+  getAnalyticalEconomic(idStudy: number): Observable<EconomicResult> {
+    return this.getAnalyticalEconomicResponse(idStudy).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * get sizng result optimum
+   * @param idStudy - Study ID
+   */
+  sizingOptimumResultResponse(idStudy: number): Observable<HttpResponse<ViewSizingResultOptimum>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    
+    let req = new HttpRequest<any>(
+      "GET",
+      this.rootUrl + `/output/sizingresult/${idStudy}/optimum`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: ViewSizingResultOptimum = null;
+        _body = _resp.body as ViewSizingResultOptimum
+        return _resp.clone({body: _body}) as HttpResponse<ViewSizingResultOptimum>;
+      })
+    );
+  }
+
+  /**
+   * get sizng result optimum
+   * @param idStudy - Study ID
+   */
+  sizingOptimumResult(idStudy: number): Observable<ViewSizingResultOptimum> {
+    return this.sizingOptimumResultResponse(idStudy).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * sizing result estimation
+   * @param idStudy - Study ID
+   * @param tr - Control temperature
+   */
+  sizingEstimationResultResponse(params: ApiService.SizingEstimationResultParams): Observable<HttpResponse<ViewSizingEstimationResult>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    if (params.idStudy != null) __params = __params.set("idStudy", params.idStudy.toString());
+    if (params.tr != null) __params = __params.set("tr", params.tr.toString());
+    let req = new HttpRequest<any>(
+      "GET",
+      this.rootUrl + `/output/sizingresult/estimation`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: ViewSizingEstimationResult = null;
+        _body = _resp.body as ViewSizingEstimationResult
+        return _resp.clone({body: _body}) as HttpResponse<ViewSizingEstimationResult>;
+      })
+    );
+  }
+
+  /**
+   * sizing result estimation
+   * @param idStudy - Study ID
+   * @param tr - Control temperature
+   */
+  sizingEstimationResult(params: ApiService.SizingEstimationResultParams): Observable<ViewSizingEstimationResult> {
+    return this.sizingEstimationResultResponse(params).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * get temperature profile
+   * @param idStudyEquipment - StudyEquipment ID
+   */
+  temperatureProfileResponse(idStudyEquipment: number): Observable<HttpResponse<ViewTemperatureProfile>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    
+    let req = new HttpRequest<any>(
+      "GET",
+      this.rootUrl + `/output/temperatureProfile/${idStudyEquipment}`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: ViewTemperatureProfile = null;
+        _body = _resp.body as ViewTemperatureProfile
+        return _resp.clone({body: _body}) as HttpResponse<ViewTemperatureProfile>;
+      })
+    );
+  }
+
+  /**
+   * get temperature profile
+   * @param idStudyEquipment - StudyEquipment ID
+   */
+  temperatureProfile(idStudyEquipment: number): Observable<ViewTemperatureProfile> {
+    return this.temperatureProfileResponse(idStudyEquipment).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
    * @param lang - undefined
    */
   getComponentTranslationsResponse(lang: string): Observable<HttpResponse<Translation[]>> {
-    let __params = new HttpParams();
+    let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
     
@@ -169,7 +1106,7 @@ export class ApiService extends BaseService {
    * @param lang - undefined
    */
   getPackingTranslationsResponse(lang: string): Observable<HttpResponse<Translation[]>> {
-    let __params = new HttpParams();
+    let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
     
@@ -207,7 +1144,7 @@ export class ApiService extends BaseService {
    * @param mine - true will return studies of current logged in user, false for getting other studies
    */
   findStudiesResponse(mine?: boolean): Observable<HttpResponse<Study[]>> {
-    let __params = new HttpParams();
+    let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
     if (mine != null) __params = __params.set("mine", mine.toString());
@@ -246,7 +1183,7 @@ export class ApiService extends BaseService {
    * @param study - The study to create.
    */
   createStudyResponse(study?: Study): Observable<HttpResponse<void>> {
-    let __params = new HttpParams();
+    let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
     __body = study;
@@ -284,7 +1221,7 @@ export class ApiService extends BaseService {
    * @param id - Study ID
    */
   getStudyByIdResponse(id: number): Observable<HttpResponse<Study>> {
-    let __params = new HttpParams();
+    let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
     
@@ -321,7 +1258,7 @@ export class ApiService extends BaseService {
    * @param id - Study ID
    */
   deleteStudyByIdResponse(id: number): Observable<HttpResponse<void>> {
-    let __params = new HttpParams();
+    let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
     
@@ -355,10 +1292,50 @@ export class ApiService extends BaseService {
     );
   }
   /**
+   * @param id - Study ID
+   * @param body - undefined
+   */
+  saveStudyResponse(params: ApiService.SaveStudyParams): Observable<HttpResponse<void>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    
+    __body = params.body;
+    let req = new HttpRequest<any>(
+      "PATCH",
+      this.rootUrl + `/studies/${params.id}`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'text'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: void = null;
+        
+        return _resp.clone({body: _body}) as HttpResponse<void>;
+      })
+    );
+  }
+
+  /**
+   * @param id - Study ID
+   * @param body - undefined
+   */
+  saveStudy(params: ApiService.SaveStudyParams): Observable<void> {
+    return this.saveStudyResponse(params).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
    * @param id - id study to open
    */
   openStudyResponse(id: number): Observable<HttpResponse<void>> {
-    let __params = new HttpParams();
+    let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
     
@@ -400,7 +1377,7 @@ export class ApiService extends BaseService {
    * @param dim1 - dim1
    */
   updateProductResponse(params: ApiService.UpdateProductParams): Observable<HttpResponse<void>> {
-    let __params = new HttpParams();
+    let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
     
@@ -447,7 +1424,7 @@ export class ApiService extends BaseService {
    * @param id - study ID
    */
   newProductResponse(params: ApiService.NewProductParams): Observable<HttpResponse<void>> {
-    let __params = new HttpParams();
+    let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
     if (params.name != null) __params = __params.set("name", params.name.toString());
@@ -486,7 +1463,7 @@ export class ApiService extends BaseService {
    * @param id - refresh mesh of study
    */
   refreshMeshResponse(id: number): Observable<HttpResponse<void>> {
-    let __params = new HttpParams();
+    let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
     
@@ -523,7 +1500,7 @@ export class ApiService extends BaseService {
    * @param id - undefined
    */
   getStudyEquipmentsResponse(id: number): Observable<HttpResponse<StudyEquipment[]>> {
-    let __params = new HttpParams();
+    let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
     
@@ -561,7 +1538,7 @@ export class ApiService extends BaseService {
    * @param id - id study to open.
    */
   saveStudyAsResponse(params: ApiService.SaveStudyAsParams): Observable<HttpResponse<void>> {
-    let __params = new HttpParams();
+    let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
     
@@ -607,7 +1584,7 @@ export class ApiService extends BaseService {
    * @param energy - undefined
    */
   getEquipmentsResponse(params: ApiService.GetEquipmentsParams): Observable<HttpResponse<Equipment[]>> {
-    let __params = new HttpParams();
+    let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
     if (params.size != null) __params = __params.set("size", params.size.toString());
@@ -658,7 +1635,7 @@ export class ApiService extends BaseService {
    * @param id - Equipment ID
    */
   getEquipmentByIdResponse(id: number): Observable<HttpResponse<Equipment>> {
-    let __params = new HttpParams();
+    let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
     
@@ -697,7 +1674,7 @@ export class ApiService extends BaseService {
    * @param id - StudyEquipment ID
    */
   getStudyEquipmentByIdResponse(id: number): Observable<HttpResponse<StudyEquipment>> {
-    let __params = new HttpParams();
+    let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
     
@@ -736,7 +1713,7 @@ export class ApiService extends BaseService {
    * @param id - Production ID
    */
   getProductionByIdResponse(id: number): Observable<HttpResponse<Production>> {
-    let __params = new HttpParams();
+    let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
     
@@ -771,11 +1748,51 @@ export class ApiService extends BaseService {
     );
   }
   /**
+   * @param id - Production ID
+   * @param body - todo
+   */
+  saveProductionResponse(params: ApiService.SaveProductionParams): Observable<HttpResponse<void>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    
+    __body = params.body;
+    let req = new HttpRequest<any>(
+      "PATCH",
+      this.rootUrl + `/productions/${params.id}`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'text'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: void = null;
+        
+        return _resp.clone({body: _body}) as HttpResponse<void>;
+      })
+    );
+  }
+
+  /**
+   * @param id - Production ID
+   * @param body - todo
+   */
+  saveProduction(params: ApiService.SaveProductionParams): Observable<void> {
+    return this.saveProductionResponse(params).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
    * get product by id
    * @param id - Product ID
    */
   getProductByIdResponse(id: number): Observable<HttpResponse<Product>> {
-    let __params = new HttpParams();
+    let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
     
@@ -814,7 +1831,7 @@ export class ApiService extends BaseService {
    * @param id - Product ID
    */
   getProductViewModelResponse(id: number): Observable<HttpResponse<ViewProduct>> {
-    let __params = new HttpParams();
+    let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
     
@@ -853,7 +1870,7 @@ export class ApiService extends BaseService {
    * @param id - Product ID
    */
   getElementsByProductIdResponse(id: number): Observable<HttpResponse<ProductElmt[]>> {
-    let __params = new HttpParams();
+    let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
     
@@ -896,7 +1913,7 @@ export class ApiService extends BaseService {
    * @param dim1 - undefined
    */
   appendElementsToProductResponse(params: ApiService.AppendElementsToProductParams): Observable<HttpResponse<void>> {
-    let __params = new HttpParams();
+    let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
     if (params.shapeId != null) __params = __params.set("shapeId", params.shapeId.toString());
@@ -944,7 +1961,7 @@ export class ApiService extends BaseService {
    * @param elementId - undefined
    */
   removeProductElementResponse(params: ApiService.RemoveProductElementParams): Observable<HttpResponse<void>> {
-    let __params = new HttpParams();
+    let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
     
@@ -985,7 +2002,7 @@ export class ApiService extends BaseService {
    * @param id - element ID
    */
   productElementMoveUpResponse(id: number): Observable<HttpResponse<void>> {
-    let __params = new HttpParams();
+    let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
     
@@ -1024,7 +2041,7 @@ export class ApiService extends BaseService {
    * @param id - element ID
    */
   productElementMoveDownResponse(id: number): Observable<HttpResponse<void>> {
-    let __params = new HttpParams();
+    let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
     
@@ -1065,7 +2082,7 @@ export class ApiService extends BaseService {
    * @param compfamily - undefined
    */
   findComponentsResponse(params: ApiService.FindComponentsParams): Observable<HttpResponse<Component[]>> {
-    let __params = new HttpParams();
+    let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
     if (params.waterpercent != null) __params = __params.set("waterpercent", params.waterpercent.toString());
@@ -1107,7 +2124,7 @@ export class ApiService extends BaseService {
    * todo
    */
   getUsersResponse(): Observable<HttpResponse<void>> {
-    let __params = new HttpParams();
+    let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
     let req = new HttpRequest<any>(
@@ -1143,7 +2160,7 @@ export class ApiService extends BaseService {
    * get available shapes
    */
   getShapesResponse(): Observable<HttpResponse<Shape[]>> {
-    let __params = new HttpParams();
+    let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
     let req = new HttpRequest<any>(
@@ -1179,7 +2196,7 @@ export class ApiService extends BaseService {
    * get available packing elements
    */
   findPackingElementsResponse(): Observable<HttpResponse<PackingElement[]>> {
-    let __params = new HttpParams();
+    let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
     let req = new HttpRequest<any>(
@@ -1215,7 +2232,7 @@ export class ApiService extends BaseService {
    * get packing layers
    */
   findPackingLayersResponse(): Observable<HttpResponse<PackingLayer[]>> {
-    let __params = new HttpParams();
+    let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
     let req = new HttpRequest<any>(
@@ -1248,356 +2265,11 @@ export class ApiService extends BaseService {
     );
   }
   /**
-   */
-  getMyMeshParamDefResponse(): Observable<HttpResponse<MeshParamDef>> {
-    let __params = new HttpParams();
-    let __headers = new HttpHeaders();
-    let __body: any = null;
-    let req = new HttpRequest<any>(
-      "GET",
-      this.rootUrl + `/meshparamdef`,
-      __body,
-      {
-        headers: __headers,
-        params: __params,
-        responseType: 'json'
-      });
-
-    return this.http.request<any>(req).pipe(
-      filter(_r => _r instanceof HttpResponse),
-      map(_r => {
-        let _resp = _r as HttpResponse<any>;
-        let _body: MeshParamDef = null;
-        _body = _resp.body as MeshParamDef
-        return _resp.clone({body: _body}) as HttpResponse<MeshParamDef>;
-      })
-    );
-  }
-
-  /**
-   */
-  getMyMeshParamDef(): Observable<MeshParamDef> {
-    return this.getMyMeshParamDefResponse().pipe(
-      map(_r => _r.body)
-    );
-  }
-  /**
-   */
-  getMyTempRecordPtsDefResponse(): Observable<HttpResponse<TempRecordPtsDef>> {
-    let __params = new HttpParams();
-    let __headers = new HttpHeaders();
-    let __body: any = null;
-    let req = new HttpRequest<any>(
-      "GET",
-      this.rootUrl + `/temprecordptsdef`,
-      __body,
-      {
-        headers: __headers,
-        params: __params,
-        responseType: 'json'
-      });
-
-    return this.http.request<any>(req).pipe(
-      filter(_r => _r instanceof HttpResponse),
-      map(_r => {
-        let _resp = _r as HttpResponse<any>;
-        let _body: TempRecordPtsDef = null;
-        _body = _resp.body as TempRecordPtsDef
-        return _resp.clone({body: _body}) as HttpResponse<TempRecordPtsDef>;
-      })
-    );
-  }
-
-  /**
-   */
-  getMyTempRecordPtsDef(): Observable<TempRecordPtsDef> {
-    return this.getMyTempRecordPtsDefResponse().pipe(
-      map(_r => _r.body)
-    );
-  }
-  /**
-   */
-  getMyCalculationParametersDefResponse(): Observable<HttpResponse<CalculationParametersDef>> {
-    let __params = new HttpParams();
-    let __headers = new HttpHeaders();
-    let __body: any = null;
-    let req = new HttpRequest<any>(
-      "GET",
-      this.rootUrl + `/calculationparametersdef`,
-      __body,
-      {
-        headers: __headers,
-        params: __params,
-        responseType: 'json'
-      });
-
-    return this.http.request<any>(req).pipe(
-      filter(_r => _r instanceof HttpResponse),
-      map(_r => {
-        let _resp = _r as HttpResponse<any>;
-        let _body: CalculationParametersDef = null;
-        _body = _resp.body as CalculationParametersDef
-        return _resp.clone({body: _body}) as HttpResponse<CalculationParametersDef>;
-      })
-    );
-  }
-
-  /**
-   */
-  getMyCalculationParametersDef(): Observable<CalculationParametersDef> {
-    return this.getMyCalculationParametersDefResponse().pipe(
-      map(_r => _r.body)
-    );
-  }
-  /**
-   * get array checkcontrol
-   * @param idStudy - undefined
-   * @param idProd - undefined
-   */
-  checkControlViewResponse(params: ApiService.CheckControlViewParams): Observable<HttpResponse<CheckControlView[]>> {
-    let __params = new HttpParams();
-    let __headers = new HttpHeaders();
-    let __body: any = null;
-    if (params.idStudy != null) __params = __params.set("idStudy", params.idStudy.toString());
-    if (params.idProd != null) __params = __params.set("idProd", params.idProd.toString());
-    let req = new HttpRequest<any>(
-      "GET",
-      this.rootUrl + `/checkcontrolview`,
-      __body,
-      {
-        headers: __headers,
-        params: __params,
-        responseType: 'json'
-      });
-
-    return this.http.request<any>(req).pipe(
-      filter(_r => _r instanceof HttpResponse),
-      map(_r => {
-        let _resp = _r as HttpResponse<any>;
-        let _body: CheckControlView[] = null;
-        _body = _resp.body as CheckControlView[]
-        return _resp.clone({body: _body}) as HttpResponse<CheckControlView[]>;
-      })
-    );
-  }
-
-  /**
-   * get array checkcontrol
-   * @param idStudy - undefined
-   * @param idProd - undefined
-   */
-  checkControlView(params: ApiService.CheckControlViewParams): Observable<CheckControlView[]> {
-    return this.checkControlViewResponse(params).pipe(
-      map(_r => _r.body)
-    );
-  }
-  /**
-   * get checkcontrol
-   * @param idStudy - undefined
-   * @param idProd - undefined
-   */
-  checkControlResponse(params: ApiService.CheckControlParams): Observable<HttpResponse<CheckControl[]>> {
-    let __params = new HttpParams();
-    let __headers = new HttpHeaders();
-    let __body: any = null;
-    if (params.idStudy != null) __params = __params.set("idStudy", params.idStudy.toString());
-    if (params.idProd != null) __params = __params.set("idProd", params.idProd.toString());
-    let req = new HttpRequest<any>(
-      "GET",
-      this.rootUrl + `/checkcontrol`,
-      __body,
-      {
-        headers: __headers,
-        params: __params,
-        responseType: 'json'
-      });
-
-    return this.http.request<any>(req).pipe(
-      filter(_r => _r instanceof HttpResponse),
-      map(_r => {
-        let _resp = _r as HttpResponse<any>;
-        let _body: CheckControl[] = null;
-        _body = _resp.body as CheckControl[]
-        return _resp.clone({body: _body}) as HttpResponse<CheckControl[]>;
-      })
-    );
-  }
-
-  /**
-   * get checkcontrol
-   * @param idStudy - undefined
-   * @param idProd - undefined
-   */
-  checkControl(params: ApiService.CheckControlParams): Observable<CheckControl[]> {
-    return this.checkControlResponse(params).pipe(
-      map(_r => _r.body)
-    );
-  }
-  /**
-   * save MeshParamDef
-   * @param body - body save meshParamDef
-   */
-  saveMyMeshParamDefResponse(body: MeshParamDefSave): Observable<HttpResponse<void>> {
-    let __params = new HttpParams();
-    let __headers = new HttpHeaders();
-    let __body: any = null;
-    __body = body;
-    let req = new HttpRequest<any>(
-      "POST",
-      this.rootUrl + `/savemeshparamdef`,
-      __body,
-      {
-        headers: __headers,
-        params: __params,
-        responseType: 'text'
-      });
-
-    return this.http.request<any>(req).pipe(
-      filter(_r => _r instanceof HttpResponse),
-      map(_r => {
-        let _resp = _r as HttpResponse<any>;
-        let _body: void = null;
-        
-        return _resp.clone({body: _body}) as HttpResponse<void>;
-      })
-    );
-  }
-
-  /**
-   * save MeshParamDef
-   * @param body - body save meshParamDef
-   */
-  saveMyMeshParamDef(body: MeshParamDefSave): Observable<void> {
-    return this.saveMyMeshParamDefResponse(body).pipe(
-      map(_r => _r.body)
-    );
-  }
-  /**
-   * save TempRecordPtsDef by id
-   * @param body - body save TempRecordPtsDef
-   */
-  saveMyTempRecordPtsDefResponse(body: TempRecordPtsDefSave): Observable<HttpResponse<void>> {
-    let __params = new HttpParams();
-    let __headers = new HttpHeaders();
-    let __body: any = null;
-    __body = body;
-    let req = new HttpRequest<any>(
-      "POST",
-      this.rootUrl + `/savetemprecordptsdef`,
-      __body,
-      {
-        headers: __headers,
-        params: __params,
-        responseType: 'text'
-      });
-
-    return this.http.request<any>(req).pipe(
-      filter(_r => _r instanceof HttpResponse),
-      map(_r => {
-        let _resp = _r as HttpResponse<any>;
-        let _body: void = null;
-        
-        return _resp.clone({body: _body}) as HttpResponse<void>;
-      })
-    );
-  }
-
-  /**
-   * save TempRecordPtsDef by id
-   * @param body - body save TempRecordPtsDef
-   */
-  saveMyTempRecordPtsDef(body: TempRecordPtsDefSave): Observable<void> {
-    return this.saveMyTempRecordPtsDefResponse(body).pipe(
-      map(_r => _r.body)
-    );
-  }
-  /**
-   * save CalculationParametersDef by id
-   * @param body - body save CalculationParametersDef
-   */
-  saveMyCalculationParametersDefResponse(body: CalculationParametersDefSave): Observable<HttpResponse<void>> {
-    let __params = new HttpParams();
-    let __headers = new HttpHeaders();
-    let __body: any = null;
-    __body = body;
-    let req = new HttpRequest<any>(
-      "POST",
-      this.rootUrl + `/savecalculationparametersdef`,
-      __body,
-      {
-        headers: __headers,
-        params: __params,
-        responseType: 'text'
-      });
-
-    return this.http.request<any>(req).pipe(
-      filter(_r => _r instanceof HttpResponse),
-      map(_r => {
-        let _resp = _r as HttpResponse<any>;
-        let _body: void = null;
-        
-        return _resp.clone({body: _body}) as HttpResponse<void>;
-      })
-    );
-  }
-
-  /**
-   * save CalculationParametersDef by id
-   * @param body - body save CalculationParametersDef
-   */
-  saveMyCalculationParametersDef(body: CalculationParametersDefSave): Observable<void> {
-    return this.saveMyCalculationParametersDefResponse(body).pipe(
-      map(_r => _r.body)
-    );
-  }
-  /**
-   * get optimumcalculator
-   * @param idStudyEquipment - undefined
-   * @param idStudy - undefined
-   */
-  getOptimumCalculatorResponse(params: ApiService.GetOptimumCalculatorParams): Observable<HttpResponse<OptimumCalculator[]>> {
-    let __params = new HttpParams();
-    let __headers = new HttpHeaders();
-    let __body: any = null;
-    if (params.idStudyEquipment != null) __params = __params.set("idStudyEquipment", params.idStudyEquipment.toString());
-    if (params.idStudy != null) __params = __params.set("idStudy", params.idStudy.toString());
-    let req = new HttpRequest<any>(
-      "GET",
-      this.rootUrl + `/optimumcalculator`,
-      __body,
-      {
-        headers: __headers,
-        params: __params,
-        responseType: 'json'
-      });
-
-    return this.http.request<any>(req).pipe(
-      filter(_r => _r instanceof HttpResponse),
-      map(_r => {
-        let _resp = _r as HttpResponse<any>;
-        let _body: OptimumCalculator[] = null;
-        _body = _resp.body as OptimumCalculator[]
-        return _resp.clone({body: _body}) as HttpResponse<OptimumCalculator[]>;
-      })
-    );
-  }
-
-  /**
-   * get optimumcalculator
-   * @param idStudyEquipment - undefined
-   * @param idStudy - undefined
-   */
-  getOptimumCalculator(params: ApiService.GetOptimumCalculatorParams): Observable<OptimumCalculator[]> {
-    return this.getOptimumCalculatorResponse(params).pipe(
-      map(_r => _r.body)
-    );
-  }
-  /**
    * get StudyPackingLayers
    * @param id - study id
    */
   getStudyPackingLayersResponse(id: number): Observable<HttpResponse<ViewPackingLayer>> {
-    let __params = new HttpParams();
+    let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
     
@@ -1637,7 +2309,7 @@ export class ApiService extends BaseService {
    * @param body - body
    */
   savePackingResponse(params: ApiService.SavePackingParams): Observable<HttpResponse<void>> {
-    let __params = new HttpParams();
+    let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
     
@@ -1674,443 +2346,11 @@ export class ApiService extends BaseService {
     );
   }
   /**
-   * get symbol study
-   * @param idStudy - Study ID
-   */
-  getSymbolResponse(idStudy: number): Observable<HttpResponse<Symbol>> {
-    let __params = new HttpParams();
-    let __headers = new HttpHeaders();
-    let __body: any = null;
-    
-    let req = new HttpRequest<any>(
-      "GET",
-      this.rootUrl + `/symbol/${idStudy}`,
-      __body,
-      {
-        headers: __headers,
-        params: __params,
-        responseType: 'json'
-      });
-
-    return this.http.request<any>(req).pipe(
-      filter(_r => _r instanceof HttpResponse),
-      map(_r => {
-        let _resp = _r as HttpResponse<any>;
-        let _body: Symbol = null;
-        _body = _resp.body as Symbol
-        return _resp.clone({body: _body}) as HttpResponse<Symbol>;
-      })
-    );
-  }
-
-  /**
-   * get symbol study
-   * @param idStudy - Study ID
-   */
-  getSymbol(idStudy: number): Observable<Symbol> {
-    return this.getSymbolResponse(idStudy).pipe(
-      map(_r => _r.body)
-    );
-  }
-  /**
-   * get pro info study
-   * @param idStudy - Study ID
-   */
-  getProInfoStudyResponse(idStudy: number): Observable<HttpResponse<OptimumResultAna>> {
-    let __params = new HttpParams();
-    let __headers = new HttpHeaders();
-    let __body: any = null;
-    
-    let req = new HttpRequest<any>(
-      "GET",
-      this.rootUrl + `/proInfoStudy/${idStudy}`,
-      __body,
-      {
-        headers: __headers,
-        params: __params,
-        responseType: 'json'
-      });
-
-    return this.http.request<any>(req).pipe(
-      filter(_r => _r instanceof HttpResponse),
-      map(_r => {
-        let _resp = _r as HttpResponse<any>;
-        let _body: OptimumResultAna = null;
-        _body = _resp.body as OptimumResultAna
-        return _resp.clone({body: _body}) as HttpResponse<OptimumResultAna>;
-      })
-    );
-  }
-
-  /**
-   * get pro info study
-   * @param idStudy - Study ID
-   */
-  getProInfoStudy(idStudy: number): Observable<OptimumResultAna> {
-    return this.getProInfoStudyResponse(idStudy).pipe(
-      map(_r => _r.body)
-    );
-  }
-  /**
-   * get optimum head balance
-   * @param idStudy - Study ID
-   */
-  getOptimumHeadBalanceResponse(idStudy: number): Observable<HttpResponse<HeadBalanceResult>> {
-    let __params = new HttpParams();
-    let __headers = new HttpHeaders();
-    let __body: any = null;
-    
-    let req = new HttpRequest<any>(
-      "GET",
-      this.rootUrl + `/optimum/headBalance/${idStudy}`,
-      __body,
-      {
-        headers: __headers,
-        params: __params,
-        responseType: 'json'
-      });
-
-    return this.http.request<any>(req).pipe(
-      filter(_r => _r instanceof HttpResponse),
-      map(_r => {
-        let _resp = _r as HttpResponse<any>;
-        let _body: HeadBalanceResult = null;
-        _body = _resp.body as HeadBalanceResult
-        return _resp.clone({body: _body}) as HttpResponse<HeadBalanceResult>;
-      })
-    );
-  }
-
-  /**
-   * get optimum head balance
-   * @param idStudy - Study ID
-   */
-  getOptimumHeadBalance(idStudy: number): Observable<HeadBalanceResult> {
-    return this.getOptimumHeadBalanceResponse(idStudy).pipe(
-      map(_r => _r.body)
-    );
-  }
-  /**
-   * get optimum head balance max
-   * @param idStudy - get optimum head balance max results
-   */
-  getOptimumHeadBalanceMaxResponse(idStudy: number): Observable<HttpResponse<HeadBalanceMaxResult>> {
-    let __params = new HttpParams();
-    let __headers = new HttpHeaders();
-    let __body: any = null;
-    
-    let req = new HttpRequest<any>(
-      "GET",
-      this.rootUrl + `/optimum/headBalanceMax/${idStudy}`,
-      __body,
-      {
-        headers: __headers,
-        params: __params,
-        responseType: 'json'
-      });
-
-    return this.http.request<any>(req).pipe(
-      filter(_r => _r instanceof HttpResponse),
-      map(_r => {
-        let _resp = _r as HttpResponse<any>;
-        let _body: HeadBalanceMaxResult = null;
-        _body = _resp.body as HeadBalanceMaxResult
-        return _resp.clone({body: _body}) as HttpResponse<HeadBalanceMaxResult>;
-      })
-    );
-  }
-
-  /**
-   * get optimum head balance max
-   * @param idStudy - get optimum head balance max results
-   */
-  getOptimumHeadBalanceMax(idStudy: number): Observable<HeadBalanceMaxResult> {
-    return this.getOptimumHeadBalanceMaxResponse(idStudy).pipe(
-      map(_r => _r.body)
-    );
-  }
-  /**
-   * get equip sizing
-   * @param idStudyEquipment - StudyEquipment ID
-   */
-  getEquipSizingResponse(idStudyEquipment: number): Observable<HttpResponse<EquipSizing>> {
-    let __params = new HttpParams();
-    let __headers = new HttpHeaders();
-    let __body: any = null;
-    
-    let req = new HttpRequest<any>(
-      "GET",
-      this.rootUrl + `/optimum/equipSizing/${idStudyEquipment}`,
-      __body,
-      {
-        headers: __headers,
-        params: __params,
-        responseType: 'json'
-      });
-
-    return this.http.request<any>(req).pipe(
-      filter(_r => _r instanceof HttpResponse),
-      map(_r => {
-        let _resp = _r as HttpResponse<any>;
-        let _body: EquipSizing = null;
-        _body = _resp.body as EquipSizing
-        return _resp.clone({body: _body}) as HttpResponse<EquipSizing>;
-      })
-    );
-  }
-
-  /**
-   * get equip sizing
-   * @param idStudyEquipment - StudyEquipment ID
-   */
-  getEquipSizing(idStudyEquipment: number): Observable<EquipSizing> {
-    return this.getEquipSizingResponse(idStudyEquipment).pipe(
-      map(_r => _r.body)
-    );
-  }
-  /**
-   * get estimation head balance
-   * @param idStudy - Study ID
-   * @param tr - Control temperature
-   */
-  getEstimationHeadBalanceResponse(params: ApiService.GetEstimationHeadBalanceParams): Observable<HttpResponse<EstimationHeadBalanceResult>> {
-    let __params = new HttpParams();
-    let __headers = new HttpHeaders();
-    let __body: any = null;
-    if (params.idStudy != null) __params = __params.set("idStudy", params.idStudy.toString());
-    if (params.tr != null) __params = __params.set("tr", params.tr.toString());
-    let req = new HttpRequest<any>(
-      "GET",
-      this.rootUrl + `/estimation/headBalance`,
-      __body,
-      {
-        headers: __headers,
-        params: __params,
-        responseType: 'json'
-      });
-
-    return this.http.request<any>(req).pipe(
-      filter(_r => _r instanceof HttpResponse),
-      map(_r => {
-        let _resp = _r as HttpResponse<any>;
-        let _body: EstimationHeadBalanceResult = null;
-        _body = _resp.body as EstimationHeadBalanceResult
-        return _resp.clone({body: _body}) as HttpResponse<EstimationHeadBalanceResult>;
-      })
-    );
-  }
-
-  /**
-   * get estimation head balance
-   * @param idStudy - Study ID
-   * @param tr - Control temperature
-   */
-  getEstimationHeadBalance(params: ApiService.GetEstimationHeadBalanceParams): Observable<EstimationHeadBalanceResult> {
-    return this.getEstimationHeadBalanceResponse(params).pipe(
-      map(_r => _r.body)
-    );
-  }
-  /**
-   * get temperature calculation data
-   * @param idStudyEquipment - StudyEquipment ID
-   */
-  temperatureCalculationResponse(idStudyEquipment: number): Observable<HttpResponse<ViewTrCalculate>> {
-    let __params = new HttpParams();
-    let __headers = new HttpHeaders();
-    let __body: any = null;
-    
-    let req = new HttpRequest<any>(
-      "GET",
-      this.rootUrl + `/estimation/trCalculate/${idStudyEquipment}`,
-      __body,
-      {
-        headers: __headers,
-        params: __params,
-        responseType: 'json'
-      });
-
-    return this.http.request<any>(req).pipe(
-      filter(_r => _r instanceof HttpResponse),
-      map(_r => {
-        let _resp = _r as HttpResponse<any>;
-        let _body: ViewTrCalculate = null;
-        _body = _resp.body as ViewTrCalculate
-        return _resp.clone({body: _body}) as HttpResponse<ViewTrCalculate>;
-      })
-    );
-  }
-
-  /**
-   * get temperature calculation data
-   * @param idStudyEquipment - StudyEquipment ID
-   */
-  temperatureCalculation(idStudyEquipment: number): Observable<ViewTrCalculate> {
-    return this.temperatureCalculationResponse(idStudyEquipment).pipe(
-      map(_r => _r.body)
-    );
-  }
-  /**
-   * view Equipment Temperature
-   * @param idStudyEquipment - StudyEquipment ID
-   */
-  viewEquipTrResponse(idStudyEquipment: number): Observable<HttpResponse<ViewEquipTr>> {
-    let __params = new HttpParams();
-    let __headers = new HttpHeaders();
-    let __body: any = null;
-    
-    let req = new HttpRequest<any>(
-      "GET",
-      this.rootUrl + `/estimation/viewEquipTr/${idStudyEquipment}`,
-      __body,
-      {
-        headers: __headers,
-        params: __params,
-        responseType: 'json'
-      });
-
-    return this.http.request<any>(req).pipe(
-      filter(_r => _r instanceof HttpResponse),
-      map(_r => {
-        let _resp = _r as HttpResponse<any>;
-        let _body: ViewEquipTr = null;
-        _body = _resp.body as ViewEquipTr
-        return _resp.clone({body: _body}) as HttpResponse<ViewEquipTr>;
-      })
-    );
-  }
-
-  /**
-   * view Equipment Temperature
-   * @param idStudyEquipment - StudyEquipment ID
-   */
-  viewEquipTr(idStudyEquipment: number): Observable<ViewEquipTr> {
-    return this.viewEquipTrResponse(idStudyEquipment).pipe(
-      map(_r => _r.body)
-    );
-  }
-  /**
-   * get consumption results
-   * @param idStudy - Study ID
-   */
-  getAnalyticalConsumptionResponse(idStudy: number): Observable<HttpResponse<ConsumptionResult>> {
-    let __params = new HttpParams();
-    let __headers = new HttpHeaders();
-    let __body: any = null;
-    
-    let req = new HttpRequest<any>(
-      "GET",
-      this.rootUrl + `/common/consumption/${idStudy}`,
-      __body,
-      {
-        headers: __headers,
-        params: __params,
-        responseType: 'json'
-      });
-
-    return this.http.request<any>(req).pipe(
-      filter(_r => _r instanceof HttpResponse),
-      map(_r => {
-        let _resp = _r as HttpResponse<any>;
-        let _body: ConsumptionResult = null;
-        _body = _resp.body as ConsumptionResult
-        return _resp.clone({body: _body}) as HttpResponse<ConsumptionResult>;
-      })
-    );
-  }
-
-  /**
-   * get consumption results
-   * @param idStudy - Study ID
-   */
-  getAnalyticalConsumption(idStudy: number): Observable<ConsumptionResult> {
-    return this.getAnalyticalConsumptionResponse(idStudy).pipe(
-      map(_r => _r.body)
-    );
-  }
-  /**
-   * get economic results
-   * @param idStudy - Study ID
-   */
-  getAnalyticalEconomicResponse(idStudy: number): Observable<HttpResponse<EconomicResult>> {
-    let __params = new HttpParams();
-    let __headers = new HttpHeaders();
-    let __body: any = null;
-    
-    let req = new HttpRequest<any>(
-      "GET",
-      this.rootUrl + `/common/economic/${idStudy}`,
-      __body,
-      {
-        headers: __headers,
-        params: __params,
-        responseType: 'json'
-      });
-
-    return this.http.request<any>(req).pipe(
-      filter(_r => _r instanceof HttpResponse),
-      map(_r => {
-        let _resp = _r as HttpResponse<any>;
-        let _body: EconomicResult = null;
-        _body = _resp.body as EconomicResult
-        return _resp.clone({body: _body}) as HttpResponse<EconomicResult>;
-      })
-    );
-  }
-
-  /**
-   * get economic results
-   * @param idStudy - Study ID
-   */
-  getAnalyticalEconomic(idStudy: number): Observable<EconomicResult> {
-    return this.getAnalyticalEconomicResponse(idStudy).pipe(
-      map(_r => _r.body)
-    );
-  }
-  /**
-   * get sizng result optimum
-   * @param idStudy - Study ID
-   */
-  sizingOptimumResultResponse(idStudy: number): Observable<HttpResponse<ViewSizingResultOptimum>> {
-    let __params = new HttpParams();
-    let __headers = new HttpHeaders();
-    let __body: any = null;
-    
-    let req = new HttpRequest<any>(
-      "GET",
-      this.rootUrl + `/output/sizingresult/${idStudy}/optimum`,
-      __body,
-      {
-        headers: __headers,
-        params: __params,
-        responseType: 'json'
-      });
-
-    return this.http.request<any>(req).pipe(
-      filter(_r => _r instanceof HttpResponse),
-      map(_r => {
-        let _resp = _r as HttpResponse<any>;
-        let _body: ViewSizingResultOptimum = null;
-        _body = _resp.body as ViewSizingResultOptimum
-        return _resp.clone({body: _body}) as HttpResponse<ViewSizingResultOptimum>;
-      })
-    );
-  }
-
-  /**
-   * get sizng result optimum
-   * @param idStudy - Study ID
-   */
-  sizingOptimumResult(idStudy: number): Observable<ViewSizingResultOptimum> {
-    return this.sizingOptimumResultResponse(idStudy).pipe(
-      map(_r => _r.body)
-    );
-  }
-  /**
    * get mesh view of product
    * @param id - id of product
    */
   getMeshViewResponse(id: number): Observable<HttpResponse<ViewMesh>> {
-    let __params = new HttpParams();
+    let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
     
@@ -2146,6 +2386,30 @@ export class ApiService extends BaseService {
   }}
 
 export module ApiService {
+  export interface CheckControlViewParams {
+    idStudy?: number;
+    idProd?: number;
+  }
+  export interface CheckControlParams {
+    idStudy?: number;
+    idProd?: number;
+  }
+  export interface GetOptimumCalculatorParams {
+    idStudyEquipment?: number;
+    idStudy?: number;
+  }
+  export interface GetEstimationHeadBalanceParams {
+    idStudy: number;
+    tr?: number;
+  }
+  export interface SizingEstimationResultParams {
+    idStudy: number;
+    tr?: number;
+  }
+  export interface SaveStudyParams {
+    id: number;
+    body?: Study;
+  }
   export interface UpdateProductParams {
     id: number;
     name?: string;
@@ -2170,6 +2434,10 @@ export module ApiService {
     equipOrigin?: number;
     energy?: number;
   }
+  export interface SaveProductionParams {
+    id: number;
+    body?: Production;
+  }
   export interface AppendElementsToProductParams {
     shapeId: number;
     id: number;
@@ -2186,24 +2454,8 @@ export module ApiService {
     subfamily?: number;
     compfamily?: number;
   }
-  export interface CheckControlViewParams {
-    idStudy?: number;
-    idProd?: number;
-  }
-  export interface CheckControlParams {
-    idStudy?: number;
-    idProd?: number;
-  }
-  export interface GetOptimumCalculatorParams {
-    idStudyEquipment?: number;
-    idStudy?: number;
-  }
   export interface SavePackingParams {
     id: number;
     body: SavePackingLayer;
-  }
-  export interface GetEstimationHeadBalanceParams {
-    idStudy: number;
-    tr?: number;
   }
 }

@@ -3,12 +3,12 @@ import { OnChanges } from '@angular/core';
 
 import { ViewChild } from '@angular/core';
 import { CalculatorComponent } from '../../calculation/calculator/calculator.component';
-import { StudyEquipment } from '../../../api/models/study-equipment';
-import { Study } from '../../../api/models/study';
 import { User } from '../../../api/models/user';
 import { ApiService } from '../../../api/services';
 import { ModalDirective } from 'ngx-bootstrap/modal/modal.directive';
 import 'chart.piecelabel.js';
+import { TranslateService } from '@ngx-translate/core';
+import { BaseChartDirective } from 'ng2-charts/ng2-charts';
 
 @Component({
   selector: 'app-preliminary',
@@ -16,7 +16,7 @@ import 'chart.piecelabel.js';
   styleUrls: ['./preliminary.component.scss']
 })
 export class PreliminaryComponent implements OnInit, AfterViewInit {
-  @ViewChild('comsumptionPieModal') public comsumptionPieModal: ModalDirective;
+  @ViewChild('consumptionPieModal') public consumptionPieModal: ModalDirective;
 
   public study;
   public user;
@@ -45,13 +45,13 @@ export class PreliminaryComponent implements OnInit, AfterViewInit {
   public pieChartType = 'pie';
 
   public pieColours: Array<any> = [
-    { 
-      backgroundColor: ['#0000FF', '#00BFBF', '#00FFFF', '#33CC33'],
-    }
+    { backgroundColor: ['#0000FF', '#00BFBF', '#00FFFF', '#33CC33'], }
   ];
 
   @ViewChild('calculator') calculator: CalculatorComponent;
-  constructor(private api: ApiService) { }
+  @ViewChild(BaseChartDirective) myChart: BaseChartDirective;
+
+  constructor(private api: ApiService, private translate: TranslateService) { }
 
   ngOnInit() {
     if (localStorage.getItem('study')) {
@@ -141,15 +141,15 @@ export class PreliminaryComponent implements OnInit, AfterViewInit {
       );
 
       if (this.study.CALCULATION_MODE == 1) {
-        let params: ApiService.GetEstimationHeadBalanceParams = {
+        const params: ApiService.GetEstimationHeadBalanceParams = {
           idStudy: this.study.ID_STUDY,
           tr: 0
         };
-        let params01: ApiService.GetEstimationHeadBalanceParams = {
+        const params01: ApiService.GetEstimationHeadBalanceParams = {
           idStudy: this.study.ID_STUDY,
           tr: 1
         };
-        let params02: ApiService.GetEstimationHeadBalanceParams = {
+        const params02: ApiService.GetEstimationHeadBalanceParams = {
           idStudy: this.study.ID_STUDY,
           tr: 2
         };
@@ -173,7 +173,6 @@ export class PreliminaryComponent implements OnInit, AfterViewInit {
         this.api.getOptimumHeadBalance(this.study.ID_STUDY).subscribe(
           data => {
             // console.log('get studies response:');
-            console.log(data);
             this.headBalanceResults = data;
           },
           err => {
@@ -205,8 +204,8 @@ export class PreliminaryComponent implements OnInit, AfterViewInit {
 
     }
   }
-
-  oncomsumptionPie(element) {
+  onConsumptionPie(element) {
+    console.log(element);
     this.chartPieData.name = element.equipName;
     this.chartPieData.percentProduct = element.percentProduct;
     this.chartPieData.percentEquipmentPerm = element.percentEquipmentPerm;
@@ -221,22 +220,32 @@ export class PreliminaryComponent implements OnInit, AfterViewInit {
           fontStyle: 'bold',
           fontColor: ['#fff', '#000', '#000', '#fff'],
           fontFamily: '"Lucida Console", Monaco, monospace',
+      },
+      tooltips: {
+        enabled: false
       }
     };
-
-    this.pieLabels = ['Product', 'Equipment(permanent)', 'Equipment(cooldonw)'];
+    this.pieLabels = [];
+    this.pieLabels = [this.translate.instant('Product') + ': ' + element.percentProduct + '%',
+    this.translate.instant('Equipment(permanent)') + ': ' + element.percentEquipmentPerm + '%',
+    this.translate.instant('Equipment(cool down)') + ': ' + element.percentEquipmentDown + '%'];
 
     if (element.percentLine > 0) {
-      this.pieLabels.push('Line');
+      this.pieLabels.push(this.translate.instant('Line') + ': ' + element.percentLine + '%');
     }
-
     this.pieData = [
       {
         data: [element.percentProduct, element.percentEquipmentPerm, element.percentEquipmentDown, element.percentLine]
       }
     ];
-
-    this.comsumptionPieModal.show();
+    if (this.myChart) {
+      console.log(this.pieLabels);
+      this.myChart.chart.config.data.labels = this.pieLabels;
+      this.myChart.chart.update();
+    }
+    this.consumptionPieModal.show();
   }
-
+  closePie() {
+    this.consumptionPieModal.hide();
+  }
 }

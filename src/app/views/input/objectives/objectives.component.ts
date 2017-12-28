@@ -2,6 +2,7 @@ import { Component, OnInit, AfterViewInit, Output, EventEmitter } from '@angular
 import { Study } from '../../../api/models/study';
 import { ApiService } from '../../../api/services';
 import { InputNavItems } from '../input.nav-items';
+import { Production } from '../../../api/models/production';
 
 @Component({
   selector: 'app-objectives',
@@ -11,41 +12,47 @@ import { InputNavItems } from '../input.nav-items';
 export class ObjectivesComponent implements OnInit, AfterViewInit {
 
   public study: Study;
-  public production: Study;
+  public production: Production;
 
   constructor(private api: ApiService) { }
 
   ngOnInit() {
-    if (localStorage.getItem('study')) {
-      this.study = JSON.parse(localStorage.getItem('study'));
-    }
+  }
+
+  saveStudy() {
   }
 
   toggleChainControl() {
     if (this.study.CHAINING_CONTROLS) {
-      this.study.OPTION_CRYOPIPELINE = 0;
+      this.study.OPTION_CRYOPIPELINE = false;
     } else {
-      this.study.CHAINING_ADD_COMP_ENABLE = 0;
+      this.study.CHAINING_ADD_COMP_ENABLE = false;
     }
   }
 
   ngAfterViewInit() {
-    if (localStorage.getItem('study')) {
-      this.study = JSON.parse(localStorage.getItem('study'));
-      this.api.getProductionById(this.study.ID_PRODUCTION).subscribe(
-        data => {
-          // console.log('get studies response:');
-          // console.log(data);
-          this.production = data;
-        },
-        err => {
-          console.log(err);
-        },
-        () => {
-          // console.log('find sttudies completed');
-        }
-      );
-    }
+    this.api.getStudyById( JSON.parse(localStorage.getItem('study')).ID_STUDY ).subscribe(
+      (resp: Study) => {
+        this.study = resp;
+        console.log(this.study);
+        this.api.getProductionById(this.study.ID_PRODUCTION).subscribe(
+          data => {
+            // console.log('get studies response:');
+            // console.log(data);
+            this.production = data;
+          },
+          err => {
+            console.log(err);
+          },
+          () => {
+            // console.log('find sttudies completed');
+          }
+        );
+      },
+      err => {
+        console.log(err);
+      }
+    );
   }
 
 }

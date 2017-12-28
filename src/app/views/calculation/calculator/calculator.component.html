@@ -3,13 +3,13 @@
   <div class="modal-dialog modal-lg modal-primary">
     <div class="modal-content">
       <div class="modal-header">
-        <strong class="modal-title pull-left">{{ 'CALCULATOR' | translate }}</strong>
+        <strong class="modal-title pull-left">{{ 'CALCULATOR - OPTIMUM MODE' | translate }}</strong>
         <button type="button" class="close pull-right" aria-label="Close" (click)="calcModal.hide()">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body" *ngIf="calculate">
-        <table class="table table-bordered table-sm" *ngIf="calculate['isBrainCalculator'] === 1">
+        <table class="table table-bordered table-sm" *ngIf="calculate.isBrainCalculator == 1">
           <tr>
             <th style="text-align:center">{{ 'Residence / Dwell time (s)' | translate }}</th>
             <th style="text-align:center">{{ 'Control temperature (°C)' | translate }}</th>
@@ -39,18 +39,20 @@
           <tr>
             <td align="center">
               <label class="custom-control custom-checkbox">
-                <input type="checkbox" class="custom-control-input" name="cbOptim" id="cbOptim" [checked]="calculate['scheckOptim']">
+                <input type="checkbox" class="custom-control-input" name="cbOptim" id="cbOptim" [checked]="calculate.scheckOptim" 
+                [(ngModel)]="calculate.scheckOptim">
                 <span class="custom-control-indicator"></span>
               </label>
             </td>
             <td align="center">
-              <input type="text" name="epsilonTemp" id="epsilonTemp" style="width:80px;" [(ngModel)]="calculate['epsilonTemp']">
+              <input type="text" name="epsilonTemp" id="epsilonTemp" style="width:80px;" [(ngModel)]="calculate.epsilonTemp">
             </td>
             <td align="center">
-              <input type="text" name="epsilonEnth" id="epsilonEnth" style="width:80px;" [(ngModel)]="calculate['epsilonEnth']">
+              <input type="text" name="epsilonEnth" id="epsilonEnth" style="width:80px;" [(ngModel)]="calculate.epsilonEnth">
             </td>
             <td align="center">
-              <input type="text" name="nbOptimIter" id="nbOptimIter" style="width:80px;" [(ngModel)]="calculate['nbOptimIter']">
+              <input type="text" name="nbOptimIter" id="nbOptimIter" style="width:80px;" [(ngModel)]="calculate.nbOptimIter"
+              [disabled]="calculate.sdisableOptim">
             </td>
           </tr>
         </table>
@@ -74,26 +76,28 @@
           </tr>
           <tr>
             <td align="center">
-              <input type="text" name="timestep" id="" style="width:80px;" [(ngModel)]="calculate['timeStep']">
+              <input type="text" name="timestep" id="timestep" style="width:80px;" [(ngModel)]="calculate.timeStep">
             </td>
             <td align="center">
-              <input type="text" name="Precision" id="" style="width:80px;" [(ngModel)]="calculate['precision']">
+              <input type="text" name="Precision" id="Precision" style="width:80px;" [(ngModel)]="calculate.precision">
             </td>
             <td align="center">
               <label class="custom-control custom-checkbox">
-                <input type="checkbox" class="custom-control-input" name="cbCharts" id="cbCharts" [checked]="calculate['scheckStorage']">
+                <input type="checkbox" class="custom-control-input" name="cbCharts" id="cbCharts" [checked]="calculate.scheckStorage"
+                 [disabled]="calculate.sdisableStorage">
                 <span class="custom-control-indicator"></span>
               </label>
             </td>
             <td align="center">
-              <input type="text" name="storagestep" id="" style="width:80px;" [(ngModel)]="calculate['storagestep']">
+              <input type="text" name="storagestep" id="storagestep" style="width:80px;" [(ngModel)]="calculate.storagestep" 
+              [disabled]="calculate.sdisableNbOptim">
             </td>
           </tr>
         </table>
         <div class="text-center">
           <button type="button" class="btn btn-secondary btn-lg" id="settbutton" (click)="openSetting()">
             <i class="icon-settings"></i>&nbsp; {{'Setting'|translate}}</button>
-          <button type="button" class="btn btn-primary btn-lg" id="calcbutton">
+          <button type="button" class="btn btn-primary btn-lg" id="calcbutton" (click)="startCalculate()" [ladda]="laddaIsCalculating">
             <i class="icon-energy"></i>&nbsp; {{'Calculate'|translate}}</button>
         </div>
         <br>
@@ -114,19 +118,19 @@
               <td align="center">{{'Horizontal'|translate}}</td>
               <td>
                 <label class="custom-control custom-radio" style="margin: 0px 0px 0px 0px;">
-                  <input type="radio" class="custom-control-input" name="Hradiobutton" [checked]="calculate['hRadioOn']">{{'Yes'|translate}}
+                  <input type="radio" class="custom-control-input" name="Hradiobutton" [checked]="calculate.hRadioOn">{{'Yes'|translate}}
                   <span class="custom-control-indicator"></span>
                 </label>
                 <label class="custom-control custom-radio" style="margin: 0px 0px 0px 0px;">
-                  <input type="radio" class="custom-control-input" name="Hradiobutton" [checked]="calculate['hRadioOff']">{{'No'|translate}}
+                  <input type="radio" class="custom-control-input" name="Hradiobutton" [checked]="calculate.hRadioOff">{{'No'|translate}}
                   <span class="custom-control-indicator"></span>
                 </label>
               </td>
               <td rowspan="2" align="center">
-                <input type="text" name="MaxIter" id="MaxIter" style="width:80px; margin-top:20px;" [(ngModel)]="calculate['maxIter']">
+                <input type="text" name="MaxIter" id="MaxIter" style="width:80px; margin-top:20px;" [(ngModel)]="calculate.maxIter">
               </td>
               <td rowspan="2" align="center">
-                <input type="text" name="RelaxCoef" id="RelaxCoef" style="width:80px; margin-top:20px;" [(ngModel)]="calculate['relaxCoef']">
+                <input type="text" name="RelaxCoef" id="RelaxCoef" style="width:80px; margin-top:20px;" [(ngModel)]="calculate.relaxCoef">
               </td>
               <td style="text-align:center">{{'Surface'|translate}}</td>
               <td style="text-align:center">{{'Internal'|translate}}</td>
@@ -137,25 +141,25 @@
               <td align="center">{{'Vertical'|translate}}</td>
               <td>
                 <label class="custom-control custom-radio" style="margin: 0px 0px 0px 0px;">
-                  <input type="radio" class="custom-control-input" name="Vradiobutton" [checked]="calculate['vRadioOn']">{{'Yes'|translate}}
+                  <input type="radio" class="custom-control-input" name="Vradiobutton" [checked]="calculate.vRadioOn">{{'Yes'|translate}}
                   <span class="custom-control-indicator"></span>
                 </label>
                 <label class="custom-control custom-radio" style="margin: 0px 0px 0px 0px;">
-                  <input type="radio" class="custom-control-input" name="Vradiobutton" [checked]="calculate['vRadioOff']">{{'No'|translate}}
+                  <input type="radio" class="custom-control-input" name="Vradiobutton" [checked]="calculate.vRadioOff">{{'No'|translate}}
                   <span class="custom-control-indicator"></span>
                 </label>
               </td>
               <td align="center">
-                <input type="text" name="TempPtSurf" id="TempPtSurf" style="width:80px;" [(ngModel)]="calculate['tempPtSurf']">
+                <input type="text" name="TempPtSurf" id="TempPtSurf" style="width:80px;" [(ngModel)]="calculate.tempPtSurf">
               </td>
               <td align="center">
-                <input type="text" name="TempPtIn" id="TempPtIn" style="width:80px;" [(ngModel)]="calculate['tempPtIn']">
+                <input type="text" name="TempPtIn" id="TempPtIn" style="width:80px;" [(ngModel)]="calculate.tempPtIn">
               </td>
               <td align="center">
-                <input type="text" name="TempPtBot" id="TempPtBot" style="width:80px;" [(ngModel)]="calculate['tempPtBot']">
+                <input type="text" name="TempPtBot" id="TempPtBot" style="width:80px;" [(ngModel)]="calculate.tempPtBot">
               </td>
               <td align="center">
-                <input type="text" name="TempPtAvg" id="TempPtAvg" style="width:80px;" [(ngModel)]="calculate['tempPtAvg']">
+                <input type="text" name="TempPtAvg" id="TempPtAvg" style="width:80px;" [(ngModel)]="calculate.tempPtAvg">
               </td>
             </tr>
           </table>
@@ -169,58 +173,58 @@
             <tr>
               <td align="center">
                 1<select name="select1" id="select1" style="width:100px;">
-                  <option *ngFor="let select of calculate['select1']" [selected]="select['selected']" [value]="select['value']">
-                    {{ select['label']|translate }}
+                  <option *ngFor="let select of calculate.select1" [selected]="select.selected" [value]="select.value">
+                    {{ select.label | formatNumber:3 }}
                   </option>
                 </select>
                 <br> 
                 2<select name="select2" id="select2" style="width:100px;">
-                  <option  *ngFor="let select of calculate['select2']" [selected]="select['selected']" [value]="select['value']">
-                     {{ select['label']|translate }}
+                  <option  *ngFor="let select of calculate.select2" [selected]="select.selected" [value]="select.value">
+                     {{ select.label | formatNumber:3 }}
                   </option>
                 </select>
                 <br> 
                 3<select name="select3" id="select3" style="width:100px;">
-                  <option *ngFor="let select of calculate['select3']" [selected]="select['selected']" [value]="select['value']">
-                     {{ select['label']|translate }}
+                  <option *ngFor="let select of calculate.select3" [selected]="select.selected" [value]="select.value">
+                     {{ select.label | formatNumber:3 }}
                   </option>
                 </select>
               </td>
               <td align="center">
                 1<select name="select4" id="select4" style="width:100px;">
-                  <option *ngFor="let select of calculate['select4']" [selected]="select['selected']" [value]="select['value']">
-                     {{ select['label']|translate }}
+                  <option *ngFor="let select of calculate.select4" [selected]="select.selected" [value]="select.value">
+                     {{ select.label | formatNumber:3 }}
                   </option>
                 </select>
                 <br> 
                 2<select name="select5" id="select5" style="width:100px;">
-                  <option *ngFor="let select of calculate['select5']" [selected]="select['selected']" [value]="select['value']">
-                     {{ select['label']|translate }}
+                  <option *ngFor="let select of calculate.select5" [selected]="select.selected" [value]="select.value">
+                     {{ select.label | formatNumber:3 }}
                   </option>
                 </select>
                 <br> 
                 3<select name="select6" id="select6" style="width:100px;">
-                  <option *ngFor="let select of calculate['select6']" [selected]="select['selected']" [value]="select['value']">
-                     {{ select['label']|translate }}
+                  <option *ngFor="let select of calculate.select6" [selected]="select.selected" [value]="select.value">
+                     {{ select.label | formatNumber:3 }}
                   </option>
                 </select>
               </td>
               <td align="center">
                 1<select name="select7" id="select7" style="width:100px;">
-                  <option *ngFor="let select of calculate['select7']" [selected]="select['selected']" [value]="select['value']">
-                     {{ select['label']|translate }}
+                  <option *ngFor="let select of calculate.select7" [selected]="select.selected" [value]="select.value">
+                     {{ select.label | formatNumber:3 }}
                   </option>
                 </select>
                 <br> 
                 2<select name="select8" id="select8" style="width:100px;">
-                  <option *ngFor="let select of calculate['select8']" [selected]="select['selected']" [value]="select['value']">
-                     {{ select['label']|translate }}
+                  <option *ngFor="let select of calculate.select8" [selected]="select.selected" [value]="select.value">
+                     {{ select.label | formatNumber:3 }}
                   </option>
                 </select>
                 <br> 
                 3<select name="select9" id="select9" style="width:100px;">
-                  <option *ngFor="let select of calculate['select9']" [selected]="select['selected']" [value]="select['value']">
-                     {{ select['label']|translate }}
+                  <option *ngFor="let select of calculate.select9" [selected]="select.selected" [value]="select.value">
+                     {{ select.label | formatNumber:3 }}
                   </option>
                 </select>
               </td>
@@ -238,7 +242,7 @@
   <div class="modal-dialog modal-primary" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <strong class="modal-title pull-left">{{ 'CALCULATOR' | translate }}</strong>
+        <strong class="modal-title pull-left">{{ 'CALCULATOR - ESTIMATION MODE' | translate }}</strong>
         <button type="button" class="close pull-right" aria-label="Close" (click)="estimationMode.hide()">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -247,7 +251,7 @@
         <strong class="modal-title txt-estimation">{{ 'Launch The Preliminary Calculation.' | translate }}</strong>
         <div class="btn-estimation">
           <button class="btn btn-secondary btn-lg" (click)="estimationMode.hide()">Cancel</button>
-          <button class="btn btn-primary btn-lg" style="margin-left:20px;">Confirm</button>
+          <button class="btn btn-primary btn-lg" style="margin-left:20px;" (click)="startEstimation()" [ladda]="laddaIsCalculating">Confirm</button>
         </div>
       </div>
     </div>
@@ -389,7 +393,7 @@
         <div align="center">
           <button class="btn btn-secondary btn-sm" (click)="brainCalculate.hide()">{{ 'Cancel' | translate }}</button>
           <button class="btn btn-primary btn-sm" (click)="calculWithoutOpti.show();brainCalculate.hide()">{{ 'Calculate without optimization' | translate }}</button>
-          <button class="btn btn-primary btn-sm" (click)="calculWithOpti.show();brainCalculate.hide()">{{ 'Calculate with optimization' | translate }}</button>
+            <button class="btn btn-primary btn-sm" (click)="calculWithOpti.show();brainCalculate.hide()">{{ 'Calculate with optimization' | translate }}</button>
           <button class="btn btn-primary btn-sm">{{ 'Settings' | translate }}</button>
         </div>
       </div>

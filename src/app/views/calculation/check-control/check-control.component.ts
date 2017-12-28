@@ -14,8 +14,8 @@ import { CalculatorComponent } from '../calculator/calculator.component';
 })
 export class CheckControlComponent implements OnInit, AfterViewInit {
   @ViewChild('calculator') calculator: CalculatorComponent;
-  public checkcontrolview: CheckControlView[];
-  public checkcontrol: CheckControl[];
+  public checkcontrolview: CheckControlView;
+  public checkcontrol: CheckControl;
   public study: Study;
 
   constructor(private api: ApiService) { }
@@ -42,7 +42,7 @@ export class CheckControlComponent implements OnInit, AfterViewInit {
         this.checkcontrol = data;
         console.log(this.checkcontrol);
 
-        if (this.checkcontrol['checkcontrol']) {
+        if (this.checkcontrol.checkcontrol) {
           this.calculator.open();
         }
       }

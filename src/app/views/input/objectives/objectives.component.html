@@ -1,8 +1,9 @@
 <div class="container">
-  
-    <div class="card">
+
+    <div class="card" *ngIf="study">
       <div class="card-header">
         <strong>{{'CALCULATION MODE'|translate}}</strong>
+        <button type="button" class="btn btn-sm btn-success float-right" (click)="saveStudy()">Save</button>
       </div>
       <div class="card-body">
         <div class="row">
@@ -82,15 +83,13 @@
           </div>
         </div>
       </div> <!-- /.card-body -->
-      <div class="card-footer text-center">
-        <button type="button" class="btn btn-success">Save</button>
-      </div> <!-- /.card-footer -->
     </div> <!-- /.card -->
 
 
     <div class="card" *ngIf="production">
       <div class="card-header">
         <strong>{{'PRODUCTION DUTY CYCLE'|translate}}</strong>
+        <button type="button" class="btn btn-sm btn-success float-right">Save</button>
       </div>
       <div class="card-body">
         <div class="row">
@@ -99,7 +98,7 @@
               <label class="col-md-7 col-form-label" for="text-input">Daily production</label>
               <div class="col-md-5">
                 <div class="input-group">
-                  <input type="text" id="text-input" name="text-input" class="form-control" [(ngModel)]="production.DAILY_PROD">
+                  <input type="text" name="text-input" class="form-control" [(ngModel)]="production.DAILY_PROD">
                   <span class="input-group-addon"><small>hours/day</small></span>
                 </div>
               </div>
@@ -108,7 +107,7 @@
               <label class="col-md-7 col-form-label" for="text-input">Weekly production</label>
               <div class="col-md-5">
                 <div class="input-group">
-                  <input type="text" id="text-input" name="text-input" class="form-control" [(ngModel)]="production.WEEKLY_PROD">
+                  <input type="text" name="text-input" class="form-control" [(ngModel)]="production.WEEKLY_PROD">
                   <span class="input-group-addon"><small>days/week</small></span>
                 </div>
               </div>
@@ -117,7 +116,7 @@
               <label class="col-md-7 col-form-label" for="text-input">Annual production</label>
               <div class="col-md-5">
                 <div class="input-group">
-                  <input type="text" id="text-input" name="text-input" class="form-control" [(ngModel)]="production.NB_PROD_WEEK_PER_YEAR">
+                  <input type="text" name="text-input" class="form-control" [(ngModel)]="production.NB_PROD_WEEK_PER_YEAR">
                   <span class="input-group-addon"><small>weeks/year</small></span>
                 </div>
               </div>
@@ -126,7 +125,7 @@
               <label class="col-md-7 col-form-label" for="text-input">Number of equipment cooldowns</label>
               <div class="col-md-5">
                 <div class="input-group">
-                  <input type="text" id="text-input" name="text-input" class="form-control" [(ngModel)]="production.DAILY_STARTUP">
+                  <input type="text" name="text-input" class="form-control" [(ngModel)]="production.DAILY_STARTUP">
                   <span class="input-group-addon"><small>per day</small></span>
                 </div>
               </div>
@@ -137,7 +136,7 @@
               <label class="col-md-7 col-form-label" for="text-input">Factory Air temperature</label>
               <div class="col-md-5">
                 <div class="input-group">
-                  <input type="text" id="text-input" name="text-input" class="form-control" [(ngModel)]="production.AMBIENT_TEMP">
+                  <input type="text" name="text-input" class="form-control" [(ngModel)]="production.AMBIENT_TEMP">
                   <span class="input-group-addon"><small>&#8451;</small></span>
                 </div>
               </div>
@@ -146,7 +145,7 @@
               <label class="col-md-7 col-form-label" for="text-input">Relative Humidity of Factory Air</label>
               <div class="col-md-5">
                 <div class="input-group">
-                  <input type="text" id="text-input" name="text-input" class="form-control" [(ngModel)]="production.AMBIENT_HUM">
+                  <input type="text" name="text-input" class="form-control" [(ngModel)]="production.AMBIENT_HUM">
                   <span class="input-group-addon"><small>%</small></span>
                 </div>
               </div>
@@ -164,17 +163,14 @@
               <label class="col-md-7 col-form-label" for="text-input">Required Production Rate</label>
               <div class="col-md-5">
                 <div class="input-group">
-                  <input type="text" id="text-input" name="text-input" class="form-control" [(ngModel)]="production.PROD_FLOW_RATE">
+                  <input type="text" name="text-input" class="form-control" [(ngModel)]="production.PROD_FLOW_RATE">
                   <span class="input-group-addon"><small>kg/h</small></span>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        
+
       </div><!-- /.card-body -->
-      <div class="card-footer text-center">
-        <button type="button" class="btn btn-success">Save</button>
-      </div><!-- /.card-footer -->
     </div><!-- /.card -->
 </div><!-- #/container -->

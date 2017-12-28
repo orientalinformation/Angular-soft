@@ -39,6 +39,7 @@ export class StudyEquipment {
     EQUIP_VERSION?: number;
     STD?: number;
     ITEM_TR?: number;
+    NB_TR?: number;
     SERIES_NAME?: string;
     BATCH_PROCESS?: number;
 }

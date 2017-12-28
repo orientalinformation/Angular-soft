@@ -20,7 +20,7 @@ export class LineComponent implements OnInit, AfterContentChecked {
 
   ngAfterContentChecked() {
     this.study = JSON.parse(localStorage.getItem('study'));
-    if (this.study.OPTION_CRYOPIPELINE !== 1) {
+    if (this.study.OPTION_CRYOPIPELINE) {
       swal('Oops..', 'This study does not have enabled CryoPipeline calculation option', 'error');
       this.router.navigate(['/input/objectives']);
     }
