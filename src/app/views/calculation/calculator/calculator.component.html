@@ -1,15 +1,240 @@
 <!-- Modal Optimum Mode-->
 <div class="modal fade" bsModal #calcModal="bs-modal" role="dialog" aria-labelledby="calculatorModal" aria-hidden="true">
   <div class="modal-dialog modal-lg modal-primary">
-    <div class="modal-content">
+    <div id="showcalculateloading" *ngIf="isLoading"></div>
+    <div *ngIf="!isLoading">
+      <div class="modal-content" *ngIf="calculate">
+        <div class="modal-header">
+          <strong class="modal-title pull-left">{{ 'CALCULATOR - OPTIMUM MODE' | translate }}</strong>
+          <button type="button" class="close pull-right" aria-label="Close" (click)="calcModal.hide()">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <table class="table table-bordered table-sm">
+            <tr>
+              <th style="text-align:center">{{ 'Optimization required' | translate }}</th>
+              <th style="text-align:center">{{ 'Temperature margin' | translate }}
+                <br> ( °C )</th>
+              <th style="text-align:center">{{ 'Enthalpy error' | translate }}
+                <br> ( % )</th>
+              <th style="text-align:center">{{ 'Number of iterations' | translate }}</th>
+            </tr>
+            <tr>
+              <td align="center">
+                <label class="custom-control custom-checkbox">
+                  <input type="checkbox" class="custom-control-input" name="cbOptim" id="cbOptim" [checked]="calculate.scheckOptim == 1" [(ngModel)]="calculate.scheckOptim">
+                  <span class="custom-control-indicator"></span>
+                </label>
+              </td>
+              <td align="center">
+                <input type="text" name="epsilonTemp" id="epsilonTemp" style="width:80px;" [(ngModel)]="calculate.epsilonTemp">
+              </td>
+              <td align="center">
+                <input type="text" name="epsilonEnth" id="epsilonEnth" style="width:80px;" [(ngModel)]="calculate.epsilonEnth">
+              </td>
+              <td align="center">
+                <input type="text" name="nbOptimIter" id="nbOptimIter" style="width:80px;" [(ngModel)]="calculate.nbOptimIter" [disabled]="calculate.sdisableOptim">
+              </td>
+            </tr>
+          </table>
+          <table class="table table-bordered table-sm">
+            <tr>
+              <th style="text-align:center" rowspan="2">
+                {{ 'Time Step'|translate}}
+                <br> (s)
+              </th>
+              <th style="text-align:center" rowspan="2">
+                {{'Precision of numerical modelling'|translate}}
+                <br> (%)
+              </th>
+              <th style="text-align:center" colspan="2">
+                {{'Storage'|translate}}
+              </th>
+            </tr>
+            <tr>
+              <th style="text-align:center">{{'Access to product graph and charts'|translate}}</th>
+              <th style="text-align:center">{{'Step (s)'|translate}}</th>
+            </tr>
+            <tr>
+              <td align="center">
+                <input type="text" name="timestep" id="timestep" style="width:80px;" [(ngModel)]="calculate.timeStep">
+              </td>
+              <td align="center">
+                <input type="text" name="Precision" id="Precision" style="width:80px;" [(ngModel)]="calculate.precision">
+              </td>
+              <td align="center">
+                <label class="custom-control custom-checkbox">
+                  <input type="checkbox" class="custom-control-input" name="cbCharts" id="cbCharts" [checked]="calculate.scheckStorage == 1"
+                    [disabled]="calculate.sdisableStorage">
+                  <span class="custom-control-indicator"></span>
+                </label>
+              </td>
+              <td align="center">
+                <input type="text" name="storagestep" id="storagestep" style="width:80px;" [(ngModel)]="calculate.storagestep" [disabled]="calculate.sdisableNbOptim">
+              </td>
+            </tr>
+          </table>
+          <div class="text-center">
+            <button type="button" class="btn btn-secondary btn-lg" id="settbutton" (click)="openSetting()">
+              <i class="icon-settings"></i>&nbsp; {{'Setting'|translate}}</button>
+            <button type="button" class="btn btn-primary btn-lg" id="calcbutton" (click)="startCalculate()" [ladda]="laddaIsCalculating">
+              <i class="icon-energy"></i>&nbsp; {{'Calculate'|translate}}</button>
+          </div>
+          <br>
+          <br>
+          <!-- table settings display none -->
+          <div style="display:none" id="optimumSettings">
+            <strong>{{'Seized condition'|translate}}</strong>
+            <br>
+            <table class="table table-bordered table-sm">
+              <tr>
+                <th style="text-align:center" colspan="2">{{'Activation'|translate}}</th>
+                <th style="text-align:center" colspan="2">{{'Max of iterations'|translate}}</th>
+                <th style="text-align:center" colspan="2">{{'Coef.of relaxation'|translate}}</th>
+                <th style="text-align:center" colspan="2">{{'Temperature to stop'|translate}}
+                  <br>(°C)</th>
+              </tr>
+              <tr>
+                <td align="center">{{'Horizontal'|translate}}</td>
+                <td>
+                  <label class="custom-control custom-radio" style="margin: 0px 0px 0px 0px;">
+                    <input type="radio" class="custom-control-input" name="Hradiobutton" [checked]="calculate.hRadioOn == 1">{{'Yes'|translate}}
+                    <span class="custom-control-indicator"></span>
+                  </label>
+                  <label class="custom-control custom-radio" style="margin: 0px 0px 0px 0px;">
+                    <input type="radio" class="custom-control-input" name="Hradiobutton" [checked]="calculate.hRadioOn != 1">{{'No'|translate}}
+                    <span class="custom-control-indicator"></span>
+                  </label>
+                </td>
+                <td rowspan="2" align="center">
+                  <input type="text" name="MaxIter" id="MaxIter" style="width:80px; margin-top:20px;" [(ngModel)]="calculate.maxIter">
+                </td>
+                <td rowspan="2" align="center">
+                  <input type="text" name="RelaxCoef" id="RelaxCoef" style="width:80px; margin-top:20px;" [(ngModel)]="calculate.relaxCoef">
+                </td>
+                <td style="text-align:center">{{'Surface'|translate}}</td>
+                <td style="text-align:center">{{'Internal'|translate}}</td>
+                <td style="text-align:center">{{'Bottom'|translate}}</td>
+                <td style="text-align:center">{{'Average'|translate}}</td>
+              </tr>
+              <tr>
+                <td align="center">{{'Vertical'|translate}}</td>
+                <td>
+                  <label class="custom-control custom-radio" style="margin: 0px 0px 0px 0px;">
+                    <input type="radio" class="custom-control-input" name="Vradiobutton1" [checked]="calculate.vRadioOn == 1">{{'Yes'|translate}}
+                    <span class="custom-control-indicator"></span>
+                  </label>
+                  <label class="custom-control custom-radio" style="margin: 0px 0px 0px 0px;">
+                    <input type="radio" class="custom-control-input" name="Vradiobutton1" [checked]="calculate.vRadioOn != 1">{{'No'|translate}}
+                    <span class="custom-control-indicator"></span>
+                  </label>
+                </td>
+                <td align="center">
+                  <input type="text" name="TempPtSurf" id="TempPtSurf" style="width:80px;" [(ngModel)]="calculate.tempPtSurf">
+                </td>
+                <td align="center">
+                  <input type="text" name="TempPtIn" id="TempPtIn" style="width:80px;" [(ngModel)]="calculate.tempPtIn">
+                </td>
+                <td align="center">
+                  <input type="text" name="TempPtBot" id="TempPtBot" style="width:80px;" [(ngModel)]="calculate.tempPtBot">
+                </td>
+                <td align="center">
+                  <input type="text" name="TempPtAvg" id="TempPtAvg" style="width:80px;" [(ngModel)]="calculate.tempPtAvg">
+                </td>
+              </tr>
+            </table>
+            <strong>{{'Following-up Point (mm)'|translate}}</strong>
+            <table class="table table-bordered table-sm" style="width:500px;">
+              <tr>
+                <th style="text-align:center">{{'Surface'|translate}}</th>
+                <th style="text-align:center">{{'Internal'|translate}}</th>
+                <th style="text-align:center">{{'Bottom'|translate}}</th>
+              </tr>
+              <tr>
+                <td align="center">
+                  1
+                  <select name="select1" id="select1" style="width:100px;">
+                    <option *ngFor="let select of calculate.select1" [selected]="select.selected" [value]="select.value">
+                      {{ select.value }}
+                    </option>
+                  </select>
+                  <br> 2
+                  <select name="select2" id="select2" style="width:100px;">
+                    <option *ngFor="let select of calculate.select2" [selected]="select.selected" [value]="select.value">
+                      {{ select.value }}
+                    </option>
+                  </select>
+                  <br> 3
+                  <select name="select3" id="select3" style="width:100px;">
+                    <option *ngFor="let select of calculate.select3" [selected]="select.selected" [value]="select.value">
+                      {{ select.value }}
+                    </option>
+                  </select>
+                </td>
+                <td align="center">
+                  1
+                  <select name="select4" id="select4" style="width:100px;">
+                    <option *ngFor="let select of calculate.select4" [selected]="select.selected" [value]="select.value">
+                      {{ select.value }}
+                    </option>
+                  </select>
+                  <br> 2
+                  <select name="select5" id="select5" style="width:100px;">
+                    <option *ngFor="let select of calculate.select5" [selected]="select.selected" [value]="select.value">
+                      {{ select.value }}
+                    </option>
+                  </select>
+                  <br> 3
+                  <select name="select6" id="select6" style="width:100px;">
+                    <option *ngFor="let select of calculate.select6" [selected]="select.selected" [value]="select.value">
+                      {{ select.value }}
+                    </option>
+                  </select>
+                </td>
+                <td align="center">
+                  1
+                  <select name="select7" id="select7" style="width:100px;">
+                    <option *ngFor="let select of calculate.select7" [selected]="select.selected" [value]="select.value">
+                      {{ select.value }}
+                    </option>
+                  </select>
+                  <br> 2
+                  <select name="select8" id="select8" style="width:100px;">
+                    <option *ngFor="let select of calculate.select8" [selected]="select.selected" [value]="select.value">
+                      {{ select.value }}
+                    </option>
+                  </select>
+                  <br> 3
+                  <select name="select9" id="select9" style="width:100px;">
+                    <option *ngFor="let select of calculate.select9" [selected]="select.selected" [value]="select.value">
+                      {{ select.value }}
+                    </option>
+                  </select>
+                </td>
+              </tr>
+            </table>
+          </div>
+          <!-- End table settings  -->
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End Modal Optimum Mode -->
+<!-- Modal Refine -->
+<div class="modal fade" bsModal #refineModal="bs-modal" role="dialog" aria-labelledby="refineModal" aria-hidden="true">
+  <div id="showcalculateloading" *ngIf="isLoading"></div>
+  <div class="modal-dialog modal-lg modal-primary">
+    <div class="modal-content" *ngIf="!isLoading">
       <div class="modal-header">
         <strong class="modal-title pull-left">{{ 'CALCULATOR - OPTIMUM MODE' | translate }}</strong>
-        <button type="button" class="close pull-right" aria-label="Close" (click)="calcModal.hide()">
+        <button type="button" class="close pull-right" aria-label="Close" (click)="refineModal.hide()">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <div class="modal-body" *ngIf="calculate">
-        <table class="table table-bordered table-sm" *ngIf="calculate.isBrainCalculator == 1">
+      <div class="modal-body" *ngIf="brainCalculator">
+        <table class="table table-bordered table-sm">
           <tr>
             <th style="text-align:center">{{ 'Residence / Dwell time (s)' | translate }}</th>
             <th style="text-align:center">{{ 'Control temperature (°C)' | translate }}</th>
@@ -17,13 +242,13 @@
           </tr>
           <tr>
             <td align="center">
-              <input type="text" name="TS0" id="" style="width:80px;">
+              <input type="text" *ngFor="let ts of brainCalculator.dwellingTimes" name="ts{{ ts.name }}" id="" style="width:80px;" [(ngModel)]="ts.value">
             </td>
             <td align="center">
-              <input type="text" name="TR0" id="" style="width:80px;">
+              <input type="text" *ngFor="let tr of brainCalculator.temperatures" name="tr{{ tr.name }}" id="" style="width:80px;" [(ngModel)]="tr.value">
             </td>
             <td align="center">
-              <input type="text" name="toc" id="" style="width:80px;">
+              <input type="text" name="toc" id="toc" style="width:80px;" [(ngModel)]="brainCalculator.toc">
             </td>
           </tr>
         </table>
@@ -39,20 +264,18 @@
           <tr>
             <td align="center">
               <label class="custom-control custom-checkbox">
-                <input type="checkbox" class="custom-control-input" name="cbOptim" id="cbOptim" [checked]="calculate.scheckOptim" 
-                [(ngModel)]="calculate.scheckOptim">
+                <input type="checkbox" class="custom-control-input" name="cbOptim" id="cbOptim" [checked]="brainCalculator.scheckOptim == 1" [(ngModel)]="brainCalculator.scheckOptim">
                 <span class="custom-control-indicator"></span>
               </label>
             </td>
             <td align="center">
-              <input type="text" name="epsilonTemp" id="epsilonTemp" style="width:80px;" [(ngModel)]="calculate.epsilonTemp">
+              <input type="text" name="epsilonTemp" id="epsilonTemp" style="width:80px;" [disabled]="brainCalculator.scheckOptim != 1" [(ngModel)]="brainCalculator.epsilonTemp">
             </td>
             <td align="center">
-              <input type="text" name="epsilonEnth" id="epsilonEnth" style="width:80px;" [(ngModel)]="calculate.epsilonEnth">
+              <input type="text" name="epsilonEnth" id="epsilonEnth" style="width:80px;" [disabled]="brainCalculator.scheckOptim != 1" [(ngModel)]="brainCalculator.epsilonEnth">
             </td>
             <td align="center">
-              <input type="text" name="nbOptimIter" id="nbOptimIter" style="width:80px;" [(ngModel)]="calculate.nbOptimIter"
-              [disabled]="calculate.sdisableOptim">
+              <input type="text" name="nbOptimIter" id="nbOptimIter" style="width:80px;" [disabled]="brainCalculator.scheckOptim != 1" [(ngModel)]="brainCalculator.nbOptimIter">
             </td>
           </tr>
         </table>
@@ -76,28 +299,26 @@
           </tr>
           <tr>
             <td align="center">
-              <input type="text" name="timestep" id="timestep" style="width:80px;" [(ngModel)]="calculate.timeStep">
+              <input type="text" name="timestep" id="timestep" style="width:80px;" [(ngModel)]="brainCalculator.timeStep">
             </td>
             <td align="center">
-              <input type="text" name="Precision" id="Precision" style="width:80px;" [(ngModel)]="calculate.precision">
+              <input type="text" name="Precision" id="Precision" style="width:80px;" [(ngModel)]="brainCalculator.precision">
             </td>
             <td align="center">
               <label class="custom-control custom-checkbox">
-                <input type="checkbox" class="custom-control-input" name="cbCharts" id="cbCharts" [checked]="calculate.scheckStorage"
-                 [disabled]="calculate.sdisableStorage">
+                <input type="checkbox" class="custom-control-input" name="cbCharts" id="cbCharts" [checked]="brainCalculator.scheckStorage == 1">
                 <span class="custom-control-indicator"></span>
               </label>
             </td>
             <td align="center">
-              <input type="text" name="storagestep" id="storagestep" style="width:80px;" [(ngModel)]="calculate.storagestep" 
-              [disabled]="calculate.sdisableNbOptim">
+              <input type="text" name="storagestep" id="storagestep" style="width:80px;" [(ngModel)]="brainCalculator.storagestep">
             </td>
           </tr>
         </table>
         <div class="text-center">
           <button type="button" class="btn btn-secondary btn-lg" id="settbutton" (click)="openSetting()">
             <i class="icon-settings"></i>&nbsp; {{'Setting'|translate}}</button>
-          <button type="button" class="btn btn-primary btn-lg" id="calcbutton" (click)="startCalculate()" [ladda]="laddaIsCalculating">
+          <button type="button" class="btn btn-primary btn-lg" id="calcbutton" (click)="startBrainOptimumCalculate()" [ladda]="laddaIsCalculating">
             <i class="icon-energy"></i>&nbsp; {{'Calculate'|translate}}</button>
         </div>
         <br>
@@ -118,19 +339,19 @@
               <td align="center">{{'Horizontal'|translate}}</td>
               <td>
                 <label class="custom-control custom-radio" style="margin: 0px 0px 0px 0px;">
-                  <input type="radio" class="custom-control-input" name="Hradiobutton" [checked]="calculate.hRadioOn">{{'Yes'|translate}}
+                  <input type="radio" class="custom-control-input" name="Hradiobutton1" [checked]="brainCalculator.hRadioOn == 1">{{'Yes'|translate}}
                   <span class="custom-control-indicator"></span>
                 </label>
                 <label class="custom-control custom-radio" style="margin: 0px 0px 0px 0px;">
-                  <input type="radio" class="custom-control-input" name="Hradiobutton" [checked]="calculate.hRadioOff">{{'No'|translate}}
+                  <input type="radio" class="custom-control-input" name="Hradiobutton1" [checked]="brainCalculator.hRadioOn != 1">{{'No'|translate}}
                   <span class="custom-control-indicator"></span>
                 </label>
               </td>
               <td rowspan="2" align="center">
-                <input type="text" name="MaxIter" id="MaxIter" style="width:80px; margin-top:20px;" [(ngModel)]="calculate.maxIter">
+                <input type="text" name="MaxIter" id="MaxIter" style="width:80px; margin-top:20px;" [(ngModel)]="brainCalculator.maxIter">
               </td>
               <td rowspan="2" align="center">
-                <input type="text" name="RelaxCoef" id="RelaxCoef" style="width:80px; margin-top:20px;" [(ngModel)]="calculate.relaxCoef">
+                <input type="text" name="RelaxCoef" id="RelaxCoef" style="width:80px; margin-top:20px;" [(ngModel)]="brainCalculator.relaxCoef">
               </td>
               <td style="text-align:center">{{'Surface'|translate}}</td>
               <td style="text-align:center">{{'Internal'|translate}}</td>
@@ -141,25 +362,25 @@
               <td align="center">{{'Vertical'|translate}}</td>
               <td>
                 <label class="custom-control custom-radio" style="margin: 0px 0px 0px 0px;">
-                  <input type="radio" class="custom-control-input" name="Vradiobutton" [checked]="calculate.vRadioOn">{{'Yes'|translate}}
+                  <input type="radio" class="custom-control-input" name="Vradiobutton1" [checked]="brainCalculator.vRadioOn == 1">{{'Yes'|translate}}
                   <span class="custom-control-indicator"></span>
-                </label>
+                </label> 
                 <label class="custom-control custom-radio" style="margin: 0px 0px 0px 0px;">
-                  <input type="radio" class="custom-control-input" name="Vradiobutton" [checked]="calculate.vRadioOff">{{'No'|translate}}
+                  <input type="radio" class="custom-control-input" name="Vradiobutton1" [checked]="brainCalculator.vRadioOn != 1">{{'No'|translate}}
                   <span class="custom-control-indicator"></span>
                 </label>
               </td>
               <td align="center">
-                <input type="text" name="TempPtSurf" id="TempPtSurf" style="width:80px;" [(ngModel)]="calculate.tempPtSurf">
+                <input type="text" name="TempPtSurf" id="TempPtSurf" style="width:80px;" [(ngModel)]="brainCalculator.tempPtSurf">
               </td>
               <td align="center">
-                <input type="text" name="TempPtIn" id="TempPtIn" style="width:80px;" [(ngModel)]="calculate.tempPtIn">
+                <input type="text" name="TempPtIn" id="TempPtIn" style="width:80px;" [(ngModel)]="brainCalculator.tempPtIn">
               </td>
               <td align="center">
-                <input type="text" name="TempPtBot" id="TempPtBot" style="width:80px;" [(ngModel)]="calculate.tempPtBot">
+                <input type="text" name="TempPtBot" id="TempPtBot" style="width:80px;" [(ngModel)]="brainCalculator.tempPtBot">
               </td>
               <td align="center">
-                <input type="text" name="TempPtAvg" id="TempPtAvg" style="width:80px;" [(ngModel)]="calculate.tempPtAvg">
+                <input type="text" name="TempPtAvg" id="TempPtAvg" style="width:80px;" [(ngModel)]="brainCalculator.tempPtAvg">
               </td>
             </tr>
           </table>
@@ -172,59 +393,62 @@
             </tr>
             <tr>
               <td align="center">
-                1<select name="select1" id="select1" style="width:100px;">
-                  <option *ngFor="let select of calculate.select1" [selected]="select.selected" [value]="select.value">
-                    {{ select.label | formatNumber:3 }}
+                1
+                <select name="select1" id="select1" style="width:100px;">
+                  <option *ngFor="let select of brainCalculator.select1" [selected]="select.selected" [value]="select.value">
+                    {{ select.value }}
                   </option>
                 </select>
-                <br> 
-                2<select name="select2" id="select2" style="width:100px;">
-                  <option  *ngFor="let select of calculate.select2" [selected]="select.selected" [value]="select.value">
-                     {{ select.label | formatNumber:3 }}
+                <br> 2
+                <select name="select2" id="select2" style="width:100px;">
+                  <option *ngFor="let select of brainCalculator.select2" [selected]="select.selected" [value]="select.value">
+                    {{ select.value }}
                   </option>
                 </select>
-                <br> 
-                3<select name="select3" id="select3" style="width:100px;">
-                  <option *ngFor="let select of calculate.select3" [selected]="select.selected" [value]="select.value">
-                     {{ select.label | formatNumber:3 }}
-                  </option>
-                </select>
-              </td>
-              <td align="center">
-                1<select name="select4" id="select4" style="width:100px;">
-                  <option *ngFor="let select of calculate.select4" [selected]="select.selected" [value]="select.value">
-                     {{ select.label | formatNumber:3 }}
-                  </option>
-                </select>
-                <br> 
-                2<select name="select5" id="select5" style="width:100px;">
-                  <option *ngFor="let select of calculate.select5" [selected]="select.selected" [value]="select.value">
-                     {{ select.label | formatNumber:3 }}
-                  </option>
-                </select>
-                <br> 
-                3<select name="select6" id="select6" style="width:100px;">
-                  <option *ngFor="let select of calculate.select6" [selected]="select.selected" [value]="select.value">
-                     {{ select.label | formatNumber:3 }}
+                <br> 3
+                <select name="select3" id="select3" style="width:100px;">
+                  <option *ngFor="let select of brainCalculator.select3" [selected]="select.selected" [value]="select.value">
+                    {{ select.value }}
                   </option>
                 </select>
               </td>
               <td align="center">
-                1<select name="select7" id="select7" style="width:100px;">
-                  <option *ngFor="let select of calculate.select7" [selected]="select.selected" [value]="select.value">
-                     {{ select.label | formatNumber:3 }}
+                1
+                <select name="select4" id="select4" style="width:100px;">
+                  <option *ngFor="let select of brainCalculator.select4" [selected]="select.selected" [value]="select.value">
+                    {{ select.value }}
                   </option>
                 </select>
-                <br> 
-                2<select name="select8" id="select8" style="width:100px;">
-                  <option *ngFor="let select of calculate.select8" [selected]="select.selected" [value]="select.value">
-                     {{ select.label | formatNumber:3 }}
+                <br> 2
+                <select name="select5" id="select5" style="width:100px;">
+                  <option *ngFor="let select of brainCalculator.select5" [selected]="select.selected" [value]="select.value">
+                    {{ select.value }}
                   </option>
                 </select>
-                <br> 
-                3<select name="select9" id="select9" style="width:100px;">
-                  <option *ngFor="let select of calculate.select9" [selected]="select.selected" [value]="select.value">
-                     {{ select.label | formatNumber:3 }}
+                <br> 3
+                <select name="select6" id="select6" style="width:100px;">
+                  <option *ngFor="let select of brainCalculator.select6" [selected]="select.selected" [value]="select.value">
+                    {{ select.value }}
+                  </option>
+                </select>
+              </td>
+              <td align="center">
+                1
+                <select name="select7" id="select7" style="width:100px;">
+                  <option *ngFor="let select of brainCalculator.select7" [selected]="select.selected" [value]="select.value">
+                    {{ select.value }}
+                  </option>
+                </select>
+                <br> 2
+                <select name="select8" id="select8" style="width:100px;">
+                  <option *ngFor="let select of brainCalculator.select8" [selected]="select.selected" [value]="select.value">
+                    {{ select.value }}
+                  </option>
+                </select>
+                <br> 3
+                <select name="select9" id="select9" style="width:100px;">
+                  <option *ngFor="let select of brainCalculator.select9" [selected]="select.selected" [value]="select.value">
+                    {{ select.value }}
                   </option>
                 </select>
               </td>
@@ -236,11 +460,12 @@
     </div>
   </div>
 </div>
-<!-- End Modal Optimum Mode -->
+<!-- End Modal Refine -->
 <!-- Model Estimation Mode -->
 <div class="modal fade" bsModal #estimationMode="bs-modal" role="dialog" aria-hidden="true">
   <div class="modal-dialog modal-primary" role="document">
-    <div class="modal-content">
+    <div id="showcalculateloading" *ngIf="isLoading"></div>
+    <div class="modal-content" *ngIf="!isLoading">
       <div class="modal-header">
         <strong class="modal-title pull-left">{{ 'CALCULATOR - ESTIMATION MODE' | translate }}</strong>
         <button type="button" class="close pull-right" aria-label="Close" (click)="estimationMode.hide()">
@@ -260,141 +485,185 @@
 <!-- end Model Estimation Mode -->
 <!-- Brain Estimation Mode -->
 <div class="modal fade" bsModal #brainCalculate="bs-modal" role="dialog" aria-hidden="true">
+  <!-- <app-spinner *ngIf="isLoading"></app-spinner> -->
+  <div id="showcalculateloading" *ngIf="isLoading"></div>
   <div class="modal-dialog modal-lg modal-primary" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <strong class="modal-title pull-left">{{ 'START BRAINCALCULATOR' | translate }}</strong>
-        <button type="button" class="close pull-right" aria-label="Close" (click)="brainCalculate.hide()">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <div>
-          <strong>{{ 'Seized condition' | translate }}</strong>
-          <br>
-          <table class="table table-bordered table-sm">
-            <tr>
-              <th style="text-align:center" colspan="2">{{ 'Activation' | translate }}</th>
-              <th style="text-align:center">{{ 'Max of iterations' | translate }}</th>
-              <th style="text-align:center">{{ 'Coef.of relaxation' | translate }}</th>
-              <th style="text-align:center">{{ 'Precision of numerical modelling(%)' | translate }}</th>
-              <th style="text-align:center" colspan="4">{{ 'Temperature to stop' | translate }}
-                <br>(°C)</th>
-            </tr>
-            <tr>
-              <td style="vertical-align:middle">{{ 'Horizontal' | translate }}</td>
-              <td>
-                <label class="custom-control custom-radio" style="margin: 0px 0px 0px 0px;">
-                  <input type="radio" class="custom-control-input" name="Hradiobutton">{{ 'Yes' | translate }}
-                  <span class="custom-control-indicator"></span>
-                </label>
-                <label class="custom-control custom-radio" style="margin: 0px 0px 0px 0px;">
-                  <input type="radio" class="custom-control-input" name="Hradiobutton">{{ 'No' | translate }}
-                  <span class="custom-control-indicator"></span>
-                </label>
-              </td>
-              <td rowspan="2" style="vertical-align:middle">
-                <input type="text" name="MaxIter" id="maxIter" style="width:80px; margin-top:20px;">
-              </td>
-              <td style="vertical-align:middle" rowspan="2">
-                <input type="text" name="RelaxCoef" id="relaxCoef" style="width:80px; margin-top:20px;">
-              </td>
-              <td style="vertical-align:middle" rowspan="2" align="center">
-                <input type="text" name="Precision" id="" style="width:80px; margin-top:20px;">
-              </td>
-              <td style="vertical-align:middle" align="center">{{ 'Surface' | translate }}</td>
-              <td style="vertical-align:middle" align="center">{{ 'Internal' | translate }}</td>
-              <td style="vertical-align:middle" align="center">{{ 'Bottom' | translate }}</td>
-              <td style="vertical-align:middle" align="center">{{ 'Average' | translate }}</td>
-            </tr>
-            <tr>
-              <td style="vertical-align:middle">{{ 'Vertical' | translate }}</td>
-              <td>
-                <label class="custom-control custom-radio" style="margin: 0px 0px 0px 0px;">
-                  <input type="radio" class="custom-control-input" name="Vradiobutton">{{ 'Yes' | translate }}
-                  <span class="custom-control-indicator"></span>
-                </label>
-                <label class="custom-control custom-radio" style="margin: 0px 0px 0px 0px;">
-                  <input type="radio" class="custom-control-input" name="Vradiobutton">{{ 'No' | translate }}
-                  <span class="custom-control-indicator"></span>
-                </label>
-              </td>
-              <td style="vertical-align:middle">
-                <input type="text" name="TempPtSurf" id="" style="width:80px;">
-              </td>
-              <td style="vertical-align:middle">
-                <input type="text" name="TempPtIn" id="" style="width:80px;">
-              </td>
-              <td style="vertical-align:middle">
-                <input type="text" name="TempPtBot" id="" style="width:80px;">
-              </td>
-              <td style="vertical-align:middle">
-                <input type="text" name="TempPtAvg" id="" style="width:80px;">
-              </td>
-            </tr>
-          </table>
-          <div class="row">
-            <div class="col-md-6">
-              <strong>{{ 'Step number' | translate }}</strong>
-              <table class="table table-bordered table-sm">
-                <tr>
-                  <th style="text-align:center">{{ 'Precision log step' | translate }}</th>
-                  <th style="text-align:center">{{ 'Storage step(s)' | translate }}</th>
-                  <th style="text-align:center">{{ 'Time Step(s)' | translate }}</th>
-                </tr>
-                <tr>
-                  <td align="center">
-                    <input type="text" name="precisionlog" id="" style="width:80px;height:30px;">
-                  </td>
-                  <td align="center">
-                    <input type="text" name="storagestep" id="" style="width:80px;height:30px;">
-                  </td>
-                  <td align="center">
-                    <input type="text" name="timestep" id="" style="width:80px;height:30px;">
-                  </td>
-                </tr>
-              </table>
-            </div>
-            <div class="col-md-6">
-              <strong>{{ 'Following-up Point (mm)' | translate }}</strong>
-              <table class="table table-bordered table-sm">
-                <tr>
-                  <th style="text-align:center">{{ 'Surface' | translate }}</th>
-                  <th style="text-align:center">{{ 'Internal' | translate }}</th>
-                  <th style="text-align:center">{{ 'Bottom' | translate }}</th>
-                </tr>
-                <tr>
-                  <td align="center">
-                    1<select name="select1" id="select1" style="width:100px;"></select>
-                    <br> 
-                    2<select name="select2" id="select2" style="width:100px;"></select>
-                    <br> 
-                    3<select name="select3" id="select3" style="width:100px;"></select>
-                  </td>
-                  <td align="center">
-                    1<select name="select4" id="select4" style="width:100px;"></select>
-                    <br> 
-                    2<select name="select5" id="select5" style="width:100px;"></select>
-                    <br> 
-                    3<select name="select6" id="select6" style="width:100px;"></select>
-                  </td>
-                  <td align="center">
-                    1<select name="select7" id="select7" style="width:100px;"></select>
-                    <br> 
-                    2<select name="select8" id="select8" style="width:100px;"></select>
-                    <br> 
-                    3<select name="select9" id="select9" style="width:100px;"></select>
-                  </td>
-                </tr>
-              </table>
+    <div *ngIf="!isLoading">
+      <div class="modal-content" *ngIf="brainCalculator">
+        <div class="modal-header">
+          <strong class="modal-title pull-left">{{ 'START BRAINCALCULATOR' | translate }}</strong>
+          <button type="button" class="close pull-right" aria-label="Close" (click)="brainCalculate.hide()">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div id="brainSetting">
+            <strong>{{ 'Seized condition' | translate }}</strong>
+            <br>
+            <table class="table table-bordered table-sm">
+              <tr>
+                <th style="text-align:center" colspan="2">{{ 'Activation' | translate }}</th>
+                <th style="text-align:center">{{ 'Max of iterations' | translate }}</th>
+                <th style="text-align:center">{{ 'Coef.of relaxation' | translate }}</th>
+                <th style="text-align:center">{{ 'Precision of numerical modelling(%)' | translate }}</th>
+                <th style="text-align:center" colspan="4">{{ 'Temperature to stop' | translate }}
+                  <br>(°C)</th>
+              </tr>
+              <tr>
+                <td style="vertical-align:middle">{{ 'Horizontal' | translate }}</td>
+                <td>
+                  <label class="custom-control custom-radio" style="margin: 0px 0px 0px 0px;">
+                    <input type="radio" class="custom-control-input" name="Hradiobutton" [checked]="brainCalculator.hRadioOn == 1">{{ 'Yes' | translate }}
+                    <span class="custom-control-indicator"></span>
+                  </label>
+                  <label class="custom-control custom-radio" style="margin: 0px 0px 0px 0px;">
+                    <input type="radio" class="custom-control-input" name="Hradiobutton" [checked]="brainCalculator.hRadioOn != 1">{{ 'No' | translate }}
+                    <span class="custom-control-indicator"></span>
+                  </label>
+                </td>
+                <td rowspan="2" style="vertical-align:middle">
+                  <input type="text" name="MaxIter" id="maxIter" style="width:80px; margin-top:20px;" [(ngModel)]="brainCalculator.maxIter">
+                </td>
+                <td style="vertical-align:middle" rowspan="2">
+                  <input type="text" name="RelaxCoef" id="relaxCoef" style="width:80px; margin-top:20px;" [(ngModel)]="brainCalculator.relaxCoef">
+                </td>
+                <td style="vertical-align:middle" rowspan="2" align="center">
+                  <input type="text" name="Precision" id="" style="width:80px; margin-top:20px;" [(ngModel)]="brainCalculator.precision">
+                </td>
+                <td style="vertical-align:middle" align="center">{{ 'Surface' | translate }}</td>
+                <td style="vertical-align:middle" align="center">{{ 'Internal' | translate }}</td>
+                <td style="vertical-align:middle" align="center">{{ 'Bottom' | translate }}</td>
+                <td style="vertical-align:middle" align="center">{{ 'Average' | translate }}</td>
+              </tr>
+              <tr>
+                <td style="vertical-align:middle">{{ 'Vertical' | translate }}</td>
+                <td>
+                  <label class="custom-control custom-radio" style="margin: 0px 0px 0px 0px;">
+                    <input type="radio" class="custom-control-input" name="Vradiobutton" [checked]="brainCalculator.vRadioOn == 1">{{ 'Yes' | translate }}
+                    <span class="custom-control-indicator"></span>
+                  </label>
+                  <label class="custom-control custom-radio" style="margin: 0px 0px 0px 0px;">
+                    <input type="radio" class="custom-control-input" name="Vradiobutton" [checked]="brainCalculator.vRadioOn != 1">{{ 'No' | translate }}
+                    <span class="custom-control-indicator"></span>
+                  </label>
+                </td>
+                <td style="vertical-align:middle">
+                  <input type="text" name="TempPtSurf" id="" style="width:80px;" [(ngModel)]="brainCalculator.tempPtSurf">
+                </td>
+                <td style="vertical-align:middle">
+                  <input type="text" name="TempPtIn" id="" style="width:80px;" [(ngModel)]="brainCalculator.tempPtIn">
+                </td>
+                <td style="vertical-align:middle">
+                  <input type="text" name="TempPtBot" id="" style="width:80px;" [(ngModel)]="brainCalculator.tempPtBot">
+                </td>
+                <td style="vertical-align:middle">
+                  <input type="text" name="TempPtAvg" id="" style="width:80px;" [(ngModel)]="brainCalculator.tempPtAvg">
+                </td>
+              </tr>
+            </table>
+            <div class="row">
+              <div class="col-md-6">
+                <strong>{{ 'Step number' | translate }}</strong>
+                <table class="table table-bordered table-sm">
+                  <tr>
+                    <th style="text-align:center">{{ 'Precision log step' | translate }}</th>
+                    <th style="text-align:center">{{ 'Storage step(s)' | translate }}</th>
+                    <th style="text-align:center">{{ 'Time Step(s)' | translate }}</th>
+                  </tr>
+                  <tr>
+                    <td align="center">
+                      <input type="text" name="precisionlog" id="" style="width:80px;height:30px;" [(ngModel)]="brainCalculator.precisionlogstep">
+                    </td>
+                    <td align="center">
+                      <input type="text" name="storagestep" id="" style="width:80px;height:30px;" [(ngModel)]="brainCalculator.storagestep">
+                    </td>
+                    <td align="center">
+                      <input type="text" name="timestep" id="" style="width:80px;height:30px;" [(ngModel)]="brainCalculator.timeStep">
+                    </td>
+                  </tr>
+                </table>
+              </div>
+              <div class="col-md-6">
+                <strong>{{ 'Following-up Point (mm)' | translate }}</strong>
+                <table class="table table-bordered table-sm">
+                  <tr>
+                    <th style="text-align:center">{{ 'Surface' | translate }}</th>
+                    <th style="text-align:center">{{ 'Internal' | translate }}</th>
+                    <th style="text-align:center">{{ 'Bottom' | translate }}</th>
+                  </tr>
+                  <tr>
+                    <td align="center">
+                      1
+                      <select name="select1" id="select1" style="width:100px;">
+                        <option *ngFor="let select of brainCalculator.select1" [selected]="select.selected" [value]="select.value">
+                          {{ select.value }}
+                        </option>
+                      </select>
+                      <br> 2
+                      <select name="select2" id="select2" style="width:100px;">
+                        <option *ngFor="let select of brainCalculator.select2" [selected]="select.selected" [value]="select.value">
+                          {{ select.value }}
+                        </option>
+                      </select>
+                      <br> 3
+                      <select name="select3" id="select3" style="width:100px;">
+                        <option *ngFor="let select of brainCalculator.select3" [selected]="select.selected" [value]="select.value">
+                          {{ select.value }}
+                        </option>
+                      </select>
+                    </td>
+                    <td align="center">
+                      1
+                      <select name="select4" id="select4" style="width:100px;">
+                        <option *ngFor="let select of brainCalculator.select4" [selected]="select.selected" [value]="select.value">
+                          {{ select.value }}
+                        </option>
+                      </select>
+                      <br> 2
+                      <select name="select5" id="select5" style="width:100px;">
+                        <option *ngFor="let select of brainCalculator.select5" [selected]="select.selected" [value]="select.value">
+                          {{ select.value }}
+                        </option>
+                      </select>
+                      <br> 3
+                      <select name="select6" id="select6" style="width:100px;">
+                        <option *ngFor="let select of brainCalculator.select6" [selected]="select.selected" [value]="select.value">
+                          {{ select.value }}
+                        </option>
+                      </select>
+                    </td>
+                    <td align="center">
+                      1
+                      <select name="select7" id="select7" style="width:100px;">
+                        <option *ngFor="let select of brainCalculator.select7" [selected]="select.selected" [value]="select.value">
+                          {{ select.value }}
+                        </option>
+                      </select>
+                      <br> 2
+                      <select name="select8" id="select8" style="width:100px;">
+                        <option *ngFor="let select of brainCalculator.select8" [selected]="select.selected" [value]="select.value">
+                          {{ select.value }}
+                        </option>
+                      </select>
+                      <br> 3
+                      <select name="select9" id="select9" style="width:100px;">
+                        <option *ngFor="let select of brainCalculator.select9" [selected]="select.selected" [value]="select.value">
+                          {{ select.value }}
+                        </option>
+                      </select>
+                    </td>
+                  </tr>
+                </table>
+              </div>
             </div>
           </div>
-        </div>
-        <div align="center">
-          <button class="btn btn-secondary btn-sm" (click)="brainCalculate.hide()">{{ 'Cancel' | translate }}</button>
-          <button class="btn btn-primary btn-sm" (click)="calculWithoutOpti.show();brainCalculate.hide()">{{ 'Calculate without optimization' | translate }}</button>
-            <button class="btn btn-primary btn-sm" (click)="calculWithOpti.show();brainCalculate.hide()">{{ 'Calculate with optimization' | translate }}</button>
-          <button class="btn btn-primary btn-sm">{{ 'Settings' | translate }}</button>
+          <div align="center">
+            <button class="btn btn-secondary btn-lg" (click)="brainCalculate.hide()">{{ 'Cancel' | translate }}</button>
+            <button class="btn btn-primary btn-lg" (click)="calculWithoutOpti.show();brainCalculate.hide()">{{ 'Calculate without optimization' | translate }}</button>
+            <button class="btn btn-primary btn-lg" (click)="calculWithOpti.show();brainCalculate.hide()">{{ 'Calculate with optimization' | translate }}</button>
+            <button class="btn btn-secondary btn-lg" (click)="hideSetting()">
+              <i class="icon-settings"></i>&nbsp; {{ 'Setting' | translate }}</button>
+          </div>
         </div>
       </div>
     </div>
@@ -414,7 +683,8 @@
       <div class="modal-body">
         <strong align="center">{{ 'Please Wait While Cryosoft Starts The High Level Calculation.' | translate }}</strong>
         <div align="center">
-          <img src="" style="width:100px;height:100px">
+          <img src="/assets/img/calculator/waiting.gif" style="width:100px;height:100px">
+          <!-- <div class="processingcalculate"></div> -->
         </div>
       </div>
     </div>
@@ -464,8 +734,8 @@
         <br>
         <p>{{ 'Optimization manages the Control Temperature/Residence/Dwell Time relationship, according to your preference.' | translate }}</p>
         <div align="center">
-          <button class="btn btn-secondary btn-sm" (click)="calculWithOpti.hide()">{{ 'Cancel' | translate }}</button>
-          <button class="btn btn-primary btn-sm">{{ 'Calculate' | translate }}</button>
+          <button class="btn btn-secondary btn-lg" (click)="calculWithOpti.hide()"><i class="fa fa-window-close" aria-hidden="true"></i> {{ 'Cancel' | translate }}</button>
+          <button class="btn btn-primary btn-lg"><i class="icon-energy"></i>&nbsp; {{ 'Calculate' | translate }}</button>
         </div>
       </div>
     </div>

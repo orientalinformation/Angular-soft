@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container" *ngIf="!isLoading">
     <div class="card" *ngIf="checkcontrolview">
         <div class="card-header">
             <strong>{{'The active links correspond to unvalidated screens, please click to complete the screen'|translate}}</strong>
@@ -25,16 +25,16 @@
                 </ng-template>
                 <div *ngIf="checkcontrolview.production;else production_content">
                     <li class="list-group-item d-flex justify-content-between align-items-center badge-check list-group-item-success">
-                        {{'Production'|translate}}
+                        {{'Product'|translate}}
                         <span>
                             <i class="fa fa-lg fa-check-square-o"></i>
                         </span>
                     </li>
                 </div>
                 <ng-template #production_content>
-                    <a href="javascript:void(0);" [routerLink]="['/input/production']">
+                    <a href="javascript:void(0);" [routerLink]="['/input/product']">
                         <li class="list-group-item d-flex justify-content-between align-items-center list-group-item-danger">
-                            {{'Production'|translate}}
+                            {{'Product'|translate}}
                             <span>
                                 <i class="fa fa-lg fa-warning"></i>
                             </span>
@@ -117,10 +117,14 @@
                 </div>
             </ul>
         </div>
-        <div class="card-footer text-center" *ngIf="checkcontrol.checkcontrol">
-            <button class="btn btn-primary btn-lg text-uppercase" (click)="calculator.open()">{{'Calculate'|translate}}</button>
+        <div *ngIf="checkcontrol">
+            <div class="card-footer text-center" *ngIf="checkcontrol.checkcontrol">
+                <button class="btn btn-primary btn-lg text-uppercase" (click)="calculator.open()">
+                    <i class="fa fa-calculator"></i> {{'Calculate'|translate}}</button>
+            </div>
         </div>
     </div>
 </div>
 
 <app-calculator #calculator></app-calculator>
+<app-spinner *ngIf="isLoading"></app-spinner>

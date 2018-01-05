@@ -31,9 +31,9 @@
     minimist "^1.2.0"
     rxjs "^5.5.2"
 
-"@angular/animations@5.0.5":
-  version "5.0.5"
-  resolved "https://registry.yarnpkg.com/@angular/animations/-/animations-5.0.5.tgz#8a008900a79cd9ecb0ee741534ec435cce9539a5"
+"@angular/animations@^5.1.2":
+  version "5.1.2"
+  resolved "https://registry.yarnpkg.com/@angular/animations/-/animations-5.1.2.tgz#464df9a9e30c7a8146118fdd9bff82cdfcf97d7e"
   dependencies:
     tslib "^1.7.1"
 
@@ -262,6 +262,16 @@
 "@types/selenium-webdriver@^2.53.35", "@types/selenium-webdriver@~2.53.39":
   version "2.53.43"
   resolved "https://registry.yarnpkg.com/@types/selenium-webdriver/-/selenium-webdriver-2.53.43.tgz#2de3d718819bc20165754c4a59afb7e9833f6707"
+
+"@types/three@^0.84.36":
+  version "0.84.36"
+  resolved "https://registry.yarnpkg.com/@types/three/-/three-0.84.36.tgz#6af9dd8da4e517c109f319c2e79f5629ef3a3d7f"
+  dependencies:
+    "@types/webvr-api" "*"
+
+"@types/webvr-api@*":
+  version "0.0.31"
+  resolved "https://registry.yarnpkg.com/@types/webvr-api/-/webvr-api-0.0.31.tgz#f6061fe88a035d34a8b6a0c55f8758901ec8a08e"
 
 abbrev@1:
   version "1.1.1"
@@ -3955,6 +3965,14 @@ ngx-quill@2.0.4:
     "@types/quill" "^1.3.3"
     quill "^1.3.2"
 
+ngx-toastr@^8.1.0:
+  version "8.1.0"
+  resolved "https://registry.yarnpkg.com/ngx-toastr/-/ngx-toastr-8.1.0.tgz#3a0742e62895f88e232607843d61373d6f0d44d3"
+
+nl2br-pipe@^0.1.0:
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/nl2br-pipe/-/nl2br-pipe-0.1.0.tgz#9741283bddf266d4568a0f54aad87511222a0363"
+
 no-case@^2.2.0:
   version "2.3.2"
   resolved "https://registry.yarnpkg.com/no-case/-/no-case-2.3.2.tgz#60b813396be39b3f1288a4c1ed5d1e7d28b464ac"
@@ -5883,6 +5901,20 @@ tar@^2.0.0, tar@^2.2.1:
 text-mask-core@^5.0.0:
   version "5.0.1"
   resolved "https://registry.yarnpkg.com/text-mask-core/-/text-mask-core-5.0.1.tgz#86db742bdfe3b4c383bb51a3b4ca342c86110639"
+
+three-orbitcontrols-ts@^0.1.2:
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/three-orbitcontrols-ts/-/three-orbitcontrols-ts-0.1.2.tgz#2040955904022ae19c2e9c52ffdff43168658abd"
+  dependencies:
+    three "^0.83.0"
+
+three@^0.83.0:
+  version "0.83.0"
+  resolved "https://registry.yarnpkg.com/three/-/three-0.83.0.tgz#3b7f94790af3e021dac1f44a2617569ca2032b0b"
+
+three@^0.89.0:
+  version "0.89.0"
+  resolved "https://registry.yarnpkg.com/three/-/three-0.89.0.tgz#4442d819a6168871b8d2cb37ad12a24310c170f5"
 
 through2@^2.0.0:
   version "2.0.3"

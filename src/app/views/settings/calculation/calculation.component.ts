@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CalculationParametersDef } from '../../../api/models/calculation-parameters-def';
 import { ApiService } from '../../../api/services';
 import { AfterViewInit } from '@angular/core';
+import swal from 'sweetalert2';
 
 @Component({
   selector: 'app-calculation',
@@ -10,10 +11,13 @@ import { AfterViewInit } from '@angular/core';
 })
 export class CalculationComponent implements OnInit, AfterViewInit {
   public calculationparametersdef: CalculationParametersDef;
+  public laddaSavingcalculation = false;
+  public isLoading = false;
 
   constructor(private api: ApiService) { }
 
   ngOnInit() {
+    this.isLoading = true;
   }
 
   ngAfterViewInit() {
@@ -50,11 +54,13 @@ export class CalculationComponent implements OnInit, AfterViewInit {
         data.TIME_STEP_DEF = Number(Number(data.TIME_STEP_DEF).toPrecision(3));
         this.calculationparametersdef = data;
         console.log(data);
+        this.isLoading = false;
       }
     );
   }
 
   saveMyCalculationParametersDef() {
+    this.laddaSavingcalculation = true;
     this.api.saveMyCalculationParametersDef({
       ishorizScanDef: Number(this.calculationparametersdef.HORIZ_SCAN_DEF),
       maxIter: Number(this.calculationparametersdef.MAX_IT_NB_DEF),
@@ -84,9 +90,14 @@ export class CalculationComponent implements OnInit, AfterViewInit {
     }).subscribe(
       response => {
         console.log(response);
+        swal('Success', 'Save calculation setting completed', 'success');
       },
       err => {
+        console.log(err);
+      },
+      () => {
+        this.laddaSavingcalculation = false;
       }
-      );
+    );
   }
 }

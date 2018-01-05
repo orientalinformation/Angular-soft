@@ -1,12 +1,10 @@
-<div class="container">
+<div class="container" *ngIf="!isLoading">
   <div class="card product-container">
     <div class="card-header">
       <strong>{{ 'PRODUCT DEFINITION' | translate }}</strong>
-      <div class="card-actions" *ngIf="productShape != 0">
-        <button type="button" (click)="modalEditProduct.show()">
-          <i class="fa fa-pencil-square-o"></i>          
-        </button>
-      </div>
+      <button type="button" class="btn btn-sm btn-success float-right" (click)="modalEditProduct.show()" *ngIf="productShape != 0">
+        <i class="fa fa-pencil-square-o"></i> {{'EDIT'|translate}}
+      </button>
     </div>
     <div class="card-body" *ngIf="productShape !== 0">
       <div class="row">
@@ -87,7 +85,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let element of elements; first as isFirst; last as isLast;">
+        <tr *ngFor="let element of elements; first as isFirst; last as isLast; let i = index">
           <td class="text-center nowrap">
             <a *ngIf="!isFirst" (click)="onMoveUpElement(element)"><i class="fa fa-caret-up" aria-hidden="true"></i></a> 
             <a *ngIf="!isLast" (click)="onMoveDownElement(element)"><i class="fa fa-caret-down" aria-hidden="true"></i></a>
@@ -99,7 +97,9 @@
           <td class="text-right">{{ element.PROD_ELMT_REALWEIGHT | formatNumber:3 }}</td>
           <td class="text-center nowrap">
             <button class="btn btn-sm btn-primary" (click)="onEditElement(element)"><i class="fa fa-pencil"></i></button>
-            <button class="btn btn-sm btn-danger" (click)="onRemoveElement(element)"><i class="fa fa-minus-circle"></i></button>
+            <button class="btn btn-sm btn-danger" (click)="onRemoveElement(element, i)" [ladda]="laddaDeletingElmts[i]">
+              <i class="fa fa-minus-circle"></i>
+            </button>
           </td>
         </tr>
       </tbody>
@@ -174,7 +174,7 @@
   </div>
 </div>
 
-<div bsModal class="modal fade " #addElementModal="bs-modal" role="dialog" aria-hidden="true" (onShow)="onEditProductModalShow('onShow', $event)">
+<div bsModal class="modal fade" #addElementModal="bs-modal" role="dialog" aria-hidden="true" (onShow)="onEditProductModalShow('onShow', $event)">
   <div class="modal-dialog" role="document" style="max-width:70%;">
     <div class="modal-content">
       <div class="modal-header">
@@ -194,7 +194,7 @@
               <div class="card-body">
                 <div class="row">
                   <div class="col-md-5">
-                    <p>Component family</p>
+                    <p>{{'Component family'|translate}}</p>
                   </div>
                   <div class="col-md-7">
                     <ng-select class="bootstrap" [allowClear]="true" name="compfamily"></ng-select>
@@ -203,7 +203,7 @@
                 <br>
                 <div class="row">
                   <div class="col-md-5">
-                    <p>Sub family</p>
+                    <p>{{'Sub family'|translate}}</p>
                   </div>
                   <div class="col-md-7">
                     <ng-select class="bootstrap" [allowClear]="true" name="subfamily"></ng-select>
@@ -212,7 +212,7 @@
                 <br>
                 <div class="row">
                   <div class="col-md-5">
-                    <p>Water percenttage</p>
+                    <p>{{'Water percenttage'|translate}}</p>
                   </div>
                   <div class="col-md-7">
                     <ng-select class="bootstrap" [allowClear]="true" name="waterpercent"></ng-select>
@@ -221,14 +221,30 @@
               </div>
             </div>
           
-            <div class="card">
+            <div class="card" *ngIf="components">
+              <div class="card-header">
+                &nbsp;
+                <div>
+                  <div class="input-group input-group-sm" id="components-search-box">
+                    <input type="text" class="form-control" [(ngModel)]="filterString" placeholder="{{'Search'|translate}}" />
+                    <span>
+                      <i class="fa fa-search" aria-hidden="true"></i>
+                    </span>
+                  </div>
+                </div>
+              </div>
               <div class="list-group">
                 <perfect-scrollbar style="max-height: 250px">
                   <div class="list-group">
-                    <a *ngFor="let component of components" class="list-group-item list-group-item-action" 
+                    <a *ngFor="let component of (components.active | compFilter: filterString)" class="list-group-item list-group-item-action" 
                       style="height:30px; padding: 5px 10px;"  [ngClass]="component == selectedAddingElement? 'active' : ''" 
                       (click)="onSelectAddingElement(component)">
-                      <p>{{ 'components.' + component.ID_COMP.toString() | translate }}</p>
+                      <p>{{ 'components.' + component.ID_COMP.toString() | translate }} - {{component.COMP_VERSION}}</p>
+                    </a>
+                    <h6 class="dropdown-header text-center" *ngIf="components.sleeping">{{'--------------- SLEEPING COMPONENTS ---------------'|translate}}</h6>
+                    <a *ngFor="let component of (components.sleeping | compFilter: filterString)" class="list-group-item list-group-item-action" style="height:30px; padding: 5px 10px;"
+                      [ngClass]="component == selectedAddingElement? 'active' : ''" (click)="onSelectAddingElement(component)">
+                      <p>{{'SCD:'|translate}} {{ 'components.' + component.ID_COMP.toString() | translate }} - {{component.COMP_VERSION}}</p>
                     </a>
                   </div>
                 </perfect-scrollbar>
@@ -279,8 +295,10 @@
       </div>
       <div class="modal-footer">
         <button class="btn btn-secondary btn-sm" (click)="editCompModal.hide()">{{'Cancel'|translate}}</button>
-        <button class="btn btn-primary btn-sm">{{'Update'|translate}}</button>
+        <button class="btn btn-primary btn-sm" (click)="updateProductElement()" [ladda]="laddaUpdateElement">{{'Update'|translate}}</button>
       </div>
     </div>
   </div>
 </div>
+
+<app-spinner *ngIf="isLoading"></app-spinner>

@@ -4,10 +4,29 @@
       <div class="card" id="study-list-card">
         <div class="card-header">
           <strong>{{'STUDIES'|translate}}</strong>
+          <div id="study-search-box-container">
+            <div class="input-group input-group-sm" id="study-search-box">
+              <input type="text" class="form-control" [(ngModel)]="filterString" placeholder="{{'Search'|translate}}" />
+              <span>
+                <i class="fa fa-search" aria-hidden="true"></i>
+              </span>
+            </div>
+          </div>
         </div>
         <perfect-scrollbar style="max-height: 500px;">
-          <div class="list-group">
-            <a *ngFor="let study of studies" class="list-group-item list-group-item-action" [ngClass]="study == selectedStudy? 'active' : ''" (click)="onSelect(study)">
+          <div class="list-group" *ngIf="studies">
+            <!-- mine -->
+            <h6 class="dropdown-header">MINE</h6>
+            <a *ngFor="let study of (studies.mine | filter: filterString)" class="list-group-item list-group-item-action" [ngClass]="study == selectedStudy? 'active' : ''" (click)="onSelect(study)">
+              <div class="d-flex w-100 justify-content-between">
+                {{study.STUDY_NAME}}
+                <small>{{study.USERNAM}}</small>
+              </div>
+            </a>
+            <!-- others -->
+            <h6 class="dropdown-header">OTHER</h6>
+            <a *ngFor="let study of (studies.others | filter: filterString)" class="list-group-item list-group-item-action" [ngClass]="study == selectedStudy? 'active' : ''"
+              (click)="onSelect(study)">
               <div class="d-flex w-100 justify-content-between">
                 {{study.STUDY_NAME}}
                 <small>{{study.USERNAM}}</small>
@@ -68,7 +87,7 @@
                 <th colspan="2">Comment</th>              
               </tr>
               <tr>
-                <td colspan="2">{{ selectedStudy.COMMENT_TXT }}</td>
+                <td colspan="2" [innerHTML]="selectedStudy.COMMENT_TXT | nl2br"></td>
               </tr>
                
             </table>
@@ -76,10 +95,10 @@
         </div>
           
         <div class="card-footer text-center" *ngIf="selectedStudy">
-          <button type="button" class="btn btn-danger"><i class="fa fa-trash-o"></i> Delete</button>
-            <button type="button" class="btn btn-info"><i class="fa fa-chain"></i> Chaining</button>
-            <button type="button" class="btn btn-secondary"><i class="fa fa-copy"></i> Save As</button>
-            <button type="button" class="btn btn-primary" (click)="openStudy()"><i class="fa fa-folder-open-o"> </i>Open</button>
+          <button type="button" class="btn btn-danger" (click)="deleteStudy()" [ladda]="laddaDeletingStudy"><i class="fa fa-trash-o"></i> {{'Delete'|translate}}</button>
+            <button type="button" class="btn btn-info" (click)="chainStudy()"><i class="fa fa-chain"></i> {{'Chaining'|translate}}</button>
+            <button type="button" class="btn btn-secondary" (click)="saveStudyAs()"><i class="fa fa-copy"></i> {{'Save As'|translate}}</button>
+            <button type="button" class="btn btn-primary" (click)="openStudy()" [ladda]="laddaOpeningStudy"><i class="fa fa-folder-open-o"></i> {{'Open'|translate}}</button>
         </div>
       </div>
     </div>

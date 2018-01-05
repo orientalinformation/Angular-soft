@@ -25,7 +25,7 @@ export class ProfileLayoutComponent implements OnInit {
     {
       name: 'Back',
       url: '/home',
-      icon: 'icon-home',
+      icon: 'icon-action-undo',
     }
   ];
 

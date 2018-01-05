@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container" *ngIf="!isLoading">
   <div class="card" *ngIf="calculationparametersdef">
     <div class="card-header">
       <strong>{{'Seized condition'|translate}}</strong>
@@ -345,9 +345,11 @@
       </div>
     </div>
     <div class="card-footer text-center">
-      <button type="button" class="btn btn-success" (click)="saveMyCalculationParametersDef()">{{'Save'|translate}}</button>
+      <button type="button" class="btn btn-success" (click)="saveMyCalculationParametersDef()" [ladda]="laddaSavingcalculation">
+        <i class="fa fa-floppy-o" aria-hidden="true"></i> {{'Save'|translate}}</button>
     </div>
     <!-- /.card-footer -->
   </div>
   <!-- /.card -->
 </div>
+<app-spinner *ngIf="isLoading"></app-spinner>

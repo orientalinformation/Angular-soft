@@ -8,6 +8,7 @@ import { NgxLocalizedNumbers } from 'ngx-localized-numbers';
 import { NgxLocalizedNumbersService } from 'ngx-localized-numbers';
 import { FormsModule, FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { LaddaModule } from 'angular2-ladda';
+import { AppSpinnerComponent } from '../components';
 
 
 @NgModule({
@@ -22,7 +23,7 @@ import { LaddaModule } from 'angular2-ladda';
     ReactiveFormsModule,
     NgxLocalizedNumbers.forRoot()
   ],
-  declarations: [],
+  declarations: [AppSpinnerComponent],
   providers: [
     StatusService,
     TextService,
@@ -36,7 +37,8 @@ import { LaddaModule } from 'angular2-ladda';
     NgxLocalizedNumbers,
     ReactiveFormsModule,
     FormsModule,
-    LaddaModule
+    LaddaModule,
+    AppSpinnerComponent
   ]
 })
 export class SharedModule { }

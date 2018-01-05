@@ -5,9 +5,27 @@ import 'rxjs/add/operator/do';
 import { map } from 'rxjs/operators/map';
 import { ApiService } from '../../../api/services';
 import { error } from 'selenium-webdriver';
-import { Study } from '../../../api/models';
+import { Study, ViewOpenStudy } from '../../../api/models';
 import { IOption } from 'ng-select';
 import { Router } from '@angular/router';
+import { Pipe } from '@angular/core';
+import { PipeTransform } from '@angular/core';
+
+import swal from 'sweetalert2';
+
+@Pipe({ name: 'filter' })
+export class FilterPipe implements PipeTransform {
+  public transform(values: Study[], filter: string): any[] {
+    if (!values || !values.length) {
+      return [];
+    }
+    if (!filter) {
+      return values;
+    }
+
+    return values.filter(v => v.STUDY_NAME.toLowerCase().indexOf(filter.toLowerCase()) >= 0);
+  }
+}
 
 @Component({
   selector: 'app-open-study',
@@ -15,7 +33,7 @@ import { Router } from '@angular/router';
   styleUrls: ['./open-study.component.scss']
 })
 export class OpenStudyComponent implements OnInit, AfterViewInit {
-  public studies: Study[];
+  public studies: ViewOpenStudy;
 
   public selectedStudy: Study = null;
 
@@ -24,6 +42,10 @@ export class OpenStudyComponent implements OnInit, AfterViewInit {
   public filterCompSubFamilies: Array<IOption> = [];
   public filterComponents: Array<IOption> = [];
 
+  public filterString = '';
+  public laddaOpeningStudy = false;
+  public laddaDeletingStudy = false;
+
   constructor(private api: ApiService, private router: Router) { }
 
   ngOnInit() {
@@ -31,10 +53,17 @@ export class OpenStudyComponent implements OnInit, AfterViewInit {
 
   openStudy() {
     localStorage.setItem('study', JSON.stringify(this.selectedStudy));
+    this.laddaOpeningStudy = true;
     this.api.openStudy(this.selectedStudy.ID_STUDY)
       .subscribe(
         data => {
           this.router.navigate(['/input']);
+        },
+        err => {
+
+        },
+        () => {
+          this.laddaOpeningStudy = false;
         }
       );
   }
@@ -44,24 +73,55 @@ export class OpenStudyComponent implements OnInit, AfterViewInit {
     this.selectedStudy = study;
   }
 
-  ngAfterViewInit() {
-    console.log('open study initializing');
+  refrestListStudies() {
     localStorage.removeItem('study');
     this.selectedStudy = null;
-    this.api.findStudies(true)
+    this.api.findStudies()
       .subscribe(
-        data => {
-          // console.log('get studies response:');
-          // console.log(data);
-          this.studies = data;
-        },
-        err => {
-          console.log(err);
-        },
-        () => {
-          // console.log('find sttudies completed');
-        }
+      data => {
+        // console.log('get studies response:');
+        // console.log(data);
+        this.studies = data;
+      },
+      err => {
+        console.log(err);
+      },
+      () => {
+        // console.log('find sttudies completed');
+      }
       );
+  }
+
+  ngAfterViewInit() {
+    console.log('open study initializing');
+    this.refrestListStudies();
+  }
+
+  deleteStudy() {
+    this.laddaDeletingStudy = true;
+    this.api.deleteStudyById(this.selectedStudy.ID_STUDY).subscribe(
+      data => {
+        console.log(data);
+        this.laddaDeletingStudy = false;
+        this.refrestListStudies();
+      },
+      err => {
+        this.laddaDeletingStudy = false;
+        console.log(err);
+      },
+      () => {
+        this.laddaDeletingStudy = false;
+      }
+    );
+  }
+
+  chainStudy() {
+    swal('Warning', 'This feature is under development!', 'warning');
+
+  }
+
+  saveStudyAs() {
+    swal('Warning', 'This feature is under developmente!', 'warning');
   }
 
 

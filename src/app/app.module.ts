@@ -1,4 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+
+
 import { NgModule } from '@angular/core';
 
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
@@ -21,7 +24,7 @@ import { SelectModule } from 'ng-select';
 import { ProfileModule } from './views/profile/profile.module';
 import { ReferencesModule } from './views/references/references.module';
 import { SettingsModule } from './views/settings/settings.module';
-
+import { AdminModule } from './views/admin/admin.module';
 import { ProfileLayoutComponent } from './layouts/profile-layout/profile-layout.component';
 
 // Import components
@@ -151,6 +154,8 @@ import { jqxWindowComponent } from 'jqwidgets-framework/jqwidgets-ts/angular_jqx
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { AuthenticationModule } from './authentication/authentication.module';
+import { ToastrModule, ToastrService } from 'ngx-toastr';
+import { AdminLayoutComponent } from './layouts/admin-layout/admin-layout.component';
 
 // AoT requires an exported function for factories
 export function HttpLoaderFactory(http: HttpClient) {
@@ -235,11 +240,13 @@ export function HttpLoaderFactory(http: HttpClient) {
     jqxTreeMapComponent,
     jqxValidatorComponent,
     jqxWindowComponent,
-    ProfileLayoutComponent
+    ProfileLayoutComponent,
+    AdminLayoutComponent
   ],
   imports: [
     AppRoutingModule,
     BrowserModule,
+    BrowserAnimationsModule,
     SelectModule,
     HttpClientModule,
     ChartsModule,
@@ -255,6 +262,12 @@ export function HttpLoaderFactory(http: HttpClient) {
         useFactory: HttpLoaderFactory,
         deps: [HttpClient]
       }
+    }),
+    ToastrModule.forRoot({
+      timeOut: 4000,
+      positionClass: 'toast-top-center',
+      progressBar: true,
+      preventDuplicates: true
     })
   ],
   providers: [
@@ -263,6 +276,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     NoStudyGuard,
     StatusService,
     HttpClientModule,
+    ToastrService
   ],
   bootstrap: [AppComponent]
 })

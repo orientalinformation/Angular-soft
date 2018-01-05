@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { TempRecordPtsDef } from '../../../api/models/temp-record-pts-def';
 import { ApiService } from '../../../api/services';
 import { AfterViewInit } from '@angular/core';
+import swal from 'sweetalert2';
 
 @Component({
   selector: 'app-result',
@@ -10,13 +11,17 @@ import { AfterViewInit } from '@angular/core';
 })
 export class ResultComponent implements OnInit, AfterViewInit {
   public temprecordptsdef: TempRecordPtsDef;
+  public laddaSavingResult = false;
+  public isLoading = false;
 
   constructor(private api: ApiService) { }
 
   ngOnInit() {
+    this.isLoading = true;
   }
 
   ngAfterViewInit() {
+    this.isLoading = true;
     this.api.getMyTempRecordPtsDef().subscribe(
       data => {
         data.AXIS1_PT_TOP_SURF_DEF = Number(Number(data.AXIS1_PT_TOP_SURF_DEF).toPrecision(3));
@@ -46,11 +51,13 @@ export class ResultComponent implements OnInit, AfterViewInit {
 
         this.temprecordptsdef = data;
         console.log(data);
+        this.isLoading = false;
       }
     );
   }
 
   saveMyTempRecordPtsDef() {
+    this.laddaSavingResult = true;
     this.api.saveMyTempRecordPtsDef({
       axis1TopSurf: Number(this.temprecordptsdef.AXIS1_PT_TOP_SURF_DEF),
       axis2TopSurf: Number(this.temprecordptsdef.AXIS2_PT_TOP_SURF_DEF),
@@ -73,9 +80,13 @@ export class ResultComponent implements OnInit, AfterViewInit {
     }).subscribe(
       response => {
         console.log(response);
+        swal('Success', 'Save result setting completed', 'success');
       },
       err => {
+      },
+      () => {
+        this.laddaSavingResult = false;
       }
-      );
+    );
   }
 }

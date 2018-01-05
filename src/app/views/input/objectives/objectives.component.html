@@ -1,9 +1,9 @@
-<div class="container">
+<div class="container" *ngIf="!isLoading">
 
     <div class="card" *ngIf="study">
       <div class="card-header">
         <strong>{{'CALCULATION MODE'|translate}}</strong>
-        <button type="button" class="btn btn-sm btn-success float-right" (click)="saveStudy()">Save</button>
+        <button type="button" class="btn btn-sm btn-success float-right" (click)="saveStudy()" [ladda]="laddaSavingStudy">Save</button>
       </div>
       <div class="card-body">
         <div class="row">
@@ -11,7 +11,7 @@
             <div class="form-check">
               <label class="form-check-label">
                 <label class="switch switch-icon switch-pill switch-primary">
-                  <input type="radio" class="switch-input" name="calculation_mode" id="calc-mode-1" [checked]="study.CALCULATION_MODE == 1">
+                  <input type="radio" class="switch-input" [(ngModel)]="study.CALCULATION_MODE" value="1" [checked]="study.CALCULATION_MODE == 1">
                   <span class="switch-label" data-on="&#xf00c;" data-off="&#xf00d;"></span>
                   <span class="switch-handle"></span>
                 </label>
@@ -21,7 +21,7 @@
             <div class="form-check">
               <label class="form-check-label">
                 <label class="switch switch-icon switch-pill switch-primary">
-                  <input type="radio" class="switch-input" name="calculation_mode" id="calc-mode-2" [checked]="study.CALCULATION_MODE == 3">
+                  <input type="radio" class="switch-input" [(ngModel)]="study.CALCULATION_MODE" value="3" [checked]="study.CALCULATION_MODE == 3">
                   <span class="switch-label" data-on="&#xf00c;" data-off="&#xf00d;"></span>
                   <span class="switch-handle"></span>
                 </label>
@@ -31,7 +31,7 @@
             <div class="form-check">
               <label class="form-check-label">
                 <label class="switch switch-icon switch-pill switch-primary">
-                  <input type="radio" class="switch-input" name="calculation_mode" id="calc-mode-3" [checked]="study.CALCULATION_MODE == 2">
+                  <input type="radio" class="switch-input" [(ngModel)]="study.CALCULATION_MODE" value="2" [checked]="study.CALCULATION_MODE == 2">
                   <span class="switch-label" data-on="&#xf00c;" data-off="&#xf00d;"></span>
                   <span class="switch-handle"></span>
                 </label>
@@ -89,7 +89,7 @@
     <div class="card" *ngIf="production">
       <div class="card-header">
         <strong>{{'PRODUCTION DUTY CYCLE'|translate}}</strong>
-        <button type="button" class="btn btn-sm btn-success float-right">Save</button>
+        <button type="button" class="btn btn-sm btn-success float-right" (click)="saveProduction()" [ladda]="laddaSavingProduction">Save</button>
       </div>
       <div class="card-body">
         <div class="row">
@@ -174,3 +174,5 @@
       </div><!-- /.card-body -->
     </div><!-- /.card -->
 </div><!-- #/container -->
+
+<app-spinner *ngIf="isLoading"></app-spinner>

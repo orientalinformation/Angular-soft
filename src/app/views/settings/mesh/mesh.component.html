@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container" *ngIf="!isLoading">
   <div class="card">
     <div class="card-header">
       <strong>{{'Default Mesh sizes (irregular mode)'|translate}}</strong>
@@ -44,9 +44,11 @@
     </div>
     <!-- /.card-body -->
     <div class="card-footer text-center">
-      <button type="button" class="btn btn-success" (click)="saveMyMeshParamDef()">{{'Save'|translate}}</button>
+      <button type="button" class="btn btn-success" (click)="saveMyMeshParamDef()" [ladda]="laddaSavingMesh">
+        <i class="fa fa-floppy-o" aria-hidden="true"></i> {{'Save'|translate}}</button>
     </div>
     <!-- /.card-footer -->
   </div>
   <!-- /.card -->
 </div>
+<app-spinner *ngIf="isLoading"></app-spinner>

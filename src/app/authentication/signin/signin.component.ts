@@ -4,6 +4,8 @@ import { Login } from '../../api/models/login';
 import { Router } from '@angular/router';
 
 import swal from 'sweetalert2';
+import { ToastrService } from 'ngx-toastr';
+import { TextService } from '../../shared/text.service';
 
 @Component({
   selector: 'app-signin',
@@ -13,7 +15,7 @@ import swal from 'sweetalert2';
 export class SigninComponent implements OnInit {
   user: Login = new Login();
 
-  constructor(private auth: AuthenticationService, private router: Router) { }
+  constructor(private auth: AuthenticationService, private router: Router, private toastr: ToastrService, private text: TextService) { }
 
   ngOnInit() {
   }
@@ -23,6 +25,7 @@ export class SigninComponent implements OnInit {
       .subscribe(
         data => {
           console.log('User is logged in');
+          this.toastr.success('Welcome back', 'Authenticated successfully');
           this.router.navigate(['/']);
         },
         error => {
@@ -30,6 +33,10 @@ export class SigninComponent implements OnInit {
           swal('Oops...', 'Logged in failed', 'error');
         }
       );
+  }
+
+  forgotPassword() {
+    swal('Forgot password?', 'Please contact our Administrator', 'warning');
   }
 
 }

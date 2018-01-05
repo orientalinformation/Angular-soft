@@ -8,6 +8,8 @@ import { PackingElement } from '../../../api/models/packing-element';
 import { Router } from '@angular/router';
 import { ViewProduct } from '../../../api/models/view-product';
 import swal from 'sweetalert2';
+import { ToastrService } from 'ngx-toastr';
+import { TextService } from '../../../shared/text.service';
 
 @Component({
   selector: 'app-packing',
@@ -36,11 +38,15 @@ export class PackingComponent implements OnInit, AfterContentChecked, AfterViewI
   public packingView: ViewPackingLayer;
   public productView: ViewProduct;
 
-  constructor(private api: ApiService, private router: Router) {
+  public laddaSavingPacking = false;
+
+  constructor(private api: ApiService, private router: Router, private toastr: ToastrService, public text: TextService) {
     this.topNrLayer = 0;
     this.sideNrLayer = 0;
     this.bottomNrLayer = 0;
   }
+
+  public isLoading = true;
 
   ngOnInit() {
   }
@@ -49,30 +55,37 @@ export class PackingComponent implements OnInit, AfterContentChecked, AfterViewI
     this.study = JSON.parse(localStorage.getItem('study'));
     this.api.getStudyPackingLayers(this.study.ID_STUDY).subscribe (
       (response: ViewPackingLayer) => {
-        this.packingView = response;
+        if (response.packing && response.packingLayers) {
+          this.packingView = response;
 
-        this.packingView.packingLayers.forEach(layer => {
-          switch (Number(layer.PACKING_SIDE_NUMBER)) {
-            case 1:
-              this.topLayers.push(layer);
-              break;
+          this.packingView.packingLayers.forEach(layer => {
+            switch (Number(layer.PACKING_SIDE_NUMBER)) {
+              case 1:
+                this.topLayers.push(layer);
+                break;
 
-            case 2:
-              this.sideLayers.push(layer);
-              break;
+              case 2:
+                this.sideLayers.push(layer);
+                break;
 
-            case 3:
-              this.bottomLayers.push(layer);
-              break;
-          }
-        });
+              case 3:
+                this.bottomLayers.push(layer);
+                break;
+            }
+          });
 
-        this.packingName = this.packingView.packing.NOMEMBMAT;
+          this.packingName = this.packingView.packing.NOMEMBMAT;
 
-        this.topNrLayer = this.topLayers.length;
-        this.sideNrLayer = this.sideLayers.length;
-        this.bottomNrLayer = this.bottomLayers.length;
-        console.log(response);
+          this.topNrLayer = this.topLayers.length;
+          this.sideNrLayer = this.sideLayers.length;
+          this.bottomNrLayer = this.bottomLayers.length;
+        }
+      },
+      err => {
+
+      },
+      () => {
+        this.isLoading = false;
       }
     );
 
@@ -91,6 +104,7 @@ export class PackingComponent implements OnInit, AfterContentChecked, AfterViewI
     if (this.productShape == 0 || !this.productView.elements || this.productView.elements.length == 0) {
       swal('Oops..', 'Please define product first', 'error');
       this.router.navigate(['/input/product']);
+      return;
     }
     this.imgSrc = this.shapeImgShim(JSON.parse(localStorage.getItem('shapes'))[this.productShape - 1].SHAPEPICT);
   }
@@ -99,12 +113,48 @@ export class PackingComponent implements OnInit, AfterContentChecked, AfterViewI
     return '/assets/img/packing/pack_' + shapePict.split('/').pop().split('.').shift().substr(5) + '.jpg';
   }
 
+  private getTopLabel(shapeCode: number) {
+    switch (shapeCode) {
+      case this.text.shapeNames.SPHERE:
+        return 'All around';
+      case this.text.shapeNames.CYL_LAY:
+      case this.text.shapeNames.CON_CYL_LAY:
+        return 'Side';
+    }
+    return 'Top';
+  }
+
+  private getSideLabel(shapeCode: number) {
+    switch (shapeCode) {
+      case this.text.shapeNames.REC_LAY:
+      case this.text.shapeNames.REC_STAND:
+      case this.text.shapeNames.BREAD:
+        return '4 Sides';
+
+      case this.text.shapeNames.CYL_LAY:
+      case this.text.shapeNames.CON_CYL_LAY:
+        return 'Rear';
+    }
+
+    return 'Side';
+  }
+
+  private getBottomLabel(shapeCode: number) {
+    switch (shapeCode) {
+      case this.text.shapeNames.CYL_LAY:
+      case this.text.shapeNames.CON_CYL_LAY:
+        return 'Rear';
+    }
+    return 'Bottom';
+  }
+
   savePacking() {
     if (!this.packingName) {
-      swal('Shit..', 'Please input packing name', 'error');
-      // Thickness checking
+      swal('Oops', 'Please input packing name', 'error');
+      return;
     }
-    let updateParams = {
+    this.laddaSavingPacking = true;
+    const updateParams = {
       id: this.study.ID_STUDY,
       body: {
         packing: {
@@ -146,7 +196,8 @@ export class PackingComponent implements OnInit, AfterContentChecked, AfterViewI
 
     this.api.savePacking(updateParams).subscribe(
       response => {
-
+        this.laddaSavingPacking = false;
+        this.toastr.success('Product packing specification saved.', 'Success');
       },
       err => {
 

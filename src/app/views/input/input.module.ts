@@ -4,7 +4,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 import { InputRoutingModule } from './input-routing.module';
 import { ObjectivesComponent } from './objectives/objectives.component';
-import { ProductComponent } from './product/product.component';
+import { ProductComponent, CompFilterPipe } from './product/product.component';
 import { InitialComponent } from './initial/initial.component';
 import { PackingComponent } from './packing/packing.component';
 import { EquipmentComponent } from './equipment/equipment.component';
@@ -40,7 +40,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   declarations: [
     ObjectivesComponent, ProductComponent, InitialComponent,
     PackingComponent, EquipmentComponent, LineComponent, LayoutComponent,
-    jqxGridComponent
+    jqxGridComponent, CompFilterPipe
   ],
   providers: [
     StudyRequiredGuard

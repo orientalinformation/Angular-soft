@@ -1,0 +1,694 @@
+<div class="container">
+
+  <div class="card product-container">
+    <div class="card-header text-center">
+        <div class="btn-group" role="group">
+          <button class="btn btn-outline-primary btn-sm" [class.active]="activePageComponent == 'new'" (click)="openNewComponent()">{{ 'New'|translate }}</button>
+          <button class="btn btn-outline-primary btn-sm" [class.active]="activePageComponent == 'open'" (click)="openOpenComponent()">{{ 'Open'|translate }}</button>
+          <button class="btn btn-outline-primary btn-sm" [class.active]="activePageComponent == 'gen'" (click)="openDataGenerateComponent()">{{ 'Data generated'|translate }}</button>
+        </div>
+    </div>
+    <div class="card-body">
+      <div style="margin-top:10px;display:block" id="page-new-component">
+        <div class="card">
+            <div class="card-header">
+                <strong>{{ 'DESCRIPTION'|translate }}</strong>
+            </div>
+            <div class="card-body">
+                <div class="row col-md-12" style="margin-top: 10px;">
+                    <div class="col-md-6">
+                            <div class="form-group row">
+                                <label class="col-md-3 col-form-label" for="text-input">{{ 'Name'|translate }}</label>
+                                <div class="col-md-5">
+                                    <input type="text" id="text-input" name="text-input" class="form-control">
+                                </div>
+                                <label class="col-md-2 col-form-label" for="text-input">{{ 'Version'|translate }}</label>
+                                <div class="col-md-2">
+                                    <input type="text" id="text-input" name="text-input" class="form-control" placeholder="0.0">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-md-3 col-form-label" for="text-input">{{ 'Comment'|translate }}</label>
+                                <div class="col-md-9">
+                                    <textarea type="text" id="text-input" name="text-input" class="form-control"></textarea>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-md-8 col-form-label" for="text-input"><a href="#/references/component" (click)="modalFreezetemper.show()">{{ 'Freeze temperature'|translate }} </a></label>
+                                <div class="col-md-4">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" placeholder="0.00">
+                                        <span class="input-group-addon"><small><sup>o</sup>C</small></span>
+                                    </div>
+                                </div>
+                            </div>
+                    </div>
+                    <div class="col-md-6">
+                            <div class="row form-group">
+                                <label class="col-md-4 col-form-label">{{ 'Product family'|translate }}</label>
+                                <div class="col-md-8">
+                                    <select class="form-control" >
+                                        <option >None</option>
+                                        <option >option 1</option>
+                                        <option >option 1</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row form-group">
+                                <label class="col-md-4 col-form-label">{{ 'Sub family'|translate }}</label>
+                                <div class="col-md-8">
+                                    <select class="form-control" >
+                                        <option >None</option>
+                                        <option >option 1</option>
+                                        <option >option 1</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row form-group">
+                                <label class="col-md-4 col-form-label">{{ 'Product nature'|translate }}</label>
+                                <div class="col-md-8">
+                                    <select class="form-control" >
+                                        <option >None</option>
+                                        <option >option 1</option>
+                                        <option >option 1</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row form-group">
+                                <label class="col-md-4 col-form-label">{{ 'Conductivity'|translate }}</label>
+                                <div class="col-md-8">
+                                    <select class="form-control" >
+                                        <option >None</option>
+                                        <option >option 1</option>
+                                        <option >option 1</option>
+                                    </select>
+                                </div>
+                            </div>
+                    </div>
+                </div>
+                <div class="row col-md-12">
+                    <div class="col-md-7">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group row">
+                                        <label class="col-md-6 col-form-label" for="text-input">{{ 'Water'|translate }}</label>
+                                        <div class="col-md-6">
+                                          <div class="input-group">
+                                            <input type="text" id="text-input" name="text-input" class="form-control" placeholder="0.00">
+                                            <span class="input-group-addon"><small>%</small></span>
+                                          </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-md-6 col-form-label" for="text-input">{{ 'Protein & dry material'|translate }}</label>
+                                        <div class="col-md-6">
+                                          <div class="input-group">
+                                            <input type="text" id="text-input" name="text-input" class="form-control" placeholder="0.00">
+                                            <span class="input-group-addon"><small>%</small></span>
+                                          </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-md-6 col-form-label" for="text-input">{{ 'Lipid'|translate }}</label>
+                                        <div class="col-md-6">
+                                            <div class="input-group">
+                                                <input type="text" id="text-input" name="text-input" class="form-control" placeholder="0.00">
+                                                <span class="input-group-addon"><small>%</small></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group row">
+                                        <label class="col-md-6 col-form-label" for="text-input">{{ 'Glucid'|translate }}</label>
+                                        <div class="col-md-6">
+                                            <div class="input-group">
+                                                <input type="text" id="text-input" name="text-input" class="form-control" placeholder="0.00">
+                                                <span class="input-group-addon"><small>%</small></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-md-6 col-form-label" for="text-input">{{ 'Salt'|translate }}</label>
+                                        <div class="col-md-6">
+                                            <div class="input-group">
+                                                <input type="text" id="text-input" name="text-input" class="form-control" placeholder="0.00">
+                                                <span class="input-group-addon"><small>%</small></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-md-6 col-form-label" for="text-input">{{ 'Air (volume)'|translate }}'</label>
+                                        <div class="col-md-6">
+                                            <div class="input-group">
+                                                <input type="text" id="text-input" name="text-input" class="form-control" placeholder="0.00">
+                                                <span class="input-group-addon"><small>%</small></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                    </div>
+                    <div class="col-md-5">
+                            <div class="form-group row">
+                                <label class="col-md-6 col-form-label" for="text-input">{{ 'Unfreezable water'|translate }}</label>
+                                <div class="col-md-6">
+                                    <div class="input-group">
+                                        <input type="text" id="text-input" name="text-input" class="form-control" placeholder="0.00">
+                                        <span class="input-group-addon"><small>%</small></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-md-6 col-form-label" for="text-input">{{ 'Fat type'|translate }}</label>
+                                <div class="col-md-6">
+                                    <select class="form-control" >
+                                        <option >None</option>
+                                        <option >option 1</option>
+                                        <option >option 1</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-md-6"></div>
+                                <div class="col-md-6">
+                                    <div class="input-group" align="center">
+                                        <input type="text" id="text-input" name="text-input" class="form-control" placeholder="0.00">
+                                        <span class="input-group-addon"><small>%</small></span>
+                                    </div>
+                                </div>
+                            </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <strong>{{ 'STATUS'|translate }}</strong>
+            </div>
+            <div class="row card-status">
+                <div class="col-md-2" align="center" >
+                    <label class="custom-control custom-radio" >
+                      <input type="radio" class="custom-control-input" name="statusComp" checked>{{ 'Draft'|translate }}
+                      <span class="custom-control-indicator"></span>
+                    </label>
+                </div>
+                <div class="col-md-2" align="center" >
+                    <label class="custom-control custom-radio" >
+                      <input type="radio" class="custom-control-input" name="statusComp" >{{ 'Test'|translate }}
+                      <span class="custom-control-indicator"></span>
+                    </label>
+                </div>
+                <div class="col-md-2" align="center" >
+                    <label class="custom-control custom-radio" >
+                      <input type="radio" class="custom-control-input" name="statusComp">{{ 'Active'|translate }}
+                      <span class="custom-control-indicator"></span>
+                    </label>
+                </div>
+                <div class="col-md-2" align="center" >
+                    <label class="custom-control custom-radio" >
+                        <input type="radio" class="custom-control-input" name="statusComp" >{{ 'Certified'|translate }}
+                        <span class="custom-control-indicator"></span>
+                    </label>
+                </div>
+                <div class="col-md-2" align="center" >
+                    <label class="custom-control custom-radio" >
+                        <input type="radio" class="custom-control-input" name="statusComp">{{ 'Obsolete'|translate }}
+                        <span class="custom-control-indicator"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <strong>{{ 'CALCULATION PARAMETER'|translate }}</strong>
+            </div>
+            <div class="card-body">
+                <table class="table table-bordered table-sm mb-0">
+                    <tr>
+                        <th style="vertical-align:middle;text-align:center">{{ 'Temperature'|translate }}(°C)</th>
+                        <th style="vertical-align:middle;text-align:center">{{ 'Action'|translate }}</th>
+                    </tr>
+                    <tr>
+                        <td align="center"style="vertical-align:middle">8.0</td>
+                        <td align="center" width="10%">
+                            <div style="margin-top:0.5em">
+                                <button type="button" class="btn btn-danger btn-sm"><i class="fa fa-minus-circle" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="center" style="vertical-align:middle">
+                            <input type="text" class="form-control col-md-6">
+                        </td>
+                        <td align="center">
+                            <div style="margin-top:0.5em">
+                                <button type="button" class="btn btn-success btn-sm">{{ 'Add'|translate }}</button>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="card-footer text-center">
+                <button type="button" class="btn btn-success"><i class="fa fa-floppy-o" aria-hidden="true"></i> {{ 'Save'|translate }}</button>
+            </div>
+        </div>
+      </div>
+
+      <div style="margin-top:10px;display:none" id="page-open-component">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="card">
+              <div class="card-header">
+                  <strong>{{ 'SELECTION'|translate }}</strong>
+              </div>
+              <div class="card-body">
+                <div class="form-group row">
+                  <label class="col-md-4 col-form-label" for="text-input">{{ 'Component family'|translate }}</label>
+                  <div class="col-md-8">
+                        <select class="form-control" >
+                          <option >None</option>
+                          <option >option 1</option>
+                          <option >option 1</option>
+                        </select>
+                  </div>
+                </div>
+                <div class="form-group row">
+                      <label class="col-md-4 col-form-label" for="text-input">{{ 'Sub Family'|translate }}	</label>
+                      <div class="col-md-8">
+                        <select class="form-control" >
+                          <option >None</option>
+                          <option >option 1</option>
+                          <option >option 1</option>
+                        </select>
+                      </div>
+                </div>
+                <div class="form-group row">
+                      <label class="col-md-4 col-form-label" for="text-input">{{ 'Water percentage'|translate }}</label>
+                      <div class="col-md-8">
+                        <select class="form-control" >
+                          <option >None</option>
+                          <option >option 1</option>
+                          <option >option 1</option>
+                        </select>
+                      </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                  <strong>{{ 'COMPONENT LIST'|translate }}</strong>
+                  <div id="study-search-box-container">
+                    <div class="input-group input-group-sm" id="study-search-box">
+                      <input type="text" class="form-control" placeholder="Search" />
+                      <span>
+                        <i class="fa fa-search" aria-hidden="true"></i>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div style="max-height: 300px;">
+                  <div class="list-group">
+                    <a class="list-group-item list-group-item-action">
+                      <div class="d-flex w-100 justify-content-between">
+                        A 1
+                      </div>
+                    </a>
+                    <a class="list-group-item list-group-item-action">
+                      <div class="d-flex w-100 justify-content-between">
+                        A 1
+                      </div>
+                    </a>
+                    <a class="list-group-item list-group-item-action">
+                      <div class="d-flex w-100 justify-content-between">
+                        A 1
+                      </div>
+                    </a>
+                  </div>
+                </div>
+              </div>
+          </div>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <strong>{{ 'DESCRIPTION'|translate }}</strong>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-md-3 col-form-label" for="text-input">{{ 'Name'|translate }}</label>
+                            <div class="col-md-5">
+                                <input type="text" id="text-input" name="text-input" class="form-control">
+                            </div>
+                            <label class="col-md-2 col-form-label" for="text-input">{{ 'Version'|translate }}</label>
+                            <div class="col-md-2">
+                                <input type="text" id="text-input" name="text-input" class="form-control" placeholder="0.0">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-md-3 col-form-label" for="text-input">{{ 'Comment'|translate }}</label>
+                            <div class="col-md-9">
+                                <textarea type="text" id="text-input" name="text-input" class="form-control"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-md-8 col-form-label" for="text-input"><a href="#/references/component" (click)="modalFreezetemper.show()">{{ 'Freeze temperature'|translate }} </a></label>
+                            <div class="col-md-4">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" placeholder="0.00">
+                                    <span class="input-group-addon"><small><sup>o</sup>C</small></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="row form-group">
+                            <label class="col-md-4 col-form-label">{{ 'Product family'|translate }}</label>
+                            <div class="col-md-8">
+                                <select class="form-control" >
+                                    <option >None</option>
+                                    <option >option 1</option>
+                                    <option >option 1</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row form-group">
+                            <label class="col-md-4 col-form-label">{{ 'Sub family'|translate }}</label>
+                            <div class="col-md-8">
+                                <select class="form-control" >
+                                    <option >None</option>
+                                    <option >option 1</option>
+                                    <option >option 1</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row form-group">
+                            <label class="col-md-4 col-form-label">{{ 'Product nature'|translate }}</label>
+                            <div class="col-md-8">
+                                <select class="form-control" >
+                                    <option >None</option>
+                                    <option >option 1</option>
+                                    <option >option 1</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row form-group">
+                            <label class="col-md-4 col-form-label">{{ 'Conductivity'|translate }}</label>
+                            <div class="col-md-8">
+                                <select class="form-control" >
+                                    <option >None</option>
+                                    <option >option 1</option>
+                                    <option >option 1</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-7">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group row">
+                                    <label class="col-md-6 col-form-label" for="text-input">{{ 'Water'|translate }}</label>
+                                    <div class="col-md-6">
+                                    <div class="input-group">
+                                        <input type="text" id="text-input" name="text-input" class="form-control" placeholder="0.00">
+                                        <span class="input-group-addon"><small>%</small></span>
+                                    </div>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-md-6 col-form-label" for="text-input">{{ 'Protein & dry material'|translate }}</label>
+                                    <div class="col-md-6">
+                                    <div class="input-group">
+                                        <input type="text" id="text-input" name="text-input" class="form-control" placeholder="0.00">
+                                        <span class="input-group-addon"><small>%</small></span>
+                                    </div>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-md-6 col-form-label" for="text-input">{{ 'Lipid'|translate }}</label>
+                                    <div class="col-md-6">
+                                        <div class="input-group">
+                                            <input type="text" id="text-input" name="text-input" class="form-control" placeholder="0.00">
+                                            <span class="input-group-addon"><small>%</small></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group row">
+                                    <label class="col-md-6 col-form-label" for="text-input">{{ 'Glucid'|translate }}</label>
+                                    <div class="col-md-6">
+                                        <div class="input-group">
+                                            <input type="text" id="text-input" name="text-input" class="form-control" placeholder="0.00">
+                                            <span class="input-group-addon"><small>%</small></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-md-6 col-form-label" for="text-input">{{ 'Salt'|translate }}</label>
+                                    <div class="col-md-6">
+                                        <div class="input-group">
+                                            <input type="text" id="text-input" name="text-input" class="form-control" placeholder="0.00">
+                                            <span class="input-group-addon"><small>%</small></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-md-6 col-form-label" for="text-input">{{ 'Air (volume)'|translate }}</label>
+                                    <div class="col-md-6">
+                                        <div class="input-group">
+                                            <input type="text" id="text-input" name="text-input" class="form-control" placeholder="0.00">
+                                            <span class="input-group-addon"><small>%</small></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="form-group row">
+                            <label class="col-md-6 col-form-label" for="text-input">{{ 'Unfreezable water'|translate }}</label>
+                            <div class="col-md-6">
+                                <div class="input-group">
+                                    <input type="text" id="text-input" name="text-input" class="form-control" placeholder="0.00">
+                                    <span class="input-group-addon"><small>%</small></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-md-6 col-form-label" for="text-input">{{ 'Fat type'|translate }}</label>
+                            <div class="col-md-6">
+                                <select class="form-control" >
+                                    <option >None</option>
+                                    <option >option 1</option>
+                                    <option >option 1</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-md-6"></div>
+                            <div class="col-md-6">
+                                <div class="input-group" align="center">
+                                    <input type="text" id="text-input" name="text-input" class="form-control" placeholder="0.00">
+                                    <span class="input-group-addon"><small>%</small></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <strong>{{ 'STATUS'|translate }}</strong>
+            </div>
+            <div class="row card-status">
+                    <div class="col-md-2" align="center" >
+                        <label class="custom-control custom-radio" >
+                        <input type="radio" class="custom-control-input" name="statusCompOpen" checked>{{ 'Draft'|translate }}
+                        <span class="custom-control-indicator"></span>
+                        </label>
+                    </div>
+                    <div class="col-md-2" align="center" >
+                        <label class="custom-control custom-radio" >
+                        <input type="radio" class="custom-control-input" name="statusCompOpen" >{{ 'Test'|translate }}
+                        <span class="custom-control-indicator"></span>
+                        </label>
+                    </div>
+                    <div class="col-md-2" align="center" >
+                        <label class="custom-control custom-radio" >
+                        <input type="radio" class="custom-control-input" name="statusCompOpen">{{ 'Active'|translate }}
+                        <span class="custom-control-indicator"></span>
+                        </label>
+                    </div>
+                    <div class="col-md-2" align="center" >
+                        <label class="custom-control custom-radio" >
+                            <input type="radio" class="custom-control-input" name="statusCompOpen" >{{ 'Certified'|translate }}
+                            <span class="custom-control-indicator"></span>
+                        </label>
+                    </div>
+                    <div class="col-md-2" align="center" >
+                        <label class="custom-control custom-radio" >
+                            <input type="radio" class="custom-control-input" name="statusCompOpen">{{ 'Obsolete'|translate }}
+                            <span class="custom-control-indicator"></span>
+                        </label>
+                    </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <strong>{{ 'CALCULATION PARAMETER'|translate }}</strong>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                        <table class="table table-bordered table-sm mb-0">
+                            <tr>
+                                <th style="vertical-align:middle;text-align:center">{{ 'Temperature'|translate }}(°C)</th>
+                                <th style="vertical-align:middle;text-align:center">{{ 'Action'|translate }}</th>
+                            </tr>
+                            <tr>
+                                <td align="center"style="vertical-align:middle">8.0</td>
+                                <td align="center" width="10%">
+                                    <div style="margin-top:0.5em">
+                                        <button type="button" class="btn btn-danger btn-sm"><i class="fa fa-minus-circle" aria-hidden="true"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align="center" style="vertical-align:middle">
+                                    <input type="text" class="form-control col-md-6">
+                                </td>
+                                <td align="center">
+                                    <div style="margin-top:0.5em">
+                                        <button type="button" class="btn btn-success btn-sm">{{ 'Add'|translate }}</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                </div>
+            </div>
+            <div class="card-footer text-center">
+                <button type="button" class="btn btn-warning"><i class="fa fa-calculator"></i> {{ 'Calculate'|translate }}</button>
+                <button type="button" class="btn btn-danger" (click)="modalDeleteComponent.show()"><i class="fa fa-trash-o"></i> {{ 'Delete'|translate }}</button>
+                <button type="button" class="btn btn-secondary" (click)="modalSaveAsComponent.show()"><i class="fa fa-copy"></i> {{ 'Save as'|translate }}</button>
+            </div>
+        </div>
+      </div>
+
+      <div style="margin-top:10px;display:none" id="page-datagenerated-component">
+        <table class="table table-bordered table-sm mb-0" >
+            <tr>
+                <td align="center">{{ 'Temperature'|translate }} (°C)</td>
+                <td align="center">{{ 'Enthalpy'|translate }} (kj/kg)</td>
+                <td align="center">{{ 'Conductivity'|translate }} (W/(m.°C))</td>
+                <td align="center">{{ 'Density'|translate }} (kg/ m³)</td>
+            </tr>
+            <tr>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+        </table>
+      </div>
+
+    </div>
+  </div>
+</div>
+<!-- Modal -->
+<div bsModal class="modal fade" #modalFreezetemper="bs-modal" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              {{ 'Freeze temperature'|translate }}
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="modalFreezetemper.hide()">
+                <span aria-hidden="true">×</span>
+              </button>
+            </div>
+            <div class="modal-body row">
+                <div class="col-md-12" align="center">
+                    <strong style="color: #FF6633;">{{ 'Please confirm freeze calculation'|translate }}</strong>
+                </div>
+
+            </div><!-- modal-body -->
+            <div class="modal-footer">
+              <button class="btn btn-secondary" data-dismiss="modal" (click)="modalFreezetemper.hide()">{{ 'Cancel'|translate }}</button>
+              <button class="btn btn-primary" >{{ 'Confirm'|translate }}</button>
+            </div>
+          </div>
+        </div>
+</div>
+
+<div bsModal class="modal fade" #modalDeleteComponent="bs-modal" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              {{ 'Delete component'|translate }}
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="modalDeleteComponent.hide()">
+                <span aria-hidden="true">×</span>
+              </button>
+            </div>
+            <div class="modal-body row">
+                <div class="col-md-12" align="center">
+                    <strong style="color: #FF6633;">{{ 'Please Confirm The Deletion Of This Component ?'|translate }}</strong>
+                </div>
+
+            </div><!-- modal-body -->
+            <div class="modal-footer">
+              <button class="btn btn-secondary" data-dismiss="modal" (click)="modalDeleteComponent.hide()">{{ 'Cancel'|translate }}</button>
+              <button class="btn btn-primary" >{{ 'Confirm'|translate }}</button>
+            </div>
+          </div>
+        </div>
+</div>
+
+<div bsModal class="modal fade" #modalSaveAsComponent="bs-modal" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+                    {{ 'Save Component As'|translate }}
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="modalSaveAsComponent.hide()">
+                <span aria-hidden="true">×</span>
+              </button>
+            </div>
+            <div class="modal-body row">
+                <div class="col-md-12">
+                    <div class="form-group row">
+                        <div class="col-md-3"></div>
+                        <label class="col-md-2 col-form-label" for="text-input">{{ 'Name'|translate }}</label>
+                        <div class="col-md-4">
+                            <input type="text" id="text-input" name="text-input" class="form-control">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="form-group row">
+                            <div class="col-md-3"></div>
+                        <label class="col-md-2 col-form-label" for="text-input">{{ 'Version'|translate }}</label>
+                        <div class="col-md-4">
+                            <input type="text" id="text-input" name="text-input" class="form-control" placeholder="0.0">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+              <button class="btn btn-secondary" data-dismiss="modal" (click)="modalSaveAsComponent.hide()">{{ 'Cancel'|translate }}</button>
+              <button class="btn btn-primary" >{{ 'Confirm'|translate }}</button>
+            </div>
+          </div>
+        </div>
+</div>

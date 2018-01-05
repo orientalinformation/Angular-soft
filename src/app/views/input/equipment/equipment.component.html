@@ -12,9 +12,9 @@
             </div>
             <div class="col-6">
               <div class="input-group" style="width:120px;">
-                <input type="text" name="text-input" class="form-control">
+                <input type="text" name="text-input" class="form-control" value="0.00">
                 <span class="input-group-addon">
-                  <small>EURO</small>
+                  <small>&euro;</small>
                 </span>
               </div>
             </div>
@@ -37,7 +37,7 @@
                 <div class="row">
                   <div class="col-md-5 auto">
                     <div class="input-group">
-                      <input type="text" name="text-input" class="form-control">
+                      <input type="text" name="text-input" class="form-control" value="2">
                       <span class="input-group-addon">
                         <small>cm</small>
                       </span>
@@ -46,7 +46,7 @@
                   <div class="col-md-2 text-center">x</div>
                   <div class="col-md-5">
                     <div class="input-group">
-                      <input type="text" name="text-input" class="form-control">
+                      <input type="text" name="text-input" class="form-control" value="2">
                       <span class="input-group-addon">
                         <small>cm</small>
                       </span>
@@ -69,42 +69,56 @@
       <strong>{{'SELECTED EQUIPMENT' | translate}}</strong>
      
       <div class="float-right">
-        <button class="btn btn-sm btn-outline-primary" >
-            Recalculate equipment parameters
+        <button class="btn btn-sm btn-primary" (click)="recalculateEquipment()">
+            {{'Recalculate equipment parameters'|translate}}
         </button>
-        <button class="btn btn-sm btn-outline-success" data-toggle="modal" (click)="exModal.show()" >
+        <button class="btn btn-sm btn-success" data-toggle="modal" (click)="onShowAddEquip()" [ladda]="laddaListingEquipments">
           <i class="fa fa-plus"></i>
-          Add
+          {{'Add'|translate}}
         </button>
         
       </div>
     </div>
-    <table class="table table-bordered table-sm mb-0">
+    <table class="table table-bordered table-sm mb-0" *ngIf="equipmentsView">
       <tr>
-        <th style="vertical-align:middle;text-align:center">Calculate</th>
-        <th style="vertical-align:middle;text-align:center">Name</th>
-        <th style="vertical-align:middle;text-align:center">Product orientation</th>
-        <th style="vertical-align:middle;text-align:center">Residence / Dwell time (s)</th>
-        <th style="vertical-align:middle;text-align:center">Control temperature (°C)</th>
-        <th style="vertical-align:middle;text-align:center">Convection Setting (Hz)</th>
-        <th style="vertical-align:middle;text-align:center">Actions</th>
+        <th class="text-center align-middle"><small>{{'Calculate'|translate}}</small></th>
+        <th class="text-center align-middle"><small>{{'Name'|translate}}</small></th>
+        <th class="text-center align-middle"><small>{{'Product orientation'|translate}}</small></th>
+        <th class="text-center align-middle"><small>{{'Residence / Dwell time'|translate}} (s)</small></th>
+        <th class="text-center align-middle"><small>{{'Control temperature'|translate}} (°C)</small></th>
+        <th class="text-center align-middle"><small>{{'Convection Setting'|translate}} (Hz)</small></th>
+        <th class="text-center align-middle"><small>{{'Conveyor coverage or quantity of product per batch'|translate}}</small></th>
+        <th class="text-center align-middle"><small>{{'Actions'|translate}}</small></th>
       </tr>
-      <tr>
+      <tr *ngFor="let equip of equipmentsView">
         <td>
           <label style="margin-left:1.5em;margin-top:0.7em" class="custom-control custom-checkbox">
             <input type="checkbox" name="" id="" class="custom-control-input">
             <span class="custom-control-indicator"></span>
           </label>
         </td>
-        <td align="center"style="vertical-align:middle">SILVERSAS SENIOR LN2 - 0.80x0.60 (v1.0) / Active</td>
-        <td align="center"style="vertical-align:middle">Parallel</td>
-        <td align="center"style="vertical-align:middle">958.0</td>
-        <td align="center"style="vertical-align:middle">58.0</td>
-        <td align="center"style="vertical-align:middle">8.0</td>
-        <td align="center" width="10%">
-          <div style="margin-top:0.5em">
-            <button type="button" class="btn btn-primary btn-sm" (click)="editModal.show()"><i class="fa fa-pencil"></i></button>
-            <button type="button" class="btn btn-danger btn-sm"><i class="fa fa-trash"></i></button>
+        <td class="text-center align-middle">{{ equip.displayName }}</td>
+        <td class="text-center align-middle">
+          <span *ngIf="equip.ORIENTATION == 0">{{'Perpendicular'|translate}}</span>
+          <span *ngIf="equip.ORIENTATION == 1">{{'Parallel'|translate}}</span>
+        </td>
+        <td class="text-center align-middle">
+          <span class="d-block" *ngFor="let ts of equip.ts">{{ ts | formatNumber:1 }}</span>
+        </td>
+        <td class="text-center align-middle">
+          <span class="d-block" *ngFor="let tr of equip.tr">{{ tr | formatNumber:1 }}</span>
+        </td>
+        <td class="text-center align-middle">
+          <span class="d-block" *ngFor="let vc of equip.vc">{{ vc | formatNumber:1 }}</span>
+        </td>
+        <td class="text-center align-middle">
+          {{ equip.top_or_QperBatch }}
+        </td>
+        <td class="text-center align-middle" width="1%">
+          <div style="margin-top:0.5em; white-space: nowrap">
+            <button type="button" class="btn btn-primary btn-sm" (click)="recalculateEquipment()"><i class="fa fa-th-large"></i></button>
+            <button type="button" class="btn btn-success btn-sm" (click)="recalculateEquipment()"><i class="fa fa-pencil"></i></button>
+            <button type="button" class="btn btn-danger btn-sm" (click)="recalculateEquipment()"><i class="fa fa-trash"></i></button>
           </div>  
         </td>
       </tr>
@@ -113,100 +127,107 @@
   </div> <!-- /.card -->
 </div>
 
-<div bsModal class="modal fade bd-example-modal-lg" #exModal="bs-modal" role="dialog" aria-hidden="true"  >
+<div bsModal class="modal fade bd-example-modal-lg" #addEquipModal="bs-modal" role="dialog" aria-hidden="true">
   <div class="modal-dialog modal-primary" role="document" style="max-width:80%;" >
     <div class="modal-content">
       <div class="modal-header">
         <strong>{{'EQUIPMENT' | translate}}</strong>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"(click)="exModal.hide()">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="addEquipModal.hide()">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <div class="modal-body">
+      <div class="modal-body" *ngIf="equipments">
         <div class="card-group">
+          <!-- Filter card -->
           <div class="card" >
             <div class="card-header" style="text-align:center;">
-              <strong >Selection criteria</strong>
+              <strong >{{'Selection criteria'|translate}}</strong>
             </div>
-            <perfect-scrollbar style="max-height:300px;">
-                
             <div class="card-body">
               <div class="row">
-                <div class="col-4"> <p>Type of Refrigeration</p></div>
+                <div class="col-4"> <p>{{'Type of Refrigeration'|translate}}</p></div>
                 <div class="col-8">
                     <ng-select class="bootstrap" [allowClear]="true" name="energy" ></ng-select>
                 </div>
               </div>
               
               <div class="row">
-                <div class="col-4"> <p>Manufacturer</p></div>
+                <div class="col-4"> <p>{{'Manufacturer'|translate}}</p></div>
                 <div class="col-8">
                     <ng-select class="bootstrap" [allowClear]="true" name="manufacturer"></ng-select>
                 </div>
               </div>
             
               <div class="row">
-                <div class="col-4"> <p>Equipment Series</p></div>
+                <div class="col-4"> <p>{{'Equipment Series'|translate}}</p></div>
                 <div class="col-8">
                     <ng-select class="bootstrap" [allowClear]="true" name="family"></ng-select>
                 </div>
               </div>
             
               <div class="row">
-                <div class="col-4"> <p>Equipment origin</p></div>
+                <div class="col-4"> <p>{{'Equipment origin'|translate}}</p></div>
                 <div class="col-8">
                     <ng-select class="bootstrap" [allowClear]="true" name="equip-origin" ></ng-select>
                 </div>
               </div>
             
               <div class="row">
-                <div class="col-4"> <p>Process type</p></div>
+                <div class="col-4"> <p>{{'Process type'|translate}}</p></div>
                 <div class="col-8">
                     <ng-select class="bootstrap" [allowClear]="true" name="processType" ></ng-select>
                 </div>
               </div>
             
               <div class="row">
-                <div class="col-4"> <p>Model</p></div>
+                <div class="col-4"> <p>{{'Model'|translate}}</p></div>
                 <div class="col-8">
                     <ng-select class="bootstrap" [allowClear]="true" name="model" ></ng-select>
                 </div>
               </div>
             
               <div class="row">
-                <div class="col-4"> <p>Size (m)</p></div>
+                <div class="col-4"> <p>{{'Size'|translate}} (m)</p></div>
                 <div class="col-8">
                     <ng-select class="bootstrap" [allowClear]="true" name="size" ></ng-select>
                 </div>
               </div>
             </div>
-            </perfect-scrollbar>
           </div>
     
           <div class="card" >
             <div class="card-header" style="text-align:center;">
-              <strong>Search results</strong>
-            </div>
-            
-              <perfect-scrollbar style="max-height:290px;">
-                <div class="list-group" name="add" >
-                  <a class="list-group-item list-group-item-action" 
-                  style="height:30px; padding: 5px 10px;" name="eid" id="eid" >
-                    <p></p>
-                  </a>
+              <div id="equipment-search-box-container">&nbsp;
+                <div class="input-group input-group-sm" id="equipment-search-box">
+                  <input type="text" class="form-control" [(ngModel)]="filterString" placeholder="{{'Search'|translate}}" />
+                  <span>
+                    <i class="fa fa-search" aria-hidden="true"></i>
+                  </span>
                 </div>
-              </perfect-scrollbar>
+              </div>
+            </div>
+            <perfect-scrollbar style="max-height:300px;">
+              <div class="list-group" name="add" >
+                <a class="list-group-item list-group-item-action" *ngFor="let equip of equipments"
+                  style="height:30px; padding: 5px 10px;"  name="eid" id="eid" (click)="onSelectAddingEquipment(equip)"
+                  [ngClass]="equip == selectedAddingEquipment? 'active' : ''">
+                    {{equip.EQUIP_NAME}} - {{equip.EQUIP_VERSION}} 
+                  <span *ngIf="equip.EQUIP_RELEASE == 3">({{'Active'|translate}})</span>
+                </a>
+              </div>
+            </perfect-scrollbar>
           </div>
             
           </div>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-outline-primary" data-dismiss="modal" (click)="exModal.hide()">Cancel</button>
-        <button class="btn btn-outline-primary">Ok</button>
+        <button class="btn btn-secondary" data-dismiss="modal" (click)="addEquipModal.hide()">Cancel</button>
+        <button class="btn btn-primary" (click)="onAddEquip()" [ladda]="laddaAddingEquipment">Confirm</button>
       </div>
     </div>
   </div>
 </div>
+
 <div bsModal class="modal fade bd-example-modal-lg" #editModal="bs-modal" role="dialog" aria-hidden="true"  >
     <div class="modal-dialog modal-primary" role="document" style="max-width:60%;" >
       <div class="modal-content">

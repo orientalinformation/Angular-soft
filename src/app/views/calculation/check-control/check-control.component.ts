@@ -17,13 +17,16 @@ export class CheckControlComponent implements OnInit, AfterViewInit {
   public checkcontrolview: CheckControlView;
   public checkcontrol: CheckControl;
   public study: Study;
+  public isLoading = false;
 
   constructor(private api: ApiService) { }
 
   ngOnInit() {
+    this.isLoading = true;
   }
 
   ngAfterViewInit() {
+    this.isLoading = true;
     this.study = JSON.parse(localStorage.getItem('study'));
     const params: ApiService.CheckControlViewParams = {
       idStudy: this.study.ID_STUDY,
@@ -34,6 +37,7 @@ export class CheckControlComponent implements OnInit, AfterViewInit {
       data => {
         this.checkcontrolview = data;
         console.log(data);
+        this.isLoading = false;
       }
     );
 
@@ -41,6 +45,7 @@ export class CheckControlComponent implements OnInit, AfterViewInit {
       data => {
         this.checkcontrol = data;
         console.log(this.checkcontrol);
+        this.isLoading = false;
 
         if (this.checkcontrol.checkcontrol) {
           this.calculator.open();

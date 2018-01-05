@@ -7,6 +7,18 @@ import { Translation } from '../api/models/translation';
 export class TextService {
   private _initialized = false;
 
+  public shapeNames = {
+    SLAB: 1,
+    REC_STAND: 2,
+    REC_LAY: 3,
+    CYL_STAND: 4,
+    CYL_LAY: 5,
+    SPHERE: 6,
+    CON_CYL_STAND: 7,
+    CON_CYL_LAY: 8,
+    BREAD: 9
+  };
+
   constructor(private translate: TranslateService, private api: ApiService) { }
 
   initialize() {

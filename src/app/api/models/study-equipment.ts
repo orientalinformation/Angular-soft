@@ -1,9 +1,10 @@
 /* tslint:disable */
+import { Equipment } from './equipment';
 
 /**
  */
 export class StudyEquipment {
-    PRECIS?: number;
+    NB_MODUL?: number;
     ID_STUDY_EQUIPMENTS?: number;
     ID_EQUIP?: number;
     ID_EXH_GEN?: number;
@@ -22,8 +23,8 @@ export class StudyEquipment {
     AVERAGE_PRODUCT_TEMEQP_WIDTHP?: number;
     AVERAGE_PRODUCT_ENTHALPY?: number;
     ENTHALPY_VARIATION?: number;
+    PRECIS?: number;
     ID_STUDY?: number;
-    NB_MODUL?: number;
     STACKING_WARNING?: number;
     ENABLE_CONS_PIE?: number;
     EQUIP_STATUS?: number;
@@ -42,4 +43,5 @@ export class StudyEquipment {
     NB_TR?: number;
     SERIES_NAME?: string;
     BATCH_PROCESS?: number;
+    equipment?: Equipment;
 }

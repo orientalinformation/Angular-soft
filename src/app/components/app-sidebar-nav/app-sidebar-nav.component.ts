@@ -6,6 +6,9 @@ import { AppSysUtilzComponent } from '../app-sys-utilz/app-sys-utilz.component';
   template: `
     <nav class="sidebar-nav">
       <ul class="nav">
+        <li class="nav-title">
+          {{'Navigation'|translate}}
+        </li>
         <ng-template ngFor let-navitem [ngForOf]="navigation">
           <li *ngIf="isDivider(navitem)" class="nav-divider"></li>
           <ng-template [ngIf]="isTitle(navitem)">
@@ -15,10 +18,20 @@ import { AppSysUtilzComponent } from '../app-sys-utilz/app-sys-utilz.component';
             <app-sidebar-nav-item [item]='navitem'></app-sidebar-nav-item>
           </ng-template>
         </ng-template>
-        <app-sys-utilz>
-        </app-sys-utilz>
+        <li class="app-sys-utilz"><app-sys-utilz></app-sys-utilz></li>
       </ul>
-    </nav>`
+    </nav>`,
+  styles: [`
+    .app-sys-utilz {
+      position: absolute;
+      bottom: 20px;
+    }
+    @media (max-width: 991px){
+      .app-sys-utilz {
+        position: static;
+      }
+    }
+  `]
 })
 export class AppSidebarNavComponent {
   @Input() public navigation: any = [];

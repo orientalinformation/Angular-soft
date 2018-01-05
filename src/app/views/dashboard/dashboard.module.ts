@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { DashboardRoutingModule } from './dashboard-routing.module';
 import { StartPageComponent } from './start-page/start-page.component';
 import { NewStudyComponent } from './new-study/new-study.component';
-import { OpenStudyComponent } from './open-study/open-study.component';
+import { OpenStudyComponent, FilterPipe } from './open-study/open-study.component';
 
 import { SelectModule } from 'ng-select';
 
@@ -13,6 +13,8 @@ import { PERFECT_SCROLLBAR_CONFIG } from 'ngx-perfect-scrollbar';
 import { PerfectScrollbarConfigInterface } from 'ngx-perfect-scrollbar';
 import { ImportComponent } from './import/import.component';
 import { TranslateModule } from '@ngx-translate/core';
+import { SharedModule } from '../../shared/shared.module';
+import { Nl2BrPipe } from 'nl2br-pipe';
 
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   suppressScrollX: true
@@ -23,10 +25,11 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     CommonModule,
     DashboardRoutingModule,
     SelectModule,
+    SharedModule,
     PerfectScrollbarModule,
-    TranslateModule.forChild()
+    TranslateModule.forChild(),
   ],
-  declarations: [StartPageComponent, NewStudyComponent, OpenStudyComponent, ImportComponent],
+  declarations: [StartPageComponent, NewStudyComponent, OpenStudyComponent, ImportComponent, FilterPipe, Nl2BrPipe],
   providers: [
     {
       provide: PERFECT_SCROLLBAR_CONFIG,

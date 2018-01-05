@@ -38,7 +38,8 @@ export class PreliminaryComponent implements OnInit, AfterViewInit {
     percentEquipmentDown: 0,
     percentLine: 0
   };
-
+  public activePage = '';
+  public displayPie: boolean;
   public pieOptions;
   public pieLabels;
   public pieData;
@@ -46,6 +47,15 @@ export class PreliminaryComponent implements OnInit, AfterViewInit {
 
   public pieColours: Array<any> = [
     { backgroundColor: ['#0000FF', '#00BFBF', '#00FFFF', '#33CC33'], }
+  ];
+
+  public pieOptionsNone;
+  public pieLabelsNone;
+  public pieDataNone;
+  public pieChartTypeNone = 'pie';
+
+  public pieColoursNone: Array<any> = [
+    { backgroundColor: ['#b4b9c1', '#b4b9c1', '#b4b9c1'], }
   ];
 
   @ViewChild('calculator') calculator: CalculatorComponent;
@@ -56,6 +66,7 @@ export class PreliminaryComponent implements OnInit, AfterViewInit {
   ngOnInit() {
     if (localStorage.getItem('study')) {
       this.study = JSON.parse(localStorage.getItem('study'));
+      this.displayPie = true;
     }
   }
   openPageHeat() {
@@ -65,6 +76,7 @@ export class PreliminaryComponent implements OnInit, AfterViewInit {
     page.style.display = 'block';
     pageCon.style.display = 'none';
     pageEco.style.display = 'none';
+    this.activePage = 'heat';
   }
   openPageCon() {
     const page = <HTMLElement>document.getElementById('pageHeat');
@@ -73,6 +85,7 @@ export class PreliminaryComponent implements OnInit, AfterViewInit {
     page.style.display = 'none';
     pageEco.style.display = 'none';
     pageCon.style.display = 'block';
+    this.activePage = 'consumpt';
   }
   openPageEco() {
     const page = <HTMLElement>document.getElementById('pageHeat');
@@ -81,44 +94,50 @@ export class PreliminaryComponent implements OnInit, AfterViewInit {
     page.style.display = 'none';
     pageEco.style.display = 'block';
     pageCon.style.display = 'none';
+    this.activePage = 'economic';
   }
   openHeadBalacePage() {
+    const showLoaderChange = <HTMLElement>document.getElementById('showLoaderChange');
+    showLoaderChange.style.display = 'block';
     const headBalancePage = <HTMLElement>document.getElementById('headBalacePage');
     const headBalanceMaxPage = <HTMLElement>document.getElementById('headBalaceMaxPage');
-    headBalancePage.style.display = 'block';
-    headBalanceMaxPage.style.display = 'none';
+    this.api.getOptimumHeadBalance(this.study.ID_STUDY).subscribe(
+      data => {
+        this.headBalanceResults = data;
+        headBalancePage.style.display = 'block';
+        headBalanceMaxPage.style.display = 'none';
+        showLoaderChange.style.display = 'none';
+      }
+    );
   }
   openHeadBalaceMaxPage() {
+    const showLoaderChange = <HTMLElement>document.getElementById('showLoaderChange');
+    showLoaderChange.style.display = 'block';
     const headBalancePage = <HTMLElement>document.getElementById('headBalacePage');
     const headBalanceMaxPage = <HTMLElement>document.getElementById('headBalaceMaxPage');
-    headBalancePage.style.display = 'none';
-    headBalanceMaxPage.style.display = 'block';
+    this.api.getOptimumHeadBalanceMax(this.study.ID_STUDY).subscribe(
+      data => {
+        this.headBalanceMaxResults = data;
+        headBalancePage.style.display = 'none';
+        headBalanceMaxPage.style.display = 'block';
+        showLoaderChange.style.display = 'none';
+      }
+    );
   }
-  openTrPage() {
-    const trPage = <HTMLElement>document.getElementById('trPage');
-    const trPage01 = <HTMLElement>document.getElementById('trPage01');
-    const trPage02 = <HTMLElement>document.getElementById('trPage02');
-    trPage.style.display = 'block';
-    trPage01.style.display = 'none';
-    trPage02.style.display = 'none';
+  openTrPage(value) {
+    const showLoaderChange = <HTMLElement>document.getElementById('showLoaderChange');
+    showLoaderChange.style.display = 'block';
+    const params: ApiService.GetEstimationHeadBalanceParams = {
+      idStudy: this.study.ID_STUDY,
+      tr: value
+    };
+    this.api.getEstimationHeadBalance(params).subscribe(
+      data => {
+        this.headBalanceResultsTr = data;
+        showLoaderChange.style.display = 'none';
+      }
+    );
   }
-  openTrPage01() {
-    const trPage = <HTMLElement>document.getElementById('trPage');
-    const trPage01 = <HTMLElement>document.getElementById('trPage01');
-    const trPage02 = <HTMLElement>document.getElementById('trPage02');
-    trPage.style.display = 'none';
-    trPage01.style.display = 'block';
-    trPage02.style.display = 'none';
-  }
-  openTrPage02() {
-    const trPage = <HTMLElement>document.getElementById('trPage');
-    const trPage01 = <HTMLElement>document.getElementById('trPage01');
-    const trPage02 = <HTMLElement>document.getElementById('trPage02');
-    trPage.style.display = 'none';
-    trPage01.style.display = 'none';
-    trPage02.style.display = 'block';
-  }
-
   ngAfterViewInit() {
     if (localStorage.getItem('study')) {
       this.study = JSON.parse(localStorage.getItem('study'));
@@ -143,49 +162,20 @@ export class PreliminaryComponent implements OnInit, AfterViewInit {
       if (this.study.CALCULATION_MODE == 1) {
         const params: ApiService.GetEstimationHeadBalanceParams = {
           idStudy: this.study.ID_STUDY,
-          tr: 0
-        };
-        const params01: ApiService.GetEstimationHeadBalanceParams = {
-          idStudy: this.study.ID_STUDY,
           tr: 1
         };
-        const params02: ApiService.GetEstimationHeadBalanceParams = {
-          idStudy: this.study.ID_STUDY,
-          tr: 2
-        };
-
         this.api.getEstimationHeadBalance(params).subscribe(
           data => {
             this.headBalanceResultsTr = data;
-          }
-        );
-        this.api.getEstimationHeadBalance(params01).subscribe(
-          data => {
-            this.headBalanceResultsTr01 = data;
-          }
-        );
-        this.api.getEstimationHeadBalance(params02).subscribe(
-          data => {
-            this.headBalanceResultsTr02 = data;
+            this.activePage = 'heat';
           }
         );
       } else {
         this.api.getOptimumHeadBalance(this.study.ID_STUDY).subscribe(
           data => {
-            // console.log('get studies response:');
+            console.log(data);
             this.headBalanceResults = data;
-          },
-          err => {
-            console.log(err);
-          }
-        );
-
-        this.api.getOptimumHeadBalanceMax(this.study.ID_STUDY).subscribe(
-          data => {
-            this.headBalanceMaxResults = data;
-          },
-          err => {
-            console.log(err);
+            this.activePage = 'heat';
           }
         );
       }
@@ -205,7 +195,6 @@ export class PreliminaryComponent implements OnInit, AfterViewInit {
     }
   }
   onConsumptionPie(element) {
-    console.log(element);
     this.chartPieData.name = element.equipName;
     this.chartPieData.percentProduct = element.percentProduct;
     this.chartPieData.percentEquipmentPerm = element.percentEquipmentPerm;
@@ -215,14 +204,18 @@ export class PreliminaryComponent implements OnInit, AfterViewInit {
     this.pieOptions = {
       responsive: true,
       pieceLabel: {
-          render: 'percentage',
-          fontSize: 13,
-          fontStyle: 'bold',
+          render: 'value',
+          fontSize: 14,
+          fontStyle: 600,
           fontColor: ['#fff', '#000', '#000', '#fff'],
-          fontFamily: '"Lucida Console", Monaco, monospace',
+          fontFamily: '"Helvetica Neue", "Helvetica", "Arial", sans-serif',
+          overlap: true
       },
       tooltips: {
         enabled: false
+      },
+      legend: {
+        onClick: (e) => e.stopPropagation()
       }
     };
     this.pieLabels = [];
@@ -233,16 +226,40 @@ export class PreliminaryComponent implements OnInit, AfterViewInit {
     if (element.percentLine > 0) {
       this.pieLabels.push(this.translate.instant('Line') + ': ' + element.percentLine + '%');
     }
+    this.displayPie = true;
+    if ((element.percentProduct + element.percentEquipmentPerm + element.percentEquipmentDown + element.percentLine) === 0) {
+      this.displayPie = false;
+    }
+    const dataChart = [element.percentProduct, element.percentEquipmentPerm, element.percentEquipmentDown, element.percentLine];
     this.pieData = [
       {
         data: [element.percentProduct, element.percentEquipmentPerm, element.percentEquipmentDown, element.percentLine]
       }
     ];
     if (this.myChart) {
-      console.log(this.pieLabels);
       this.myChart.chart.config.data.labels = this.pieLabels;
       this.myChart.chart.update();
     }
+
+    // pie none
+    this.pieDataNone = [{
+      data: [100, 0, 0]
+    }];
+    console.log(this.pieDataNone);
+    this.pieOptionsNone = {
+      responsive: true,
+      tooltips: {
+        enabled: false
+      },
+      legend: {
+        onClick: (e) => e.stopPropagation()
+      }
+    };
+    this.pieLabelsNone = [];
+    this.pieLabelsNone = [this.translate.instant('Product') + ': 0%',
+    this.translate.instant('Equipment(permanent)') + ': 0%',
+    this.translate.instant('Equipment(cool down)') + ': 0%'];
+
     this.consumptionPieModal.show();
   }
   closePie() {

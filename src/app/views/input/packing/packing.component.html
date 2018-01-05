@@ -1,12 +1,10 @@
-<div class="container">
+<div class="container" *ngIf="!isLoading">
   <div class="card product-container">
     <div class="card-header">
-      <strong>{{ 'PACKING DEFINITION' | translate }}</strong>
-      <div class="card-actions">
-        <button type="button" class="btn btn-success" (click)="savePacking()">
-          <i class="fa fa-floppy-o"></i>
-        </button>
-      </div>
+      <strong>{{ 'PRODUCT PACKING SPECIFICATIONS' | translate }}</strong>
+      <button type="button" class="btn btn-sm btn-success float-right" [ladda]="laddaSavingPacking" (click)="savePacking()">
+        <i class="fa fa-floppy-o"></i> {{'Save'|translate}}
+      </button>
     </div>
     <div class="card card-body">
       <p>
@@ -16,8 +14,8 @@
         <div class="col-md-6">
           <table class="table table-sm table-bordered">
             <tr>
-              <th style="text-align:center">Top</th>
-              <th style="text-align:center" align="center">Number of Layers</th>
+              <th style="text-align:center">{{ getTopLabel(productShape)|translate }}</th>
+              <th style="text-align:center" align="center">{{'Number of Layers'|translate}}</th>
               <td align="center">
                 <select name="toplayersNr" [(ngModel)]="topNrLayer" id="toplaynum" class="form-control" style="width:60px;height:30px;" (change)="onTopNrLayerChanged()" >
                   <option value="0">0</option>
@@ -34,8 +32,8 @@
               </td>
             </tr>
             <tr>
-              <td align="center" colspan="2">Layer / Packing type</td>
-              <td align="center">Thickness</td>
+              <td align="center" colspan="2">{{'Layer / Packing type'|translate}}</td>
+              <td align="center">{{'Thickness'|translate}}</td>
             </tr>        
             <tr *ngFor="let layer of topLayers; let idx = index">
               <td align="center" colspan="2">
@@ -64,7 +62,7 @@
             </tr>
           </table>
         </div>
-        <div class="col-md-1" >
+        <div class="col-md-1" *ngIf="productShape != text.shapeNames.SPHERE && productShape != text.shapeNames.SLAB" >
           <table>
             <tr>
               <td align="center" valign="center" height="200">
@@ -73,24 +71,24 @@
             </tr>
           </table>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-6" *ngIf="productShape != text.shapeNames.SPHERE && productShape != text.shapeNames.SLAB" >
           <table class="table table-sm table-bordered">
             <tr>
-              <th style="text-align:center">Sides</th>
-              <th style="text-align:center">Number of Layers</th>
+              <th style="text-align:center"> {{ getSideLabel(productShape)|translate }} </th>
+              <th style="text-align:center">{{'Number of Layers'|translate}}</th>
               <td align="center">
                 <div class="form-group row" style="margin-bottom:0px;" ngbDropdown>
                   <div class="col-sm-12" >
                     <div class="input-group" >
                       <div class="input-group-btn dropdown"  style="margin-left:50px;">
                         <button type="button" id="btnSpecificSide" class="btn btn-primary dropdown-toggle btn-sm dropdown-toggle-split " ngbDropdownToggle>
-                          Specific
+                          {{'Specific'|translate}}
                           <span class="caret"></span>
                             <span class="sr-only">Split button!</span>
                         </button>
                         <div class="dropdown-menu" aria-labelledby="btnSpecificSide" ngbDropdownMenu>
-                            <a class="dropdown-item" href="javascript:void(0)" (click)="onSideSameAsTop()">Same as Top</a>
-                            <a class="dropdown-item" href="javascript:void(0)" (click)="onSideSameAsBottom()">Same as Bottom</a>
+                            <a class="dropdown-item" href="javascript:void(0)" (click)="onSideSameAsTop()"> {{'Same as' + getTopLabel(productShape)|translate}}</a>
+                            <a class="dropdown-item" href="javascript:void(0)" (click)="onSideSameAsBottom()">{{'Same as' + getBottomLabel(productShape)|translate}}</a>
                         </div>
                         <select name="sideLayersNr" [(ngModel)]="sideNrLayer" id="sidlaynum" class="form-control" style="height:30px;" (change)="onSideNrLayerChanged()" >
                           <option value="0">0</option>
@@ -111,8 +109,8 @@
               </td>
             </tr>
             <tr>
-              <td align="center" colspan="2">Layer / Packing type</td>
-              <td align="center">Thickness</td>
+              <td align="center" colspan="2">{{'Layer / Packing type'|translate}}</td>
+              <td align="center">{{'Thickness'|translate}}</td>
             </tr>        
             <tr *ngFor="let layer of sideLayers; let idx = index">
               <td  align="center" colspan="2">
@@ -129,24 +127,24 @@
           </table>
         </div>
       </div>
-      <div class="row">
+      <div class="row" *ngIf="productShape != text.shapeNames.SPHERE" >
         <div class="col-md-6">
             <div style="width:400px;height:50px;margin-top:20px;" align="center">
               <i class="fa fa-long-arrow-up fa-lg mt6"></i>
             </div>
-          <table class="table table-sm table-bordered">
+          <table class="table table-sm table-bordered"> 
             <tr>
-              <th style="text-align:center">Bottom</th>
-              <th style="text-align:center">Number of Layers</th>
+              <th style="text-align:center"> {{ getBottomLabel(productShape)|translate }} </th>
+              <th style="text-align:center">{{'Number of Layers'|translate}}</th>
               <td align="center">
                 <div class="form-group row" style="margin-bottom:0px;">
                   <div class="col-sm-12" >
                     <div class="input-group" >
                       <div class="input-group-btn dropdown" style="margin-left:50px;" ngbDropdown>
-                        <button id="btnSpecificBottom" class="btn btn-primary dropdown-toggle btn-sm dropdown-toggle-split" ngbDropdownToggle>Specific
+                        <button id="btnSpecificBottom" class="btn btn-primary dropdown-toggle btn-sm dropdown-toggle-split" ngbDropdownToggle>{{'Specific'|translate}}
                         </button>
                         <div class="dropdown-menu" aria-labelledby="btnSpecificBottom" ngbDropdownMenu>
-                            <a class="dropdown-item" href="javascript:void(0)" (click)="onBottomSameAsTop()">Same as Top</a>
+                            <a class="dropdown-item" href="javascript:void(0)" (click)="onBottomSameAsTop()">{{'Same as' + getTopLabel(productShape)|translate}}</a>
                         </div>
                         <select name="bottomLayersNr" [(ngModel)]="bottomNrLayer" id="botlaynum" class="form-control" style="height:30px;" (change)="onBottomNrLayerChanged()">
                           <option value="0">0</option>
@@ -167,8 +165,8 @@
               </td>
             </tr>
             <tr>
-              <td align="center" colspan="2">Layer / Packing type</td>
-              <td align="center">Thickness</td>
+              <td align="center" colspan="2">{{'Layer / Packing type'|translate}}</td>
+              <td align="center">{{'Thickness'|translate}}</td>
             </tr>        
             <tr *ngFor="let layer of bottomLayers; let idx = index">
               <td  align="center" colspan="2">
@@ -187,3 +185,5 @@
      </div>
    </div>
 </div>
+
+<app-spinner *ngIf="isLoading"></app-spinner>

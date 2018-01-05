@@ -9,4 +9,5 @@ export class ViewMesh {
     meshGeneration?: MeshGeneration;
     elements?: ProductElmt[];
     elmtMeshPositions?: MeshPosition[];
+    productIsoTemp?: number;
 }

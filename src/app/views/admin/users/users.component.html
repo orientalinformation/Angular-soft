@@ -1,0 +1,207 @@
+
+<div class="subnav-container text-center pt-3 mb-3">
+  <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
+    <button type="button" class="btn btn-outline-secondary" [class.active]="activePage == 'new'" (click)="openPageNew()">{{ 'New'|translate }}</button>
+    <button type="button" class="btn btn-outline-secondary" [class.active]="activePage == 'load'" (click)="openPageLoad()">{{ 'Load'|translate }}</button>
+    <button type="button" class="btn btn-outline-secondary" [class.active]="activePage == 'connections'" (click)="openPageConnections()">{{ 'Connections'|translate }}</button>
+  </div>
+</div>
+
+<div class="container-fluid">
+  <div class="container">
+
+    <div class="card product-container">
+      <div class="card-body">
+        <div style="margin-top:10px;" *ngIf="activePage=='new'">
+          <div class="card" *ngIf="user">
+              <div class="card-header">
+                  <strong>{{ 'LOGIN'|translate }}</strong>
+              </div>
+              <div class="card-body">
+                  <div class="col-md-12" style="margin-top: 10px;">
+                    <div class="form-group row">
+                      <label class="col-md-3 col-form-label" for="text-input">{{ 'Login'|translate }}</label>
+                      <div class="col-md-6">
+                        <input type="text" id="username" name="username" class="form-control" [(ngModel)]="user.username">
+                      </div>
+                    </div>
+                    <div class="form-group row">
+                      <label class="col-md-3 col-form-label" for="text-input">{{'E-Mail'|translate}}	</label>
+                      <div class="col-md-6">
+                        <input type="email" id="email" name="email" class="form-control" [(ngModel)]="user.email">
+                      </div>
+                    </div>
+                    <div class="form-group row">
+                      <label class="col-md-3 col-form-label" for="text-input">{{ 'Password'|translate }}</label>
+                      <div class="col-md-6">
+                        <input type="password" id="password" name="password" class="form-control" [(ngModel)]="user.password">
+                      </div>
+                    </div>
+                    <div class="form-group row">
+                      <label class="col-md-3 col-form-label" for="text-input">{{ 'Confirm'|translate }}</label>
+                      <div class="col-md-6">
+                        <input type="password" id="confirm" name="confirm" class="form-control" [(ngModel)]="user.confirmpassword">
+                      </div>
+                    </div>
+                  </div>
+              </div>
+              <div class="card-footer text-center">
+                <button type="button" class="btn btn-success" (click)="newUser()"><i class="fa fa-floppy-o"></i> {{ 'Save'|translate }}</button>
+              </div>
+          </div>
+        </div>
+
+        <div style="margin-top:10px;" *ngIf="activePage=='load'">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="card">
+                <div class="card-header">
+                  <strong>{{ 'USER SELECTTION'|translate }}</strong>
+                  <div id="study-search-box-container">
+                    <div class="input-group input-group-sm" id="study-search-box">
+                      <input type="text" class="form-control" placeholder="Search" />
+                      <span>
+                        <i class="fa fa-search" aria-hidden="true"></i>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div style="max-height: 400px;">
+                  <div class="list-group">
+                    <a class="list-group-item list-group-item-action">
+                      <div class="d-flex w-100 justify-content-between">
+                        A 1
+                      </div>
+                    </a>
+                    <a class="list-group-item list-group-item-action">
+                      <div class="d-flex w-100 justify-content-between">
+                        A 1
+                      </div>
+                    </a>
+                    <a class="list-group-item list-group-item-action">
+                      <div class="d-flex w-100 justify-content-between">
+                        A 1
+                      </div>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="card">
+                  <div class="card-header">
+                      <strong>{{ 'USER MODIFICATION'|translate }}</strong>
+                  </div>
+                  <div class="card-body">
+                        <div class="form-group row">
+                          <label class="col-md-3 col-form-label" for="text-input">{{ 'Login'|translate }}</label>
+                          <div class="col-md-9">
+                            <input type="text" id="text-input" name="text-input" class="form-control">
+                          </div>
+                        </div>
+                        <div class="form-group row">
+                          <label class="col-md-3 col-form-label" for="text-input">{{ 'E-Mail'|translate }}	</label>
+                          <div class="col-md-9">
+                            <input type="text" id="text-input" name="text-input" class="form-control">
+                          </div>
+                        </div>
+                        <div class="form-group row">
+                          <label class="col-md-3 col-form-label" for="text-input">{{ 'Password'|translate }}</label>
+                          <div class="col-md-9">
+                            <input type="text" id="text-input" name="text-input" class="form-control">
+                          </div>
+                        </div>
+                        <div class="form-group row">
+                          <label class="col-md-3 col-form-label" for="text-input">{{ 'Confirm'|translate }}</label>
+                          <div class="col-md-9">
+                            <input type="text" id="text-input" name="text-input" class="form-control">
+                          </div>
+                        </div>
+                  </div>
+                  <div class="card-footer text-center">
+                    <button type="button" class="btn btn-success btn-sm"><i class="fa fa-floppy-o"></i> {{ 'Save'|translate }}</button>
+                    <button type="button" class="btn btn-danger btn-sm"><i class="fa fa-trash-o"></i> {{ 'Delete'|translate }}</button>
+                    <button type="button" class="btn btn-warning btn-sm"><i class="fa fa-plug"></i> {{ 'Disconnect'|translate }}</button>
+                  </div>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+              <div class="card-header">
+                  <strong>{{ 'USERS CONNECTED'|translate }}</strong>
+              </div>
+              <div class="card-body">
+                    <table class="table table-bordered table-sm mb-0 text-center" >
+                        <tr>
+                            <th align="center">{{ 'Login'|translate }}</th>
+                            <th align="center">{{ 'Disconnect'|translate }}</th>
+                        </tr>
+                        <tr>
+                            <td>Admin</td>
+                            <td align="center" width="20%">
+                                <div>
+                                    <button type="button" class="btn btn-danger btn-sm"><i class="fa fa-minus-circle" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>User</td>
+                            <td align="center">
+                                <div>
+                                    <button type="button" class="btn btn-danger btn-sm"><i class="fa fa-minus-circle" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+              </div>
+              <div class="card-footer text-center">
+                <button type="button" class="btn btn-success"><i class="fa fa-floppy-o"></i> {{ 'Save'|translate }}</button>
+                <button type="button" class="btn btn-primary"><i class="fa fa-refresh"></i> {{ 'Refresh'|translate }}</button>
+              </div>
+          </div>
+        </div>
+
+        <div style="margin-top:10px;" *ngIf="activePage=='connections'">
+          <div class="card">
+            <div class="card-body">
+              <table class="table table-bordered table-sm mb-0 text-center" >
+                <tr>
+                  <th align="center" width="30%">{{ 'Login'|translate }}</th>
+                  <th align="center" width="25%">{{ 'Connection date'|translate }}	</th>
+                  <th align="center" width="25%">{{ 'Disconnection date'|translate }}	</th>
+                  <th align="center" width="20%">{{ 'Period'|translate }}</th>
+                </tr>
+                <tr>
+                  <td>Admin</td>
+                  <td>Jan 4, 2018 2:56:49 PM</td>
+                  <td>Jan 4, 2018 2:55:40 PM	</td>
+                  <td>00:30:02</td>
+                </tr>
+                <tr>
+                  <td>User</td>
+                  <td>Jan 4, 2018 2:56:49 PM</td>
+                  <td>Jan 4, 2018 2:55:40 PM	</td>
+                  <td>00:30:02</td>
+                </tr>
+              </table>
+            </div>
+            <div class="card-footer text-center">
+              <div class="form-group row">
+                <div class="col-md-5"></div>
+                <label class="col-md-3 col-form-label" for="text-input">{{ 'Connections to display'|translate }}</label>
+                <div class="col-md-2">
+                  <input type="text" id="text-input" name="text-input" class="form-control">
+                </div>
+                <div class="col-md-2">
+                  <button type="button" class="btn btn-primary"><i class="fa fa-refresh"></i> {{ 'Refresh'|translate }}</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

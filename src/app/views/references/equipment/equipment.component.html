@@ -1,0 +1,1059 @@
+<div class="container">
+  <div class="card product-container">
+    <div class="card-header text-center">
+        <div class="btn-group" role="group">
+          <button class="btn btn-outline-primary btn-sm" (click)="openNewEquipment()" [class.active]="activePageEquipment == 'new'">{{ 'New'|translate }}</button>
+          <button class="btn btn-outline-primary btn-sm" (click)="openLoadEquipment()" [class.active]="activePageEquipment == 'load'">{{ 'Load'|translate }}</button>
+          <button class="btn btn-outline-primary btn-sm" (click)="openGenerateEquipment()" [class.active]="activePageEquipment == 'gen'">{{ 'Data generated'|translate }}</button>
+          <button class="btn btn-outline-primary btn-sm" (click)="openCurvesEquipment()" [class.active]="activePageEquipment == 'curves'">{{ 'Curves'|translate }}</button>
+        </div>
+    </div>
+    <div class="card-body">
+      <div style="margin-top:10px;display:block" id="page-new-equipment">
+          <div class="card">
+            <div class="card-header">
+              <strong>{{ 'BUILD'|translate }}</strong>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                            <div class="col-md-10">
+                                    <div class="form-group row">
+                                        <label class="col-md-3 col-form-label" for="text-input">{{ 'Name'|translate }}</label>
+                                        <div class="col-md-5">
+                                            <input type="text" id="text-input" name="text-input" class="form-control">
+                                        </div>
+                                        <label class="col-md-2 col-form-label" for="text-input">{{ 'Version'|translate }}</label>
+                                        <div class="col-md-2">
+                                            <input type="text" id="text-input" name="text-input" class="form-control" placeholder="0.0">
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <div class="col-md-3" align="center" >
+                                            <label class="custom-control custom-radio" >
+                                              <input type="radio" class="custom-control-input" name="equip" (change)="pageGenerate()" checked>{{ 'Generate'|translate }}
+                                              <span class="custom-control-indicator"></span>
+                                            </label>
+                                        </div>
+                                        <div class="col-md-3" align="center" >
+                                            <label class="custom-control custom-radio" >
+                                              <input type="radio" class="custom-control-input" name="equip" (change)="pageRotate()" >{{ 'Rotate'|translate }}
+                                              <span class="custom-control-indicator"></span>
+                                            </label>
+                                        </div>
+                                        <div class="col-md-3" align="center" >
+                                            <label class="custom-control custom-radio" >
+                                              <input type="radio" class="custom-control-input" name="equip" (change)="pageTranslate()">{{ 'Translate'|translate }}
+                                              <span class="custom-control-indicator"></span>
+                                            </label>
+                                        </div>
+                                        <div class="col-md-3" align="center" >
+                                            <label class="custom-control custom-radio" >
+                                                <input type="radio" class="custom-control-input" name="equip" (change)="pageMerge()">{{ 'Merge'|translate }}
+                                                <span class="custom-control-indicator"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <div style="display: block" id="equipment-page-generate">
+                                      <div class="form-group row">
+                                          <label class="col-md-3 col-form-label" for="text-input">{{ 'Equipment'|translate }}</label>
+                                          <div class="col-md-5">
+                                              <select [(ngModel)]="equipmentGenerate" class="form-control" id="equipment-generate" (change)="showGenerateRegulation()">
+                                                  <option value="0">None</option>
+                                                  <option value="1">A 1</option>
+                                                  <option value="2">A 2</option>
+                                              </select>
+                                          </div>
+                                      </div>
+                                      <div  style="display:none" id="generate-regulation-temperature">
+                                          <div class="form-group row" >
+                                              <label class="col-md-3 col-form-label" for="text-input">{{ 'Regulation temperature'|translate }}	</label>
+                                              <div class="col-md-5">
+                                                  <div class="input-group">
+                                                      <input type="text" id="text-input" name="text-input" class="form-control">
+                                                      <span class="input-group-addon"><small><sup>o</sup>C</small></span>
+                                                  </div>
+                                              </div>
+                                          </div>
+                                      </div>
+                                    </div>
+
+                                    <div style="display: none" id="equipment-page-rotate">
+                                      <div class="form-group row">
+                                          <label class="col-md-3 col-form-label" for="text-input">{{ 'Equipment'|translate }}</label>
+                                          <div class="col-md-5">
+                                              <select class="form-control">
+                                                  <option value="0">None</option>
+                                                  <option value="1">A 1</option>
+                                                  <option value="2">A 2</option>
+                                              </select>
+                                          </div>
+                                      </div>
+                                    </div>
+
+                                    <div style="display: none" id="equipment-page-translate">
+                                      <div class="form-group row">
+                                              <label class="col-md-3 col-form-label" for="text-input">{{ 'Equipment'|translate }}</label>
+                                              <div class="col-md-5">
+                                                  <select class="form-control">
+                                                      <option>None</option>
+                                                      <option>A 1</option>
+                                                      <option>A 2</option>
+                                                  </select>
+                                              </div>
+                                      </div>
+                                      <div class="form-group row">
+                                              <label class="col-md-3 col-form-label" for="text-input">{{ 'New position'|translate }}</label>
+                                              <div class="col-md-5">
+                                                  <div class="input-group">
+                                                      <input type="text" id="text-input" name="text-input" class="form-control">
+                                                      <span class="input-group-addon"><small>s</small></span>
+                                                  </div>
+                                              </div>
+                                      </div>
+                                      <div class="form-group row">
+                                              <label class="col-md-3 col-form-label" for="text-input">{{ 'Dwelling time'|translate }}</label>
+                                              <div class="col-md-5">
+                                                  <div class="input-group">
+                                                      <input type="text" id="text-input" name="text-input" class="form-control">
+                                                      <span class="input-group-addon"><small>s</small></span>
+                                                  </div>
+                                              </div>
+                                      </div>
+                                    </div>
+
+                                    <div style="display: none" id="equipment-page-merge">
+                                          <div class="form-group row">
+                                              <label class="col-md-3 col-form-label" for="text-input">{{ 'Equipment'|translate }} 1</label>
+                                              <div class="col-md-5">
+                                                  <select [(ngModel)]="equipmentMerge1" class="form-control" (change)="showMergeRegulation()">
+                                                      <option value="0">None</option>
+                                                      <option value="1">A 1</option>
+                                                      <option value="2">A 2</option>
+                                                  </select>
+                                              </div>
+                                          </div>
+                                          <div class="form-group row">
+                                                  <label class="col-md-3 col-form-label" for="text-input">{{ 'Equipment'|translate }} 2</label>
+                                                  <div class="col-md-5">
+                                                      <select [(ngModel)]="equipmentMerge2"  class="form-control" (change)="showMergeRegulation()">
+                                                          <option value="0">None</option>
+                                                          <option value="1">A 1</option>
+                                                          <option value="2">A 2</option>
+                                                      </select>
+                                                  </div>
+                                          </div>
+                                          <div style="display:none" id="merge-regulation-temperature">
+                                              <div class="form-group row" >
+                                                  <label class="col-md-3 col-form-label" for="text-input">{{ 'Regulation temperature'|translate }}	</label>
+                                                  <div class="col-md-5">
+                                                      <div class="input-group">
+                                                          <input type="text" id="text-input" name="text-input" class="form-control">
+                                                          <span class="input-group-addon"><small><sup>o</sup>C</small></span>
+                                                      </div>
+                                                  </div>
+                                              </div>
+                                          </div>
+                                    </div>
+                            </div>
+              </div>
+            </div>
+            <div class="card-footer">
+                <div class="row text-center" style="display: flex; align-items: center; justify-content: center;">
+                    <button type="button" class="btn btn-success" style="margin: 10px 10px 10px 10px;"><i class="fa fa-floppy-o" aria-hidden="true"></i> {{ 'Save'|translate }}</button>
+                    <button type="button" class="btn btn-primary" style="margin: 10px 10px 10px 10px;" id="equipment-filter"><i class="fa fa-filter"></i> {{ 'Filter'|translate }}</button>
+                    <button type="button" class="btn btn-warning" style="margin: 10px 10px 10px 10px;" id="equipment-calculate"><i class="fa fa-calculator"></i> {{ 'Calculate'|translate }}</button>
+                </div>
+            </div>
+          </div>
+      </div>
+
+      <div style="margin-top:10px;display:none" id="page-load-equipment">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                  <strong>{{ 'EQUIPMENTS LIST'|translate }}</strong>
+                  <div id="study-search-box-container">
+                    <div class="input-group input-group-sm" id="study-search-box">
+                      <input type="text" class="form-control" placeholder="Search" />
+                      <span>
+                        <i class="fa fa-search" aria-hidden="true"></i>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div style="max-height: 300px;">
+                  <div class="list-group">
+                    <a class="list-group-item list-group-item-action" (click)="changeEquipmentLoad(1)">
+                      <div class="d-flex w-100 justify-content-between">
+                        A 1
+                      </div>
+                    </a>
+                    <a class="list-group-item list-group-item-action" (click)="changeEquipmentLoad(2)">
+                      <div class="d-flex w-100 justify-content-between">
+                        A 1
+                      </div>
+                    </a>
+                    <a class="list-group-item list-group-item-action" (click)="changeEquipmentLoad(3)">
+                      <div class="d-flex w-100 justify-content-between">
+                        A 1
+                      </div>
+                    </a>
+                  </div>
+                </div>
+              </div>
+          </div>
+          <div class="col-md-6">
+            <div class="card">
+              <div class="card-header">
+                <strong>{{ 'BUILD'|translate }}</strong>
+              </div>
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-md-12">
+                    <div class="form-group row">
+                      <label class="col-md-3 col-form-label" for="text-input">{{ 'Designation'|translate }}</label>
+                      <div class="col-md-4">
+                        <input type="text" id="text-input" name="text-input" class="form-control">
+                      </div>
+                      <label class="col-md-2 col-form-label" for="text-input">{{ 'Version'|translate }}</label>
+                      <div class="col-md-3">
+                        <input type="text" id="text-input" name="text-input" class="form-control" placeholder="0.0">
+                      </div>
+                    </div>
+                    <div class="form-group row">
+                      <label class="col-md-3 col-form-label" for="text-input">{{ 'Comment'|translate }}</label>
+                      <div class="col-md-9">
+                        <textarea type="text" id="text-input" name="text-input" class="form-control"></textarea>
+                      </div>
+                    </div>
+                    <div class="form-group row">
+                      <div style="display:none" class="col-md-12" id="page-load-equipment3">
+                        <div class="form-group row">
+                          <label class="col-md-7 col-form-label" for="text-input">{{ 'Regulation temperature'|translate }}</label>
+                          <div class="col-md-5">
+                            <div class="input-group">
+                              <input type="text" class="form-control" placeholder="0.00">
+                              <span class="input-group-addon"><small>°C</small></span>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="form-group row">
+                          <label class="col-md-7 col-form-label" for="text-input">{{ 'Click here to change this value'|translate }} </label>
+                          <div class="col-md-5">
+                            <img src="./assets/img/change_tr.gif" alt="Click here" (click)="modalTempSetpoint.show()">
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:10px; display: none" id="page-load-equipment1">
+          <div class="card">
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-6">
+                              <div class="row form-group">
+                                <label class="col-md-5 col-form-label">{{ 'Family'|translate }}</label>
+                                <div class="col-md-7">
+                                  <select class="form-control" >
+                                    <option >None</option>
+                                    <option >option 1</option>
+                                    <option >option 1</option>
+                                  </select>
+                                </div>
+                              </div>
+                              <div class="row form-group">
+                                <label class="col-md-5 col-form-label">{{ 'Model'|translate }}</label>
+                                <div class="col-md-7">
+                                  <select class="form-control" >
+                                    <option >None</option>
+                                    <option >option 1</option>
+                                    <option >option 1</option>
+                                  </select>
+                                </div>
+                              </div>
+                              <div class="form-group row">
+                                <label class="col-md-5 col-form-label" for="text-input">{{ 'Max flow rate'|translate }}	</label>
+                                <div class="col-md-7">
+                                  <div class="input-group">
+                                    <input type="text" class="form-control" placeholder="0.00">
+                                    <span class="input-group-addon"><small>kg/h</small></span>
+                                  </div>
+                                </div>
+                              </div>
+                              <div class="form-group row">
+                                <label class="col-md-5 col-form-label" for="text-input">{{ 'Mimimum regulation temperature'|translate }}	</label>
+                                <div class="col-md-7">
+                                  <div class="input-group">
+                                    <input type="text" class="form-control" placeholder="0.00">
+                                    <span class="input-group-addon"><small>°C</small></span>
+                                  </div>
+                                </div>
+                              </div>
+                              <div class="form-group row">
+                                <label class="col-md-5 col-form-label" for="text-input">{{ 'Nozzles/ramps number'|translate }}	</label>
+                                <div class="col-md-7">
+                                  <input type="text" class="form-control" placeholder="0.00">
+                                </div>
+                              </div>
+                              <div class="form-group row">
+                                <label class="col-md-5 col-form-label" for="text-input">{{ 'Ramp max number'|translate }}	</label>
+                                <div class="col-md-7">
+                                  <input type="text" class="form-control" placeholder="0.00">
+                                </div>
+                              </div>
+                              <div class="form-group row">
+                                    <label class="col-md-5" for="text-input">STD	</label>
+                                    <div class="col-md-1">
+                                      <input type="checkbox" class="form-control">
+                                    </div>
+                              </div>
+                    </div>
+                <div class="col-md-6">
+                  <div class="form-group row">
+                    <label class="col-md-4 col-form-label" for="text-input">{{ 'Length'|translate }}</label>
+                    <div class="col-md-8">
+                      <div class="input-group">
+                        <input type="text" class="form-control" placeholder="0.00">
+                        <span class="input-group-addon"><small>m</small></span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group row">
+                    <label class="col-md-4 col-form-label" for="text-input">{{ 'Width'|translate }}</label>
+                    <div class="col-md-8">
+                      <div class="input-group">
+                        <input type="text" class="form-control" placeholder="0.00">
+                        <span class="input-group-addon"><small>m</small></span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group row">
+                    <label class="col-md-4 col-form-label" for="text-input">{{ 'Height'|translate }}</label>
+                    <div class="col-md-8">
+                      <div class="input-group">
+                        <input type="text" class="form-control" placeholder="0.00">
+                        <span class="input-group-addon"><small>m</small></span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group row">
+                    <label class="col-md-4 col-form-label" for="text-input">TR {{ 'number'|translate }}	</label>
+                    <div class="col-md-8">
+                      <input type="text" class="form-control" placeholder="0.00">
+                    </div>
+                  </div>
+                  <div class="form-group row">
+                    <label class="col-md-4 col-form-label" for="text-input">Ts {{ 'number'|translate }}	</label>
+                    <div class="col-md-8">
+                      <input type="text" class="form-control" placeholder="0.00">
+                    </div>
+                  </div>
+                  <div class="form-group row">
+                    <label class="col-md-4 col-form-label" for="text-input">VC {{ 'number'|translate }}	</label>
+                    <div class="col-md-8">
+                      <input type="text" class="form-control" placeholder="0.00">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="display: none" id="page-load-equipment2">
+          <div class="card">
+                        <div class="card-header">
+                            <strong>{{ 'STATUS'|translate }}</strong>
+                        </div>
+                        <div class="row card-status">
+                            <div class="col-md-2" align="center" >
+                                <label class="custom-control custom-radio" >
+                                  <input type="radio" class="custom-control-input" name="statusEquip" checked>{{ 'Draft'|translate }}
+                                  <span class="custom-control-indicator"></span>
+                                </label>
+                            </div>
+                            <div class="col-md-2" align="center" >
+                                <label class="custom-control custom-radio" >
+                                  <input type="radio" class="custom-control-input" name="statusEquip" >{{ 'Test'|translate }}
+                                  <span class="custom-control-indicator"></span>
+                                </label>
+                            </div>
+                            <div class="col-md-2" align="center" >
+                                <label class="custom-control custom-radio" >
+                                  <input type="radio" class="custom-control-input" name="statusEquip">{{ 'Active'|translate }}
+                                  <span class="custom-control-indicator"></span>
+                                </label>
+                            </div>
+                            <div class="col-md-2" align="center" >
+                                <label class="custom-control custom-radio" >
+                                    <input type="radio" class="custom-control-input" name="statusEquip" >{{ 'Certified'|translate }}
+                                    <span class="custom-control-indicator"></span>
+                                </label>
+                            </div>
+                            <div class="col-md-2" align="center" >
+                                <label class="custom-control custom-radio" >
+                                    <input type="radio" class="custom-control-input" name="statusEquip">{{ 'Obsolete'|translate }}
+                                    <span class="custom-control-indicator"></span>
+                                </label>
+                            </div>
+                        </div>
+            </div>
+          <div class="card product-container">
+                    <div class="card-header">
+                      <strong>{{ 'PARAMETERS'|translate }}</strong>
+                    </div>
+                    <div class="card-body">
+                      <table class="table table-bordered table-sm mb-0">
+                        <caption>{{ 'Ramps'|translate }}</caption>
+                        <tr>
+                          <th style="vertical-align:middle;text-align:center">{{ 'Position ramp'|translate }} (m)</th>
+                          <th style="vertical-align:middle;text-align:center">{{ 'Action'|translate }}</th>
+                        </tr>
+                        <tr>
+                          <td align="center"style="vertical-align:middle">8.0</td>
+                          <td align="center" width="10%" >
+                            <div style="margin-top:0.5em">
+                              <button type="button" class="btn btn-danger btn-sm"><i class="fa fa-minus-circle" aria-hidden="true"></i>
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                        <tr >
+                            <td align="center"style="vertical-align:middle">8.0</td>
+                            <td align="center" width="10%">
+                                <div style="margin-top:0.5em">
+                                    <button type="button" class="btn btn-danger btn-sm"><i class="fa fa-minus-circle" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td align="center" style="vertical-align:middle">
+                                <input type="text" class="form-control col-md-6">
+                            </td>
+                            <td align="center">
+                                <div style="margin-top:0.5em">
+                                    <button type="button" class="btn btn-success btn-sm">{{ 'Add'|translate }}</button>
+                                </div>
+                            </td>
+                        </tr>
+                      </table>
+                      <table class="table table-bordered table-sm mb-0">
+                            <caption>{{ 'Consumptions'|translate }}</caption>
+                            <tr>
+                              <th style="vertical-align:middle;text-align:center">{{ 'Temperature'|translate }} (°C)</th>
+                              <th style="vertical-align:middle;text-align:center">{{ 'Consumption of maintains in cold'|translate }} (kg/h)</th>
+                              <th style="vertical-align:middle;text-align:center">{{ 'Consumption of stake in cold'|translate }} (kg)</th>
+                              <th style="vertical-align:middle;text-align:center">{{ 'Action'|translate }}</th>
+
+                            </tr>
+                            <tr>
+                              <td align="center"style="vertical-align:middle">8.0</td>
+                              <td align="center"style="vertical-align:middle">8.0</td>
+                              <td align="center"style="vertical-align:middle">8.0</td>
+                              <td align="center" width="10%">
+                                <div style="margin-top:0.5em">
+                                  <button type="button" class="btn btn-danger btn-sm"><i class="fa fa-minus-circle" aria-hidden="true"></i>
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                                <td align="center"style="vertical-align:middle">8.0</td>
+                                <td align="center"style="vertical-align:middle">8.0</td>
+                                <td align="center"style="vertical-align:middle">8.0</td>
+                                <td align="center" width="10%">
+                                    <div style="margin-top:0.5em">
+                                        <button type="button" class="btn btn-danger btn-sm"><i class="fa fa-minus-circle" aria-hidden="true"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align="center" style="vertical-align:middle">
+                                    <input type="text" class="form-control col-md-6">
+                                </td>
+                                <td align="center" style="vertical-align:middle">
+                                    <input type="text" class="form-control col-md-6">
+                                </td>
+                                <td align="center" style="vertical-align:middle">
+                                    <input type="text" class="form-control col-md-6">
+                                </td>
+                                <td align="center">
+                                    <div style="margin-top:0.5em">
+                                        <button type="button" class="btn btn-success btn-sm">{{ 'Add'|translate }}</button>
+                                    </div>
+                                </td>
+                            </tr>
+
+                      </table>
+                    </div>
+                    <div class="card-footer">
+                        <div class="row text-center" style="display: flex; align-items: center; justify-content: center;">
+                            <button type="button" class="btn btn-success" style="margin: 10px 10px 10px 10px;"><i class="fa fa-floppy-o" aria-hidden="true"></i>{{ 'Save'|translate }}</button>
+                            <button type="button" class="btn btn-primary" style="margin: 10px 10px 10px 10px;" id="equipment-filter"><i class="fa fa-filter"></i>{{ 'Filter'|translate }}</button>
+                            <button type="button" class="btn btn-warning" style="margin: 10px 10px 10px 10px;" id="equipment-calculate"><i class="fa fa-calculator"></i>{{ 'Calculate'|translate }}</button>
+                            <button type="button" class="btn btn-danger" style="margin: 10px 10px 10px 10px;"><i class="fa fa-trash-o"></i> {{ 'Delete'|translate }}</button>
+                            <button class="btn btn-secondary" type="button" style="margin: 10px 10px 10px 10px;"><i class="fa fa-copy"></i> {{ 'Save As'|translate }}</button>
+                        </div>
+                    </div>
+            </div>
+        </div>
+      </div>
+
+      <div style="margin-top:10px;display:none" id="page-generated-equipment">
+            <table class="table table-bordered table-sm mb-0" >
+                <caption>{{ 'Convection table'|translate }} </caption>
+                <tr>
+                    <td align="center">{{ 'Position'|translate }} <br> (%)</td>
+                    <td align="center"><a href="#/references/equipment" (click)="modalEquipmentProfil.show()">{{ 'Alpha top'|translate }} <br> (Kw/(m².°C))</a></td>
+                    <td align="center"><a href="#/references/equipment" (click)="modalEquipmentProfil.show()">{{ 'Alpha bottom'|translate }}<br> (Kw/(m².°C))</a></td>
+                    <td align="center"><a href="#/references/equipment" (click)="modalEquipmentProfil.show()">{{ 'Alpha left'|translate }} <br>(Kw/(m².°C))</a></td>
+                    <td align="center"><a href="#/references/equipment" (click)="modalEquipmentProfil.show()">{{ 'Alpha right'|translate }}<br> (Kw/(m².°C))</a></td>
+                    <td align="center"><a href="#/references/equipment" (click)="modalEquipmentProfil.show()">{{ 'Alpha front'|translate }}<br> (Kw/(m².°C))</a></td>
+                    <td align="center"><a href="#/references/equipment" (click)="modalEquipmentProfil.show()">{{ 'Alpha rear'|translate }}<br> (Kw/(m².°C))</a></td>
+                    <td align="center">{{ 'Delete'|translate }}</td>
+                </tr>
+                <tr>
+                    <td><a href="#/references/equipment" (click)="modalReferentialEquip.show()">1.00</a></td>
+                    <td>0</td>
+                    <td>0</td>
+                    <td>0</td>
+                    <td>0</td>
+                    <td>0</td>
+                    <td>0</td>
+                    <td align="center" width="10%">
+                        <div style="margin-top:0.5em">
+                            <button type="button" class="btn btn-danger btn-sm"><i class="fa fa-minus-circle" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td><a href="#/references/equipment" (click)="modalReferentialEquip.show()">100.0</a></td>
+                    <td>0</td>
+                    <td>0</td>
+                    <td>0</td>
+                    <td>0</td>
+                    <td>0</td>
+                    <td>0</td>
+                    <td align="center" width="10%">
+                        <div style="margin-top:0.5em">
+                            <button type="button" class="btn btn-danger btn-sm"><i class="fa fa-minus-circle" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            <table class="table table-bordered table-sm mb-0" >
+                    <caption>{{ 'Temperature table'|translate }} </caption>
+                    <tr>
+                        <td align="center">{{ 'Position'|translate }} <br> (%)</td>
+                        <td align="center"><a href="#1" (click)="modalEquipmentProfil2.show()">{{ 'Top temperature'|translate }}<br> (°C)</a></td>
+                        <td align="center"><a href="#1" (click)="modalEquipmentProfil2.show()">{{ 'Temperature bottom'|translate }} <br>(°C)</a></td>
+                        <td align="center"><a href="#1" (click)="modalEquipmentProfil2.show()">{{ 'Temperature left'|translate }} <br>(°C)</a></td>
+                        <td align="center"><a href="#1" (click)="modalEquipmentProfil2.show()">{{ 'Temperature right'|translate }} <br>(°C)</a></td>
+                        <td align="center"><a href="#1" (click)="modalEquipmentProfil2.show()">{{ 'Temperature front'|translate }}<br> (°C)</a></td>
+                        <td align="center"><a href="#1" (click)="modalEquipmentProfil2.show()">{{ 'Temperature rear'|translate }} <br>(°C)</a></td>
+                        <td align="center">{{ 'Delete'|translate }}</td>
+                    </tr>
+                    <tr>
+                        <td><a href="#/references/equipment" (click)="modalReferentialEquip.show()">1.00</a></td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td align="center" width="10%">
+                            <div style="margin-top:0.5em">
+                                <button type="button" class="btn btn-danger btn-sm"><i class="fa fa-minus-circle" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><a href="#/references/equipment" (click)="modalReferentialEquip.show()">100.0</a></td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td align="center" width="10%">
+                            <div style="margin-top:0.5em">
+                                <button type="button" class="btn btn-danger btn-sm"><i class="fa fa-minus-circle" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+            </table>
+            <table class="table table-bordered table-sm mb-0 " >
+                <tr>
+                    <td align="center">
+                        <div style="margin-top:0.5em">
+                            <button type="button" class="btn btn-danger btn-sm"><i class="fa fa fa-trash-o" aria-hidden="true"></i> {{ 'Delete'|translate }}
+                            </button>
+                        </div>
+                    </td>
+                    <td align="center" style="vertical-align:middle">
+                        <input type="text" class="form-control col-md-6" >
+                    </td>
+                    <td align="center">
+                        <div style="margin-top:0.5em">
+                             <button type="button" class="btn btn-success btn-sm">{{ 'Add'|translate }}</button>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+      </div>
+
+      <div style="margin-top:10px;display:none" id="page-curves-equipment">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group row">
+                            <label class="col-md-6 col-form-label" for="text-input">{{ 'Regulation temperature'|translate }}	</label>
+                            <div class="col-md-6">
+                                <div class="input-group" align="center">
+                                    <input type="text" id="text-input" name="text-input" class="form-control" placeholder="0.00">
+                                    <span class="input-group-addon"><small>°C</small></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group row">
+                            <label class="col-md-6 col-form-label" for="text-input">{{ 'Initial temperature of the product'|translate }}	</label>
+                            <div class="col-md-6">
+                                <div class="input-group" align="center">
+                                    <input type="text" id="text-input" name="text-input" class="form-control" placeholder="0.00">
+                                    <span class="input-group-addon"><small>°C</small></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group row">
+                            <label class="col-md-6 col-form-label" for="text-input">{{ 'Loading Rate'|translate }}</label>
+                            <div class="col-md-6">
+                                <div class="input-group" align="center">
+                                    <input type="text" id="text-input" name="text-input" class="form-control" placeholder="0.00">
+                                    <span class="input-group-addon"><small>%</small></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row text-center" style="display: flex; align-items: center; justify-content: center;">
+                    <button type="button" class="btn btn-success" style="margin-bottom: 10px;"> {{ 'Graphic'|translate }}</button>
+                </div>
+                <div class="row">
+                    <img src="./assets/img/char2.png" style="width:100%">
+                    <img src="./assets/img/char3.png" style="width:100%">
+                </div>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Modal -->
+<div bsModal class="modal fade" #modalTempSetpoint="bs-modal" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+                    {{ 'Changing Equipment Temperature Setpoint'|translate }}
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="modalTempSetpoint.hide()">
+                <span aria-hidden="true">×</span>
+              </button>
+            </div>
+            <div class="modal-body row">
+                <div class="col-md-12" align="center">
+                    <table class="table table-bordered table-sm mb-0">
+                                <tr>
+                                  <th style="vertical-align:middle;text-align:center">{{ 'Current temperature'|translate }}</th>
+                                  <td>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" placeholder="0.00">
+                                        <span class="input-group-addon"><small>°C</small></span>
+                                    </div>
+                                  </td>
+                                </tr>
+                                <tr>
+                                    <th style="vertical-align:middle;text-align:center">{{ 'New temperature'|translate }}	</th>
+                                    <td>
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" placeholder="0.00">
+                                            <span class="input-group-addon"><small>°C</small></span>
+                                        </div>
+                                    </td>
+                                </tr>
+                    </table>
+                </div>
+
+            </div><!-- modal-body -->
+            <div class="modal-footer">
+              <button class="btn btn-secondary" data-dismiss="modal" (click)="modalTempSetpoint.hide()">{{ 'Cancel'|translate }}</button>
+              <button class="btn btn-warning" >{{ 'Calculate'|translate }}</button>
+            </div>
+          </div>
+        </div>
+</div>
+<div bsModal class="modal fade" #modalReferentialEquip ="bs-modal" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+          <div class="modal-content" style="width: 100%;">
+            <div class="modal-header">
+                    <strong> {{ 'Equipment - Data Generated'|translate }}</strong>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="modalReferentialEquip.hide()">
+                <span aria-hidden="true">×</span>
+              </button>
+            </div>
+            <div class="modal-body row">
+                <div class="col-md-12" align="center">
+                    <table class="table table-bordered table-sm mb-0">
+                        <caption>{{ 'Convection table'|translate }}</caption>
+                        <tr>
+                            <td align="center">{{ 'Position'|translate }} <br> (%)</td>
+                            <td align="center">{{ 'Alpha top'|translate }} <br> (Kw/(m².°C))</td>
+                            <td align="center">{{ 'Alpha bottom'|translate }}<br> (Kw/(m².°C))</td>
+                            <td align="center">{{ 'Alpha left'|translate }} <br>(Kw/(m².°C))</td>
+                            <td align="center">{{ 'Alpha right'|translate }}<br> (Kw/(m².°C))</td>
+                            <td align="center">{{ 'Alpha front'|translate }}<br> (Kw/(m².°C))</td>
+                            <td align="center">{{ 'Alpha rear'|translate }}<br> (Kw/(m².°C))</td>
+                        </tr>
+                        <tr>
+                            <td align="center" style="vertical-align:middle">0.0</td>
+                            <td align="center" style="vertical-align:middle">
+                                <input type="text" class="form-control col-md-6 input-small" >
+                            </td>
+                            <td align="center" style="vertical-align:middle">
+                                    <input type="text" class="form-control col-md-6 input-small" >
+                            </td>
+                            <td align="center" style="vertical-align:middle">
+                                    <input type="text" class="form-control col-md-6 input-small" >
+                            </td>
+                            <td align="center" style="vertical-align:middle">
+                                    <input type="text" class="form-control col-md-6 input-small" >
+                            </td>
+                            <td align="center" style="vertical-align:middle">
+                                    <input type="text" class="form-control col-md-6 input-small" >
+                            </td>
+                            <td align="center" style="vertical-align:middle">
+                                    <input type="text" class="form-control col-md-6 input-small" >
+                            </td>
+                        </tr>
+                    </table>
+                    <table class="table table-bordered table-sm mb-0">
+                            <caption>{{ 'Temperature table'|translate }}</caption>
+                            <tr>
+                                    <td align="center">{{ 'Position'|translate }} <br> (%)</td>
+                                    <td align="center">{{ 'Top temperature'|translate }}<br> (°C)</td>
+                                    <td align="center">{{ 'Temperature bottom'|translate }} <br>(°C)</td>
+                                    <td align="center">{{ 'Temperature left'|translate }} <br>(°C)</td>
+                                    <td align="center">{{ 'Temperature right'|translate }} <br>(°C)</td>
+                                    <td align="center">{{ 'Temperature front'|translate }}<br> (°C)</td>
+                                    <td align="center">{{ 'Temperature rear'|translate }} <br>(°C)</td>
+                            </tr>
+                            <tr>
+                                <td align="center" style="vertical-align:middle">0.0</td>
+                                <td align="center" style="vertical-align:middle">
+                                    <input type="text" class="form-control col-md-6 input-small" >
+                                </td>
+                                <td align="center" style="vertical-align:middle">
+                                        <input type="text" class="form-control col-md-6 input-small" >
+                                </td>
+                                <td align="center" style="vertical-align:middle">
+                                        <input type="text" class="form-control col-md-6 input-small" >
+                                </td>
+                                <td align="center" style="vertical-align:middle">
+                                        <input type="text" class="form-control col-md-6 input-small" >
+                                </td>
+                                <td align="center" style="vertical-align:middle">
+                                        <input type="text" class="form-control col-md-6 input-small" >
+                                </td>
+                                <td align="center" style="vertical-align:middle">
+                                        <input type="text" class="form-control col-md-6 input-small" >
+                                </td>
+                            </tr>
+                    </table>
+                </div>
+            </div><!-- modal-body -->
+            <div class="modal-footer">
+              <button class="btn btn-secondary" data-dismiss="modal" (click)="modalReferentialEquip.hide()">{{ 'Cancel'|translate }}</button>
+              <button class="btn btn-success" >{{ 'Confirm'|translate }}</button>
+            </div>
+          </div>
+        </div>
+</div>
+<div bsModal class="modal fade" #modalEquipmentProfil="bs-modal" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+                <strong>{{ 'Equipment Profil - Modify'|translate }}</strong>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="modalEquipmentProfil.hide()">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="card">
+                    <div class="card-header">
+                        <strong>{{ 'Vertical scale'|translate }}</strong>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group row" >
+                                    <label class="col-md-6 col-form-label" for="text-input">{{ 'Minimum value'|translate }}</label>
+                                    <div class="col-md-6">
+                                        <input type="text" id="text-input" name="text-input" class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group row" >
+                                    <label class="col-md-5 col-form-label" for="text-input">{{ 'Maximum value'|translate }}</label>
+                                    <div class="col-md-7">
+                                        <input type="text" id="text-input" name="text-input" class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group row" >
+                                    <label class="col-md-6 col-form-label" for="text-input">{{ 'Selected point'|translate }}	</label>
+                                    <div class="col-md-6">
+                                        <input type="text" id="text-input" name="text-input" class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group row" >
+                                    <div class="col-md-5"></div>
+                                    <div class="col-md-7">
+                                        <input type="text" id="text-input" name="text-input" class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="row text-center" style="display: flex; align-items: center; justify-content: center;">
+                            <button type="button" class="btn btn-success btn-sm" style="margin-right: 10px;"> {{ 'Apply'|translate }}</button>
+                            <button type="button" class="btn btn-primary btn-sm" style="margin-right: 10px;" >{{ 'Initialize'|translate }}</button>
+                            <button type="button" class="btn btn-warning btn-sm" style="margin-right: 10px;">{{ 'Generate'|translate }}</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <strong>{{ 'Profile'|translate }}</strong>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <img src="./assets/img/char.png" style="width: 100%">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <strong>{{ 'Select all face to save with the same profil:'|translate }}</strong>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <table class="table table-bordered table-sm mb-0">
+                                <tr>
+                                    <td style="vertical-align:middle;text-align:center">{{ 'Alpha top'|translate }}</td>
+                                    <td style="vertical-align:middle;text-align:center">{{ 'Alpha bottom'|translate }}</td>
+                                    <td style="vertical-align:middle;text-align:center">{{ 'Alpha left'|translate }}</td>
+                                    <td style="vertical-align:middle;text-align:center">{{ 'Alpha right'|translate }}</td>
+                                    <td style="vertical-align:middle;text-align:center">{{ 'Alpha front'|translate }}</td>
+                                    <td style="vertical-align:middle;text-align:center">{{ 'Alpha rear'|translate }} </td>
+                                </tr>
+                                <tr>
+                                    <td align="center">
+                                        <div style="margin-top:0.5em">
+                                            <input type="checkbox" class="form-control">
+                                        </div>
+                                    </td>
+                                    <td align="center">
+                                        <div style="margin-top:0.5em">
+                                            <input type="checkbox" class="form-control">
+                                        </div>
+                                    </td>
+                                    <td align="center">
+                                        <div style="margin-top:0.5em">
+                                            <input type="checkbox" class="form-control">
+                                        </div>
+                                    </td>
+                                    <td align="center">
+                                        <div style="margin-top:0.5em">
+                                            <input type="checkbox" class="form-control">
+                                        </div>
+                                    </td>
+                                    <td align="center">
+                                        <div style="margin-top:0.5em">
+                                            <input type="checkbox" class="form-control">
+                                        </div>
+                                    </td>
+                                    <td align="center">
+                                        <div style="margin-top:0.5em">
+                                            <input type="checkbox" class="form-control">
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-secondary" data-dismiss="modal" (click)="modalEquipmentProfil.hide()">{{ 'Cancel'|translate }}</button>
+              <button class="btn btn-success" >{{ 'Confirm'|translate }}</button>
+            </div>
+          </div>
+        </div>
+</div>
+<div bsModal class="modal fade" #modalEquipmentProfil2="bs-modal" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+                <strong>{{ 'Equipment Profil - Modify'|translate }}</strong>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="modalEquipmentProfil2.hide()">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="card">
+                    <div class="card-header">
+                        <strong>{{ 'Vertical scale'|translate }}</strong>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group row" >
+                                    <label class="col-md-6 col-form-label" for="text-input">{{ 'Minimum value'|translate }}</label>
+                                    <div class="col-md-6">
+                                        <input type="text" id="text-input" name="text-input" class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group row" >
+                                    <label class="col-md-5 col-form-label" for="text-input">{{ 'Maximum value'|translate }}</label>
+                                    <div class="col-md-7">
+                                        <input type="text" id="text-input" name="text-input" class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group row" >
+                                    <label class="col-md-6 col-form-label" for="text-input">{{ 'Selected point'|translate }}	</label>
+                                    <div class="col-md-6">
+                                        <input type="text" id="text-input" name="text-input" class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group row" >
+                                    <div class="col-md-5"></div>
+                                    <div class="col-md-7">
+                                        <input type="text" id="text-input" name="text-input" class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="row text-center" style="display: flex; align-items: center; justify-content: center;">
+                            <button type="button" class="btn btn-success btn-sm" style="margin-right: 10px;"> {{ 'Apply'|translate }}</button>
+                            <button type="button" class="btn btn-primary btn-sm" style="margin-right: 10px;" >{{ 'Initialize'|translate }}</button>
+                            <button type="button" class="btn btn-warning btn-sm" style="margin-right: 10px;">{{ 'Generate'|translate }}</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <strong>{{ 'Profile'|translate }}</strong>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <img src="./assets/img/char.png" style="width: 100%">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <strong>{{ 'Select all face to save with the same profil:'|translate }}</strong>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <table class="table table-bordered table-sm mb-0">
+                                <tr>
+                                    <td style="vertical-align:middle;text-align:center">{{ 'Top temperature'|translate }}</td>
+                                    <td style="vertical-align:middle;text-align:center">{{ 'Temperature bottom'|translate }}</td>
+                                    <td style="vertical-align:middle;text-align:center">{{ 'Temperature left'|translate }}</td>
+                                    <td style="vertical-align:middle;text-align:center">{{ 'Temperature right'|translate }}</td>
+                                    <td style="vertical-align:middle;text-align:center">{{ 'Temperature front'|translate }}</td>
+                                    <td style="vertical-align:middle;text-align:center">{{ 'Temperature rear'|translate }}</td>
+                                </tr>
+                                <tr>
+                                    <td align="center">
+                                        <div style="margin-top:0.5em">
+                                            <input type="checkbox" class="form-control">
+                                        </div>
+                                    </td>
+                                    <td align="center">
+                                        <div style="margin-top:0.5em">
+                                            <input type="checkbox" class="form-control">
+                                        </div>
+                                    </td>
+                                    <td align="center">
+                                        <div style="margin-top:0.5em">
+                                            <input type="checkbox" class="form-control">
+                                        </div>
+                                    </td>
+                                    <td align="center">
+                                        <div style="margin-top:0.5em">
+                                            <input type="checkbox" class="form-control">
+                                        </div>
+                                    </td>
+                                    <td align="center">
+                                        <div style="margin-top:0.5em">
+                                            <input type="checkbox" class="form-control">
+                                        </div>
+                                    </td>
+                                    <td align="center">
+                                        <div style="margin-top:0.5em">
+                                            <input type="checkbox" class="form-control">
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-secondary" data-dismiss="modal" (click)="modalEquipmentProfil2.hide()">{{ 'Cancel'|translate }}</button>
+              <button class="btn btn-success" >{{ 'Confirm'|translate }}</button>
+            </div>
+          </div>
+        </div>
+</div>

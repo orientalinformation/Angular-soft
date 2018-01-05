@@ -1,3 +1,117 @@
-<p>
-  output-charts works!
-</p>
+<div class="container" *ngIf="study">
+  
+  <div class="card product-container">
+    <div class="card-header text-center">
+      <div class="btn-group" role="group">
+        <button class="btn btn-outline-primary btn-sm" (click)="loadLocation()" [class.active]="activePage == 'location'">{{'Location'|translate}}</button>
+        <button class="btn btn-outline-primary btn-sm" (click)="loadheadExchage()" [class.active]="activePage == 'heatExchange'">{{'Heat Exchange'|translate}}</button>
+        <button class="btn btn-outline-primary btn-sm" (click)="loadProductSection()" [class.active]="activePage == 'productSection'">{{'Product Section'|translate}}</button>
+        <button class="btn btn-outline-primary btn-sm" (click)="loadTimeBased()" [class.active]="activePage == 'timeBased'">{{'Time Based'|translate}}</button>
+        <button class="btn btn-outline-primary btn-sm" (click)="loadOutlines2d()" [class.active]="activePage == 'outlines2d'">{{'2D Outlines'|translate}}</button>
+      </div>
+    </div>
+
+    <div class="card-body">
+      <div id="location">
+        <h5 class="text-center">Under construction!</h5>
+      </div>
+      <div id="headExchange" style="display:none">
+        <div class="text-center" id="showLoader"></div>
+        <tabset>
+          <tab>
+            <ng-template tabHeading><i class="icon-graph"></i> {{'Curve'|translate}}</ng-template> 
+            <h5 class="text-danger" style="font-weight:600">{{'Curve'|translate}}</h5>
+            <div class="chart-wrapper" *ngIf="heatExchangeChartData" style="width:70%;margin:auto">
+              <canvas class="chart" baseChart
+                [datasets]="heatExchangeChartData"
+                [options]="heatExchangeChartOptions"
+                [colors]= "heatExchangeColours"
+                [legend]="heatExchangeChartLegend"
+                [chartType]="heatExchangeChartType">
+              </canvas>
+            </div>
+          </tab>
+          <tab>
+            <ng-template tabHeading><i class="icon-doc"></i> {{'Value'|translate}}</ng-template>
+            <h5 class="text-danger" style="font-weight:600">{{'Value'|translate}}</h5>
+            <h6 class="text-primary text-center" *ngIf="symbol">{{'Enthalpy'|translate}} ({{symbol.enthalpySymbol}}) vs {{'Time'|translate}} ({{symbol.timeSymbol}})</h6>
+            <table class="table table-bordered table-sm">
+              <tr>
+                  <th>{{'Equipment'|translate}}</th>
+                  <ng-container *ngFor="let result of headExchangeResult">
+                  <th class="text-center">{{result.x}}</th>
+                </ng-container>
+              </tr>
+              <tr>
+                <td *ngIf="outputProductChart">{{outputProductChart.EQUIP_NAME}}</td>
+                <ng-container *ngFor="let result of headExchangeResult">
+                <td class="text-center">{{result.y}}</td>
+              </ng-container>
+              </tr>
+            </table>
+          </tab>
+        </tabset>
+      </div>
+      <div id="productSection" style="display:none">
+        <h5 class="text-center">Under construction!</h5>
+      </div>
+      <div id="timeBased" style="display:none">
+          <div class="text-center" id="showLoaderTimeBased"></div>
+        <tabset>
+          <tab>
+            <ng-template tabHeading><i class="icon-graph"></i> {{'Curve'|translate}}</ng-template> 
+            <h5 class="text-danger" style="font-weight:600">{{'Curve'|translate}}</h5>
+            <div class="chart-wrapper" *ngIf="timeBasedChartData" style="width:90%;margin:auto">
+              <canvas class="chart" baseChart
+                [datasets]="timeBasedChartData"
+                [options]="timeBasedChartOptions"
+                [colors]= "timeBasedColours"
+                [legend]="timeBasedChartLegend"
+                [chartType]="timeBasedChartType">
+              </canvas>
+            </div>
+          </tab>
+          <tab>
+            <ng-template tabHeading><i class="icon-doc"></i> {{'Value'|translate}}</ng-template>
+            <h5 class="text-danger" style="font-weight:600">{{'Value'|translate}}</h5>
+            <h6 class="text-primary text-center" *ngIf="symbol">{{'Temperature'|translate}} ({{symbol.temperatureSymbol}}) vs {{'Time'|translate}} ({{symbol.timeSymbol}})</h6>
+            <table class="table table-bordered table-sm">
+                <tr>
+                    <th class="text-center">{{'Points'|translate}}</th>
+                    <ng-container *ngFor="let result of timeBasedResult">
+                    <th *ngIf="result.points" class="text-center">{{result.points}}</th>
+                    </ng-container>
+                </tr>
+                <tr *ngIf="timeBasedLabel">
+                  <td class="text-center">{{'Top'|translate}}({{timeBasedLabel.top}})</td>
+                  <ng-container *ngFor="let result of timeBasedResult">
+                  <td *ngIf="result.top" class="text-center">{{result.top}}</td>
+                  </ng-container>
+                </tr>
+                <tr *ngIf="timeBasedLabel">
+                  <td class="text-center">{{'Internal'|translate}}({{timeBasedLabel.int}})</td>
+                  <ng-container *ngFor="let result of timeBasedResult">
+                  <td *ngIf="result.int" class="text-center">{{result.int}}</td>
+                  </ng-container>
+                </tr>
+                <tr *ngIf="timeBasedLabel">
+                  <td class="text-center">{{'Bottom'|translate}}({{timeBasedLabel.bot}})</td>
+                  <ng-container *ngFor="let result of timeBasedResult">
+                  <td *ngIf="result.bot" class="text-center">{{result.bot}}</td>
+                  </ng-container>
+                </tr>
+                <tr *ngIf="timeBasedLabel">
+                  <td class="text-center">{{'Average temperature'|translate}}</td>
+                  <ng-container *ngFor="let result of timeBasedResult">
+                  <td *ngIf="result.average" class="text-center">{{result.average}}</td>
+                  </ng-container>
+                </tr>
+              </table>
+          </tab>
+        </tabset>
+      </div>
+      <div id="outlines2d" style="display:none">
+        <h5 class="text-center">Under construction!</h5>
+      </div>
+    </div>
+</div>

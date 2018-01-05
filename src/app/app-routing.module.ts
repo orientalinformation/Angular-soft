@@ -7,11 +7,13 @@ import { StudyRequiredGuard } from './guards/study-required.guard';
 import { DashboardLayoutComponent } from './layouts/dashboard-layout/dashboard-layout.component';
 import { NoStudyGuard } from './guards/no-study.guard';
 import { ProfileLayoutComponent } from './layouts/profile-layout/profile-layout.component';
+import { AdminLayoutComponent } from './layouts/admin-layout/admin-layout.component';
+
 
 const routes: Routes = [
   {
     path: '',
-    redirectTo: '/open',
+    redirectTo: '/home',
     pathMatch: 'full'
   },
   /**
@@ -83,6 +85,19 @@ const routes: Routes = [
       }, {
         path: 'error',
         loadChildren: './error/error.module#ErrorModule'
+      }
+    ]
+  },
+  /**
+   * AUTHENTICATION LAYOUT
+   */
+  {
+    path: '',
+    component: AdminLayoutComponent,
+    children: [
+      {
+        path: 'admin',
+        loadChildren: './views/admin/admin.module#AdminModule'
       }
     ]
   },
