@@ -9,6 +9,7 @@ import { ModalDirective } from 'ngx-bootstrap/modal/modal.directive';
 import 'chart.piecelabel.js';
 import { TranslateService } from '@ngx-translate/core';
 import { BaseChartDirective } from 'ng2-charts/ng2-charts';
+import { CheckControl } from '../../../api/models/check-control';
 
 @Component({
   selector: 'app-preliminary',
@@ -17,6 +18,7 @@ import { BaseChartDirective } from 'ng2-charts/ng2-charts';
 })
 export class PreliminaryComponent implements OnInit, AfterViewInit {
   @ViewChild('consumptionPieModal') public consumptionPieModal: ModalDirective;
+  @ViewChild('modalSaveAs') public modalSaveAs: ModalDirective;
 
   public study;
   public user;
@@ -30,6 +32,7 @@ export class PreliminaryComponent implements OnInit, AfterViewInit {
   public headBalanceResultsTr;
   public headBalanceResultsTr01;
   public headBalanceResultsTr02;
+  public checkcontrol: CheckControl;
 
   public chartPieData = {
     name: '',
@@ -139,60 +142,19 @@ export class PreliminaryComponent implements OnInit, AfterViewInit {
     );
   }
   ngAfterViewInit() {
-    if (localStorage.getItem('study')) {
-      this.study = JSON.parse(localStorage.getItem('study'));
-      this.api.getSymbol(this.study.ID_STUDY).subscribe(
-        data => {
-          this.symbol = data;
-        }
-      );
+    this.study = JSON.parse(localStorage.getItem('study'));
+    this.refeshView();
+    const params: ApiService.CheckControlViewParams = {
+      idStudy: this.study.ID_STUDY,
+      idProd: this.study.ID_PROD
+    };
 
-      this.api.getProInfoStudy(this.study.ID_STUDY).subscribe(
-        data => {
-          this.resultAna = data;
-        }
-      );
-
-      this.api.getProductById(this.study.ID_PROD).subscribe(
-        data => {
-          // console.log(data);
-        }
-      );
-
-      if (this.study.CALCULATION_MODE == 1) {
-        const params: ApiService.GetEstimationHeadBalanceParams = {
-          idStudy: this.study.ID_STUDY,
-          tr: 1
-        };
-        this.api.getEstimationHeadBalance(params).subscribe(
-          data => {
-            this.headBalanceResultsTr = data;
-            this.activePage = 'heat';
-          }
-        );
-      } else {
-        this.api.getOptimumHeadBalance(this.study.ID_STUDY).subscribe(
-          data => {
-            console.log(data);
-            this.headBalanceResults = data;
-            this.activePage = 'heat';
-          }
-        );
+    this.api.checkControl(params).subscribe(
+      data => {
+        this.checkcontrol = data;
+        console.log(this.checkcontrol);
       }
-
-      this.api.getAnalyticalConsumption(this.study.ID_STUDY).subscribe(
-        data => {
-          this.commonResults = data;
-        }
-      );
-
-      this.api.getAnalyticalEconomic(this.study.ID_STUDY).subscribe(
-        data => {
-          this.economicResults = data;
-        }
-      );
-
-    }
+    );
   }
   onConsumptionPie(element) {
     this.chartPieData.name = element.equipName;
@@ -264,5 +226,61 @@ export class PreliminaryComponent implements OnInit, AfterViewInit {
   }
   closePie() {
     this.consumptionPieModal.hide();
+  }
+  refeshView() {
+    this.api.getSymbol(this.study.ID_STUDY).subscribe(
+      data => {
+        this.symbol = data;
+      }
+    );
+
+    this.api.getProInfoStudy(this.study.ID_STUDY).subscribe(
+      data => {
+        this.resultAna = data;
+      }
+    );
+
+    this.api.getProductById(this.study.ID_PROD).subscribe(
+      data => {
+        // console.log(data);
+      }
+    );
+
+    if (this.study.CALCULATION_MODE == 1) {
+      const params: ApiService.GetEstimationHeadBalanceParams = {
+        idStudy: this.study.ID_STUDY,
+        tr: 1
+      };
+      this.api.getEstimationHeadBalance(params).subscribe(
+        data => {
+          this.headBalanceResultsTr = data;
+          this.activePage = 'heat';
+        }
+      );
+    } else {
+      this.api.getOptimumHeadBalance(this.study.ID_STUDY).subscribe(
+        data => {
+          console.log(data);
+          this.headBalanceResults = data;
+          this.activePage = 'heat';
+        }
+      );
+    }
+
+    this.api.getAnalyticalConsumption(this.study.ID_STUDY).subscribe(
+      data => {
+        this.commonResults = data;
+      }
+    );
+
+    this.api.getAnalyticalEconomic(this.study.ID_STUDY).subscribe(
+      data => {
+        this.economicResults = data;
+      }
+    );
+  }
+
+  onFinishCalculate() {
+    this.refeshView();
   }
 }

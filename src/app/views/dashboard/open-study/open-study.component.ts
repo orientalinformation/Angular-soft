@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ViewChild } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/do';
@@ -10,6 +10,9 @@ import { IOption } from 'ng-select';
 import { Router } from '@angular/router';
 import { Pipe } from '@angular/core';
 import { PipeTransform } from '@angular/core';
+import { ModalDirective } from 'ngx-bootstrap/modal/modal.directive';
+
+import * as Models from '../../../api/models';
 
 import swal from 'sweetalert2';
 
@@ -33,9 +36,11 @@ export class FilterPipe implements PipeTransform {
   styleUrls: ['./open-study.component.scss']
 })
 export class OpenStudyComponent implements OnInit, AfterViewInit {
+  @ViewChild('modalSaveAs') public modalSaveAs: ModalDirective;
   public studies: ViewOpenStudy;
 
   public selectedStudy: Study = null;
+  public studyID: any;
 
   public filterUsers: Array<IOption> = [];
   public filterCompFamilies: Array<IOption> = [];
@@ -43,11 +48,12 @@ export class OpenStudyComponent implements OnInit, AfterViewInit {
   public filterComponents: Array<IOption> = [];
 
   public filterString = '';
+  public name = '';
   public laddaOpeningStudy = false;
   public laddaDeletingStudy = false;
+  public laddaSaveStudyAs = false;
 
-  constructor(private api: ApiService, private router: Router) { }
-
+  constructor(private api: ApiService, private router: Router) {}
   ngOnInit() {
   }
 
@@ -121,8 +127,28 @@ export class OpenStudyComponent implements OnInit, AfterViewInit {
   }
 
   saveStudyAs() {
+    this.laddaSaveStudyAs = true;
+    this.studyID = this.selectedStudy.ID_STUDY;
+    const studyName = this.selectedStudy.STUDY_NAME;
+        // console.log(studyName);
+        // console.log(this.name);
+    this.api.saveStudyAs(
+      {id: this.studyID,
+      name: this.name}
+    ).subscribe(
+        data => {
+        console.log(data);
+        this.laddaSaveStudyAs = false;
+        this.refrestListStudies();
+      }, err => {
+        this.laddaSaveStudyAs = false;
+        console.log(err);
+      },
+      () => {
+        this.laddaDeletingStudy = false;
+      }
+    );
     swal('Warning', 'This feature is under developmente!', 'warning');
   }
-
 
 }

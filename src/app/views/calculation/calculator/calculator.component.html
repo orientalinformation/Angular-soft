@@ -1,16 +1,15 @@
 <!-- Modal Optimum Mode-->
 <div class="modal fade" bsModal #calcModal="bs-modal" role="dialog" aria-labelledby="calculatorModal" aria-hidden="true">
+  <div id="showcalculateloading" *ngIf="isLoading"></div>
   <div class="modal-dialog modal-lg modal-primary">
-    <div id="showcalculateloading" *ngIf="isLoading"></div>
-    <div *ngIf="!isLoading">
-      <div class="modal-content" *ngIf="calculate">
+      <div class="modal-content" *ngIf="!isLoading">
         <div class="modal-header">
           <strong class="modal-title pull-left">{{ 'CALCULATOR - OPTIMUM MODE' | translate }}</strong>
           <button type="button" class="close pull-right" aria-label="Close" (click)="calcModal.hide()">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
-        <div class="modal-body">
+        <div class="modal-body"  *ngIf="calculate">
           <table class="table table-bordered table-sm">
             <tr>
               <th style="text-align:center">{{ 'Optimization required' | translate }}</th>
@@ -28,13 +27,13 @@
                 </label>
               </td>
               <td align="center">
-                <input type="text" name="epsilonTemp" id="epsilonTemp" style="width:80px;" [(ngModel)]="calculate.epsilonTemp">
+                <input type="text" name="epsilonTemp" id="epsilonTemp" style="width:80px;" [(ngModel)]="calculate.epsilonTemp" [disabled]="calculate.scheckOptim != 1">
               </td>
               <td align="center">
-                <input type="text" name="epsilonEnth" id="epsilonEnth" style="width:80px;" [(ngModel)]="calculate.epsilonEnth">
+                <input type="text" name="epsilonEnth" id="epsilonEnth" style="width:80px;" [(ngModel)]="calculate.epsilonEnth" [disabled]="calculate.scheckOptim != 1">
               </td>
               <td align="center">
-                <input type="text" name="nbOptimIter" id="nbOptimIter" style="width:80px;" [(ngModel)]="calculate.nbOptimIter" [disabled]="calculate.sdisableOptim">
+                <input type="text" name="nbOptimIter" id="nbOptimIter" style="width:80px;" [(ngModel)]="calculate.nbOptimIter" [disabled]="calculate.sdisableOptim != 1">
               </td>
             </tr>
           </table>
@@ -78,7 +77,7 @@
           <div class="text-center">
             <button type="button" class="btn btn-secondary btn-lg" id="settbutton" (click)="openSetting()">
               <i class="icon-settings"></i>&nbsp; {{'Setting'|translate}}</button>
-            <button type="button" class="btn btn-primary btn-lg" id="calcbutton" (click)="startCalculate()" [ladda]="laddaIsCalculating">
+            <button type="button" class="btn btn-primary btn-lg" id="calcbutton" (click)="calcModal.hide();startCalculate();brainOptimum.show();loadProgressBar();" [ladda]="laddaIsCalculating">
               <i class="icon-energy"></i>&nbsp; {{'Calculate'|translate}}</button>
           </div>
           <br>
@@ -218,7 +217,6 @@
           <!-- End table settings  -->
         </div>
       </div>
-    </div>
   </div>
 </div>
 <!-- End Modal Optimum Mode -->
@@ -242,13 +240,15 @@
           </tr>
           <tr>
             <td align="center">
-              <input type="text" *ngFor="let ts of brainCalculator.dwellingTimes" name="ts{{ ts.name }}" id="" style="width:80px;" [(ngModel)]="ts.value">
+              <input type="text" *ngFor="let ts of brainCalculator.dwellingTimes" name="ts{{ ts.name }}" id="" style="width:80px;" 
+              [(ngModel)]="ts.value" [disabled]="brainCalculator.typeCalculate == 3">
             </td>
             <td align="center">
               <input type="text" *ngFor="let tr of brainCalculator.temperatures" name="tr{{ tr.name }}" id="" style="width:80px;" [(ngModel)]="tr.value">
             </td>
             <td align="center">
-              <input type="text" name="toc" id="toc" style="width:80px;" [(ngModel)]="brainCalculator.toc">
+              <input type="text" name="toc" id="toc" style="width:80px;" [(ngModel)]="brainCalculator.toc"
+               [disabled]="brainCalculator.typeCalculate  == 1 || brainCalculator.typeCalculate == 2">
             </td>
           </tr>
         </table>
@@ -275,7 +275,8 @@
               <input type="text" name="epsilonEnth" id="epsilonEnth" style="width:80px;" [disabled]="brainCalculator.scheckOptim != 1" [(ngModel)]="brainCalculator.epsilonEnth">
             </td>
             <td align="center">
-              <input type="text" name="nbOptimIter" id="nbOptimIter" style="width:80px;" [disabled]="brainCalculator.scheckOptim != 1" [(ngModel)]="brainCalculator.nbOptimIter">
+              <input type="text" name="nbOptimIter" id="nbOptimIter" style="width:80px;" [disabled]="brainCalculator.scheckOptim != 1 || brainCalculator.typeCalculate == 3" 
+              [(ngModel)]="brainCalculator.nbOptimIter">
             </td>
           </tr>
         </table>
@@ -306,12 +307,15 @@
             </td>
             <td align="center">
               <label class="custom-control custom-checkbox">
-                <input type="checkbox" class="custom-control-input" name="cbCharts" id="cbCharts" [checked]="brainCalculator.scheckStorage == 1">
+                <input type="checkbox" class="custom-control-input" name="cbCharts" id="cbCharts" 
+                [checked]="brainCalculator.scheckStorage == 1" [(ngModel)]="brainCalculator.scheckStorage" 
+                [disabled]="brainCalculator.typeCalculate == 2 || brainCalculator.typeCalculate == 3">
                 <span class="custom-control-indicator"></span>
               </label>
             </td>
             <td align="center">
-              <input type="text" name="storagestep" id="storagestep" style="width:80px;" [(ngModel)]="brainCalculator.storagestep">
+              <input type="text" name="storagestep" id="storagestep" style="width:80px;" [(ngModel)]="brainCalculator.storagestep" 
+              [disabled]="brainCalculator.scheckStorage != 1">
             </td>
           </tr>
         </table>
@@ -599,13 +603,15 @@
                           {{ select.value }}
                         </option>
                       </select>
-                      <br> 2
+                      <br> 
+                      2
                       <select name="select2" id="select2" style="width:100px;">
                         <option *ngFor="let select of brainCalculator.select2" [selected]="select.selected" [value]="select.value">
                           {{ select.value }}
                         </option>
                       </select>
-                      <br> 3
+                      <br> 
+                      3
                       <select name="select3" id="select3" style="width:100px;">
                         <option *ngFor="let select of brainCalculator.select3" [selected]="select.selected" [value]="select.value">
                           {{ select.value }}
@@ -619,13 +625,15 @@
                           {{ select.value }}
                         </option>
                       </select>
-                      <br> 2
+                      <br> 
+                      2
                       <select name="select5" id="select5" style="width:100px;">
                         <option *ngFor="let select of brainCalculator.select5" [selected]="select.selected" [value]="select.value">
                           {{ select.value }}
                         </option>
                       </select>
-                      <br> 3
+                      <br> 
+                      3
                       <select name="select6" id="select6" style="width:100px;">
                         <option *ngFor="let select of brainCalculator.select6" [selected]="select.selected" [value]="select.value">
                           {{ select.value }}
@@ -639,13 +647,15 @@
                           {{ select.value }}
                         </option>
                       </select>
-                      <br> 2
+                      <br> 
+                      2
                       <select name="select8" id="select8" style="width:100px;">
                         <option *ngFor="let select of brainCalculator.select8" [selected]="select.selected" [value]="select.value">
                           {{ select.value }}
                         </option>
                       </select>
-                      <br> 3
+                      <br> 
+                      3
                       <select name="select9" id="select9" style="width:100px;">
                         <option *ngFor="let select of brainCalculator.select9" [selected]="select.selected" [value]="select.value">
                           {{ select.value }}
@@ -659,8 +669,8 @@
           </div>
           <div align="center">
             <button class="btn btn-secondary btn-lg" (click)="brainCalculate.hide()">{{ 'Cancel' | translate }}</button>
-            <button class="btn btn-primary btn-lg" (click)="calculWithoutOpti.show();brainCalculate.hide()">{{ 'Calculate without optimization' | translate }}</button>
-            <button class="btn btn-primary btn-lg" (click)="calculWithOpti.show();brainCalculate.hide()">{{ 'Calculate with optimization' | translate }}</button>
+            <button class="btn btn-primary btn-lg" (click)="calculWithoutOpti.show();brainCalculate.hide();startBrainEstimationCalculate();">{{ 'Calculate without optimization' | translate }}</button>
+            <button class="btn btn-primary btn-lg" (click)="calculWithOpti.show();brainCalculate.hide();saveCalculOptim();loadBrainOptim();">{{ 'Calculate with optimization' | translate }}</button>
             <button class="btn btn-secondary btn-lg" (click)="hideSetting()">
               <i class="icon-settings"></i>&nbsp; {{ 'Setting' | translate }}</button>
           </div>
@@ -694,7 +704,7 @@
 <!-- Brain with OPtimum -->
 <div class="modal fade" bsModal #calculWithOpti="bs-modal" aria-hidden="true" role="dialog">
   <div class="modal-dialog modal-primary" role="document">
-    <div class="modal-content">
+    <div class="modal-content"  *ngIf="brainOptim">
       <div class="modal-header">
         <strong>{{ 'BRAIN - OPTIMIZATION' | translate }}</strong>
         <button type="button" class="close pull-right" aria-label="Close" (click)="calculWithOpti.hide()">
@@ -703,42 +713,74 @@
       </div>
       <div class="modal-body">
         <label class="custom-control custom-radio">
-          <input type="radio" name="brainoptim" id="" class="custom-control-input">
+          <input type="radio" name="brainoptim" id="" class="custom-control-input" [(ngModel)]="brainOptim.BRAIN_OPTIM"
+          [value]="brainOptim.BRAIN_OPTIM_TSFIXED" [checked]="brainOptim.BRAIN_OPTIM == 1">
           <span class="custom-control-indicator"></span>
           {{ 'fixed Dwelling Time' | translate }}
         </label>
         <br>
         <label class="custom-control custom-radio">
-          <input type="radio" name="brainoptim" id="" class="custom-control-input">
+          <input type="radio" name="brainoptim" id="" class="custom-control-input" [(ngModel)]="brainOptim.BRAIN_OPTIM" 
+          [value]="brainOptim.BRAIN_OPTIM_TRFIXED" [checked]="brainOptim.BRAIN_OPTIM != 1">
           <span class="custom-control-indicator"></span>
           {{ 'fixed Control Temperature' | translate }}
         </label>
         <br>
         <label class="custom-control custom-radio">
-          <input type="radio" name="brainoptim" id="" class="custom-control-input" disabled>
+          <input type="radio" name="brainoptim" id="" class="custom-control-input" disabled [(ngModel)]="brainOptim.BRAIN_OPTIM_DHPFIXED">
           <span class="custom-control-indicator"></span>
           {{ 'fixed production rate' | translate }}
         </label>
         <br>
         <label class="custom-control custom-radio">
-          <input type="radio" name="brainoptim" id="" class="custom-control-input" disabled>
+          <input type="radio" name="brainoptim" id="" class="custom-control-input" disabled [(ngModel)]="brainOptim.BRAIN_OPTIM_TOPFIXED">
           <span class="custom-control-indicator"></span>
           {{ 'fixed product belt coverage' | translate }}
         </label>
         <br>
         <label class="custom-control custom-radio">
-          <input type="radio" name="brainoptim" id="" class="custom-control-input" disabled>
+          <input type="radio" name="brainoptim" id="" class="custom-control-input" disabled [(ngModel)]="brainOptim.BRAIN_OPTIM_COSTFIXED">
           <span class="custom-control-indicator"></span>
           {{ 'fixed Processing Cost' | translate }}
         </label>
         <br>
         <p>{{ 'Optimization manages the Control Temperature/Residence/Dwell Time relationship, according to your preference.' | translate }}</p>
         <div align="center">
-          <button class="btn btn-secondary btn-lg" (click)="calculWithOpti.hide()"><i class="fa fa-window-close" aria-hidden="true"></i> {{ 'Cancel' | translate }}</button>
-          <button class="btn btn-primary btn-lg"><i class="icon-energy"></i>&nbsp; {{ 'Calculate' | translate }}</button>
+          <button class="btn btn-secondary btn-lg" (click)="calculWithOpti.hide()">{{ 'Cancel' | translate }}</button>
+          <button class="btn btn-primary btn-lg" (click)="startBrainCalculOptim();" [ladda]="laddaIsCalculating"><i class="icon-energy"></i>&nbsp; {{ 'Calculate' | translate }}</button>
         </div>
       </div>
     </div>
   </div>
 </div>
 <!-- End Brain with Optimum -->
+
+<!-- Brain Optinum -->
+<div class="modal fade" role="dialog" aria-hidden="true" bsModal #brainOptimum="bs-modal">
+  <div class="modal-dialog modal-primary">
+    <div class="modal-content">
+      <div class="modal-header">
+        <strong>{{'WAITING' | translate }}</strong>
+        <button type="button" class="close pull-right" aria-label="Close" (click)="calculWithoutOpti.hide()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <strong align="center">{{ 'Please Wait While Cryosoft Starts The High Level Calculation.' | translate }}</strong>
+        <div align="center">
+          <img src="/assets/img/calculator/waiting.gif" style="width:100px;height:100px">
+          <!-- <div class="processingcalculate"></div> -->
+        </div>
+        <div *ngIf="progressbar">
+          <div class="progress-calculate" *ngFor="let progress of progressbar.studyEquipments">
+            <div class="progress-name">{{progress.EQUIP_NAME}}</div>
+            <div class="progress-study">
+              <progress-bar [progress]="100" [color]="'#488aff'"></progress-bar>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End Brain Optimum -->

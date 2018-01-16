@@ -2,6 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { ViewChild } from '@angular/core';
 import { ModalDirective } from 'ngx-bootstrap/modal/modal.directive';
 
+import { ApiService } from '../../../api/services';
+// import { ComponentDB } from '../../../api/models';
+import { Translation } from '../../../api/models';
+
 
 @Component({
   selector: 'app-component',
@@ -13,10 +17,38 @@ export class ComponentComponent implements OnInit {
   @ViewChild('modalDeleteComponent') public modalDeleteComponent: ModalDirective;
   @ViewChild('modalSaveAsComponent') public modalSaveAsComponent: ModalDirective;
   public activePageComponent = '';
-  constructor() { }
+  // public componentDB: ComponentDB;
+  public listFamily: Object;
+  public listSubFamily: Object;
+
+  constructor(private api: ApiService) { 
+    // this.componentDB = new ComponentDB();
+  }
 
   ngOnInit() {
     this.activePageComponent = 'new';
+    // console.log(this.componentDB);
+    this.getListFamily();
+  }
+
+  saveComponent() {
+
+  }
+
+  getListFamily() {
+    // this.api.getFamilyTranslations("en")
+    //   .subscribe(
+    //   data => {
+    //     this.listFamily = data;
+    //     console.log(this.listFamily);
+    //   },
+    //   err => {
+    //     console.log(err);
+    //   },
+    //   () => {
+    //     // console.log('find sttudies completed');
+    //   }
+    //   );
   }
 
   openNewComponent() {

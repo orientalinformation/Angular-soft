@@ -334,6 +334,8 @@ export class ProductComponent implements OnInit, AfterViewInit {
       dim2: this.elementForm.specific_dim,
       elementId: this.elementForm.elementId,
       description: this.elementForm.description,
+      computedmass: this.elementForm.computed_mass,
+      realmass: this.elementForm.real_mass
     }).subscribe(
       response => {
         this.refreshViewModel();

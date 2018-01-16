@@ -5,10 +5,12 @@ import { FormsModule } from '@angular/forms';
 import { ReferencesRoutingModule } from './references-routing.module';
 import { LayoutComponent } from './layout/layout.component';
 import { ComponentComponent } from './component/component.component';
-import { PackingComponent } from './packing/packing.component';
+import { PackingComponent, PackingElmtFilterPipe } from './packing/packing.component';
 import { EquipmentComponent } from './equipment/equipment.component';
 import { PipelineComponent } from './pipeline/pipeline.component';
 import { ModalModule } from 'ngx-bootstrap/modal';
+import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
+
 
 import { SharedModule } from '../../shared/shared.module';
 import { TranslateModule } from '@ngx-translate/core';
@@ -22,8 +24,9 @@ import { TranslateModule } from '@ngx-translate/core';
     FormsModule,
     SharedModule,
     TranslateModule.forChild(),
+    PerfectScrollbarModule
   ],
   declarations: [LayoutComponent, ComponentComponent, PackingComponent, EquipmentComponent,
-    PipelineComponent]
+    PipelineComponent, PackingElmtFilterPipe]
 })
 export class ReferencesModule { }

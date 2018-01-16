@@ -8,4 +8,5 @@ export class MeshPosition {
     MESH_AXIS?: number;
     MESH_ORDER?: number;
     MESH_AXIS_POS?: number;
+    ID_STUDY?: number;
 }

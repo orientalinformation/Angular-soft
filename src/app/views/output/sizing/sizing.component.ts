@@ -11,6 +11,8 @@ import { TranslateService } from '@ngx-translate/core';
 import { ViewSizingEstimationResult } from '../../../api/models/view-sizing-estimation-result';
 import { ViewSizingResultOptimum } from '../../../api/models/view-sizing-result-optimum';
 import { BaseChartDirective } from 'ng2-charts/ng2-charts';
+import { CheckControl } from '../../../api/models/check-control';
+
 @Component({
   selector: 'app-sizing',
   templateUrl: './sizing.component.html',
@@ -22,6 +24,8 @@ export class SizingComponent implements OnInit, AfterViewInit {
   @ViewChild(BaseChartDirective) myEstimationAvailableChart;
   @ViewChild(BaseChartDirective) myGraphOptimumData;
   @ViewChild(BaseChartDirective) myGraphOptimumData01;
+
+  public checkcontrol: CheckControl;
 
   constructor(private api: ApiService, private translate: TranslateService) { }
 
@@ -193,6 +197,18 @@ export class SizingComponent implements OnInit, AfterViewInit {
         }
       );
     }
+
+    const params: ApiService.CheckControlViewParams = {
+      idStudy: this.study.ID_STUDY,
+      idProd: this.study.ID_PROD
+    };
+
+    this.api.checkControl(params).subscribe(
+      data => {
+        this.checkcontrol = data;
+        console.log(this.checkcontrol);
+      }
+    );
   }
   moveSelectedEquipment() {
     for (let i = 0; i < Object.keys(this.selectedEquipList).length; i++) {
@@ -814,6 +830,7 @@ export class SizingComponent implements OnInit, AfterViewInit {
     );
   }
   loadEquipmentEstimationChart() {
+    console.log(this.selectedEquip);
     const showLoaderChange = <HTMLElement>document.getElementById('showLoaderChange');
     showLoaderChange.style.display = 'block';
     const element = this.selectedEquip;

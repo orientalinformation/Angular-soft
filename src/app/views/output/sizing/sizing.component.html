@@ -300,12 +300,22 @@
   </div>
 
   <ng-template #noResult>
-    <div class="card">
-      <div class="card-body text-center text-muted">
+    <div class="card" *ngIf="checkcontrol">
+      <div class="card-body text-center text-muted" *ngIf="checkcontrol.checkcontrol;else isCheckControl">
         <p>{{'No data to display'|translate}}</p>
         <div style="padding-top:10px">
           <button class="btn btn-primary btn-lg text-uppercase" (click)="calculator.open()">{{'Calculate'|translate}}</button>
         </div>  
+      </div>
+    </div>
+  </ng-template>
+  <ng-template #isCheckControl>
+    <div class="card">
+      <div class="card-body text-center text-muted">
+        <p>{{'No data to display'|translate}}</p>
+        <div style="padding-top:10px">
+          <button class="btn btn-primary btn-lg text-uppercase" disabled>{{'Calculate'|translate}}</button>
+        </div>
       </div>
     </div>
   </ng-template>

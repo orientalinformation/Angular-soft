@@ -6,7 +6,7 @@ import { ViewSelect } from './view-select';
 /**
  */
 export class BrainCalculator {
-    relaxCoef?: number;
+    vRadioOn?: number;
     sdisableFields?: number;
     scheckOptim?: number;
     sdisableOptim?: number;
@@ -25,8 +25,8 @@ export class BrainCalculator {
     hRadioOn?: number;
     hRadioOff?: number;
     maxIter?: number;
+    relaxCoef?: number;
     sdisableCalculate?: number;
-    vRadioOn?: number;
     vRadioOff?: number;
     tempPtSurf?: number;
     tempPtIn?: number;
@@ -44,4 +44,6 @@ export class BrainCalculator {
     select7?: ViewSelect[];
     select8?: ViewSelect[];
     select9?: ViewSelect[];
+    sdisableTOC?: number;
+    typeCalculate?: number;
 }

@@ -3,16 +3,17 @@
 /**
  */
 export class Symbol {
-    enthalpySymbol?: string;
+    monetarySymbol?: string;
     productFlowSymbol?: string;
     temperatureSymbol?: string;
     percentSymbol?: string;
     timeSymbol?: string;
     perUnitOfMassSymbol?: string;
+    enthalpySymbol?: string;
     massSymbol?: string;
-    monetarySymbol?: string;
     equipDimensionSymbol?: string;
     convectionSpeedSymbol?: string;
+    prodchartDimensionSymbol?: string;
     consumSymbol?: string;
     consumMaintienSymbol?: string;
     mefSymbol?: string;

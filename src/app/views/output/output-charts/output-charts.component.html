@@ -12,17 +12,149 @@
     </div>
 
     <div class="card-body">
-      <div id="location">
-        <h5 class="text-center">Under construction!</h5>
+      <div id="location" style="position:relative">
+          <div class="text-center" id="showLoaderLocation"></div>
+        <h5 class="text-danger" style="font-weight:600">{{'Selection criteria'|translate}}</h5>
+        <div class="row">
+          <div class="col-md-12">
+            <div class="form-horizontal">
+              <div class="row form-group">
+                <label class="col-md-2 col-form-label">
+                  {{'Equipment'|translate}}
+                </label>
+                <div class="col-md-4">
+                  <select name="" [(ngModel)]="selectedEquip" (ngModelChange)="changeEquipment()" class="form-control">
+                    <ng-container *ngFor="let equip of outputProductChartList">
+                    <option *ngIf="equip" [value]="equip.ID_STUDY_EQUIPMENTS">{{equip.EQUIP_NAME}}</option>
+                    </ng-container>
+                  </select>
+                </div>
+              </div>
+              <div class="row form-group">
+                <label class="col-md-2 col-form-label">
+                  {{'Number of samples'|translate}}
+                </label>
+                <div class="col-md-2">
+                  <input type="text" class="form-control" value="{{nbSteps}}">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6">
+            <div class="img_pararel text-center">
+                <img *ngIf="folderImg" [src]="imgProd3D">
+            </div>
+          </div>
+          <div class="col-md-5">
+            <div class="row form-group">
+              <div class="col-md-4 text-center">
+                <button class="btn btn-block btn-outline-primary" [class.active]="activeBtn == 'points'" (click)="selectPoints()">Points</button>
+              </div>
+              <div class="col-md-4 text-center">
+                <button class="btn btn-block btn-outline-primary" [class.active]="activeBtn == 'axis'" (click)="selectAxis()">Axis</button>
+              </div>
+              <div class="col-md-4 text-center">
+                <button class="btn btn-block btn-outline-primary" [class.active]="activeBtn == 'plans'" (click)="selectPlans()">Plans</button>
+              </div>
+            </div>
+            <div class="row form-group" style="margin-top:30px;height:30px">
+              <div class="col-md-4 text-center">
+                <label class="custom-control custom-radio" style="margin:0">
+                  <input type="radio" name="rbpoint" [value]= "0" (change)="onrbChange(recordType, 0)" class="custom-control-input" [disabled]="radioDisable" [ngModel]="radioChecked">{{rbpoint01}}
+                  <span class="custom-control-indicator"></span>
+                </label>
+              </div>
+              <div class="col-md-4 text-center">
+                <label class="custom-control custom-radio" style="margin:0">
+                  <input type="radio" name="rbpoint" [value]= "1" (change)="onrbChange(recordType, 1)" class="custom-control-input" [disabled]="radioDisable" [ngModel]="radioChecked">{{rbpoint02}}
+                  <span class="custom-control-indicator"></span>
+                </label>
+              </div>
+              <div class="col-md-4 text-center">
+                <label class="custom-control custom-radio" style="margin:0">
+                  <input type="radio" name="rbpoint" [value]= "2" (change)="onrbChange(recordType, 2)" class="custom-control-input" [disabled]="radioDisable" [ngModel]="radioChecked">{{rbpoint03}}
+                  <span class="custom-control-indicator"></span>
+                </label>
+              </div>
+            </div>
+            <div class="row form-group" >
+              <ng-container *ngIf="shape != 5 && shape != 8; else shapeFull">
+                <div class="col-md-4">
+                  <div class="row">
+                      <label class="col-md-3 col-form-label text-success">X</label>
+                      <div class="col-md-9">
+                        <select class="form-control" [disabled]="selectDisable">
+                          <option *ngFor="let axis of mesAxisX" [value]="axis.value">{{ axis.name }}</option>
+                        </select>
+                      </div>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="row">
+                      <label class="col-md-3 col-form-label text-primary">Y</label>
+                      <div class="col-md-9">
+                        <select class="form-control" [disabled]="selectDisable">
+                          <option *ngFor="let axis of mesAxisY" [value]="axis.value">{{ axis.name }}</option>
+                        </select>
+                      </div>
+                  </div>
+                </div>
+              </ng-container>
+              <ng-template #shapeFull>
+                <div class="col-md-4">
+                  <div class="row">
+                      <label class="col-md-3 col-form-label text-success">X</label>
+                      <div class="col-md-9">
+                        <select class="form-control" [disabled]="selectDisable">
+                          <option *ngFor="let axis of mesAxisY" [value]="axis.value">{{ axis.name }}</option>
+                        </select>
+                      </div>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="row">
+                      <label class="col-md-3 col-form-label text-primary">Y</label>
+                      <div class="col-md-9">
+                        <select class="form-control" [disabled]="selectDisable">
+                          <option *ngFor="let axis of mesAxisX" [value]="axis.value">{{ axis.name }}</option>
+                        </select>
+                      </div>
+                  </div>
+                </div>
+              </ng-template>
+              <div class="col-md-4">
+                  <div class="row">
+                      <label class="col-md-3 col-form-label text-warning">Z</label>
+                      <div class="col-md-9">
+                        <select class="form-control" [disabled]="selectDisable">
+                          <option *ngFor="let axis of mesAxisZ" [value]="axis.value">{{ axis.name }}</option>
+                        </select>
+                      </div>
+                  </div>
+                </div>
+            </div>
+            <div class="row form-group" style="margin-top:30px">
+              <div class="col-md-12 text-center">
+                <button class="btn btn-success">Save</button>
+              </div>
+            </div>
+            <div class="text-center" style="padding-top:15px">
+                <img *ngIf="folderImg" src="assets/img/output/{{folderImg}}/orientation.png">
+            </div>
+          </div>
+        </div>
       </div>
-      <div id="headExchange" style="display:none">
+      <div id="headExchange" style="display:none;position:relative">
         <div class="text-center" id="showLoader"></div>
         <tabset>
           <tab>
-            <ng-template tabHeading><i class="icon-graph"></i> {{'Curve'|translate}}</ng-template> 
+            <ng-template tabHeading><i class="icon-graph"></i> {{'Curve'|translate}}</ng-template>
             <h5 class="text-danger" style="font-weight:600">{{'Curve'|translate}}</h5>
+            <div class="text-center" *ngIf="outputProductChart"><h4 style="color:#f00">{{outputProductChart.EQUIP_NAME}}</h4></div>
             <div class="chart-wrapper" *ngIf="heatExchangeChartData" style="width:70%;margin:auto">
-              <canvas class="chart" baseChart
+              <canvas #heatExchangeChart class="chart" baseChart
                 [datasets]="heatExchangeChartData"
                 [options]="heatExchangeChartOptions"
                 [colors]= "heatExchangeColours"
@@ -40,27 +172,96 @@
                   <th>{{'Equipment'|translate}}</th>
                   <ng-container *ngFor="let result of headExchangeResult">
                   <th class="text-center">{{result.x}}</th>
-                </ng-container>
+                  </ng-container>
               </tr>
               <tr>
                 <td *ngIf="outputProductChart">{{outputProductChart.EQUIP_NAME}}</td>
                 <ng-container *ngFor="let result of headExchangeResult">
                 <td class="text-center">{{result.y}}</td>
-              </ng-container>
+                </ng-container>
               </tr>
             </table>
           </tab>
         </tabset>
       </div>
-      <div id="productSection" style="display:none">
-        <h5 class="text-center">Under construction!</h5>
+      <div id="productSection" style="display:none;position:relative">
+        <div class="text-center" id="showLoaderProductSection"></div>
+        <h5 class="text-danger" style="font-weight:600">{{'Select'|translate}}</h5>
+        <div class="row">
+          <div class="col-md-10" style="margin-top:80px">
+            <div class="row">
+              <div class="col-md-4 text-center" *ngIf="shape !=1 && shape != 6">
+                <label class="custom-control custom-radio" style="margin:0">
+                  <input type="radio" name="selectAxe" [value]= "1" (change)="changeAxePS()" class="custom-control-input" [(ngModel)]="selectedAxe" *ngIf="axis1Disable == true" disabled>{{'Axis 1'|translate}}
+                  <span class="custom-control-indicator"></span>
+                </label>
+              </div>
+              <div class="col-md-4 text-center">
+                <label class="custom-control custom-radio" style="margin:0">
+                  <input type="radio" name="selectAxe" [value]= "2" (change)="changeAxePS()" class="custom-control-input" [(ngModel)]="selectedAxe">{{'Axis 2'|translate}}
+                  <span class="custom-control-indicator"></span>
+                </label>
+              </div>
+              <div class="col-md-4 text-center" *ngIf="shape ==3 || shape == 2 || shape == 9">
+                <label class="custom-control custom-radio" style="margin:0">
+                  <input type="radio" name="selectAxe" [value]= "3" (change)="changeAxePS()" class="custom-control-input" [(ngModel)]="selectedAxe" *ngIf="axis3Disable == true" disabled>{{'Axis 3'|translate}}
+                  <span class="custom-control-indicator"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-2 text-center">
+              <img *ngIf="folderImg" src="assets/img/output/STANDING_PLPD/parallel/orientation.png" style="max-width:100%">
+          </div>
+        </div>
+        <tabset>
+          <tab>
+            <ng-template tabHeading><i class="icon-graph"></i> {{'Curve'|translate}}</ng-template>
+          </tab>
+          <tab>
+            <ng-template tabHeading><i class="icon-doc"></i> {{'Value'|translate}}</ng-template>
+            <div class="row form-group">
+              <div class="col-md-2">
+                <h5 class="text-danger" style="font-weight:600;margin-top:5px">{{'Curve number'|translate}}</h5>
+              </div>
+              <div class="col-md-2 text-center" *ngIf="nbSteps">
+                <input type="text" value="{{nbSteps}}" [(ngModel)]="NB_STEPS" class="form-control">
+              </div>
+              <div class="col-md-2 text-center">
+                <button class="btn btn-primary">Refesh</button>
+              </div>
+            </div>
+            <h6 class="text-danger text-center" *ngIf="symbol">{{'Table on the axis'|translate}} {{selectedAxe}} ({{productSectionAxisTemp}}) ({{symbol.prodchartDimensionSymbol}})</h6>
+            <div class="table-responsive">
+              <table class="table table-bordered table-sm">
+                  <tr *ngIf="symbol">
+                    <th class="text-center">{{'Node number'|translate}}</th>
+                    <th class="text-center">{{'Position Axis'|translate}} {{selectedAxe}}<br>({{symbol.prodchartDimensionSymbol}})</th>
+                    <ng-container *ngFor="let result of productSectionResult">
+                      <th *ngIf="result" class="text-center">{{'Temperature at'|translate}}<br>{{result}} {{symbol.timeSymbol}}<br>({{symbol.temperatureSymbol}})</th>
+                    </ng-container>
+                  </tr>
+                  <ng-container *ngFor="let items of productSectionValue, let i = index">
+                    <tr>
+                      <td class="text-center">{{productSectionRecAxis[i]}}</td>
+                      <td class="text-center">{{productSectionMesAxis[i]}}</td>
+                      <ng-container *ngFor="let item of items">
+                      <td class="text-center">{{item}}</td>
+                     </ng-container>
+                    </tr>
+                  </ng-container>
+                </table>
+            </div>
+          </tab>
+        </tabset>
       </div>
-      <div id="timeBased" style="display:none">
+      <div id="timeBased" style="display:none;position:relative">
           <div class="text-center" id="showLoaderTimeBased"></div>
         <tabset>
           <tab>
             <ng-template tabHeading><i class="icon-graph"></i> {{'Curve'|translate}}</ng-template> 
             <h5 class="text-danger" style="font-weight:600">{{'Curve'|translate}}</h5>
+            <div class="text-center" *ngIf="outputProductChart"><h4 style="color:#f00">{{outputProductChart.EQUIP_NAME}}</h4></div>
             <div class="chart-wrapper" *ngIf="timeBasedChartData" style="width:90%;margin:auto">
               <canvas class="chart" baseChart
                 [datasets]="timeBasedChartData"
@@ -74,6 +275,7 @@
           <tab>
             <ng-template tabHeading><i class="icon-doc"></i> {{'Value'|translate}}</ng-template>
             <h5 class="text-danger" style="font-weight:600">{{'Value'|translate}}</h5>
+            <div class="text-center" *ngIf="outputProductChart"><h4 style="color:#f00">{{outputProductChart.EQUIP_NAME}}</h4></div>
             <h6 class="text-primary text-center" *ngIf="symbol">{{'Temperature'|translate}} ({{symbol.temperatureSymbol}}) vs {{'Time'|translate}} ({{symbol.timeSymbol}})</h6>
             <table class="table table-bordered table-sm">
                 <tr>
@@ -110,7 +312,7 @@
           </tab>
         </tabset>
       </div>
-      <div id="outlines2d" style="display:none">
+      <div id="outlines2d" style="display:none;position:relative">
         <h5 class="text-center">Under construction!</h5>
       </div>
     </div>

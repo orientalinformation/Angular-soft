@@ -4,6 +4,8 @@ import { ApiConfiguration } from './api-configuration';
 
 import { ApiService } from './services/api.service';
 import { AdminService } from './services/admin.service';
+import { CalculatorService } from './services/calculator.service';
+import { ReferencedataService } from './services/referencedata.service';
 
 /**
  * Module that provides instances for all API services
@@ -19,7 +21,9 @@ import { AdminService } from './services/admin.service';
   providers: [
     ApiConfiguration,
    ApiService,
-   AdminService
+   AdminService,
+   CalculatorService,
+   ReferencedataService
   ],
 })
 export class ApiModule { }

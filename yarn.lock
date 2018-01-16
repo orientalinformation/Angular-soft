@@ -378,6 +378,10 @@ angular-draggable-droppable@^1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/angular-draggable-droppable/-/angular-draggable-droppable-1.1.1.tgz#70b3b601daaf65a1b3f73d8a4de8683e7fa22356"
 
+angular-progress-bar@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/angular-progress-bar/-/angular-progress-bar-1.0.0.tgz#f1c36b4feecb2720ab2198d73766da65ff9f4cb2"
+
 angular-resizable-element@^1.2.4:
   version "1.2.4"
   resolved "https://registry.yarnpkg.com/angular-resizable-element/-/angular-resizable-element-1.2.4.tgz#983828eaced18f432814581ab4c25892c26197d9"

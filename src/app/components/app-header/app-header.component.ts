@@ -8,7 +8,8 @@ import { User } from '../../api/models/user';
 
 @Component({
   selector: 'app-header',
-  templateUrl: './app-header.component.html'
+  templateUrl: './app-header.component.html',
+  styleUrls: ['./app-header.component.scss']
 })
 export class AppHeaderComponent implements AfterViewInit, OnInit {
   @Input() showStudy;

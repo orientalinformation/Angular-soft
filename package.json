@@ -31,6 +31,7 @@
     "@ngx-translate/http-loader": "^2.0.0",
     "@toverux/ngx-sweetalert2": "^3.0.1",
     "angular-calendar": "0.22.1",
+    "angular-progress-bar": "^1.0.0",
     "angular2-datatable": "0.6.0",
     "angular2-ladda": "1.2.2",
     "angular2-text-mask": "8.0.4",

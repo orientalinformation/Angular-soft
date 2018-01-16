@@ -20,6 +20,8 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
   public study: Models.Study;
   public equipmentsView: Models.ViewStudyEquipment[];
 
+  public laddaDeletingStudyEquip: boolean[];
+
   public laddaListingEquipments = false;
   public laddaAddingEquipment = false;
 
@@ -34,6 +36,29 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
   ngOnInit() {
   }
 
+  deleteStudyEquipment(equip: Models.StudyEquipment, index: number) {
+    this.laddaDeletingStudyEquip[index] = true;
+    this.api.removeStudyEquipment({
+      id: this.study.ID_STUDY,
+      idEquip: equip.ID_STUDY_EQUIPMENTS
+    }).subscribe(
+      (resp) => {
+        this.refreshView();
+      },
+      (err) => {
+        this.laddaDeletingStudyEquip[index] = false;
+        swal('Error', 'Failed to remove equipment, please check your internet connection and' +
+          ' try again, contact administrators if error is persist.', 'warning');
+
+        console.log(err);
+      },
+      () => {
+        this.laddaDeletingStudyEquip[index] = false;
+
+      }
+    );
+  }
+
   recalculateEquipment() {
     swal('Warning', 'This feature is not yet implement', 'warning');
   }
@@ -41,14 +66,15 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
   refreshView() {
     this.api.getStudyEquipments(this.study.ID_STUDY).subscribe(
       (equips: Models.ViewStudyEquipment[]) => {
-        console.log(equips);
+        this.laddaDeletingStudyEquip = new Array<boolean>(equips.length);
+        this.laddaDeletingStudyEquip.fill(false);
         this.equipmentsView = equips;
+        console.log(this.equipmentsView);
       },
       (err) => {
         console.log(err);
       },
       () => {
-
       }
     );
   }

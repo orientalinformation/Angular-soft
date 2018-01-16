@@ -3,17 +3,18 @@
 /**
  */
 export class HeadBalanceMaxResult {
-    vc?: number;
+    vep?: number;
     id?: number;
     equipName?: string;
     calculWarning?: number;
     tr?: number;
     ts?: number;
+    vc?: number;
     specificSize?: string;
-    vep?: number;
     tfp?: number;
     dhp?: number;
     conso?: string;
+    conso_warning?: string;
     toc?: string;
     precision?: number;
 }

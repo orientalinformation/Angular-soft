@@ -12,6 +12,8 @@ import { ModalModule } from 'ngx-bootstrap/modal';
 
 import { FormsModule } from '@angular/forms';
 import { SharedModule } from '../../shared/shared.module';
+import { ProgressBarModule } from 'angular-progress-bar';
+// import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 @NgModule({
   imports: [
@@ -20,7 +22,9 @@ import { SharedModule } from '../../shared/shared.module';
     ModalModule.forRoot(),
     TranslateModule.forChild(),
     SharedModule,
-    FormsModule
+    FormsModule,
+    // MatProgressBarModule
+    ProgressBarModule
   ],
   declarations: [LayoutComponent, CheckControlComponent, CalculationStatusComponent, CalculatorComponent],
   exports: [

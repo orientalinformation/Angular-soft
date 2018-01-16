@@ -175,11 +175,10 @@
         <div class="col">
           <div class="col-md-6">
             <div class="input-group">
-              <label class="switch switch-text switch-primary">
-                <input type="checkbox" id="isStudyAlphaTopFixedDef" name="isStudyAlphaTopFixedDef" class="switch-input" [checked]="calculationparametersdef.STUDY_ALPHA_TOP_FIXED_DEF == 1"
+              <label class="custom-control custom-checkbox cal-check">
+                <input type="checkbox" class="custom-control-input" id="isStudyAlphaTopFixedDef" name="isStudyAlphaTopFixedDef" [checked]="calculationparametersdef.STUDY_ALPHA_TOP_FIXED_DEF == 1"
                   [(ngModel)]="calculationparametersdef.STUDY_ALPHA_TOP_FIXED_DEF">
-                <span class="switch-label" data-on="On" data-off="Off"></span>
-                <span class="switch-handle"></span>
+                <span class="custom-control-indicator"></span>
               </label>
             </div>
           </div>
@@ -187,11 +186,23 @@
         <div class="col">
           <div class="col-md-6">
             <div class="input-group">
-              <label class="switch switch-text switch-primary">
-                <input type="checkbox" id="isStudyAlphaBottomFixedDef" name="isStudyAlphaBottomFixedDef" class="switch-input" [checked]="calculationparametersdef.STUDY_ALPHA_BOTTOM_FIXED_DEF == 1"
+                <label class="custom-control custom-checkbox cal-check">
+                  <input type="checkbox" class="custom-control-input" id="isStudyAlphaBottomFixedDef" name="isStudyAlphaBottomFixedDef" 
+                  [checked]="calculationparametersdef.STUDY_ALPHA_BOTTOM_FIXED_DEF == 1"
                   [(ngModel)]="calculationparametersdef.STUDY_ALPHA_BOTTOM_FIXED_DEF">
-                <span class="switch-label" data-on="On" data-off="Off"></span>
-                <span class="switch-handle"></span>
+                  <span class="custom-control-indicator"></span>
+                </label>
+            </div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="col-md-6">
+            <div class="input-group">
+              <label class="custom-control custom-checkbox cal-check">
+                <input type="checkbox" class="custom-control-input" id="isStudyAlphaLeftFixedDef" name="isStudyAlphaLeftFixedDef" 
+                [checked]="calculationparametersdef.STUDY_ALPHA_LEFT_FIXED_DEF == 1"
+                [(ngModel)]="calculationparametersdef.STUDY_ALPHA_LEFT_FIXED_DEF">
+                <span class="custom-control-indicator"></span>
               </label>
             </div>
           </div>
@@ -199,11 +210,11 @@
         <div class="col">
           <div class="col-md-6">
             <div class="input-group">
-              <label class="switch switch-text switch-primary">
-                <input type="checkbox" class="switch-input" id="isStudyAlphaLeftFixedDef" name="isStudyAlphaLeftFixedDef" [checked]="calculationparametersdef.STUDY_ALPHA_LEFT_FIXED_DEF == 1"
-                  [(ngModel)]="calculationparametersdef.STUDY_ALPHA_LEFT_FIXED_DEF">
-                <span class="switch-label" data-on="On" data-off="Off"></span>
-                <span class="switch-handle"></span>
+              <label class="custom-control custom-checkbox cal-check">
+                <input type="checkbox" class="custom-control-input" id="isStudyAlphaRightFixedDef" name="isStudyAlphaRightFixedDef" 
+                [checked]="calculationparametersdef.STUDY_ALPHA_RIGHT_FIXED_DEF == 1"
+                [(ngModel)]="calculationparametersdef.STUDY_ALPHA_RIGHT_FIXED_DEF">
+                <span class="custom-control-indicator"></span>
               </label>
             </div>
           </div>
@@ -211,11 +222,11 @@
         <div class="col">
           <div class="col-md-6">
             <div class="input-group">
-              <label class="switch switch-text switch-primary">
-                <input type="checkbox" id="isStudyAlphaRightFixedDef" name="isStudyAlphaRightFixedDef" class="switch-input" [checked]="calculationparametersdef.STUDY_ALPHA_RIGHT_FIXED_DEF == 1"
-                  [(ngModel)]="calculationparametersdef.STUDY_ALPHA_RIGHT_FIXED_DEF">
-                <span class="switch-label" data-on="On" data-off="Off"></span>
-                <span class="switch-handle"></span>
+              <label class="custom-control custom-checkbox cal-check">
+                <input type="checkbox" class="custom-control-input" id="isStudyAlphaFrontFixedDef" name="isStudyAlphaFrontFixedDef" 
+                [checked]="calculationparametersdef.STUDY_ALPHA_FRONT_FIXED_DEF == 1"
+                [(ngModel)]="calculationparametersdef.STUDY_ALPHA_FRONT_FIXED_DEF">
+                <span class="custom-control-indicator"></span>
               </label>
             </div>
           </div>
@@ -223,23 +234,11 @@
         <div class="col">
           <div class="col-md-6">
             <div class="input-group">
-              <label class="switch switch-text switch-primary">
-                <input type="checkbox" id="isStudyAlphaFrontFixedDef" name="isStudyAlphaFrontFixedDef" class="switch-input" [checked]="calculationparametersdef.STUDY_ALPHA_FRONT_FIXED_DEF == 1"
-                  [(ngModel)]="calculationparametersdef.STUDY_ALPHA_FRONT_FIXED_DEF">
-                <span class="switch-label" data-on="On" data-off="Off"></span>
-                <span class="switch-handle"></span>
-              </label>
-            </div>
-          </div>
-        </div>
-        <div class="col">
-          <div class="col-md-6">
-            <div class="input-group">
-              <label class="switch switch-text switch-primary">
-                <input type="checkbox" id="isStudyAlphaRearFixedDef" name="isStudyAlphaRearFixedDef" class="switch-input" [checked]="calculationparametersdef.STUDY_ALPHA_REAR_FIXED_DEF == 1"
-                  [(ngModel)]="calculationparametersdef.STUDY_ALPHA_REAR_FIXED_DEF">
-                <span class="switch-label" data-on="On" data-off="Off"></span>
-                <span class="switch-handle"></span>
+              <label class="custom-control custom-checkbox cal-check">
+                <input type="checkbox" class="custom-control-input" id="isStudyAlphaRearFixedDef" name="isStudyAlphaRearFixedDef"
+                [checked]="calculationparametersdef.STUDY_ALPHA_REAR_FIXED_DEF == 1"
+                [(ngModel)]="calculationparametersdef.STUDY_ALPHA_REAR_FIXED_DEF">
+                <span class="custom-control-indicator"></span>
               </label>
             </div>
           </div>

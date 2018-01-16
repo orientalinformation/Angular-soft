@@ -1,0 +1,360 @@
+<div class="container">
+  <div class="card product-container">
+    <div class="row">
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-header">
+            <button type="button" class="btn btn-sm btn-success float-right">
+              <i class="fa fa-floppy-o"></i> {{'Confirm'|translate}}
+            </button>
+          </div>
+          <div class="card-body">
+            <div class="row">
+                <div class="card-block">
+                  <h6 class="card-title"><strong>{{ 'Change password'|translate }}</strong></h6>
+                  <div class="form-group row">
+                      <label class="col-md-3 col-form-label" for="text-input">{{ 'Old'|translate }}</label>
+                      <div class="col-md-7">
+                          <input type="password" id="text-input" name="text-input" class="form-control">
+                      </div>
+                  </div>
+                  <div class="form-group row">
+                      <label class="col-md-3 col-form-label" for="text-input">{{ 'New'|translate }}</label>
+                      <div class="col-md-7">
+                          <input type="password" id="text-input" name="text-input" class="form-control">
+                      </div>
+                  </div>
+                  <div class="form-group row">
+                      <label class="col-md-3 col-form-label" for="text-input">{{ 'Confirm'|translate }}</label>
+                      <div class="col-md-7">
+                          <input type="password" id="text-input" name="text-input" class="form-control">
+                      </div>
+                  </div>
+                </div>
+                <div class="card-block">
+                  <h6 class="card-title"><strong>{{ 'Language and monetary units'|translate }}</strong></h6>
+                  <div class="form-group row">
+                      <label class="col-md-3 col-form-label" for="text-input">{{ 'Language'|translate }}</label>
+                      <div class="col-md-7">
+                          <select class="form-control">
+                            <option>English</option>
+                            <option>French</option>
+                            <option>Italian</option>
+                            <option>German</option>
+                            <option>Spanish</option>
+                          </select>
+                      </div>
+                  </div>
+                  <div class="form-group row">
+                      <label class="col-md-3 col-form-label" for="text-input">{{ 'Monetary'|translate }}</label>
+                      <div class="col-md-7">
+                        <select class="form-control">
+                          <option>EURO (€)</option>
+                          <option>DOLLAR ($)</option>
+                          <option>POUND (£)</option>
+                        </select>
+                      </div>
+                  </div>
+                </div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <strong>{{ ' Default selection for equipment page'|translate }}</strong>
+                <button type="button" class="btn btn-sm btn-success float-right">
+                  <i class="fa fa-floppy-o"></i> {{'Confirm'|translate}}
+                </button>
+            </div>
+            <div class="card-body">
+                            <div class="form-group row">
+                                <label class="col-md-4 col-form-label" for="text-input">{{ 'Type of Refrigeration	'|translate }}</label>
+                                <div class="col-md-6">
+                                    <select class="form-control">
+                                      <option>None</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-md-4 col-form-label" for="text-input">{{ 'Manufacturer'|translate }}</label>
+                                <div class="col-md-6">
+                                  <select class="form-control">
+                                    <option>None</option>
+                                  </select>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-md-4 col-form-label" for="text-input">{{ 'Equipment Series	'|translate }}</label>
+                                <div class="col-md-6">
+                                  <select class="form-control">
+                                    <option>None</option>
+                                  </select>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-md-4 col-form-label" for="text-input">{{ 'Equipment origin	'|translate }}</label>
+                                <div class="col-md-6">
+                                  <select class="form-control">
+                                    <option>None</option>
+                                  </select>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-md-4 col-form-label" for="text-input">{{ 'Process type	'|translate }}</label>
+                                <div class="col-md-6">
+                                  <select class="form-control">
+                                    <option>None</option>
+                                  </select>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-md-4 col-form-label" for="text-input">{{ 'Model'|translate }}</label>
+                                <div class="col-md-6">
+                                  <select class="form-control">
+                                    <option>None</option>
+                                  </select>
+                                </div>
+                            </div>
+
+            </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-header">
+            <strong style="margin-top:5px;margin-left:5px;">{{'UNITS' | translate}}</strong>
+            <button type="button" class="btn btn-sm btn-success float-right">
+              <i class="fa fa-floppy-o"></i> {{'Confirm'|translate}}
+            </button>
+          </div>
+          <div class="card-body">
+            <div style="display: block; width:100%; max-height: 600px;overflow: auto;">
+              <table class="table table-hover table-sm mb-0 " >
+                <thead>
+                  <tr>
+                      <th style="vertical-align:middle;text-align:center" width="70%">{{ 'Type'|translate }}</th>
+                      <th style="vertical-align:middle;text-align:center" width="30%">{{ 'Symbol'|translate }}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                      <td style="vertical-align:middle">Conductivity</td>
+                      <td align="center" width="10%">
+                          <div style="margin-top:0.5em">
+                              <select class="form-control">
+                                <option>W/(m.°C)</option>
+                                <option>Btu/(ft.h.°F)</option>
+                              </select>
+                          </div>
+                      </td>
+                  </tr>
+                  <tr>
+                      <td style="vertical-align:middle">Consumption unit	</td>
+                      <td align="center">
+                          <div style="margin-top:0.5em">
+                            <select class="form-control">
+                              <option>UC</option>
+                              <option>Lbs</option>
+                            </select>
+                          </div>
+                      </td>
+                  </tr>
+                  <tr>
+                      <td style="vertical-align:middle">Consumption unit (CO2)	</td>
+                      <td align="center">
+                          <div style="margin-top:0.5em">
+                            <select class="form-control">
+                              <option>kg</option>
+                              <option>Lbs</option>
+                            </select>
+                          </div>
+                      </td>
+                  </tr>
+                  <tr>
+                      <td style="vertical-align:middle">Consumption unit (LN2)	</td>
+                      <td align="center">
+                          <div style="margin-top:0.5em">
+                            <select class="form-control">
+                              <option>kg</option>
+                              <option>Lbs</option>
+                            </select>
+                          </div>
+                      </td>
+                  </tr>
+                  <tr>
+                      <td style="vertical-align:middle">Heat losses per hour</td>
+                      <td align="center">
+                          <div style="margin-top:0.5em">
+                            <select class="form-control">
+                              <option>UC/h</option>
+                              <option>Lbs/h</option>
+                            </select>
+                          </div>
+                      </td>
+                  </tr>
+                  <tr>
+                      <td style="vertical-align:middle">Heat losses per hour (CO2)</td>
+                      <td align="center">
+                          <div style="margin-top:0.5em">
+                            <select class="form-control">
+                              <option>kg/h</option>
+                              <option>Lbs/h</option>
+                            </select>
+                          </div>
+                      </td>
+                  </tr>
+                  <tr>
+                      <td style="vertical-align:middle">Heat losses per hour (LN2)	</td>
+                      <td align="center">
+                          <div style="margin-top:0.5em">
+                            <select class="form-control">
+                              <option>kg/h</option>
+                              <option>Lbs/h</option>
+                            </select>
+                          </div>
+                      </td>
+                  </tr>
+                  <tr>
+                      <td style="vertical-align:middle">Cooldown</td>
+                      <td align="center">
+                          <div style="margin-top:0.5em">
+                            <select class="form-control">
+                              <option>UC</option>
+                              <option>Lbs</option>
+                            </select>
+                          </div>
+                      </td>
+                  </tr>
+                  <tr>
+                      <td style="vertical-align:middle">Cooldown (CO2)</td>
+                      <td align="center">
+                          <div style="margin-top:0.5em">
+                            <select class="form-control">
+                              <option>kg</option>
+                              <option>Lbs</option>
+                            </select>
+                          </div>
+                      </td>
+                  </tr>
+                  <tr>
+                      <td style="vertical-align:middle">Cooldown (LN2)</td>
+                      <td align="center">
+                          <div style="margin-top:0.5em">
+                            <select class="form-control">
+                              <option>l</option>
+                              <option>kg</option>
+                              <option>Lbs</option>
+                            </select>
+                          </div>
+                      </td>
+                  </tr>
+                  <tr>
+                      <td style="vertical-align:middle">Convection coef</td>
+                      <td align="center">
+                          <div style="margin-top:0.5em">
+                            <select class="form-control">
+                              <option>Kw/(m².°C)</option>
+                              <option>W/(m².°C)</option>
+                              <option>Btu/(ft².h.°F)</option>
+                            </select>
+                          </div>
+                      </td>
+                  </tr>
+                  <tr>
+                      <td style="vertical-align:middle">Convection speed</td>
+                      <td align="center">
+                          <div style="margin-top:0.5em">
+                            <select class="form-control">
+                              <option>Hz</option>
+                            </select>
+                          </div>
+                      </td>
+                  </tr>
+                  <tr>
+                      <td style="vertical-align:middle">Density</td>
+                      <td align="center">
+                          <div style="margin-top:0.5em">
+                            <select class="form-control">
+                              <option>kg/ m³</option>
+                              <option>Lbs/ft3</option>
+                            </select>
+                          </div>
+                      </td>
+                  </tr>
+                  <tr>
+                      <td style="vertical-align:middle">Enthalpy</td>
+                      <td align="center">
+                          <div style="margin-top:0.5em">
+                            <select class="form-control">
+                              <option>kj/kg</option>
+                              <option>kCal/kg</option>
+                              <option>Btu/Lb</option>
+                            </select>
+                          </div>
+                      </td>
+                  </tr>
+                  <tr>
+                      <td style="vertical-align:middle">Equipment dimension</td>
+                      <td align="center">
+                          <div style="margin-top:0.5em">
+                            <select class="form-control">
+                              <option>m</option>
+                              <option>dm</option>
+                              <option>cm</option>
+                              <option>mm</option>
+                              <option>Inch</option>
+                              <option>ft</option>
+                            </select>
+                          </div>
+                      </td>
+                  </tr>
+                  <tr>
+                      <td style="vertical-align:middle">Evaporation</td>
+                      <td align="center">
+                          <div style="margin-top:0.5em">
+                            <select class="form-control">
+                              <option>l/h</option>
+                              <option>Lbs/h</option>
+                            </select>
+                          </div>
+                      </td>
+                  </tr>
+                  <tr>
+                      <td style="vertical-align:middle">Fluid flow</td>
+                      <td align="center">
+                          <div style="margin-top:0.5em">
+                            <select class="form-control">
+                              <option>l/h</option>
+                              <option>Lbs/h</option>
+                            </select>
+                          </div>
+                      </td>
+                  </tr>
+                  <tr>
+                      <td style="vertical-align:middle">Length</td>
+                      <td align="center">
+                          <div style="margin-top:0.5em">
+                            <select class="form-control">
+                              <option>m</option>
+                              <option>dm</option>
+                              <option>cm</option>
+                              <option>mm</option>
+                              <option>Inch</option>
+                              <option>ft</option>
+                            </select>
+                          </div>
+                      </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+
+  </div>
+</div>

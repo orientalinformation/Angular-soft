@@ -139,14 +139,14 @@
                       </label>
                     </td>
                     <td align="center" class="tdResultLink"style="vertical-align:middle">
-                      <a href="javascript:;" class="tdResultLink" (click)="calculator.openRefine(result.id, false)">{{result.equipName}}</a>
+                      <a href="javascript:;" class="tdResultLink" (click)="calculator.openRefine(result.id, false, 1)">{{result.equipName}}</a>
                       <div *ngIf="result.specificSize != ''">
                         {{'Specific equipment'|translate}}
                         <div><a href="" style="color:#f00">{{result.specificSize}}</a></div>
                       </div>
                     </td>
                     <td align="center" class="tdResultLink"style="vertical-align:middle">
-                      <button class="btn btn-outline-success" (click)="calculator.openRefine(result.id, true)">
+                      <button class="btn btn-outline-success" (click)="calculator.openRefine(result.id, true, 2)">
                         <i class="fa fa-recycle"></i>
                       </button>
                     </td>
@@ -184,7 +184,7 @@
                   </tr>
                   <tr *ngFor="let result of headBalanceMaxResults">
                     <td align="center" class="tdResultLink"style="vertical-align:middle">
-                      <a href="javascript:;" class="tdResultLink" (click)="calculator.openRefine(result.id, true)">{{result.equipName}}</a>
+                      <a href="javascript:;" class="tdResultLink" (click)="calculator.openRefine(result.id, true, 3)">{{result.equipName}}</a>
                       <div *ngIf="result.specificSize != ''">
                         {{'Specific equipment'|translate}}
                         <div><a href="" style="color:#f00">{{result.specificSize}}</a></div>
@@ -310,8 +310,8 @@
   </div>
 
   <ng-template #noResult>
-    <div class="card">
-      <div class="card-body text-center text-muted">
+    <div class="card" *ngIf="checkcontrol">
+      <div class="card-body text-center text-muted" *ngIf="checkcontrol.checkcontrol;else isCheckControl">
         <p>{{'No data to display'|translate}}</p>
         <div style="padding-top:10px">
           <button class="btn btn-primary btn-lg text-uppercase" (click)="calculator.open()">{{'Calculate'|translate}}</button>
@@ -319,7 +319,16 @@
       </div>
     </div>
   </ng-template>
-
+  <ng-template #isCheckControl>
+    <div class="card">
+      <div class="card-body text-center text-muted">
+        <p>{{'No data to display'|translate}}</p>
+        <div style="padding-top:10px">
+          <button class="btn btn-primary btn-lg text-uppercase" disabled>{{'Calculate'|translate}}</button>
+        </div>
+      </div>
+    </div>
+  </ng-template>
 
 </div>
 
@@ -362,4 +371,4 @@
   </div>
 </div>
 
-<app-calculator #calculator></app-calculator>
+<app-calculator #calculator (finishCalculate)="onFinishCalculate()"></app-calculator>

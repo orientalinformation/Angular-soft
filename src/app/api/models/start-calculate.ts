@@ -1,4 +1,5 @@
 /* tslint:disable */
+import { ViewSelect } from './view-select';
 
 /**
  */
@@ -23,13 +24,13 @@ export class StartCalculate {
     tempPtIn?: number;
     tempPtBot?: number;
     tempPtAvg?: number;
-    select1?: number;
-    select2?: number;
-    select3?: number;
-    select4?: number;
-    select5?: number;
-    select6?: number;
-    select7?: number;
-    select8?: number;
-    select9?: number;
+    select1?: ViewSelect[];
+    select2?: ViewSelect[];
+    select3?: ViewSelect[];
+    select4?: ViewSelect[];
+    select5?: ViewSelect[];
+    select6?: ViewSelect[];
+    select7?: ViewSelect[];
+    select8?: ViewSelect[];
+    select9?: ViewSelect[];
 }

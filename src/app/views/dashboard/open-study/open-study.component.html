@@ -97,9 +97,35 @@
         <div class="card-footer text-center" *ngIf="selectedStudy">
           <button type="button" class="btn btn-danger" (click)="deleteStudy()" [ladda]="laddaDeletingStudy"><i class="fa fa-trash-o"></i> {{'Delete'|translate}}</button>
             <button type="button" class="btn btn-info" (click)="chainStudy()"><i class="fa fa-chain"></i> {{'Chaining'|translate}}</button>
-            <button type="button" class="btn btn-secondary" (click)="saveStudyAs()"><i class="fa fa-copy"></i> {{'Save As'|translate}}</button>
+            <button type="button" class="btn btn-secondary" (click)="modalSaveAs.show()"><i class="fa fa-copy"></i> {{'Save As'|translate}}</button>
             <button type="button" class="btn btn-primary" (click)="openStudy()" [ladda]="laddaOpeningStudy"><i class="fa fa-folder-open-o"></i> {{'Open'|translate}}</button>
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div bsModal class="modal fade" #modalSaveAs="bs-modal" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <strong>{{'SAVE AS'|translate}}</strong>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="modalSaveAs.hide()">
+          <span aria-hidden="true">×</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div align="center" class="labelSaveAs">{{'ENTER A NEW NAME'|translate}}</div>
+          <div class="row">
+            <label class="col-md-4">{{'New Study:' |translate}}</label>
+            <div class="col-md-4">
+              <input class="form-control" type="text" [(ngModel)]="name">
+            </div>
+          </div>
+      </div><!-- modal-body -->
+      <div class="modal-footer">
+        <button  class="btn btn-secondary" data-dismiss="modal" (click)="modalSaveAs.hide()">Cancel</button>
+        <button class="btn btn-primary" (click)="saveStudyAs()" >Confirm</button>
       </div>
     </div>
   </div>

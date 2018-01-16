@@ -90,7 +90,7 @@
         <th class="text-center align-middle"><small>{{'Conveyor coverage or quantity of product per batch'|translate}}</small></th>
         <th class="text-center align-middle"><small>{{'Actions'|translate}}</small></th>
       </tr>
-      <tr *ngFor="let equip of equipmentsView">
+      <tr *ngFor="let equip of equipmentsView; let i = index">
         <td>
           <label style="margin-left:1.5em;margin-top:0.7em" class="custom-control custom-checkbox">
             <input type="checkbox" name="" id="" class="custom-control-input">
@@ -118,7 +118,7 @@
           <div style="margin-top:0.5em; white-space: nowrap">
             <button type="button" class="btn btn-primary btn-sm" (click)="recalculateEquipment()"><i class="fa fa-th-large"></i></button>
             <button type="button" class="btn btn-success btn-sm" (click)="recalculateEquipment()"><i class="fa fa-pencil"></i></button>
-            <button type="button" class="btn btn-danger btn-sm" (click)="recalculateEquipment()"><i class="fa fa-trash"></i></button>
+            <button type="button" class="btn btn-danger btn-sm" (click)="deleteStudyEquipment(equip ,i)" [ladda]="laddaDeletingStudyEquip[i]"><i class="fa fa-trash"></i></button>
           </div>  
         </td>
       </tr>
@@ -221,8 +221,8 @@
           </div>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-secondary" data-dismiss="modal" (click)="addEquipModal.hide()">Cancel</button>
-        <button class="btn btn-primary" (click)="onAddEquip()" [ladda]="laddaAddingEquipment">Confirm</button>
+        <button class="btn btn-secondary" data-dismiss="modal" (click)="addEquipModal.hide()">{{'Cancel'|translate}}</button>
+        <button class="btn btn-primary" (click)="onAddEquip()" [ladda]="laddaAddingEquipment">{{'Confirm'|translate}}</button>
       </div>
     </div>
   </div>
@@ -232,7 +232,7 @@
     <div class="modal-dialog modal-primary" role="document" style="max-width:60%;" >
       <div class="modal-content">
         <div class="modal-header"><strong >EDIT</strong>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close"(click)="editModal.hide()">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="editModal.hide()">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
