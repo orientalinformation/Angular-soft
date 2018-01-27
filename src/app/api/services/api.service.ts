@@ -11,6 +11,8 @@ import { filter } from 'rxjs/operators/filter';
 
 import { ViewLogin } from '../models/view-login';
 import { Login } from '../models/login';
+import { ViewUnits } from '../models/view-units';
+import { MonetaryCurrency } from '../models/monetary-currency';
 import { MeshParamDef } from '../models/mesh-param-def';
 import { TempRecordPtsDef } from '../models/temp-record-pts-def';
 import { CalculationParametersDef } from '../models/calculation-parameters-def';
@@ -19,10 +21,12 @@ import { CheckControl } from '../models/check-control';
 import { MeshParamDefSave } from '../models/mesh-param-def-save';
 import { TempRecordPtsDefSave } from '../models/temp-record-pts-def-save';
 import { CalculationParametersDefSave } from '../models/calculation-parameters-def-save';
-import { OptimumCalculator } from '../models/optimum-calculator';
-import { StartCalculate } from '../models/start-calculate';
 import { BrainCalculator } from '../models/brain-calculator';
 import { StartBrainCalculate } from '../models/start-brain-calculate';
+import { UnitDataEquipment } from '../models/unit-data-equipment';
+import { Study } from '../models/study';
+import { Error } from '../models/error';
+import { ViewLineList } from '../models/view-line-list';
 import { Symbol } from '../models/symbol';
 import { OptimumResultAna } from '../models/optimum-result-ana';
 import { HeadBalanceResult } from '../models/head-balance-result';
@@ -34,6 +38,7 @@ import { ViewEquipTr } from '../models/view-equip-tr';
 import { ConsumptionResult } from '../models/consumption-result';
 import { EconomicResult } from '../models/economic-result';
 import { StudyEquipment } from '../models/study-equipment';
+import { RecordPosition } from '../models/record-position';
 import { TempRecordPts } from '../models/temp-record-pts';
 import { ProductElmt } from '../models/product-elmt';
 import { MeshPoints } from '../models/mesh-points';
@@ -44,9 +49,11 @@ import { ViewLocation } from '../models/view-location';
 import { ViewHeatExchange } from '../models/view-heat-exchange';
 import { ViewTimeBased } from '../models/view-time-based';
 import { ViewProductSection } from '../models/view-product-section';
+import { saveTempRecordPts } from '../models/save-temp-record-pts';
+import { ViewProductchart2D } from '../models/view-productchart-2d';
 import { Translation } from '../models/translation';
 import { ViewOpenStudy } from '../models/view-open-study';
-import { Study } from '../models/study';
+import { ProductUpdateParams } from '../models/product-update-params';
 import { ViewStudyEquipment } from '../models/view-study-equipment';
 import { Equipment } from '../models/equipment';
 import { Production } from '../models/production';
@@ -60,6 +67,7 @@ import { ViewPackingLayer } from '../models/view-packing-layer';
 import { SavePackingLayer } from '../models/save-packing-layer';
 import { ViewMesh } from '../models/view-mesh';
 import { GenMeshParams } from '../models/gen-mesh-params';
+import { User } from '../models/user';
 
 
 @Injectable()
@@ -139,6 +147,153 @@ export class ApiService extends BaseService {
    */
   logout(): Observable<void> {
     return this.logoutResponse().pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   */
+  unitsResponse(): Observable<HttpResponse<ViewUnits>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    let req = new HttpRequest<any>(
+      "GET",
+      this.rootUrl + `/admin/units`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: ViewUnits = null;
+        _body = _resp.body as ViewUnits
+        return _resp.clone({body: _body}) as HttpResponse<ViewUnits>;
+      })
+    );
+  }
+
+  /**
+   */
+  units(): Observable<ViewUnits> {
+    return this.unitsResponse().pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * create a new monetary currency
+   * @param monetaryCurrency - The monetary currency to create.
+   */
+  createMonetaryCurrencyResponse(monetaryCurrency?: MonetaryCurrency): Observable<HttpResponse<MonetaryCurrency>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    __body = monetaryCurrency;
+    let req = new HttpRequest<any>(
+      "PUT",
+      this.rootUrl + `/monetaryCurrency`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: MonetaryCurrency = null;
+        _body = _resp.body as MonetaryCurrency
+        return _resp.clone({body: _body}) as HttpResponse<MonetaryCurrency>;
+      })
+    );
+  }
+
+  /**
+   * create a new monetary currency
+   * @param monetaryCurrency - The monetary currency to create.
+   */
+  createMonetaryCurrency(monetaryCurrency?: MonetaryCurrency): Observable<MonetaryCurrency> {
+    return this.createMonetaryCurrencyResponse(monetaryCurrency).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * @param body - undefined
+   */
+  saveMonetaryCurrencyResponse(body?: MonetaryCurrency): Observable<HttpResponse<MonetaryCurrency>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    __body = body;
+    let req = new HttpRequest<any>(
+      "PATCH",
+      this.rootUrl + `/monetaryCurrency`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: MonetaryCurrency = null;
+        _body = _resp.body as MonetaryCurrency
+        return _resp.clone({body: _body}) as HttpResponse<MonetaryCurrency>;
+      })
+    );
+  }
+
+  /**
+   * @param body - undefined
+   */
+  saveMonetaryCurrency(body?: MonetaryCurrency): Observable<MonetaryCurrency> {
+    return this.saveMonetaryCurrencyResponse(body).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * @param id - MonetaryCurrency ID
+   */
+  getMonetaryCurrencyByIdResponse(id: number): Observable<HttpResponse<MonetaryCurrency>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    
+    let req = new HttpRequest<any>(
+      "GET",
+      this.rootUrl + `/monetaryCurrency/${id}`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: MonetaryCurrency = null;
+        _body = _resp.body as MonetaryCurrency
+        return _resp.clone({body: _body}) as HttpResponse<MonetaryCurrency>;
+      })
+    );
+  }
+
+  /**
+   * @param id - MonetaryCurrency ID
+   */
+  getMonetaryCurrencyById(id: number): Observable<MonetaryCurrency> {
+    return this.getMonetaryCurrencyByIdResponse(id).pipe(
       map(_r => _r.body)
     );
   }
@@ -446,87 +601,6 @@ export class ApiService extends BaseService {
     );
   }
   /**
-   * get optimumcalculator
-   * @param idStudyEquipment - undefined
-   * @param idStudy - undefined
-   */
-  getOptimumCalculatorResponse(params: ApiService.GetOptimumCalculatorParams): Observable<HttpResponse<OptimumCalculator>> {
-    let __params = this.newParams();
-    let __headers = new HttpHeaders();
-    let __body: any = null;
-    if (params.idStudyEquipment != null) __params = __params.set("idStudyEquipment", params.idStudyEquipment.toString());
-    if (params.idStudy != null) __params = __params.set("idStudy", params.idStudy.toString());
-    let req = new HttpRequest<any>(
-      "GET",
-      this.rootUrl + `/optimumcalculator`,
-      __body,
-      {
-        headers: __headers,
-        params: __params,
-        responseType: 'json'
-      });
-
-    return this.http.request<any>(req).pipe(
-      filter(_r => _r instanceof HttpResponse),
-      map(_r => {
-        let _resp = _r as HttpResponse<any>;
-        let _body: OptimumCalculator = null;
-        _body = _resp.body as OptimumCalculator
-        return _resp.clone({body: _body}) as HttpResponse<OptimumCalculator>;
-      })
-    );
-  }
-
-  /**
-   * get optimumcalculator
-   * @param idStudyEquipment - undefined
-   * @param idStudy - undefined
-   */
-  getOptimumCalculator(params: ApiService.GetOptimumCalculatorParams): Observable<OptimumCalculator> {
-    return this.getOptimumCalculatorResponse(params).pipe(
-      map(_r => _r.body)
-    );
-  }
-  /**
-   * Run Kernal calculate
-   * @param body - body save startCalculate
-   */
-  startCalculateResponse(body: StartCalculate): Observable<HttpResponse<number[]>> {
-    let __params = this.newParams();
-    let __headers = new HttpHeaders();
-    let __body: any = null;
-    __body = body;
-    let req = new HttpRequest<any>(
-      "POST",
-      this.rootUrl + `/startcalculate`,
-      __body,
-      {
-        headers: __headers,
-        params: __params,
-        responseType: 'json'
-      });
-
-    return this.http.request<any>(req).pipe(
-      filter(_r => _r instanceof HttpResponse),
-      map(_r => {
-        let _resp = _r as HttpResponse<any>;
-        let _body: number[] = null;
-        _body = _resp.body as number[]
-        return _resp.clone({body: _body}) as HttpResponse<number[]>;
-      })
-    );
-  }
-
-  /**
-   * Run Kernal calculate
-   * @param body - body save startCalculate
-   */
-  startCalculate(body: StartCalculate): Observable<number[]> {
-    return this.startCalculateResponse(body).pipe(
-      map(_r => _r.body)
-    );
-  }
-  /**
    * @param id - Study ID
    */
   startStudyCalculationResponse(id: number): Observable<HttpResponse<number[]>> {
@@ -649,18 +723,58 @@ export class ApiService extends BaseService {
     );
   }
   /**
-   * @param name - new study name.
-   * @param id - id study to open.
+   * Get Price, interval Width Lenght
+   * @param id - undefined
    */
-  saveStudyAsResponse(params: ApiService.SaveStudyAsParams): Observable<HttpResponse<void>> {
+  getUnitDataResponse(id: number): Observable<HttpResponse<UnitDataEquipment>> {
     let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
     
+    let req = new HttpRequest<any>(
+      "GET",
+      this.rootUrl + `/studies/${id}/equipment/unitData`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: UnitDataEquipment = null;
+        _body = _resp.body as UnitDataEquipment
+        return _resp.clone({body: _body}) as HttpResponse<UnitDataEquipment>;
+      })
+    );
+  }
+
+  /**
+   * Get Price, interval Width Lenght
+   * @param id - undefined
+   */
+  getUnitData(id: number): Observable<UnitDataEquipment> {
+    return this.getUnitDataResponse(id).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * Update price Studies
+   * @param price - undefined
+   * @param id - undefined
+   */
+  updatePriceResponse(params: ApiService.UpdatePriceParams): Observable<HttpResponse<number>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    if (params.price != null) __params = __params.set("price", params.price.toString());
     
     let req = new HttpRequest<any>(
-      "PUT",
-      this.rootUrl + `/studies/${params.id}/clone`,
+      "POST",
+      this.rootUrl + `/studies/${params.id}/equipment/price`,
       __body,
       {
         headers: __headers,
@@ -672,19 +786,142 @@ export class ApiService extends BaseService {
       filter(_r => _r instanceof HttpResponse),
       map(_r => {
         let _resp = _r as HttpResponse<any>;
-        let _body: void = null;
-        
-        return _resp.clone({body: _body}) as HttpResponse<void>;
+        let _body: number = null;
+        _body = parseFloat(_resp.body as string)
+        return _resp.clone({body: _body}) as HttpResponse<number>;
       })
     );
   }
 
   /**
-   * @param name - new study name.
-   * @param id - id study to open.
+   * Update price Studies
+   * @param price - undefined
+   * @param id - undefined
    */
-  saveStudyAs(params: ApiService.SaveStudyAsParams): Observable<void> {
+  updatePrice(params: ApiService.UpdatePriceParams): Observable<number> {
+    return this.updatePriceResponse(params).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * Update Interval Lenght Width Studies
+   * @param width - undefined
+   * @param lenght - undefined
+   * @param id - undefined
+   */
+  updateIntervalResponse(params: ApiService.UpdateIntervalParams): Observable<HttpResponse<number>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    if (params.width != null) __params = __params.set("width", params.width.toString());
+    if (params.lenght != null) __params = __params.set("lenght", params.lenght.toString());
+    
+    let req = new HttpRequest<any>(
+      "POST",
+      this.rootUrl + `/studies/${params.id}/equipment/interval`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'text'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: number = null;
+        _body = parseFloat(_resp.body as string)
+        return _resp.clone({body: _body}) as HttpResponse<number>;
+      })
+    );
+  }
+
+  /**
+   * Update Interval Lenght Width Studies
+   * @param width - undefined
+   * @param lenght - undefined
+   * @param id - undefined
+   */
+  updateInterval(params: ApiService.UpdateIntervalParams): Observable<number> {
+    return this.updateIntervalResponse(params).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * @param name - Study name
+   * @param id - Study id
+   */
+  saveStudyAsResponse(params: ApiService.SaveStudyAsParams): Observable<HttpResponse<Study>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    if (params.name != null) __params = __params.set("name", params.name.toString());
+    
+    let req = new HttpRequest<any>(
+      "PUT",
+      this.rootUrl + `/studies/${params.id}/clone`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: Study = null;
+        _body = _resp.body as Study
+        return _resp.clone({body: _body}) as HttpResponse<Study>;
+      })
+    );
+  }
+
+  /**
+   * @param name - Study name
+   * @param id - Study id
+   */
+  saveStudyAs(params: ApiService.SaveStudyAsParams): Observable<Study> {
     return this.saveStudyAsResponse(params).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * @param id - undefined
+   */
+  loadPipelineResponse(id: number): Observable<HttpResponse<ViewLineList[]>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    
+    let req = new HttpRequest<any>(
+      "GET",
+      this.rootUrl + `/studies/${id}/getListLine`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: ViewLineList[] = null;
+        _body = _resp.body as ViewLineList[]
+        return _resp.clone({body: _body}) as HttpResponse<ViewLineList[]>;
+      })
+    );
+  }
+
+  /**
+   * @param id - undefined
+   */
+  loadPipeline(id: number): Observable<ViewLineList[]> {
+    return this.loadPipelineResponse(id).pipe(
       map(_r => _r.body)
     );
   }
@@ -1121,6 +1358,45 @@ export class ApiService extends BaseService {
     );
   }
   /**
+   * get study equipment record position
+   * @param id - StudyEquipment ID
+   */
+  getRecordPositionResponse(id: number): Observable<HttpResponse<RecordPosition>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    
+    let req = new HttpRequest<any>(
+      "GET",
+      this.rootUrl + `/studyEquipment/${id}/recordPosition`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: RecordPosition = null;
+        _body = _resp.body as RecordPosition
+        return _resp.clone({body: _body}) as HttpResponse<RecordPosition>;
+      })
+    );
+  }
+
+  /**
+   * get study equipment record position
+   * @param id - StudyEquipment ID
+   */
+  getRecordPosition(id: number): Observable<RecordPosition> {
+    return this.getRecordPositionResponse(id).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
    * @param id - undefined
    */
   getTempRecordPtsResponse(id: number): Observable<HttpResponse<TempRecordPts>> {
@@ -1523,6 +1799,160 @@ export class ApiService extends BaseService {
     );
   }
   /**
+   * @param body - body
+   */
+  saveTempRecordPtsResponse(body: saveTempRecordPts): Observable<HttpResponse<ViewProductSection>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    __body = body;
+    let req = new HttpRequest<any>(
+      "POST",
+      this.rootUrl + `/output/saveTempRecordPts`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: ViewProductSection = null;
+        _body = _resp.body as ViewProductSection
+        return _resp.clone({body: _body}) as HttpResponse<ViewProductSection>;
+      })
+    );
+  }
+
+  /**
+   * @param body - body
+   */
+  saveTempRecordPts(body: saveTempRecordPts): Observable<ViewProductSection> {
+    return this.saveTempRecordPtsResponse(body).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * get product chart 2d chart
+   * @param selectedPlan - Plan select
+   * @param idStudyEquipment - StudyEquipment ID
+   * @param idStudy - Study ID
+   */
+  productchart2DResponse(params: ApiService.Productchart2DParams): Observable<HttpResponse<ViewProductchart2D>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    if (params.selectedPlan != null) __params = __params.set("selectedPlan", params.selectedPlan.toString());
+    if (params.idStudyEquipment != null) __params = __params.set("idStudyEquipment", params.idStudyEquipment.toString());
+    if (params.idStudy != null) __params = __params.set("idStudy", params.idStudy.toString());
+    let req = new HttpRequest<any>(
+      "GET",
+      this.rootUrl + `/output/productchart2D`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: ViewProductchart2D = null;
+        _body = _resp.body as ViewProductchart2D
+        return _resp.clone({body: _body}) as HttpResponse<ViewProductchart2D>;
+      })
+    );
+  }
+
+  /**
+   * get product chart 2d chart
+   * @param selectedPlan - Plan select
+   * @param idStudyEquipment - StudyEquipment ID
+   * @param idStudy - Study ID
+   */
+  productchart2D(params: ApiService.Productchart2DParams): Observable<ViewProductchart2D> {
+    return this.productchart2DResponse(params).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * Get list line type
+   */
+  getListLineTypeResponse(): Observable<HttpResponse<Translation>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    let req = new HttpRequest<any>(
+      "GET",
+      this.rootUrl + `/translation/linetype`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: Translation = null;
+        _body = _resp.body as Translation
+        return _resp.clone({body: _body}) as HttpResponse<Translation>;
+      })
+    );
+  }
+
+  /**
+   * Get list line type
+   */
+  getListLineType(): Observable<Translation> {
+    return this.getListLineTypeResponse().pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * Get list energies (list cooling family)
+   */
+  getListEnergiesResponse(): Observable<HttpResponse<Translation>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    let req = new HttpRequest<any>(
+      "GET",
+      this.rootUrl + `/translation/energies`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: Translation = null;
+        _body = _resp.body as Translation
+        return _resp.clone({body: _body}) as HttpResponse<Translation>;
+      })
+    );
+  }
+
+  /**
+   * Get list energies (list cooling family)
+   */
+  getListEnergies(): Observable<Translation> {
+    return this.getListEnergiesResponse().pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
    * @param lang - undefined
    */
   getComponentTranslationsResponse(lang: string): Observable<HttpResponse<Translation[]>> {
@@ -1823,20 +2253,14 @@ export class ApiService extends BaseService {
     );
   }
   /**
+   * @param updateParams - undefined
    * @param id - study ID
-   * @param name - product name
-   * @param dim3 - dim3
-   * @param dim2 - dim2
-   * @param dim1 - dim1
    */
   updateProductResponse(params: ApiService.UpdateProductParams): Observable<HttpResponse<void>> {
     let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
-    
-    
-    
-    
+    __body = params.updateParams;
     
     let req = new HttpRequest<any>(
       "POST",
@@ -1860,11 +2284,8 @@ export class ApiService extends BaseService {
   }
 
   /**
+   * @param updateParams - undefined
    * @param id - study ID
-   * @param name - product name
-   * @param dim3 - dim3
-   * @param dim2 - dim2
-   * @param dim1 - dim1
    */
   updateProduct(params: ApiService.UpdateProductParams): Observable<void> {
     return this.updateProductResponse(params).pipe(
@@ -2062,6 +2483,83 @@ export class ApiService extends BaseService {
    */
   removeStudyEquipment(params: ApiService.RemoveStudyEquipmentParams): Observable<void> {
     return this.removeStudyEquipmentResponse(params).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * @param id - undefined
+   */
+  getStudyCommentResponse(id: number): Observable<HttpResponse<void>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    
+    let req = new HttpRequest<any>(
+      "GET",
+      this.rootUrl + `/studies/${id}/comment`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'text'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: void = null;
+        
+        return _resp.clone({body: _body}) as HttpResponse<void>;
+      })
+    );
+  }
+
+  /**
+   * @param id - undefined
+   */
+  getStudyComment(id: number): Observable<void> {
+    return this.getStudyCommentResponse(id).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * @param id - undefined
+   * @param comment - undefined
+   */
+  postStudyCommentResponse(params: ApiService.PostStudyCommentParams): Observable<HttpResponse<void>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    
+    __body = params.comment;
+    let req = new HttpRequest<any>(
+      "PATCH",
+      this.rootUrl + `/studies/${params.id}/comment`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'text'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: void = null;
+        
+        return _resp.clone({body: _body}) as HttpResponse<void>;
+      })
+    );
+  }
+
+  /**
+   * @param id - undefined
+   * @param comment - undefined
+   */
+  postStudyComment(params: ApiService.PostStudyCommentParams): Observable<void> {
+    return this.postStudyCommentResponse(params).pipe(
       map(_r => _r.body)
     );
   }
@@ -3088,6 +3586,45 @@ export class ApiService extends BaseService {
     return this.recentStudiesResponse().pipe(
       map(_r => _r.body)
     );
+  }
+  /**
+   * get user by id
+   * @param id - undefined
+   */
+  getUserResponse(id: number): Observable<HttpResponse<User>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    
+    let req = new HttpRequest<any>(
+      "GET",
+      this.rootUrl + `/users/${id}`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: User = null;
+        _body = _resp.body as User
+        return _resp.clone({body: _body}) as HttpResponse<User>;
+      })
+    );
+  }
+
+  /**
+   * get user by id
+   * @param id - undefined
+   */
+  getUser(id: number): Observable<User> {
+    return this.getUserResponse(id).pipe(
+      map(_r => _r.body)
+    );
   }}
 
 export module ApiService {
@@ -3099,15 +3636,20 @@ export module ApiService {
     idStudy?: number;
     idProd?: number;
   }
-  export interface GetOptimumCalculatorParams {
-    idStudyEquipment?: number;
-    idStudy?: number;
-  }
   export interface GetStudyEquipmentCalculationParams {
     type: number;
     idStudyEquipment: number;
     idStudy: number;
     checkOptim: boolean;
+  }
+  export interface UpdatePriceParams {
+    price: number;
+    id: number;
+  }
+  export interface UpdateIntervalParams {
+    width: number;
+    lenght: number;
+    id: number;
   }
   export interface SaveStudyAsParams {
     name: string;
@@ -3138,16 +3680,18 @@ export module ApiService {
     idStudyEquipment: number;
     idStudy: number;
   }
+  export interface Productchart2DParams {
+    selectedPlan: number;
+    idStudyEquipment: number;
+    idStudy: number;
+  }
   export interface SaveStudyParams {
     id: number;
     body?: Study;
   }
   export interface UpdateProductParams {
+    updateParams: ProductUpdateParams;
     id: number;
-    name?: string;
-    dim3?: number;
-    dim2?: number;
-    dim1?: number;
   }
   export interface NewProductParams {
     name: string;
@@ -3160,6 +3704,10 @@ export module ApiService {
   export interface RemoveStudyEquipmentParams {
     idEquip: number;
     id: number;
+  }
+  export interface PostStudyCommentParams {
+    id: number;
+    comment?: string;
   }
   export interface GetEquipmentsParams {
     size?: number;

@@ -6,7 +6,7 @@ import { ViewSelect } from './view-select';
 export class OptimumCalculator {
     maxIter?: number;
     sdisableFields?: number;
-    scheckOptim?: number;
+    checkOptim?: number;
     sdisableOptim?: number;
     sdisableNbOptim?: number;
     epsilonTemp?: number;

@@ -264,28 +264,28 @@
             <tr>
               <td rowspan="2" align="center"style="vertical-align:middle;font-size:12px;">{{'Equipment'|translate}}</td>
               <td rowspan="2"style="vertical-align:middle;font-size:12px;" align="center">
-                {{'Overall Cryogen Consumption Ratio (product + equipment and pipeline losses) Unit of Cryogen, per piece of product.'|translate}} ({{symbol.consumSymbol}})
+                {{'Overall Cryogen Consumption Ratio (product + equipment and pipeline losses) Unit of Cryogen, per piece of product.'|translate}}<br>(<span [innerHTML]="symbol.monetarySymbol"></span>)
               </td>
               <td rowspan="2" style="vertical-align:middle;font-size:12px;"  align="center">
-                {{'Total Cryogen Consumption (product + equipment and pipeline losses).'|translate}} ({{symbol.consumSymbol}} /{{symbol.perUnitOfMassSymbol}})
+                {{'Total Cryogen Consumption (product + equipment and pipeline losses).'|translate}}<br>(<span [innerHTML]="symbol.monetarySymbol"></span> /{{symbol.perUnitOfMassSymbol}})
               </td>
               <td rowspan="2" style="vertical-align:middle;font-size:12px;"  align="center">
-                {{'Specific Cryogen Consumption Ratio (product only) Unit of Cryogen, per unit weight of product.'|translate}} ({{symbol.consumSymbol}} /{{symbol.perUnitOfMassSymbol}})
+                {{'Specific Cryogen Consumption Ratio (product only) Unit of Cryogen, per unit weight of product.'|translate}}<br>(<span [innerHTML]="symbol.monetarySymbol"></span> /{{symbol.perUnitOfMassSymbol}})
               </td>
               <td colspan="4" style="vertical-align:middle;font-size:12px;" align="center">{{'Total Cryogen Consumption'|translate}}</td>
               <td colspan="2" style="vertical-align:middle;font-size:12px;" align="center">{{'Equipment Cryogen Consumption'|translate}}</td>
               <td colspan="2" style="vertical-align:middle;font-size:12px;" align="center">{{'Pipeline consumption'|translate}}</td>
-              <td rowspan="2" style="vertical-align:middle;font-size:12px;" align="center">{{'Tank losses'|translate}} ({{symbol.consumSymbol}})</td>
+              <td rowspan="2" style="vertical-align:middle;font-size:12px;" align="center">{{'Tank losses'|translate}}<br>(<span [innerHTML]="symbol.monetarySymbol"></span>)</td>
             </tr>
             <tr>
-              <td style="vertical-align:middle;font-size:12px;" align="center">{{'Total Cryogen Consumption per year'|translate}} ({{symbol.consumSymbol}})</td>
-              <td style="vertical-align:middle;font-size:12px;" align="center">{{'Total Cryogen Consumption per week'|translate}} ({{symbol.consumSymbol}})</td>
-              <td style="vertical-align:middle;font-size:12px;" align="center">{{'Total Cryogen Consumption per day'|translate}} ({{symbol.consumSymbol}})</td>
-              <td style="vertical-align:middle;font-size:12px;" align="center">{{'Total Cryogen Consumption per hour'|translate}} ({{symbol.consumSymbol}})</td>
-              <td style="vertical-align:middle;font-size:12px;" align="center">{{'Heat losses per hour'|translate}} ({{symbol.consumMaintienSymbol}})</td>
-              <td style="vertical-align:middle;font-size:12px;" align="center">{{'Cooldown'|translate}} ({{symbol.mefSymbol}})</td>
-              <td style="vertical-align:middle;font-size:12px;"  align="center">{{'Heat losses per hour'|translate}} ({{symbol.consumMaintienSymbol}})</td>
-              <td style="vertical-align:middle;font-size:12px;" align="center">{{'Cooldown'|translate}} ({{symbol.mefSymbol}})</td>
+              <td style="vertical-align:middle;font-size:12px;" align="center">{{'Total Cryogen Consumption per year'|translate}}<br>(<span [innerHTML]="symbol.monetarySymbol"></span>)</td>
+              <td style="vertical-align:middle;font-size:12px;" align="center">{{'Total Cryogen Consumption per week'|translate}}<br>(<span [innerHTML]="symbol.monetarySymbol"></span>)</td>
+              <td style="vertical-align:middle;font-size:12px;" align="center">{{'Total Cryogen Consumption per day'|translate}}<br>(<span [innerHTML]="symbol.monetarySymbol"></span>)</td>
+              <td style="vertical-align:middle;font-size:12px;" align="center">{{'Total Cryogen Consumption per hour'|translate}}<br>(<span [innerHTML]="symbol.monetarySymbol"></span>)</td>
+              <td style="vertical-align:middle;font-size:12px;" align="center">{{'Heat losses per hour'|translate}}<br>(<span [innerHTML]="symbol.monetarySymbol"></span> /h)</td>
+              <td style="vertical-align:middle;font-size:12px;" align="center">{{'Cooldown'|translate}}<br>(<span [innerHTML]="symbol.monetarySymbol"></span>)</td>
+              <td style="vertical-align:middle;font-size:12px;"  align="center">{{'Heat losses per hour'|translate}}<br>(<span [innerHTML]="symbol.monetarySymbol"></span> /h)</td>
+              <td style="vertical-align:middle;font-size:12px;" align="center">{{'Cooldown'|translate}}<br>(<span [innerHTML]="symbol.monetarySymbol"></span>)</td>
             </tr>
             <tr *ngFor="let result of economicResults">
                 <td align="center" class="tdResultLink"style="vertical-align:middle">

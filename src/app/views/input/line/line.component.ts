@@ -13,8 +13,8 @@ export class LineComponent implements OnInit, AfterContentChecked {
   public study: Study;
   public productShape: number;
   public productView: ViewProduct;
+  public  laddaSavingLine = false;
   constructor(private api: ApiService, private router: Router) { }
-
   ngOnInit() {
   }
 
@@ -35,5 +35,7 @@ export class LineComponent implements OnInit, AfterContentChecked {
       this.router.navigate(['/input/product']);
     }
   }
-
+  saveLine() {
+    this.laddaSavingLine = true;
+  }
 }

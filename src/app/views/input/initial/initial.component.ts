@@ -26,12 +26,12 @@ export class InitialComponent implements OnInit, AfterContentChecked, AfterViewI
     initTemp: number
   };
 
-  renderer = new THREE.WebGLRenderer({ alpha: true });
-  scene = null;
-  camera = null;
-  mesh = null;
-  materials = null;
-  orbit = null;
+  // renderer = new THREE.WebGLRenderer({ alpha: true });
+  // scene = null;
+  // camera = null;
+  // mesh = null;
+  // materials = null;
+  // orbit = null;
 
   @ViewChild('rendererContainer') rendererContainer: ElementRef;
   @ViewChild('isoTempEditModal') isoTempEditModal: ModalDirective;
@@ -65,11 +65,11 @@ export class InitialComponent implements OnInit, AfterContentChecked, AfterViewI
     );
   }
 
-  animate() {
-    window.requestAnimationFrame(() => this.animate());
-    this.orbit.update();
-    this.renderer.render(this.scene, this.camera);
-  }
+  // animate() {
+  //   window.requestAnimationFrame(() => this.animate());
+  //   this.orbit.update();
+  //   this.renderer.render(this.scene, this.camera);
+  // }
 
   ngAfterContentChecked() {
     this.productShape = Number(localStorage.getItem('productShape'));
@@ -116,59 +116,59 @@ export class InitialComponent implements OnInit, AfterContentChecked, AfterViewI
       this.productTempForm.initTemp = this.meshView.productIsoTemp;
     }
 
-    this.scene = new THREE.Scene();
+    // this.scene = new THREE.Scene();
 
-    this.camera = new THREE.PerspectiveCamera(75, 600 / 400, 1, 10000);
-    this.camera.position.z = 400;
+    // this.camera = new THREE.PerspectiveCamera(75, 600 / 400, 1, 10000);
+    // this.camera.position.z = 400;
 
-    // this.createRubixMaterial();
+    // // this.createRubixMaterial();
 
-    let geometry = null;
-    switch (this.productShape) {
-      case this.text.shapeNames.BREAD:
-      case this.text.shapeNames.REC_LAY:
-      case this.text.shapeNames.REC_STAND:
-      case this.text.shapeNames.SLAB:
-        geometry = new THREE.BoxGeometry(200, 200, 200);
-        break;
+    // let geometry = null;
+    // switch (this.productShape) {
+    //   case this.text.shapeNames.BREAD:
+    //   case this.text.shapeNames.REC_LAY:
+    //   case this.text.shapeNames.REC_STAND:
+    //   case this.text.shapeNames.SLAB:
+    //     geometry = new THREE.BoxGeometry(200, 200, 200);
+    //     break;
 
-      case this.text.shapeNames.SPHERE:
-        geometry = new THREE.SphereGeometry(200);
-        break;
+    //   case this.text.shapeNames.SPHERE:
+    //     geometry = new THREE.SphereGeometry(200);
+    //     break;
 
-      case this.text.shapeNames.CON_CYL_LAY:
-      case this.text.shapeNames.CON_CYL_STAND:
-      case this.text.shapeNames.CYL_LAY:
-      case this.text.shapeNames.CYL_STAND:
-        geometry = new THREE.CylinderGeometry(150, 150, 300);
-        break;
+    //   case this.text.shapeNames.CON_CYL_LAY:
+    //   case this.text.shapeNames.CON_CYL_STAND:
+    //   case this.text.shapeNames.CYL_LAY:
+    //   case this.text.shapeNames.CYL_STAND:
+    //     geometry = new THREE.CylinderGeometry(150, 150, 300);
+    //     break;
 
-      default:
-        return false;
-    }
+    //   default:
+    //     return false;
+    // }
 
-    // var meshFaceMaterial = new THREE.MeshFaceMaterial(this.materials);
-    this.materials = new THREE.MeshBasicMaterial({
-      color: 0x333333,
-      wireframe: true
-    });
-    this.mesh = new THREE.Mesh(geometry, this.materials);
-    const axisHelper = new THREE.AxisHelper(120);
-    this.scene.add(axisHelper);
+    // // var meshFaceMaterial = new THREE.MeshFaceMaterial(this.materials);
+    // this.materials = new THREE.MeshBasicMaterial({
+    //   color: 0x333333,
+    //   wireframe: true
+    // });
+    // this.mesh = new THREE.Mesh(geometry, this.materials);
+    // const axisHelper = new THREE.AxisHelper(120);
+    // this.scene.add(axisHelper);
 
-    this.scene.add(this.mesh);
+    // this.scene.add(this.mesh);
 
-    this.renderer.setPixelRatio(window.devicePixelRatio);
-    this.renderer.setSize(180, 200);
+    // this.renderer.setPixelRatio(window.devicePixelRatio);
+    // this.renderer.setSize(180, 200);
 
-    this.orbit = new OrbitControls(this.camera, this.renderer.domElement);
-    this.orbit.enableZoom = true;
-    // this.renderer.domElement.style.display = 'block';
-    // this.renderer.domElement.style.margin = 'auto';
-    this.rendererContainer.nativeElement.appendChild(this.renderer.domElement);
-    this.orbit.update();
+    // this.orbit = new OrbitControls(this.camera, this.renderer.domElement);
+    // this.orbit.enableZoom = true;
+    // // this.renderer.domElement.style.display = 'block';
+    // // this.renderer.domElement.style.margin = 'auto';
+    // this.rendererContainer.nativeElement.appendChild(this.renderer.domElement);
+    // this.orbit.update();
 
-    this.animate();
+    // this.animate();
   }
 
   resetDefaultMesh() {

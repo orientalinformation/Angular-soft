@@ -1,54 +1,66 @@
-<div class="container">
-  <div class="card product-container">
-    <div class="card-group">
+<div class="container" *ngIf="study">
+  <div class="row product-container">
+    <div class="col-md-6" *ngIf="study.OPTION_ECO">
       <div class="card">
         <div class="card-header">
           <strong style="margin-top:5px;margin-left:5px;">{{'PRICE OF THE CRYOGEN' | translate}}</strong>
+          <button type="button" class="btn btn-sm btn-success float-right" (click)="savePrice()" [ladda]="isUpdatePrice">
+            <i class="fa fa-pencil-square-o"></i> {{'Update'|translate}}
+          </button>
+          <button type="button" class="btn btn-sm btn-primary float-right" (click)="refreshPrice()" style="margin-right: 10px;">
+            <i class="fa fa-refresh"></i>
+          </button>
         </div>
         <div class="card-body">
           <div class="row">
-            <div class="col-6" style="margin-top:5px;">
-              <p>Define the price of the Cryogen :</p>
+            <div class="col-8" style="margin-top:5px;">
+              <p>{{'Define the price of the Cryogen :'|translate}}</p>
             </div>
-            <div class="col-6">
-              <div class="input-group" style="width:120px;">
-                <input type="text" name="text-input" class="form-control" value="0.00">
+            <div class="col-4">
+              <div class="input-group" style="width:120px;" *ngIf="unitData">
+                <input type="text" name="text-input" class="form-control" [(ngModel)]="unitData.Price" placeholder="0.00">
                 <span class="input-group-addon">
-                  <small>&euro;</small>
+                  <small [innerHTML]="unitData.MonetarySymbol"></small>
                 </span>
               </div>
             </div>
           </div>
         </div>
       </div>
+    </div>
 
+    <div class="col-md-6">
       <div class="card">
-        
         <div class="card-header">
-          <strong style="margin-top:5px;margin-left:5px;">{{'LOADING RATE' | translate}}</strong>
+          <strong style="margin-top:5px;margin-left:5px;">{{'LOADING RATE' | translate}}
+            <span class="text-muted">{{'Spaces (length and width)'| translate}}</span>
+          </strong>
+          <button type="button" class="btn btn-sm btn-success float-right" (click)="saveInterval()" [ladda]="isUpdateInterval">
+            <i class="fa fa-pencil-square-o"></i> {{'Update'|translate}}
+          </button>
+          <button type="button" class="btn btn-sm btn-primary float-right" (click)="refreshIntervalLW()" style="margin-right: 10px;">
+            <i class="fa fa-refresh"></i>
+          </button>
         </div>
         <div class="card-body">
-          <div class="row">
-            <div class="col-md-5">
-              <p>Spaces (length and width):</p>
-            </div>
-            <div class="col-md-7">
+          <div class="row">            
+            <div class="col-md-12">
               <div class="container">
                 <div class="row">
                   <div class="col-md-5 auto">
-                    <div class="input-group">
-                      <input type="text" name="text-input" class="form-control" value="2">
+                    <div class="input-group" *ngIf="unitData">
+                      <input type="text" name="text-input" class="form-control" [(ngModel)]="unitData.IntervalLength" placeholder="0.00">
                       <span class="input-group-addon">
-                        <small>cm</small>
+                        <small>{{ unitData.DimensionSymbol }}</small>
                       </span>
                     </div>
                   </div>
                   <div class="col-md-2 text-center">x</div>
                   <div class="col-md-5">
-                    <div class="input-group">
-                      <input type="text" name="text-input" class="form-control" value="2">
+                    <div class="input-group" *ngIf="unitData">
+                      <input type="text" name="text-input" class="form-control" [(ngModel)]="unitData.IntervalWidth" placeholder="0.00">
                       <span class="input-group-addon">
-                        <small>cm</small>
+                        <small>{{ unitData.DimensionSymbol }}</small>
                       </span>
                     </div>
                   </div>

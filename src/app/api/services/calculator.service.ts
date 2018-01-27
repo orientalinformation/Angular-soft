@@ -12,6 +12,8 @@ import { filter } from 'rxjs/operators/filter';
 import { StartCalcul } from '../models/start-calcul';
 import { ViewBrainOptim } from '../models/view-brain-optim';
 import { ViewProgressBar } from '../models/view-progress-bar';
+import { StartCalculate } from '../models/start-calculate';
+import { OptimumCalculator } from '../models/optimum-calculator';
 
 
 @Injectable()
@@ -220,11 +222,96 @@ export class CalculatorService extends BaseService {
     return this.getProgressBarStudyEquipmentResponse(idStudy).pipe(
       map(_r => _r.body)
     );
+  }
+  /**
+   * Run Kernal calculate
+   * @param body - body save startCalculate
+   */
+  startCalculateResponse(body: StartCalculate): Observable<HttpResponse<number[]>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    __body = body;
+    let req = new HttpRequest<any>(
+      "POST",
+      this.rootUrl + `/calculator/startcalculate`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: number[] = null;
+        _body = _resp.body as number[]
+        return _resp.clone({body: _body}) as HttpResponse<number[]>;
+      })
+    );
+  }
+
+  /**
+   * Run Kernal calculate
+   * @param body - body save startCalculate
+   */
+  startCalculate(body: StartCalculate): Observable<number[]> {
+    return this.startCalculateResponse(body).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * get optimumcalculator
+   * @param idStudyEquipment - undefined
+   * @param idStudy - undefined
+   */
+  getOptimumCalculatorResponse(params: CalculatorService.GetOptimumCalculatorParams): Observable<HttpResponse<OptimumCalculator>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    if (params.idStudyEquipment != null) __params = __params.set("idStudyEquipment", params.idStudyEquipment.toString());
+    if (params.idStudy != null) __params = __params.set("idStudy", params.idStudy.toString());
+    let req = new HttpRequest<any>(
+      "GET",
+      this.rootUrl + `/calculator/optimumcalculator`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: OptimumCalculator = null;
+        _body = _resp.body as OptimumCalculator
+        return _resp.clone({body: _body}) as HttpResponse<OptimumCalculator>;
+      })
+    );
+  }
+
+  /**
+   * get optimumcalculator
+   * @param idStudyEquipment - undefined
+   * @param idStudy - undefined
+   */
+  getOptimumCalculator(params: CalculatorService.GetOptimumCalculatorParams): Observable<OptimumCalculator> {
+    return this.getOptimumCalculatorResponse(params).pipe(
+      map(_r => _r.body)
+    );
   }}
 
 export module CalculatorService {
   export interface GetBrainOptimParams {
     idStudyEquipment?: number;
     brainoptim?: number;
+  }
+  export interface GetOptimumCalculatorParams {
+    idStudyEquipment?: number;
+    idStudy?: number;
   }
 }

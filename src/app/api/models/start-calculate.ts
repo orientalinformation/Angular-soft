@@ -6,10 +6,11 @@ import { ViewSelect } from './view-select';
 export class StartCalculate {
     vRadioOn?: number;
     idStudy?: number;
-    scheckOptim?: number;
+    checkOptim?: number;
     epsilonTemp?: number;
     epsilonEnth?: number;
     nbOptimIter?: number;
+    sdisableOptim?: number;
     timeStep?: number;
     precision?: number;
     scheckStorage?: number;

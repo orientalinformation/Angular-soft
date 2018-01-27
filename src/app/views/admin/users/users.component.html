@@ -89,7 +89,7 @@
                   <div class="card-footer text-center" *ngIf="selectUser">
                     <button type="button" class="btn btn-success btn-sm" (click)="updateUser(selectUser)" [ladda]="isUpdateUser"><i class="fa fa-floppy-o"></i> {{ 'Save'|translate }}</button>
                     <button type="button" class="btn btn-danger btn-sm" (click)="delUser(selectUser)" [ladda]="isDeleteUser"><i class="fa fa-trash-o"></i> {{ 'Delete'|translate }}</button>
-                    <button type="button" class="btn btn-warning btn-sm" (click)="disconnectUser(selectUser)" [ladda]="isDisconnectUser"><i class="fa fa-plug"></i> {{ 'Disconnect'|translate }}</button>
+                    <button type="button" class="btn btn-warning btn-sm" (click)="disconnectUser(selectUser)" [ladda]="isDisconnectUser" *ngIf="!selectUser.USERPRIO"><i class="fa fa-plug"></i> {{ 'Disconnect'|translate }}</button>
                   </div>
               </div>
             </div>

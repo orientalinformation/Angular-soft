@@ -8,7 +8,7 @@ import { ViewSelect } from './view-select';
 export class BrainCalculator {
     vRadioOn?: number;
     sdisableFields?: number;
-    scheckOptim?: number;
+    checkOptim?: number;
     sdisableOptim?: number;
     sdisableNbOptim?: number;
     epsilonTemp?: number;

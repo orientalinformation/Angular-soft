@@ -99,8 +99,8 @@ export class UsersComponent implements OnInit, AfterViewInit {
       swal('Oops..', 'Please specify username!', 'warning');
       return;
     }
-    if (this.user.username.length > 30) {
-      swal('Oops..', 'Please username ( 1 : 30 )', 'warning');
+    if (this.user.username.length < 5 || this.user.username.length > 30) {
+      swal('Oops..', 'Please username ( 5 : 30 )', 'warning');
       return;
     }
     if (!this.user.email) {
@@ -113,6 +113,10 @@ export class UsersComponent implements OnInit, AfterViewInit {
     }
     if (!this.user.password) {
       swal('Oops..', 'Please specify password!', 'warning');
+      return;
+    }
+    if (this.user.password.length < 5 || this.user.password.length > 30) {
+      swal('Oops..', 'Please password ( 5 : 30 )', 'warning');
       return;
     }
     if (!this.user.confirmpassword) {
@@ -321,6 +325,7 @@ export class UsersComponent implements OnInit, AfterViewInit {
               data => {
                 this.toastr.success('Disconnect complete', 'successfully');
                 this.isDisconnectUser = false;
+                this.user =  new NewUser();
               },
               err => {
                 console.log(err);
@@ -328,6 +333,7 @@ export class UsersComponent implements OnInit, AfterViewInit {
               },
               () => {
                 this.isDisconnectUser = false;
+                this.refrestListUsers();
               }
               );
           } else {
@@ -338,6 +344,7 @@ export class UsersComponent implements OnInit, AfterViewInit {
               data => {
                 this.toastr.success('Disconnect complete', 'successfully');
                 this.isDisconnectUser = false;
+                this.user =  new NewUser();
               },
               err => {
                 console.log(err);
@@ -345,10 +352,10 @@ export class UsersComponent implements OnInit, AfterViewInit {
               },
               () => {
                 this.isDisconnectUser = false;
+                this.refrestListUsers();
               }
               );
           }
-          this.refrestListUsers();
         });
       }
     });

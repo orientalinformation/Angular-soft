@@ -16,7 +16,7 @@ export class NewStudyComponent implements OnInit {
 
   constructor(private api: ApiService, private router: Router) {
     this.study = new Study();
-    this.study.CALCULATION_MODE = 1;
+    this.study.CALCULATION_MODE = 3;
   }
 
   ngOnInit() {

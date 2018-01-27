@@ -186,13 +186,14 @@
       </div>
       <div id="productSection" style="display:none;position:relative">
         <div class="text-center" id="showLoaderProductSection"></div>
+        <div class="text-center" *ngIf="outputProductChart"><h4 style="color:#f00">{{outputProductChart.EQUIP_NAME}}</h4></div>
         <h5 class="text-danger" style="font-weight:600">{{'Select'|translate}}</h5>
         <div class="row">
           <div class="col-md-10" style="margin-top:80px">
             <div class="row">
               <div class="col-md-4 text-center" *ngIf="shape !=1 && shape != 6">
                 <label class="custom-control custom-radio" style="margin:0">
-                  <input type="radio" name="selectAxe" [value]= "1" (change)="changeAxePS()" class="custom-control-input" [(ngModel)]="selectedAxe" *ngIf="axis1Disable == true" disabled>{{'Axis 1'|translate}}
+                  <input type="radio" name="selectAxe" [value]= "1" (change)="changeAxePS()" class="custom-control-input" [(ngModel)]="selectedAxe" [disabled]="axis1Disable">{{'Axis 1'|translate}}
                   <span class="custom-control-indicator"></span>
                 </label>
               </div>
@@ -204,19 +205,29 @@
               </div>
               <div class="col-md-4 text-center" *ngIf="shape ==3 || shape == 2 || shape == 9">
                 <label class="custom-control custom-radio" style="margin:0">
-                  <input type="radio" name="selectAxe" [value]= "3" (change)="changeAxePS()" class="custom-control-input" [(ngModel)]="selectedAxe" *ngIf="axis3Disable == true" disabled>{{'Axis 3'|translate}}
+                  <input type="radio" name="selectAxe" [value]= "3" (change)="changeAxePS()" class="custom-control-input" [(ngModel)]="selectedAxe" [disabled]="axis3Disable">{{'Axis 3'|translate}}
                   <span class="custom-control-indicator"></span>
                 </label>
               </div>
             </div>
           </div>
           <div class="col-md-2 text-center">
-              <img *ngIf="folderImg" src="assets/img/output/STANDING_PLPD/parallel/orientation.png" style="max-width:100%">
+            <img *ngIf="folderImg" src="assets/img/output/{{folderImg}}/orientation.png">
           </div>
         </div>
         <tabset>
           <tab>
             <ng-template tabHeading><i class="icon-graph"></i> {{'Curve'|translate}}</ng-template>
+            <h6 class="text-danger text-center" *ngIf="symbol">{{'Graphic on the axis'|translate}} {{selectedAxe}} ({{productSectionAxisTemp}}) ({{symbol.prodchartDimensionSymbol}})</h6>            
+            <div class="chart-wrapper" *ngIf="productSectionChartData" style="width:90%;margin:auto">
+              <canvas #productSectionChart class="chart" baseChart
+                [datasets]="productSectionChartData"
+                [options]="productSectionChartOptions"
+                [colors]= "productSectionColours"
+                [legend]="productSectionChartLegend"
+                [chartType]="productSectionChartType">
+              </canvas>
+            </div>
           </tab>
           <tab>
             <ng-template tabHeading><i class="icon-doc"></i> {{'Value'|translate}}</ng-template>
@@ -228,7 +239,7 @@
                 <input type="text" value="{{nbSteps}}" [(ngModel)]="NB_STEPS" class="form-control">
               </div>
               <div class="col-md-2 text-center">
-                <button class="btn btn-primary">Refesh</button>
+                <button class="btn btn-primary" (click)="saveNbStep()">{{'Refesh'|translate}}</button>
               </div>
             </div>
             <h6 class="text-danger text-center" *ngIf="symbol">{{'Table on the axis'|translate}} {{selectedAxe}} ({{productSectionAxisTemp}}) ({{symbol.prodchartDimensionSymbol}})</h6>
@@ -313,7 +324,125 @@
         </tabset>
       </div>
       <div id="outlines2d" style="display:none;position:relative">
-        <h5 class="text-center">Under construction!</h5>
+        <div class="text-center" id="showLoaderOutline"></div>
+        <div class="text-center form-group" *ngIf="outputProductChart"><h4 style="color:#f00">{{outputProductChart.EQUIP_NAME}}</h4></div>
+        <div class="row" *ngIf="symbol">
+          <div class="col-md-4">
+            <div class="row">
+              <label class="col-md-6 col-form-label text-right">
+                {{'Temperature Step'|translate}}
+              </label>
+              <div class="col-md-4">
+                <input type="text" class="form-control" value="3">
+              </div>
+              <label class="col-md-2 col-form-label">({{symbol.temperatureSymbol}})</label>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="row">
+              <label class="col-md-6 col-form-label text-right">
+                {{'Temperature Min'|translate}}
+              </label>
+              <div class="col-md-4">
+                <input type="text" class="form-control" value="3">
+              </div>
+              <label class="col-md-2 col-form-label">({{symbol.temperatureSymbol}})</label>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="row">
+              <label class="col-md-6 col-form-label text-right">
+                {{'Temperature Max'|translate}}
+              </label>
+              <div class="col-md-4">
+                <input type="text" class="form-control" value="3">
+              </div>
+              <label class="col-md-2 col-form-label">({{symbol.temperatureSymbol}})</label>
+            </div>
+          </div>
+        </div>
+        <p class="text-primary text-center">{{'The bounds of the interval temperature must be outside the minimum and maximum temperatures reached by the product. Each of these bounds must be a multiple of the temperature step'|translate}}</p>
+        <div class="clearfix form-group">
+          <button class="btn btn-primary pull-right">{{'Refesh'|translate}}</button>
+        </div>
+        <div class="row">
+          <div class="col-md-4 text-center">
+            <label class="custom-control custom-radio" style="margin:0" *ngIf="outline2Ddata">
+              <input type="radio" name="selectPlan" [value]= "3" [(ngModel)]="selectedPlan" [disabled]="plan3Disable" class="custom-control-input">{{'Slice 12'|translate}} (*,*,{{outline2Ddata.x}})
+              <span class="custom-control-indicator"></span>
+            </label>
+          </div>
+          <ng-container *ngIf="shape != 5 || shape != 4 || shape != 7 || shape == 8">
+          <div class="col-md-4 text-center">
+            <label class="custom-control custom-radio" style="margin:0" *ngIf="outline2Ddata">
+              <input type="radio" name="selectPlan" [value]= "2" [(ngModel)]="selectedPlan" [disabled]="plan2Disable" class="custom-control-input">{{'Slice 13'|translate}} (*,{{outline2Ddata.y}},*)
+              <span class="custom-control-indicator"></span>
+            </label>
+          </div>
+          <div class="col-md-4 text-center">
+            <label class="custom-control custom-radio" style="margin:0" *ngIf="outline2Ddata">
+              <input type="radio" name="selectPlan" [value]= "1" [(ngModel)]="selectedPlan" [disabled]="plan1Disable" class="custom-control-input">{{'Slice 23'|translate}} (*,*,{{outline2Ddata.z}})
+              <span class="custom-control-indicator"></span>
+            </label>
+          </div>
+          </ng-container>
+        </div>
+        <div style="margin-top:30px">
+          <div class="row">
+            <div class="col-md-6">
+              <h5 class="text-danger" style="font-weight:600;margin-bottom:20px">{{'Fixed graphic'|translate}}</h5>
+              <div class="row form-group" *ngIf="symbol">
+                <label class="col-md-6 col-form-label text-right">
+                  {{'Time Record'|translate}} ({{symbol.timeSymbol}}) :
+                </label>
+                <div class="col-md-6">
+                  <select name="selectRecordTime" [(ngModel)]="timeSelected" class="form-control">
+                    <ng-container *ngFor="let time of timeRecords">
+                    <option [value]="time.RECORD_TIME">{{ time.RECORD_TIME }}</option>
+                    </ng-container>
+                  </select>
+                </div>
+              </div>
+              <div class="clearfix">
+                <div class="form-group pull-right" style="padding-top:10px">
+                  <button type="button" class="btn btn-primary">{{'Refesh'|translate}}</button>
+                  <button type="button" class="btn btn-primary">{{'Rewind'|translate}}</button>
+                  <button type="button" class="btn btn-primary">{{'Forward'|translate}}</button>
+                  <button type="button" class="btn btn-primary">{{'Values'|translate}}</button>
+                </div>
+              </div>
+              
+              <h5 class="text-danger" style="font-weight:600;margin:20px 0">{{'Fixed graphic'|translate}}</h5>
+              <div class="row form-group" *ngIf="symbol">
+                <label class="col-md-6 col-form-label text-right">
+                  {{'Interval of time'|translate}} ({{symbol.timeSymbol}}) :
+                </label>
+                <div class="col-md-6" *ngIf="timeInterval">
+                  <input type="text" class="form-control" value="{{ timeInterval }}">
+                </div>
+              </div>
+              <div class="row form-group" *ngIf="symbol">
+                <label class="col-md-6 col-form-label text-right">
+                  {{'Animation speed (sec./image)'|translate}}:
+                </label>
+                <div class="col-md-6">
+                  <select name="selectSpeedAnimation" [(ngModel)]="selectedSpeed" class="form-control">
+                    <ng-container *ngFor="let speed of speedAnimation">
+                    <option [value]="speed">{{ speed }}</option>
+                    </ng-container>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group pull-right" style="padding-top:10px">
+                <button type="button" class="btn btn-primary">{{'Refesh'|translate}}</button>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div [chart]="chart2D"></div>
+            </div>
+          </div>
+        </div>
+        
       </div>
     </div>
 </div>

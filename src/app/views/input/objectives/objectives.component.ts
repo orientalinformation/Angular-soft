@@ -3,7 +3,7 @@ import { Study } from '../../../api/models/study';
 import { ApiService } from '../../../api/services';
 import { InputNavItems } from '../input.nav-items';
 import { Production } from '../../../api/models/production';
-import swal from 'sweetalert2';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-objectives',
@@ -15,37 +15,17 @@ export class ObjectivesComponent implements OnInit, AfterViewInit {
   public study: Study;
   public production: Production;
 
-  public laddaSavingStudy = false;
-  public laddaSavingProduction = false;
+  public laddaSavingObjectives = false;
   public isLoading = false;
 
-  constructor(private api: ApiService) { }
+  constructor(private api: ApiService, private toastr: ToastrService) { }
 
   ngOnInit() {
     this.isLoading = true;
   }
 
-  saveProduction() {
-    this.laddaSavingProduction = true;
-    this.api.saveProduction({
-      id: this.production.ID_PRODUCTION,
-      body: this.production
-    }).subscribe(
-      resp => {
-        console.log(resp);
-        swal('Success', 'Save study production options completed', 'success');
-      },
-      error2 => {
-        console.log(error2);
-      },
-      () => {
-        this.laddaSavingProduction = false;
-      }
-    );
-  }
-
-  saveStudy() {
-    this.laddaSavingStudy = true;
+  saveObjectiveView() {
+    this.laddaSavingObjectives = true;
     this.api.saveStudy({
       id: this.study.ID_STUDY,
       body: this.study
@@ -53,13 +33,26 @@ export class ObjectivesComponent implements OnInit, AfterViewInit {
       resp => {
         localStorage.setItem('study', JSON.stringify(this.study));
         console.log(resp);
-        swal('Success', 'Save study calculation options completed', 'success');
+        this.api.saveProduction({
+          id: this.production.ID_PRODUCTION,
+          body: this.production
+        }).subscribe(
+          data => {
+            console.log(data);
+            this.toastr.success('Save objectives completed!', 'Success');
+            this.laddaSavingObjectives = false;
+          },
+          error2 => {
+            console.log(error2);
+            this.laddaSavingObjectives = false;
+          },
+          () => {
+            this.laddaSavingObjectives = false;
+          }
+        );
       },
       err => {
         console.log(err);
-      },
-      () => {
-        this.laddaSavingStudy = false;
       }
     );
   }

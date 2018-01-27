@@ -1,10 +1,10 @@
 /* tslint:disable */
-import { UserAdmin } from './user-admin';
+import { User } from './user';
 import { ConnectionUser } from './connection-user';
 
 /**
  */
 export class ViewUsers {
-    online?: UserAdmin[];
+    online?: User[];
     offline?: ConnectionUser[];
 }

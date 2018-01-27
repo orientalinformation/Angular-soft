@@ -61,7 +61,7 @@ export class CalculatorComponent implements OnInit, AfterViewInit {
   open() {
     this.isLoading = true;
 
-    const params: ApiService.GetOptimumCalculatorParams = {
+    const params: CalculatorService.GetOptimumCalculatorParams = {
       idStudy: this.study.ID_STUDY,
       idStudyEquipment: null
     };
@@ -75,7 +75,7 @@ export class CalculatorComponent implements OnInit, AfterViewInit {
       this.isLoading = false;
       this.calcModal.show();
     } else if (this.study.CALCULATION_MODE == 3) {
-      this.api.getOptimumCalculator(params).subscribe(
+      this.apicalculator.getOptimumCalculator(params).subscribe(
         data => {
           this.calculate = data;
           if (Number(data.timeStep) == -1) {
@@ -163,16 +163,17 @@ export class CalculatorComponent implements OnInit, AfterViewInit {
 
   startCalculate() {
     this.laddaIsCalculating = true;
-    this.api.startCalculate({
+    this.apicalculator.startCalculate({
       idStudy: this.study.ID_STUDY,
       idStudyEquipment: null,
-      scheckOptim: Number(this.calculate.scheckOptim),
+      checkOptim: Number(this.calculate.checkOptim),
       epsilonTemp: Number(this.calculate.epsilonTemp),
       epsilonEnth: Number(this.calculate.epsilonEnth),
       nbOptimIter: Number(this.calculate.nbOptimIter),
       timeStep: Number(this.calculate.timeStep),
       precision: Number(this.calculate.precision),
       scheckStorage: Number(this.calculate.scheckStorage),
+      sdisableOptim: Number(this.calculate.sdisableOptim),
       storagestep: Number(this.calculate.storagestep),
       hRadioOn: Number(this.calculate.hRadioOn),
       vRadioOn: Number(this.calculate.vRadioOn),
@@ -460,6 +461,7 @@ export class CalculatorComponent implements OnInit, AfterViewInit {
           const element = response[i];
           if (element !== 0) {
             success = false;
+            break;
           }
         }
 

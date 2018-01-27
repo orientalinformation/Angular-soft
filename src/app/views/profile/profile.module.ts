@@ -1,5 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
+import { ModalModule } from 'ngx-bootstrap/modal';
 
 import { ProfileRoutingModule } from './profile-routing.module';
 import { LayoutComponent } from './layout/layout.component';
@@ -13,6 +15,8 @@ import { TranslateModule } from '@ngx-translate/core';
     ProfileRoutingModule,
     SharedModule,
     TranslateModule.forChild(),
+    PerfectScrollbarModule,
+    ModalModule.forRoot(),
   ],
   declarations: [LayoutComponent, UserreferencesComponent]
 })

@@ -7,7 +7,7 @@ import { TextService } from '../../../shared/text.service';
 import { NgxLocalizedNumbersService } from 'ngx-localized-numbers';
 import { LocalizationFormatCurrencyPipe } from 'ngx-localized-numbers';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { AppSpinnerComponent } from '../../../components/index';
+import { AppSpinnerComponent } from '../../../components';
 
 import swal from 'sweetalert2';
 
@@ -159,22 +159,25 @@ export class ProductComponent implements OnInit, AfterViewInit {
       );
     } else {
       const updateParams: ApiService.UpdateProductParams = {
-        id: this.study.ID_STUDY
+        id: this.study.ID_STUDY,
+        updateParams: {}
       };
       if (this.product.PRODNAME !== this.productForm.name) {
-        updateParams.name = this.product.PRODNAME;
+        updateParams.updateParams.name = this.product.PRODNAME;
       }
       if (this.prodDim1 !== this.productForm.dim1 && this.hasDim1()) {
-        updateParams.dim1 = this.productForm.dim1;
+        updateParams.updateParams.dim1 = this.productForm.dim1;
       }
       if (this.prodDim3 !== this.productForm.dim3 && this.hasDim3()) {
-        updateParams.dim3 = this.productForm.dim3;
+        updateParams.updateParams.dim3 = this.productForm.dim3;
       }
 
       this.api.updateProduct(updateParams).subscribe(
         response => {
+          this.refreshViewModel();
         },
         err => {
+          console.log(err);
         }
       );
     }

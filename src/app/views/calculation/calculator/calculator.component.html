@@ -22,15 +22,15 @@
             <tr>
               <td align="center">
                 <label class="custom-control custom-checkbox">
-                  <input type="checkbox" class="custom-control-input" name="cbOptim" id="cbOptim" [checked]="calculate.scheckOptim == 1" [(ngModel)]="calculate.scheckOptim">
+                  <input type="checkbox" class="custom-control-input" name="cbOptim" id="cbOptim" [checked]="calculate.checkOptim == 1" [(ngModel)]="calculate.checkOptim">
                   <span class="custom-control-indicator"></span>
                 </label>
               </td>
               <td align="center">
-                <input type="text" name="epsilonTemp" id="epsilonTemp" style="width:80px;" [(ngModel)]="calculate.epsilonTemp" [disabled]="calculate.scheckOptim != 1">
+                <input type="text" name="epsilonTemp" id="epsilonTemp" style="width:80px;" [(ngModel)]="calculate.epsilonTemp" [disabled]="calculate.checkOptim != 1">
               </td>
               <td align="center">
-                <input type="text" name="epsilonEnth" id="epsilonEnth" style="width:80px;" [(ngModel)]="calculate.epsilonEnth" [disabled]="calculate.scheckOptim != 1">
+                <input type="text" name="epsilonEnth" id="epsilonEnth" style="width:80px;" [(ngModel)]="calculate.epsilonEnth" [disabled]="calculate.checkOptim != 1">
               </td>
               <td align="center">
                 <input type="text" name="nbOptimIter" id="nbOptimIter" style="width:80px;" [(ngModel)]="calculate.nbOptimIter" [disabled]="calculate.sdisableOptim != 1">
@@ -264,18 +264,18 @@
           <tr>
             <td align="center">
               <label class="custom-control custom-checkbox">
-                <input type="checkbox" class="custom-control-input" name="cbOptim" id="cbOptim" [checked]="brainCalculator.scheckOptim == 1" [(ngModel)]="brainCalculator.scheckOptim">
+                <input type="checkbox" class="custom-control-input" name="cbOptim" id="cbOptim" [checked]="brainCalculator.checkOptim == 1" [(ngModel)]="brainCalculator.checkOptim">
                 <span class="custom-control-indicator"></span>
               </label>
             </td>
             <td align="center">
-              <input type="text" name="epsilonTemp" id="epsilonTemp" style="width:80px;" [disabled]="brainCalculator.scheckOptim != 1" [(ngModel)]="brainCalculator.epsilonTemp">
+              <input type="text" name="epsilonTemp" id="epsilonTemp" style="width:80px;" [disabled]="brainCalculator.checkOptim != 1" [(ngModel)]="brainCalculator.epsilonTemp">
             </td>
             <td align="center">
-              <input type="text" name="epsilonEnth" id="epsilonEnth" style="width:80px;" [disabled]="brainCalculator.scheckOptim != 1" [(ngModel)]="brainCalculator.epsilonEnth">
+              <input type="text" name="epsilonEnth" id="epsilonEnth" style="width:80px;" [disabled]="brainCalculator.checkOptim != 1" [(ngModel)]="brainCalculator.epsilonEnth">
             </td>
             <td align="center">
-              <input type="text" name="nbOptimIter" id="nbOptimIter" style="width:80px;" [disabled]="brainCalculator.scheckOptim != 1 || brainCalculator.typeCalculate == 3" 
+              <input type="text" name="nbOptimIter" id="nbOptimIter" style="width:80px;" [disabled]="brainCalculator.checkOptim != 1 || brainCalculator.typeCalculate == 3" 
               [(ngModel)]="brainCalculator.nbOptimIter">
             </td>
           </tr>

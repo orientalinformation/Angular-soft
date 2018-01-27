@@ -51,7 +51,6 @@ export class OpenStudyComponent implements OnInit, AfterViewInit {
   public name = '';
   public laddaOpeningStudy = false;
   public laddaDeletingStudy = false;
-  public laddaSaveStudyAs = false;
 
   constructor(private api: ApiService, private router: Router) {}
   ngOnInit() {
@@ -127,28 +126,31 @@ export class OpenStudyComponent implements OnInit, AfterViewInit {
   }
 
   saveStudyAs() {
-    this.laddaSaveStudyAs = true;
+    console.log(this.name);
+    if (!this.name) {
+      swal('Error', 'Please specify study name!', 'error');
+      return false;
+    }
     this.studyID = this.selectedStudy.ID_STUDY;
-    const studyName = this.selectedStudy.STUDY_NAME;
+    const studyName = this.name;
         // console.log(studyName);
-        // console.log(this.name);
+        console.log(this.name);
     this.api.saveStudyAs(
       {id: this.studyID,
       name: this.name}
     ).subscribe(
-        data => {
-        console.log(data);
-        this.laddaSaveStudyAs = false;
+      (data: Study) => {
+        this.modalSaveAs.hide();
         this.refrestListStudies();
-      }, err => {
-        this.laddaSaveStudyAs = false;
+      },
+      (err) => {
+        swal('Error', err.error.message, 'error');
         console.log(err);
       },
       () => {
-        this.laddaDeletingStudy = false;
       }
     );
-    swal('Warning', 'This feature is under developmente!', 'warning');
+    // swal('Warning', 'This feature is under developmente!', 'warning');
   }
 
 }

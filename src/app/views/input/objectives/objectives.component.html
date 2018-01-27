@@ -3,9 +3,8 @@
     <div class="card" *ngIf="study">
       <div class="card-header">
         <strong>{{'CALCULATION MODE'|translate}}</strong>
-        <button type="button" class="btn btn-sm btn-success float-right" (click)="saveStudy()" [ladda]="laddaSavingStudy">Save</button>
       </div>
-      <div class="card-body">
+      <div class="card-block">
         <div class="row">
           <div class="col-md-6">
             <div class="form-check">
@@ -26,16 +25,6 @@
                   <span class="switch-handle"></span>
                 </label>
                 {{'Optimum Equipment'|translate}}
-              </label>
-            </div>
-            <div class="form-check">
-              <label class="form-check-label">
-                <label class="switch switch-icon switch-pill switch-primary">
-                  <input type="radio" class="switch-input" [(ngModel)]="study.CALCULATION_MODE" value="2" [checked]="study.CALCULATION_MODE == 2">
-                  <span class="switch-label" data-on="&#xf00c;" data-off="&#xf00d;"></span>
-                  <span class="switch-handle"></span>
-                </label>
-                {{'Selected Equipment'|translate}}
               </label>
             </div>
           </div> <!-- #col-md-6 -->
@@ -83,15 +72,11 @@
           </div>
         </div>
       </div> <!-- /.card-body -->
-    </div> <!-- /.card -->
-
-
-    <div class="card" *ngIf="production">
       <div class="card-header">
         <strong>{{'PRODUCTION DUTY CYCLE'|translate}}</strong>
-        <button type="button" class="btn btn-sm btn-success float-right" (click)="saveProduction()" [ladda]="laddaSavingProduction">Save</button>
       </div>
-      <div class="card-body">
+      <!-- /.card-body -->
+      <div class="card-block">
         <div class="row">
           <div class="col-md-6">
             <div class="form-group row">
@@ -99,7 +84,9 @@
               <div class="col-md-5">
                 <div class="input-group">
                   <input type="text" name="text-input" class="form-control" [(ngModel)]="production.DAILY_PROD">
-                  <span class="input-group-addon"><small>hours/day</small></span>
+                  <span class="input-group-addon">
+                    <small>hours/day</small>
+                  </span>
                 </div>
               </div>
             </div>
@@ -108,7 +95,9 @@
               <div class="col-md-5">
                 <div class="input-group">
                   <input type="text" name="text-input" class="form-control" [(ngModel)]="production.WEEKLY_PROD">
-                  <span class="input-group-addon"><small>days/week</small></span>
+                  <span class="input-group-addon">
+                    <small>days/week</small>
+                  </span>
                 </div>
               </div>
             </div>
@@ -117,7 +106,9 @@
               <div class="col-md-5">
                 <div class="input-group">
                   <input type="text" name="text-input" class="form-control" [(ngModel)]="production.NB_PROD_WEEK_PER_YEAR">
-                  <span class="input-group-addon"><small>weeks/year</small></span>
+                  <span class="input-group-addon">
+                    <small>weeks/year</small>
+                  </span>
                 </div>
               </div>
             </div>
@@ -126,7 +117,9 @@
               <div class="col-md-5">
                 <div class="input-group">
                   <input type="text" name="text-input" class="form-control" [(ngModel)]="production.DAILY_STARTUP">
-                  <span class="input-group-addon"><small>per day</small></span>
+                  <span class="input-group-addon">
+                    <small>per day</small>
+                  </span>
                 </div>
               </div>
             </div>
@@ -137,7 +130,9 @@
               <div class="col-md-5">
                 <div class="input-group">
                   <input type="text" name="text-input" class="form-control" [(ngModel)]="production.AMBIENT_TEMP">
-                  <span class="input-group-addon"><small>&#8451;</small></span>
+                  <span class="input-group-addon">
+                    <small>&#8451;</small>
+                  </span>
                 </div>
               </div>
             </div>
@@ -146,7 +141,9 @@
               <div class="col-md-5">
                 <div class="input-group">
                   <input type="text" name="text-input" class="form-control" [(ngModel)]="production.AMBIENT_HUM">
-                  <span class="input-group-addon"><small>%</small></span>
+                  <span class="input-group-addon">
+                    <small>%</small>
+                  </span>
                 </div>
               </div>
             </div>
@@ -155,7 +152,9 @@
               <div class="col-md-5">
                 <div class="input-group">
                   <input type="text" id="text-input" name="text-input" class="form-control" [(ngModel)]="production.AVG_T_DESIRED">
-                  <span class="input-group-addon"><small>&#8451;</small></span>
+                  <span class="input-group-addon">
+                    <small>&#8451;</small>
+                  </span>
                 </div>
               </div>
             </div>
@@ -164,15 +163,20 @@
               <div class="col-md-5">
                 <div class="input-group">
                   <input type="text" name="text-input" class="form-control" [(ngModel)]="production.PROD_FLOW_RATE">
-                  <span class="input-group-addon"><small>kg/h</small></span>
+                  <span class="input-group-addon">
+                    <small>kg/h</small>
+                  </span>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-
+        </div>      
+      </div>
+      <!-- /.card-body -->
+      <div class="card-footer text-center">
+        <button type="button" (click)="saveObjectiveView()" class="btn btn-success">{{'SAVE'|translate}}</button>
       </div><!-- /.card-body -->
-    </div><!-- /.card -->
+    </div> <!-- /.card -->
 </div><!-- #/container -->
 
 <app-spinner *ngIf="isLoading"></app-spinner>

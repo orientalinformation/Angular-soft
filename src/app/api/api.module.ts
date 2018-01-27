@@ -6,6 +6,7 @@ import { ApiService } from './services/api.service';
 import { AdminService } from './services/admin.service';
 import { CalculatorService } from './services/calculator.service';
 import { ReferencedataService } from './services/referencedata.service';
+import { ProfileService } from './services/profile.service';
 
 /**
  * Module that provides instances for all API services
@@ -23,7 +24,8 @@ import { ReferencedataService } from './services/referencedata.service';
    ApiService,
    AdminService,
    CalculatorService,
-   ReferencedataService
+   ReferencedataService,
+   ProfileService
   ],
 })
 export class ApiModule { }

@@ -9,9 +9,12 @@ import { NgxLocalizedNumbersService } from 'ngx-localized-numbers';
 import { FormsModule, FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { LaddaModule } from 'angular2-ladda';
 import { AppSpinnerComponent } from '../components';
-
+import { CommentComponent } from './comment/comment.component';
 
 @NgModule({
+  entryComponents: [
+    CommentComponent
+  ],
   imports: [
     CommonModule,
     LaddaModule.forRoot({
@@ -23,7 +26,7 @@ import { AppSpinnerComponent } from '../components';
     ReactiveFormsModule,
     NgxLocalizedNumbers.forRoot()
   ],
-  declarations: [AppSpinnerComponent],
+  declarations: [AppSpinnerComponent, CommentComponent],
   providers: [
     StatusService,
     TextService,
@@ -38,7 +41,8 @@ import { AppSpinnerComponent } from '../components';
     ReactiveFormsModule,
     FormsModule,
     LaddaModule,
-    AppSpinnerComponent
+    AppSpinnerComponent,
+    CommentComponent
   ]
 })
 export class SharedModule { }

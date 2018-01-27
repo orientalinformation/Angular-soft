@@ -5,24 +5,7 @@
     margin: auto;
     padding-top: 25px;
 }
-#study-list-card {
-    .list-group {
-        .list-group-item {
-            border-left: none;
-            border-right: none;
-            cursor: pointer;
-        }
-        .list-group-item:first-child{
-            border-top: none !important;
-        }
-        .list-group-item:last-child{
-            border-bottom: none !important;
-        }
-
-    }
-}
-
-#study-search-box {
+.study-search-box {
     span {
         position: absolute;
         top: 3px;
@@ -32,8 +15,3 @@
     }
 }
 
-#study-search-box-container {
-    position: absolute;
-    top: 8px;
-    right: 12px;
-}

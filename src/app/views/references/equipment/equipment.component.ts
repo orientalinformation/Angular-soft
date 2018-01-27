@@ -1,25 +1,46 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { OnChanges } from '@angular/core';
 import { ViewChild } from '@angular/core';
 import { ModalDirective } from 'ngx-bootstrap/modal/modal.directive';
+import { Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
+import swal from 'sweetalert2';
+import { Pipe } from '@angular/core';
+import { PipeTransform } from '@angular/core';
+
+import { ReferencedataService } from '../../../api/services/referencedata.service';
+import { RefEquipment, ViewEquipment } from '../../../api/models';
+
 
 @Component({
   selector: 'app-equipment',
   templateUrl: './equipment.component.html',
   styleUrls: ['./equipment.component.scss']
 })
-export class EquipmentComponent implements OnInit {
+export class EquipmentComponent implements OnInit, AfterViewInit {
   @ViewChild('modalTempSetpoint') public modalTempSetpoint: ModalDirective;
   @ViewChild('modalReferentialEquip') public modalReferentialEquip: ModalDirective;
   @ViewChild('modalEquipmentProfil') public modalEquipmentProfil: ModalDirective;
   @ViewChild('modalEquipmentProfil2') public modalEquipmentProfil2: ModalDirective;
 
+  @ViewChild('modalAddEquipment') public modalAddEquipment: ModalDirective;
+
   public equipmentGenerate: number;
   public equipmentMerge1: number;
   public equipmentMerge2: number;
   public equipmentLoad: number;
+
   public activePageEquipment = '';
-  constructor() {
+  public listEquipment: ViewEquipment;
+  public listEquipGenerateAll: Array<RefEquipment>;
+  public listEquipGenerate: Array<RefEquipment>;
+  public equipGenerate = 0;
+  public selectEquip: RefEquipment;
+  public statusEquip = 0;
+  public listEquipRotate: Array<RefEquipment>;
+  public equipRotate = 0;
+
+  constructor(private referencedata: ReferencedataService, private toastr: ToastrService, private router: Router) {
     this.equipmentGenerate = 0;
     this.equipmentMerge1 = 0;
     this.equipmentMerge2 = 0;
@@ -27,14 +48,71 @@ export class EquipmentComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.activePageEquipment = 'new';
+    this.activePageEquipment = 'load';
   }
 
-  openNewEquipment() {
-    this.hideAllPageEquipment();
-    const newE = <HTMLElement>document.getElementById('page-new-equipment');
-    newE.style.display = 'block';
-    this.activePageEquipment = 'new';
+  ngAfterViewInit() {
+    this.refrestListEquipment();
+  }
+
+  refrestListEquipment() {
+    this.referencedata.findRefEquipment()
+      .subscribe(
+      data => {
+        console.log(data);
+        this.listEquipment = data;
+        this.listEquipGenerateAll = (data.mine).concat(data.others);
+        this.listEquipGenerate = [];
+        for (let i = 0; i < this.listEquipGenerateAll.length; i++) {
+          if ( Number(this.listEquipGenerateAll[i].STD) === 1 && Number(this.listEquipGenerateAll[i].EQUIP_RELEASE) !== 5) {
+            this.listEquipGenerate.push(this.listEquipGenerateAll[i]);
+          }
+        }
+      },
+      err => {
+        console.log(err);
+      },
+      () => {
+
+      }
+    );
+  }
+
+  selectEquipGenerate() {
+    for (const equip of this.listEquipGenerate) {
+      if (Number(equip.ID_EQUIP) === Number(this.equipGenerate)) {
+        this.selectEquip = equip;
+        this.selectEquip = equip;
+        break;
+      }
+    }
+  }
+
+  chooseGenerate() {
+    this.statusEquip = 0;
+  }
+
+  chooseTranslate() {
+    this.statusEquip = 1;
+    this.getEquipmentRotateTranslation();
+  }
+
+  chooseRotate() {
+    this.statusEquip = 2;
+    this.getEquipmentRotateTranslation();
+  }
+
+  chooseMerge() {
+    this.statusEquip = 3;
+  }
+
+  getEquipmentRotateTranslation() {
+    this.listEquipRotate = [];
+    for (let i = 0; i < this.listEquipGenerateAll.length; i++) {
+      if ( Number(this.listEquipGenerateAll[i].STD) !== 1 && Number(this.listEquipGenerateAll[i].EQUIP_RELEASE) !== 5) {
+        this.listEquipRotate.push(this.listEquipGenerateAll[i]);
+      }
+    }
   }
 
   openLoadEquipment() {
@@ -63,11 +141,11 @@ export class EquipmentComponent implements OnInit {
     const pageEquip1 = <HTMLElement>document.getElementById('page-load-equipment1');
     const pageEquip2 = <HTMLElement>document.getElementById('page-load-equipment2');
     const pageEquip3 = <HTMLElement>document.getElementById('page-load-equipment3');
-    if(val != 0){
+    if (val !== 0) {
       pageEquip1.style.display = 'block';
       pageEquip2.style.display = 'block';
       pageEquip3.style.display = 'block';
-    }else{
+    } else {
       pageEquip1.style.display = 'none';
       pageEquip2.style.display = 'none';
       pageEquip3.style.display = 'none';
@@ -75,11 +153,9 @@ export class EquipmentComponent implements OnInit {
   }
 
   hideAllPageEquipment() {
-    const newE = <HTMLElement>document.getElementById('page-new-equipment');
     const loadE = <HTMLElement>document.getElementById('page-load-equipment');
     const genE = <HTMLElement>document.getElementById('page-generated-equipment');
     const curE = <HTMLElement>document.getElementById('page-curves-equipment');
-    newE.style.display = 'none';
     loadE.style.display = 'none';
     genE.style.display = 'none';
     curE.style.display = 'none';
@@ -88,18 +164,18 @@ export class EquipmentComponent implements OnInit {
 
   showGenerateRegulation() {
     const equip = <HTMLElement>document.getElementById('generate-regulation-temperature');
-    if(this.equipmentGenerate != 0){
+    if (this.equipmentGenerate !== 0) {
       equip.style.display = 'block';
-    }else{
+    } else {
       equip.style.display = 'none';
     }
   }
 
   showMergeRegulation() {
     const equip = <HTMLElement>document.getElementById('merge-regulation-temperature');
-    if(this.equipmentMerge1 != 0 && this.equipmentMerge2 != 0){
+    if (this.equipmentMerge1 !== 0 && this.equipmentMerge2 !== 0) {
       equip.style.display = 'block';
-    }else{
+    } else {
       equip.style.display = 'none';
     }
   }

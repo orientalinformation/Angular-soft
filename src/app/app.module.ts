@@ -266,7 +266,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     ToastrModule.forRoot({
       timeOut: 4000,
       positionClass: 'toast-top-center',
-      progressBar: true,
+      progressBar: false,
       preventDuplicates: true
     })
   ],

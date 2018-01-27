@@ -7,6 +7,8 @@ import swal from 'sweetalert2';
 import { ViewChild } from '@angular/core';
 import { BaseChartDirective } from 'ng2-charts/ng2-charts';
 import { ViewLocation } from '../../../api/models/view-location';
+import { NgxLocalizedNumbersService } from 'ngx-localized-numbers/src/localized-numbers.service';
+import { Chart } from 'angular-highcharts';
 
 @Component({
   selector: 'app-output-charts',
@@ -14,8 +16,6 @@ import { ViewLocation } from '../../../api/models/view-location';
   styleUrls: ['./output-charts.component.scss']
 })
 export class OutputChartsComponent implements OnInit, AfterViewInit {
-
-  constructor(private api: ApiService, private translate: TranslateService, private router: Router) { }
 
   public study;
   public symbol;
@@ -26,7 +26,7 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
   public outputProductChart;
   public tempRecordPts;
   public nbSteps;
-  public NB_STEPS;
+  public NB_STEPS: number;
   public selectedEquip;
   public folderImg;
   public shape: number;
@@ -38,6 +38,7 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
   public rbpoint02;
   public rbpoint03;
   public radioChecked;
+  public chart2D;
 
   public imgAxis = {
     axis1: '',
@@ -48,6 +49,10 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
     plan1: '',
     plan2: '',
     plan3: ''
+  };
+
+  public tempForm = {
+    nbSteps: ''
   };
 
   public recordType: string;
@@ -68,6 +73,7 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
   ];
 
   public selectedAxe: number;
+  public productSectionDataChart;
   public productSectionResult;
   public productSectionValue;
   public productSectionRecAxis;
@@ -75,6 +81,14 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
   public productSectionAxisTemp;
   public axis1Disable: boolean;
   public axis3Disable: boolean;
+
+  public productSectionChartData;
+  public productSectionChartOptions;
+  public productSectionChartLegend = true;
+  public productSectionChartType= 'line';
+  public productSectionColours: Array<any> = [];
+  public dataArrChart: Array<any> = [];
+  public dataArrColor = [];
 
   public timeBasedResult;
   public timeBasedCurve;
@@ -88,7 +102,26 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
     { backgroundColor: ['rgb(0,0,255)', 'rgb(0,192,192)', 'rgb(0,255,255)', 'rgb(0,255,0)'], }
   ];
 
+  public timeRecords;
+  public selectedPlan: number;
+  public plan1Disable: boolean;
+  public plan2Disable: boolean;
+  public plan3Disable: boolean;
+  public speedAnimation: Array<any> = [1, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1];
+  public selectedSpeed: number;
+  public timeSelected: number;
+  public timeInterval: number;
+  public outline2Ddata;
+  public contourData: Array<any> = [];
+
+  constructor(private api: ApiService, private translate: TranslateService, private router: Router,
+    private localizedNumbersService: NgxLocalizedNumbersService) {
+      this.tempForm.nbSteps = '';
+    }
+
   @ViewChild(BaseChartDirective) heatExchangeChart: BaseChartDirective;
+  @ViewChild(BaseChartDirective) productSectionChart: BaseChartDirective;
+
 
   ngOnInit() {
     if (localStorage.getItem('study')) {
@@ -114,6 +147,11 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
       this.selectedAxe = 2;
       this.axis1Disable = false;
       this.axis3Disable = false;
+      this.selectedPlan = 3;
+      this.plan1Disable = false;
+      this.plan2Disable = false;
+      this.plan3Disable = false;
+      this.selectedSpeed = 1;
     }
   }
 
@@ -123,25 +161,25 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
       this.api.getProductElmt(this.study.ID_STUDY).subscribe(
         data => {
           this.shape = data.SHAPECODE;
+          console.log(this.shape);
         }
       );
       this.refeshView();
     }
   }
-
   refeshView() {
     const showLoader = <HTMLElement>document.getElementById('showLoaderLocation');
     showLoader.style.display = 'block';
     this.api.getSymbol(this.study.ID_STUDY).subscribe(
       data => {
         this.symbol = data;
-        console.log(this.symbol);
         this.activePage = 'location';
         this.loadData();
         this.api.getTempRecordPts(this.study.ID_STUDY).subscribe(
           dataTemp => {
             this.tempRecordPts = dataTemp;
             this.nbSteps = dataTemp.NB_STEPS;
+            this.NB_STEPS = this.nbSteps;
           }
         );
         showLoader.style.display = 'none';
@@ -217,6 +255,24 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
             this.folderImg = 'BREADED/perpendicular';
             this.axis3Disable = true;
           }
+        }
+        console.log(this.axis3Disable);
+        if (this.shape == 2 || this.shape == 9) {
+          if (this.outputProductChart.ORIENTATION == 1) {
+            this.plan2Disable = true;
+            this.plan3Disable = true;
+            this.selectedPlan = 1;
+          } else {
+            this.plan1Disable = true;
+            this.plan2Disable = true;
+            this.selectedPlan = 3;
+          }
+        } else if (this.shape == 3) {
+          this.plan1Disable = true;
+          this.plan2Disable = true;
+          this.selectedPlan = 3;
+        } else {
+          this.selectedPlan = 3;
         }
         this.imgProd3D = 'assets/img/output/' + this.folderImg + '/shape.png';
       }
@@ -579,6 +635,7 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
     this.api.productSection(params).subscribe(
       data => {
         showLoader.style.display = 'none';
+        this.productSectionDataChart = data.dataChart;
         this.productSectionResult = data.resultLabel;
         this.productSectionValue = data.result.resultValue;
         this.productSectionRecAxis = data.result.recAxis;
@@ -590,6 +647,7 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
         } else if (this.selectedAxe == 3) {
           this.productSectionAxisTemp = data.axeTemp[0] + ',' + data.axeTemp[1] + ',*';
         }
+        this.loadChartProductSection(this.productSectionDataChart, this.productSectionResult);
       }
     );
   }
@@ -702,6 +760,86 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
     productSectionPage.style.display = 'none';
     timeBasedPage.style.display = 'none';
     outlines2dPage.style.display = 'block';
+    const params: ApiService.Productchart2DParams = {
+      idStudy: this.study.ID_STUDY,
+      idStudyEquipment: this.outputProductChart['ID_STUDY_EQUIPMENTS'],
+      selectedPlan: this.selectedPlan
+    };
+    this.api.getstudyEquipmentProductChart(this.study.ID_STUDY).subscribe(
+    data => {
+      console.log(data);
+      for (let i = 0; i < Object.keys(data).length; i++) {
+        if (data[i].ID_STUDY_EQUIPMENTS == this.selectedEquip) {
+          this.outputProductChart = data[i];
+        }
+      }
+      this.api.getRecordPosition(this.outputProductChart.ID_STUDY_EQUIPMENTS).subscribe(
+        dataRecord => {
+          this.timeRecords = dataRecord;
+        }
+      );
+      this.api.productchart2D(params).subscribe(
+        dataPr => {
+          console.log(dataPr);
+          this.outline2Ddata = dataPr.valueRecAxis;
+          this.timeSelected = dataPr.lfDwellingTime;
+          this.timeInterval = dataPr.lftimeInterval;
+          console.log(this.timeSelected);
+        }
+      );
+    });
+    for (let i = 0; i < 300; i++) {
+      const x = 200 * Math.random() - 100;
+      const y = 200 * Math.random() - 100;
+      const value = Math.random();
+      this.contourData.push([x, y, value]);
+    }
+    console.log(this.contourData);
+    this.chart2D  = new Chart({
+      chart: {
+        type: 'pie',
+        options3d: {
+            enabled: true,
+            alpha: 45,
+            beta: 0
+        }
+      },
+      title: {
+          text: 'Data demo'
+      },
+      tooltip: {
+          pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+      },
+      plotOptions: {
+          pie: {
+              allowPointSelect: true,
+              cursor: 'pointer',
+              depth: 35,
+              dataLabels: {
+                  enabled: true,
+                  format: '{point.name}'
+              }
+          }
+      },
+      series: [{
+          type: 'pie',
+          name: 'Browser share',
+          data: [
+              ['Firefox', 45.0],
+              ['IE', 26.8],
+              {
+                  name: 'Chrome',
+                  y: 12.8,
+                  sliced: true,
+                  selected: true
+              },
+              ['Safari', 8.5],
+              ['Opera', 6.2],
+              ['Others', 0.7]
+          ]
+      }]
+      });
+      console.log(this.tempRecordPts);
   }
 
   changeAxePS() {
@@ -728,8 +866,125 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
         } else if (this.selectedAxe == 3) {
           this.productSectionAxisTemp = data.axeTemp[0] + ',' + data.axeTemp[1] + ',*';
         }
+        this.productSectionDataChart = data.dataChart;
+        this.loadChartProductSection(this.productSectionDataChart, this.productSectionResult);
       }
     );
   }
 
+  saveNbStep() {
+    if (!this.NB_STEPS) {
+      swal('Oops', 'Enter a value in Curve Number !', 'error');
+      return;
+    }
+    const showLoader = <HTMLElement>document.getElementById('showLoaderProductSection');
+    console.log(this.NB_STEPS);
+    showLoader.style.display = 'block';
+    const params = {
+      ID_STUDY: this.study.ID_STUDY,
+      ID_STUDY_EQUIPMENTS: this.outputProductChart['ID_STUDY_EQUIPMENTS'],
+      AXE: this.selectedAxe,
+      NB_STEPS: this.NB_STEPS
+    };
+    this.api.saveTempRecordPts(params).subscribe(
+      data => {
+        console.log(data);
+        showLoader.style.display = 'none';
+        this.productSectionResult = data.resultLabel;
+        this.productSectionValue = data.result.resultValue;
+        this.productSectionRecAxis = data.result.recAxis;
+        this.productSectionMesAxis = data.result.mesAxis;
+        if (this.selectedAxe == 1) {
+          this.productSectionAxisTemp = '*,' + data.axeTemp[0] + ',' + data.axeTemp[1];
+        } else if (this.selectedAxe == 2) {
+          this.productSectionAxisTemp = data.axeTemp[0] + ',*,' + data.axeTemp[1];
+        } else if (this.selectedAxe == 3) {
+          this.productSectionAxisTemp = data.axeTemp[0] + ',' + data.axeTemp[1] + ',*';
+        }
+        this.productSectionDataChart = data.dataChart;
+        // this.loadChartProductSection(this.productSectionDataChart, this.productSectionResult);
+      }
+    );
+  }
+
+  loadChartProductSection(chartDataObj, productResust) {
+    const dynamicColors = function() {
+      const r = Math.floor(Math.random() * 255);
+      const g = Math.floor(Math.random() * 255);
+      const b = Math.floor(Math.random() * 255);
+      return 'rgb(' + r + ',' + g + ',' + b + ')';
+    };
+
+    this.dataArrChart = [];
+    this.dataArrColor = [];
+    for (let i = 0; i < chartDataObj.length; i++) {
+      const color = dynamicColors();
+      const dataC = {
+        data: JSON.parse(JSON.stringify(chartDataObj[i])),
+        label: this.translate.instant('Temperature T ' + productResust[i] + '(' + this.symbol.timeSymbol + '))'),
+        type: 'line',
+        radius: 0,
+        fill: false,
+        borderColor: color,
+        backgroundColor: color,
+        borderWidth: 2
+      };
+
+      this.dataArrColor.push(color);
+      this.dataArrChart.push(dataC);
+    }
+    this.productSectionColours = [
+      { backgroundColor: [this.dataArrColor], }
+    ];
+    console.log(this.dataArrColor);
+    this.productSectionChartData =  JSON.parse(JSON.stringify(this.dataArrChart));
+    this.productSectionChartOptions = {
+      animation: false,
+      responsive: false,
+      legend: {
+        onClick: (e) => e.stopPropagation(),
+        position: 'right',
+        labels: {
+          padding: 20
+        }
+      },
+      hoverMode: 'index',
+      stacked: false,
+      title: {
+        display: false,
+        text: 'test',
+        fontColor: '#f00',
+        fontSize: 16
+      },
+      scales: {
+        xAxes: [{
+            type: 'linear',
+            display: true,
+            position: 'top',
+            scaleLabel: {
+                display: true,
+                labelString: this.translate.instant(this.symbol.prodchartDimensionSymbol),
+                fontColor: '#f00',
+                fontSize: 20
+            },
+        }],
+        yAxes: [{
+            type: 'linear',
+            display: true,
+            position: 'right',
+            id: 'y-axis-1',
+            scaleLabel: {
+                display: true,
+                labelString: this.translate.instant(this.symbol.timeSymbol),
+                fontColor: '#f00',
+                fontSize: 20
+            }
+        }],
+      }
+    };
+    if (this.productSectionChart) {
+      this.productSectionChart.datasets[0].data = this.productSectionChartData;
+      this.productSectionChart.chart.update();
+    }
+  }
 }
