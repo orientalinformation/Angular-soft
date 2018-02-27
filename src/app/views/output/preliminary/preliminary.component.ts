@@ -10,6 +10,7 @@ import 'chart.piecelabel.js';
 import { TranslateService } from '@ngx-translate/core';
 import { BaseChartDirective } from 'ng2-charts/ng2-charts';
 import { CheckControl } from '../../../api/models/check-control';
+import swal from 'sweetalert2';
 
 @Component({
   selector: 'app-preliminary',
@@ -19,6 +20,7 @@ import { CheckControl } from '../../../api/models/check-control';
 export class PreliminaryComponent implements OnInit, AfterViewInit {
   @ViewChild('consumptionPieModal') public consumptionPieModal: ModalDirective;
   @ViewChild('modalSaveAs') public modalSaveAs: ModalDirective;
+  @ViewChild('equipSizingModal') public equipSizingModal: ModalDirective;
 
   public study;
   public user;
@@ -60,6 +62,19 @@ export class PreliminaryComponent implements OnInit, AfterViewInit {
   public pieColoursNone: Array<any> = [
     { backgroundColor: ['#b4b9c1', '#b4b9c1', '#b4b9c1'], }
   ];
+
+  public equipSizingName;
+  public equipSizingDisable: boolean;
+  public equipSizingLength: number;
+  public equipSizingWidth: number;
+  public equipSizingSurface: number;
+  public equipSizingMinLength: number;
+  public equipSizingMinWidth: number;
+  public equipSizingMinSurf: number;
+  public equipSizingMaxLength: number;
+  public equipSizingMaxWidth: number;
+  public equipSizingMaxSurf: number;
+  public equipSizingMessage = '';
 
   @ViewChild('calculator') calculator: CalculatorComponent;
   @ViewChild(BaseChartDirective) myChart: BaseChartDirective;
@@ -136,6 +151,7 @@ export class PreliminaryComponent implements OnInit, AfterViewInit {
     };
     this.api.getEstimationHeadBalance(params).subscribe(
       data => {
+        console.log(data);
         this.headBalanceResultsTr = data;
         showLoaderChange.style.display = 'none';
       }
@@ -279,8 +295,41 @@ export class PreliminaryComponent implements OnInit, AfterViewInit {
       }
     );
   }
-
+  onEquipSizing(id) {
+    this.api.getEquipSizing(id).subscribe(
+      data => {
+        console.log(data);
+        this.equipSizingName = data.equipName;
+        this.equipSizingDisable = data.disabled;
+        this.equipSizingWidth = data.initWidth;
+        this.equipSizingLength = data.initLength;
+        this.equipSizingSurface = data.initSurface;
+      }
+    );
+    this.equipSizingModal.show();
+  }
+  saveEquipSizing() {
+    if (!this.equipSizingWidth) {
+      this.equipSizingMessage = 'Enter a value in Width !';
+    } else if (!this.isNumberic(this.equipSizingWidth)) {
+      this.equipSizingMessage = 'Not a valid number in Width !';
+    }
+  }
+  onTocPopup(id) {
+    swal('Oops', 'Not yet implement !', 'error');
+    return;
+  }
   onFinishCalculate() {
     this.refeshView();
+  }
+  isNumberic(number) {
+    return Number.isInteger(Math.floor(number));
+  }
+  isInRangeOutput(value, min, max) {
+      if (value < min || value > max) {
+          return false;
+      } else {
+        return true;
+      }
   }
 }

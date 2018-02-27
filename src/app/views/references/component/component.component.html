@@ -67,20 +67,19 @@
                 <div class="col">
                   <div class="col-md-2" align="center">
                     <label class="custom-control custom-radio">
-                      <input type="radio" class="custom-control-input" name="statusComp" [checked]="selectComponent.COMP_RELEASE == 1"
-                        [value]="1">{{ 'Draft'|translate }}
+                      <input type="radio" class="custom-control-input" name="statusComp" [checked]="selectComponent.COMP_RELEASE == 1" [value]="1">{{ 'Draft'|translate }}
                       <span class="custom-control-indicator"></span>
                     </label>
                   </div>
                   <div class="col-md-2" align="center">
                     <label class="custom-control custom-radio">
-                      <input type="radio" class="custom-control-input" name="statusComp" [checked]="selectComponent.COMP_RELEASE == 2" [value]="2" disabled>{{ 'Test'|translate }}
+                      <input type="radio" class="custom-control-input" name="statusComp" [checked]="selectComponent.COMP_RELEASE == 2" [value]="2" [disabled]="selectComponent.COMP_GEN_STATUS != 1">{{ 'Test'|translate }}
                       <span class="custom-control-indicator"></span>
                     </label>
                   </div>
                   <div class="col-md-2" align="center">
                     <label class="custom-control custom-radio">
-                      <input type="radio" class="custom-control-input" name="statusComp" [checked]="selectComponent.COMP_RELEASE == 3" [value]="3" disabled>{{ 'Active'|translate }}
+                      <input type="radio" class="custom-control-input" name="statusComp" [checked]="selectComponent.COMP_RELEASE == 3" [value]="3" [disabled]="selectComponent.COMP_GEN_STATUS != 1">{{ 'Active'|translate }}
                       <span class="custom-control-indicator"></span>
                     </label>
                   </div>
@@ -88,13 +87,13 @@
                 <div class="col">
                   <div class="col-md-2" align="center">
                     <label class="custom-control custom-radio">
-                      <input type="radio" class="custom-control-input" name="statusComp" [checked]="selectComponent.COMP_RELEASE == 4" [value]="4" disabled>{{ 'Certified'|translate }}
+                      <input type="radio" class="custom-control-input" name="statusComp" [checked]="selectComponent.COMP_RELEASE == 4" [value]="4" [disabled]="selectComponent.COMP_GEN_STATUS != 1">{{ 'Certified'|translate }}
                       <span class="custom-control-indicator"></span>
                     </label>
                   </div>
                   <div class="col-md-2" align="center">
                     <label class="custom-control custom-radio">
-                      <input type="radio" class="custom-control-input" name="statusComp" [checked]="selectComponent.COMP_RELEASE == 9" [value]="9" disabled>{{ 'Obsolete'|translate }}
+                      <input type="radio" class="custom-control-input" name="statusComp" [checked]="selectComponent.COMP_RELEASE == 9" [value]="9" [disabled]="selectComponent.COMP_GEN_STATUS != 1">{{ 'Obsolete'|translate }}
                       <span class="custom-control-indicator"></span>
                     </label>
                   </div>
@@ -138,7 +137,7 @@
                     <td align="center">
                       <div style="margin-top:0.5em">
                         <button type="button" class="btn btn-success btn-sm" (click)="addFieldValue()">
-                          <i class="fa fa-plus" aria-hidden="true"></i>
+                          <i class="fa fa-plus-circle" aria-hidden="true"></i>
                         </button>
                       </div>
                     </td>
@@ -178,8 +177,8 @@
                     </div>
                     <div class="form-group row">
                       <label class="col-md-8 col-form-label" for="text-input">
-                        <button type="button" class="btn btn-primary btn-sm" id="calcbutton" (click)="runCalculateFreeze(selectComponent.ID_COMP)"
-                          [ladda]="laddaIsCalculating">
+                        <button type="button" class="btn btn-primary btn-sm" id="caluclateFreeze" (click)="runCalculateFreeze(selectComponent.ID_COMP)"
+                          [ladda]="laddaIsFreeze">
                           <i class="icon-energy"></i>&nbsp; {{ 'Freeze temperature'|translate }}</button>
                       </label>
                       <div class="col-md-4">
@@ -195,7 +194,7 @@
                     <div class="row form-group">
                       <label class="col-md-4 col-form-label">{{ 'Product family'|translate }}</label>
                       <div class="col-md-8">
-                        <select class="form-control" [(ngModel)]="selectComponent.CLASS_TYPE">
+                        <select class="form-control" [(ngModel)]="selectComponent.CLASS_TYPE" (change)="changCompFamily(selectComponent.CLASS_TYPE);">
                           <option [value]="0">{{ 'Select a family'|translate }}</option>
                           <option *ngFor="let family of dataComponent.productFamily" [value]="family.ID_TRANSLATION">
                             {{ family.LABEL|translate }}
@@ -327,7 +326,10 @@
                       <div class="col-md-6"></div>
                       <div class="col-md-6">
                         <div class="input-group" align="center">
-                          <input type="text" id="total" name="total" [value]="(selectComponent.WATER | number) + (selectComponent.PROTID | number)" class="form-control" placeholder="0.00" disabled>
+                          <input type="text" id="total" name="total" 
+                            [value]="((selectComponent.WATER) -- (selectComponent.PROTID) -- (selectComponent.LIPID) -- (selectComponent.GLUCID) --
+                              (selectComponent.SALT) -- (0.01205 * selectComponent.AIR))"
+                            class="form-control" placeholder="0.00" disabled>
                           <span class="input-group-addon">
                             <small>%</small>
                           </span>
@@ -340,7 +342,7 @@
             </div>
           </div>
           <div class="btn-component text-center" *ngIf="selectComponent && selectComponent.COMP_RELEASE != 6">
-            <button type="button" class="btn btn-primary" id="calcbutton" (click)="runCalculate(selectComponent);"
+            <button type="button" class="btn btn-primary" id="calulationRun" (click)="runCalculate(selectComponent);"
              [disabled]="selectComponent.ID_USER != dataComponent.ID_USER" [ladda]="laddaIsCalculating">
               <i class="icon-energy"></i>&nbsp; {{ 'Calculate'|translate }}</button>
             <!-- <button type="button" class="btn btn-success">
@@ -348,7 +350,7 @@
           </div>
         </div>
         <div class="btn-component text-center" *ngIf="selectComponent && selectComponent.COMP_RELEASE == 6">
-          <button type="button" class="btn btn-primary" id="calcbutton" (click)="awakeComponent(selectComponent, 3);">
+          <button type="button" class="btn btn-primary" id="awakeCalculate" (click)="awakeComponent(selectComponent, 3);">
             <i class="icon-energy"></i>&nbsp; {{ 'Awake'|translate }}</button>
         </div>
       </div>
@@ -593,7 +595,8 @@
                           <div class="col-md-6"></div>
                           <div class="col-md-6">
                             <div class="input-group" align="center">
-                              <input type="text" id="total" name="total" class="form-control" placeholder="0.00" disabled>
+                              <input type="text" id="total" name="total" class="form-control" placeholder="0.00" disabled
+                              [value]="((dataComponent.WATER) -- (dataComponent.PROTID) -- (dataComponent.LIPID) -- (dataComponent.GLUCID) --(dataComponent.SALT) -- (0.01205 * dataComponent.AIR))" >
                               <span class="input-group-addon">
                                 <small>%</small>
                               </span>
@@ -684,7 +687,7 @@
                         <td align="center">
                           <div style="margin-top:0.5em">
                             <button type="button" class="btn btn-success btn-sm" (click)="addFieldValue()">
-                              <i class="fa fa-plus" aria-hidden="true"></i>
+                              <i class="fa fa-plus-circle" aria-hidden="true"></i>
                             </button>
                           </div>
                         </td>

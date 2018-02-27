@@ -40,11 +40,6 @@ export class CalculatorComponent implements OnInit, AfterViewInit {
     typeCalculate?: number
   };
 
-  public selectForm = {
-    selected: false,
-    value: 0
-  };
-
   constructor(private modalService: BsModalService, private api: ApiService, private router: Router,
      private apicalculator: CalculatorService) { }
 
@@ -183,15 +178,15 @@ export class CalculatorComponent implements OnInit, AfterViewInit {
       tempPtIn: Number(this.calculate.tempPtIn),
       tempPtBot: Number(this.calculate.tempPtBot),
       tempPtAvg: Number(this.calculate.tempPtAvg),
-      select1: this.calculate.select1,
-      select2: this.calculate.select2,
-      select3: this.calculate.select3,
-      select4: this.calculate.select4,
-      select5: this.calculate.select5,
-      select6: this.calculate.select6,
-      select7: this.calculate.select7,
-      select8: this.calculate.select8,
-      select9: this.calculate.select9,
+      seValue1: Number(this.calculate.seValue1),
+      seValue2: Number(this.calculate.seValue2),
+      seValue3: Number(this.calculate.seValue3),
+      seValue4: Number(this.calculate.seValue4),
+      seValue5: Number(this.calculate.seValue5),
+      seValue6: Number(this.calculate.seValue6),
+      seValue7: Number(this.calculate.seValue7),
+      seValue8: Number(this.calculate.seValue8),
+      seValue9: Number(this.calculate.seValue9),
 
     }).subscribe(
       (response: any[]) => {
@@ -279,7 +274,7 @@ export class CalculatorComponent implements OnInit, AfterViewInit {
       timeStep: this.brainCalculator.timeStep,
       precision: this.brainCalculator.precision,
       scheckStorage: this.brainCalculator.scheckStorage,
-      storagestep: this.brainCalculator.storagestep,
+      storagestep: Number(this.brainCalculator.storagestep),
       hRadioOn: Number(this.brainCalculator.hRadioOn),
       vRadioOn: Number(this.brainCalculator.vRadioOn),
       maxIter: Number(this.brainCalculator.maxIter),
@@ -288,15 +283,15 @@ export class CalculatorComponent implements OnInit, AfterViewInit {
       tempPtIn: Number(this.brainCalculator.tempPtIn),
       tempPtBot: Number(this.brainCalculator.tempPtBot),
       tempPtAvg: Number(this.brainCalculator.tempPtAvg),
-      select1: this.brainCalculator.select1,
-      select2: this.brainCalculator.select2,
-      select3: this.brainCalculator.select3,
-      select4: this.brainCalculator.select4,
-      select5: this.brainCalculator.select5,
-      select6: this.brainCalculator.select6,
-      select7: this.brainCalculator.select7,
-      select8: this.brainCalculator.select8,
-      select9: this.brainCalculator.select9,
+      seValue1: Number(this.brainCalculator.seValue1),
+      seValue2: Number(this.brainCalculator.seValue2),
+      seValue3: Number(this.brainCalculator.seValue3),
+      seValue4: Number(this.brainCalculator.seValue4),
+      seValue5: Number(this.brainCalculator.seValue5),
+      seValue6: Number(this.brainCalculator.seValue6),
+      seValue7: Number(this.brainCalculator.seValue7),
+      seValue8: Number(this.brainCalculator.seValue8),
+      seValue9: Number(this.brainCalculator.seValue9),
     }).subscribe(
       (response) => {
         this.laddaIsCalculating = false;
@@ -353,6 +348,15 @@ export class CalculatorComponent implements OnInit, AfterViewInit {
       select7: this.brainCalculator.select7,
       select8: this.brainCalculator.select8,
       select9: this.brainCalculator.select9,
+      seValue1: Number(this.brainCalculator.seValue1),
+      seValue2: Number(this.brainCalculator.seValue2),
+      seValue3: Number(this.brainCalculator.seValue3),
+      seValue4: Number(this.brainCalculator.seValue4),
+      seValue5: Number(this.brainCalculator.seValue5),
+      seValue6: Number(this.brainCalculator.seValue6),
+      seValue7: Number(this.brainCalculator.seValue7),
+      seValue8: Number(this.brainCalculator.seValue8),
+      seValue9: Number(this.brainCalculator.seValue9),
     }).subscribe(
       (response: any[]) => {
         this.laddaIsCalculating = false;
@@ -411,6 +415,15 @@ export class CalculatorComponent implements OnInit, AfterViewInit {
       select7: this.brainCalculator.select7,
       select8: this.brainCalculator.select8,
       select9: this.brainCalculator.select9,
+      seValue1: Number(this.brainCalculator.seValue1),
+      seValue2: Number(this.brainCalculator.seValue2),
+      seValue3: Number(this.brainCalculator.seValue3),
+      seValue4: Number(this.brainCalculator.seValue4),
+      seValue5: Number(this.brainCalculator.seValue5),
+      seValue6: Number(this.brainCalculator.seValue6),
+      seValue7: Number(this.brainCalculator.seValue7),
+      seValue8: Number(this.brainCalculator.seValue8),
+      seValue9: Number(this.brainCalculator.seValue9),
     }).subscribe(
       response => {
 

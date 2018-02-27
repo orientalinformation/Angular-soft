@@ -1,14 +1,165 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
+
+import * as Models from '../../../api/models';
+import { ApiService } from '../../../api/services/api.service';
+
+import swal from 'sweetalert2';
+import { ModalDirective } from 'ngx-bootstrap/modal/modal.directive';
+import { Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
+import { isNumber } from '@ng-bootstrap/ng-bootstrap/util/util';
 
 @Component({
   selector: 'app-report-config',
   templateUrl: './report-config.component.html',
   styleUrls: ['./report-config.component.scss']
 })
-export class ReportConfigComponent implements OnInit {
-  constructor() { }
+export class ReportConfigComponent implements OnInit, AfterViewInit {
+  public report: Models.Report;
+  public study: Models.Study;
+  public isLoading = false;
+  public isSaveReport = false;
+  public meshAxisPos: Models.ViewMeshPosition;
+  public checkcontrol = false;
+  public user: Models.User;
+
+  constructor(private api: ApiService, private toastr: ToastrService, private router: Router) {
+    this.study = JSON.parse(localStorage.getItem('study'));
+    this.user = JSON.parse(localStorage.getItem('user'));
+  }
 
   ngOnInit() {
   }
 
+  ngAfterViewInit() {
+    const params: ApiService.CheckControlViewParams = {
+      idStudy: this.study.ID_STUDY,
+      idProd: this.study.ID_PROD
+    };
+    this.api.checkControl(params).subscribe(
+      data => {
+        this.checkcontrol = data.checkcontrol;
+        if (!data.checkcontrol) {
+          this.router.navigate(['/calculation/check-control']);
+          swal('Oops..', 'Report is available only when equipments are calculated numerically', 'error');
+        }
+      }
+    );
+    this.loadReport();
+    this.loadMeshAxisPos();
+  }
+
+  loadReport() {
+    this.api.getReport(this.study.ID_STUDY).subscribe(
+      resp => {
+        resp.ASSES_CONSUMP = Number(resp.ASSES_CONSUMP);
+        resp.ASSES_ECO = Number(resp.ASSES_ECO);
+        resp.ASSES_TERMAL = Number(resp.ASSES_TERMAL);
+        resp.ASSES_TR = Number(resp.ASSES_TR);
+        resp.ASSES_TR_MAX = Number(resp.ASSES_TR_MAX);
+        resp.ASSES_TR_MIN = Number(resp.ASSES_TR_MIN);
+        resp.CONS_DAY = Number(resp.CONS_DAY);
+        resp.CONS_EQUIP = Number(resp.CONS_EQUIP);
+        resp.CONS_HOUR = Number(resp.CONS_HOUR);
+        resp.CONS_MONTH = Number(resp.CONS_MONTH);
+        resp.CONS_OVERALL = Number(resp.CONS_OVERALL);
+        resp.CONS_PIPE = Number(resp.CONS_PIPE);
+        resp.CONS_SPECIFIC = Number(resp.CONS_SPECIFIC);
+        resp.CONS_TANK = Number(resp.CONS_TANK);
+        resp.CONS_TOTAL = Number(resp.CONS_TOTAL);
+        resp.CONS_WEEK = Number(resp.CONS_WEEK);
+        resp.CONS_YEAR = Number(resp.CONS_YEAR);
+        resp.CONTOUR2D_G = Number(resp.CONTOUR2D_G);
+        resp.CONTOUR2D_OUTLINE_TIME = Number(resp.CONTOUR2D_OUTLINE_TIME);
+        resp.CONTOUR2D_SAMPLE = Number(resp.CONTOUR2D_SAMPLE);
+        resp.ENTHALPY_G = Number(resp.ENTHALPY_G);
+        resp.ENTHALPY_SAMPLE = Number(resp.ENTHALPY_SAMPLE);
+        resp.ENTHALPY_V = Number(resp.ENTHALPY_V);
+        resp.EQUIP_LIST = Number(resp.EQUIP_LIST);
+        resp.EQUIP_PARAM = Number(resp.EQUIP_PARAM);
+        resp.ISOCHRONE_G = Number(resp.ISOCHRONE_G);
+        resp.ISOCHRONE_SAMPLE = Number(resp.ISOCHRONE_SAMPLE);
+        resp.ISOCHRONE_V = Number(resp.ISOCHRONE_V);
+        resp.ISOVALUE_G = Number(resp.ISOVALUE_G);
+        resp.ISOVALUE_SAMPLE = Number(resp.ISOVALUE_SAMPLE);
+        resp.ISOVALUE_V = Number(resp.ISOVALUE_V);
+        resp.PACKING = Number(resp.PACKING);
+        resp.PIPELINE = Number(resp.PIPELINE);
+        resp.PROD_3D = Number(resp.PROD_3D);
+        resp.PROD_LIST = Number(resp.PROD_LIST);
+        resp.PROD_TEMP = Number(resp.PROD_TEMP);
+        resp.REP_CONS_PIE = Number(resp.REP_CONS_PIE);
+        resp.REP_CUSTOMER = Number(resp.REP_CUSTOMER);
+        resp.SIZING_GRAPHE = Number(resp.SIZING_GRAPHE);
+        resp.SIZING_TEMP_G = Number(resp.SIZING_TEMP_G);
+        resp.SIZING_TEMP_SAMPLE = Number(resp.SIZING_TEMP_SAMPLE);
+        resp.SIZING_TEMP_V = Number(resp.SIZING_TEMP_V);
+        resp.SIZING_TR = Number(resp.SIZING_TR);
+        resp.SIZING_TR_MAX = Number(resp.SIZING_TR_MAX);
+        resp.SIZING_TR_MIN = Number(resp.SIZING_TR_MIN);
+        resp.SIZING_VALUES = Number(resp.SIZING_VALUES);
+
+        this.report = resp;
+      },
+      err => {
+        console.log(err);
+      },
+      () => {
+
+      }
+    );
+  }
+
+  loadMeshAxisPos() {
+    this.api.getMeshAxisPos(this.study.ID_STUDY)
+      .subscribe(
+      resp => {
+        this.meshAxisPos = resp;
+      },
+      err => {
+        console.log(err);
+      },
+      () => {
+      }
+    );
+  }
+
+  saveContentReport() {
+    if (Number(this.user.ID_USER) === Number(this.study.ID_USER)) {
+      this.isSaveReport = true;
+      this.api.saveReport({
+        id: this.study.ID_STUDY,
+        body: this.report
+      })
+        .subscribe(
+        resp => {
+          if (resp === 1) {
+            this.toastr.success('Save report of user success', 'successfully');
+          } else {
+            swal('Oops..', 'Save report error!', 'error');
+          }
+          this.isSaveReport = false;
+        },
+        err => {
+          console.log(err);
+          this.isSaveReport = false;
+        },
+        () => {
+          this.isSaveReport = false;
+        }
+      );
+    } else {
+      this.toastr.success('Save report', 'successfully');
+    }
+  }
+
+  savePDFs() {
+    console.log('save pdf testing');
+  }
+
+  downloadPDF() {
+    this.api.downLoadPDF({}).subscribe(data => {
+    });
+  }
 }

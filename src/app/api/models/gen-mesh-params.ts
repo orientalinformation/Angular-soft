@@ -3,7 +3,8 @@
 /**
  */
 export class GenMeshParams {
-    dim1?: number;
-    dim2?: number;
-    dim3?: number;
+    mesh_type?: number;
+    size1?: number;
+    size2?: number;
+    size3?: number;
 }

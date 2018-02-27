@@ -2,13 +2,14 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { StatusService } from './status.service';
 import { TextService } from './text.service';
+import { ValuesListService } from './values-list.service';
 import { ApiModule } from '../api/api.module';
 import { AuthenticationModule } from '../authentication/authentication.module';
 import { NgxLocalizedNumbers } from 'ngx-localized-numbers';
 import { NgxLocalizedNumbersService } from 'ngx-localized-numbers';
 import { FormsModule, FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { LaddaModule } from 'angular2-ladda';
-import { AppSpinnerComponent } from '../components';
+import { AppSpinnerComponent, HighchartsChartComponent } from '../components';
 import { CommentComponent } from './comment/comment.component';
 
 @NgModule({
@@ -26,10 +27,15 @@ import { CommentComponent } from './comment/comment.component';
     ReactiveFormsModule,
     NgxLocalizedNumbers.forRoot()
   ],
-  declarations: [AppSpinnerComponent, CommentComponent],
+  declarations: [
+    AppSpinnerComponent,
+    CommentComponent,
+    HighchartsChartComponent
+  ],
   providers: [
     StatusService,
     TextService,
+    ValuesListService,
     NgxLocalizedNumbersService,
     FormBuilder
   ],
@@ -42,7 +48,9 @@ import { CommentComponent } from './comment/comment.component';
     FormsModule,
     LaddaModule,
     AppSpinnerComponent,
-    CommentComponent
+    CommentComponent,
+    HighchartsChartComponent
   ]
 })
-export class SharedModule { }
+export class SharedModule {
+}

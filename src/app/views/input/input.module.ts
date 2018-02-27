@@ -11,7 +11,6 @@ import { EquipmentComponent } from './equipment/equipment.component';
 import { LineComponent } from './line/line.component';
 import { StudyRequiredGuard } from '../../guards/study-required.guard';
 import { LayoutComponent } from './layout/layout.component';
-import { jqxGridComponent } from 'jqwidgets-framework/jqwidgets-ts/angular_jqxgrid';
 
 import { ModalModule } from 'ngx-bootstrap';
 import { TranslateModule } from '@ngx-translate/core';
@@ -40,7 +39,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   declarations: [
     ObjectivesComponent, ProductComponent, InitialComponent,
     PackingComponent, EquipmentComponent, LineComponent, LayoutComponent,
-    jqxGridComponent, CompFilterPipe
+    CompFilterPipe
   ],
   providers: [
     StudyRequiredGuard

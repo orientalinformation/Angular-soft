@@ -115,11 +115,11 @@
         </button>
       </div>
       <div class="modal-body">
-        <div align="center" class="labelSaveAs">{{'ENTER A NEW NAME'|translate}}</div>
+        <div align="left" class="labelSaveAs">{{'Enter a new name'|translate}}</div>
               <input class="form-control" type="text" [(ngModel)]="name" placeholder="Study Name">
       </div><!-- modal-body -->
       <div class="modal-footer">
-        <button  class="btn btn-secondary" data-dismiss="modal" (click)="modalSaveAs.hide()">Cancel</button>
+        <button class="btn btn-secondary" data-dismiss="modal" (click)="modalSaveAs.hide()">Cancel</button>
         <button class="btn btn-primary" (click)="saveStudyAs()" >Confirm</button>
       </div>
     </div>

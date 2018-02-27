@@ -8,7 +8,7 @@ import { ViewChild } from '@angular/core';
 import { BaseChartDirective } from 'ng2-charts/ng2-charts';
 import { ViewLocation } from '../../../api/models/view-location';
 import { NgxLocalizedNumbersService } from 'ngx-localized-numbers/src/localized-numbers.service';
-import { Chart } from 'angular-highcharts';
+declare var Plotly: any;
 
 @Component({
   selector: 'app-output-charts',
@@ -102,6 +102,10 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
     { backgroundColor: ['rgb(0,0,255)', 'rgb(0,192,192)', 'rgb(0,255,255)', 'rgb(0,255,0)'], }
   ];
 
+  public loadProductChart: boolean;
+  public temperatureStep: number;
+  public temperatureMin: number;
+  public temperatureMax: number;
   public timeRecords;
   public selectedPlan: number;
   public plan1Disable: boolean;
@@ -113,6 +117,20 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
   public timeInterval: number;
   public outline2Ddata;
   public contourData: Array<any> = [];
+  public axisName: Array<any> = [];
+  public axisX;
+  public axisY;
+
+  public dataContour = {
+    X: [],
+    Y: [],
+    Z: [],
+  };
+
+  public minTempStep: number;
+  public maxTempStep: number;
+  public minTemperature: number;
+  public maxTemperature: number;
 
   constructor(private api: ApiService, private translate: TranslateService, private router: Router,
     private localizedNumbersService: NgxLocalizedNumbersService) {
@@ -126,17 +144,6 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
   ngOnInit() {
     if (localStorage.getItem('study')) {
       this.study = JSON.parse(localStorage.getItem('study'));
-      this.api.getstudyEquipmentProductChart(this.study.ID_STUDY).subscribe(
-        dataEquip => {
-          if (dataEquip == '') {
-            swal('Oops..', 'This study has no product charts results.', 'error');
-            this.router.navigate(['/output/preliminary']);
-          } else {
-            this.outputProductChartList = dataEquip;
-            this.selectedEquip = dataEquip[0].ID_STUDY_EQUIPMENTS;
-          }
-        }
-      );
       this.radioDisable = true;
       this.selectDisable = true;
       this.rbpoint01 = '';
@@ -152,19 +159,33 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
       this.plan2Disable = false;
       this.plan3Disable = false;
       this.selectedSpeed = 1;
+      this.axisX = '';
+      this.axisY = '';
+      this.loadProductChart = false;
     }
   }
 
   ngAfterViewInit() {
     if (localStorage.getItem('study')) {
       this.study = JSON.parse(localStorage.getItem('study'));
-      this.api.getProductElmt(this.study.ID_STUDY).subscribe(
-        data => {
-          this.shape = data.SHAPECODE;
-          console.log(this.shape);
+      this.api.getstudyEquipmentProductChart(this.study.ID_STUDY).subscribe(
+        dataEquip => {
+          if (dataEquip == '') {
+            swal('Oops..', 'This study has no product charts results.', 'error');
+            this.router.navigate(['/output/preliminary']);
+          } else {
+            this.outputProductChartList = dataEquip;
+            this.selectedEquip = dataEquip[0].ID_STUDY_EQUIPMENTS;
+            this.api.getProductElmt(this.study.ID_STUDY).subscribe(
+              data => {
+                this.shape = data.SHAPECODE;
+                console.log(this.shape);
+              }
+            );
+            this.refeshView();
+          }
         }
       );
-      this.refeshView();
     }
   }
   refeshView() {
@@ -186,7 +207,10 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
       }
     );
   }
-
+  savePoint() {
+    swal('Oops', 'Not yet implement !', 'error');
+    return;
+  }
   changeEquipment() {
     this.activeBtn = '';
     this.radioDisable = true;
@@ -781,10 +805,33 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
       this.api.productchart2D(params).subscribe(
         dataPr => {
           console.log(dataPr);
+          this.minTempStep = dataPr.minMax.minTempStep;
+          this.maxTempStep = dataPr.minMax.maxTempStep;
+          this.minTemperature = dataPr.minMax.minTemperature;
+          this.maxTemperature = dataPr.minMax.maxTemperature;
           this.outline2Ddata = dataPr.valueRecAxis;
           this.timeSelected = dataPr.lfDwellingTime;
           this.timeInterval = dataPr.lftimeInterval;
-          console.log(this.timeSelected);
+          this.temperatureMin = dataPr.chartTempInterval[0];
+          this.temperatureMax = dataPr.chartTempInterval[1];
+          this.temperatureStep = dataPr.chartTempInterval[2];
+          this.axisName = dataPr.axisName;
+          if (typeof this.axisName[0] !== 'undefined') {
+            this.axisX = ' ' + this.axisName[0];
+          }
+          if (typeof this.axisName[1] !== 'undefined') {
+            this.axisY = ' ' + this.axisName[1];
+          }
+          if ((Object.keys(dataPr.dataContour).length) > 0) {
+            for (let i = 0; i < Object.keys(dataPr.dataContour).length; i++) {
+              this.dataContour.X.push(dataPr.dataContour[i].X);
+              this.dataContour.Y.push(dataPr.dataContour[i].Y);
+              this.dataContour.Z.push(dataPr.dataContour[i].Z);
+            }
+            console.log(this.dataContour);
+            this.contourChart(this.dataContour);
+          }
+          this.loadProductChart = true;
         }
       );
     });
@@ -795,51 +842,7 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
       this.contourData.push([x, y, value]);
     }
     console.log(this.contourData);
-    this.chart2D  = new Chart({
-      chart: {
-        type: 'pie',
-        options3d: {
-            enabled: true,
-            alpha: 45,
-            beta: 0
-        }
-      },
-      title: {
-          text: 'Data demo'
-      },
-      tooltip: {
-          pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
-      },
-      plotOptions: {
-          pie: {
-              allowPointSelect: true,
-              cursor: 'pointer',
-              depth: 35,
-              dataLabels: {
-                  enabled: true,
-                  format: '{point.name}'
-              }
-          }
-      },
-      series: [{
-          type: 'pie',
-          name: 'Browser share',
-          data: [
-              ['Firefox', 45.0],
-              ['IE', 26.8],
-              {
-                  name: 'Chrome',
-                  y: 12.8,
-                  sliced: true,
-                  selected: true
-              },
-              ['Safari', 8.5],
-              ['Opera', 6.2],
-              ['Others', 0.7]
-          ]
-      }]
-      });
-      console.log(this.tempRecordPts);
+    console.log(this.tempRecordPts);
   }
 
   changeAxePS() {
@@ -873,8 +876,8 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
   }
 
   saveNbStep() {
-    if (!this.NB_STEPS) {
-      swal('Oops', 'Enter a value in Curve Number !', 'error');
+    if (!this.NB_STEPS || Number.isInteger(this.NB_STEPS) === false) {
+      swal('Oops', this.translate.instant('Enter a value in Curve Number !'), 'error');
       return;
     }
     const showLoader = <HTMLElement>document.getElementById('showLoaderProductSection');
@@ -903,6 +906,12 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
         }
         this.productSectionDataChart = data.dataChart;
         // this.loadChartProductSection(this.productSectionDataChart, this.productSectionResult);
+      },
+      (err) => {
+        swal('Error', err.error.message, 'error');
+        console.log(err);
+      },
+      () => {
       }
     );
   }
@@ -986,5 +995,115 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
       this.productSectionChart.datasets[0].data = this.productSectionChartData;
       this.productSectionChart.chart.update();
     }
+  }
+
+  refreshStaticTemp() {
+    const temperatureStepId = <HTMLElement>document.getElementById('temperatureStep');
+    const temperatureMinId = <HTMLElement>document.getElementById('temperatureMin');
+    const temperatureMaxId = <HTMLElement>document.getElementById('temperatureMax');
+    console.log(Number.isInteger(this.temperatureStep));
+    if (!this.temperatureStep) {
+      temperatureStepId.focus();
+      swal('Oops', this.translate.instant('Enter a value in Temperature step !'), 'error');
+    } else if (!this.isNumberic(this.temperatureStep)) {
+      temperatureStepId.focus();
+      swal('Oops', this.translate.instant('Not a valid number in Temperature step !'), 'error');
+    } else if (this.isInRangeOutput(this.temperatureStep, this.minTempStep, this.maxTempStep) === false) {
+      temperatureStepId.focus();
+      swal('Oops',
+      this.translate.instant('Value out of range in Temperature step (' + this.minTempStep + ' : ' + this.maxTempStep + ') !'), 'error');
+    } else if (!this.temperatureMin) {
+      temperatureMinId.focus();
+      swal('Oops', this.translate.instant('Enter a value in Temperature Min !'), 'error');
+    } else if (!this.isNumberic(this.temperatureMin)) {
+      temperatureMinId.focus();
+      swal('Oops', this.translate.instant('Not a valid number in Temperature Min !'), 'error');
+    } else if (this.isInRangeOutput(this.temperatureMin, this.minTemperature, this.maxTemperature) === false) {
+      temperatureMinId.focus();
+      swal('Oops',
+      this.translate.instant('Value out of range in Temperature Min (' + this.minTemperature + ' : ' + this.maxTemperature + ') !'),
+      'error');
+    } else if (!this.temperatureMax) {
+      temperatureMaxId.focus();
+      swal('Oops', this.translate.instant('Enter a value in Temperature Max !'), 'error');
+    } else if (!this.isNumberic(this.temperatureMax)) {
+      temperatureMaxId.focus();
+      swal('Oops', this.translate.instant('Not a valid number in Temperature Max !'), 'error');
+    } else if (this.isInRangeOutput(this.temperatureMax, this.minTemperature, this.maxTemperature) === false) {
+      temperatureMaxId.focus();
+      swal('Oops',
+      this.translate.instant('Value out of range in Temperature Max (' + this.minTemperature + ' : ' + this.maxTemperature + ') !'),
+      'error');
+    }
+  }
+
+  isNumberic(number) {
+    return Number.isInteger(Math.floor(number));
+  }
+
+  isInRangeOutput(value, min, max) {
+    if (value < min || value > max) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  contourChart(dataContour) {
+    const size = this.temperatureStep;
+    const data = [{
+      x: JSON.parse(JSON.stringify(dataContour.X)),
+      y: JSON.parse(JSON.stringify(dataContour.Y)),
+      z: JSON.parse(JSON.stringify(dataContour.Z)),
+      type: 'contour',
+      colorscale: [
+        [0, 'rgb(0,25,255)'],
+        [.125, 'rgb(0, 107, 255)'],
+        [.25, 'rgb(0,152,255)'],
+        [.375, 'rgb(37, 232, 109)'],
+        [.5, 'rgb(44,255,150)'],
+        [.625, 'rgb(151,255,0)'],
+        [.75, 'rgb(255,234,0)'],
+        [.875, 'rgb(255,111,0)'],
+        [1, 'rgb(255,0,0)']
+      ],
+      colorbar: {
+        thickness: 50,
+        thicknessmode: 'pixels',
+        len: 1,
+        lenmode: 'fraction',
+        outlinewidth: 0,
+        borderwidth: 1
+        },
+      contours: {
+        start: this.temperatureMin,
+        end: this.temperatureMax,
+        size: size,
+        coloring: 'heatmap'
+      }
+    }
+  ];
+
+  const layout = {
+    title: '',
+    showlegend: false,
+    margin: {
+      t: 10, r: 0, b: 43, l: 40
+    },
+    xaxis: {
+      title: this.translate.instant('Dimension') + this.axisX + ' (' + this.symbol.prodchartDimensionSymbol + ')',
+      titlefont: {
+        color: '#f00'
+      }
+    },
+    yaxis: {
+      title: this.translate.instant('Dimension')  + this.axisY + ' (' + this.symbol.prodchartDimensionSymbol + ')',
+      titlefont: {
+        color: '#f00'
+      }
+    }
+  };
+
+  Plotly.newPlot('contourChart', data, layout, {displayModeBar: false});
   }
 }

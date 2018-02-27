@@ -10,3 +10,4 @@ export * from './app-sidebar-minimizer';
 export * from './app-sidebar-nav';
 export * from './app-spinner/app-spinner.component';
 export * from './app-sys-utilz/app-sys-utilz.component';
+export * from './highcharts-chart/highcharts-chart.component';

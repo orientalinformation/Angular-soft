@@ -163,7 +163,7 @@ export class ProductComponent implements OnInit, AfterViewInit {
         updateParams: {}
       };
       if (this.product.PRODNAME !== this.productForm.name) {
-        updateParams.updateParams.name = this.product.PRODNAME;
+        updateParams.updateParams.name = this.productForm.name;
       }
       if (this.prodDim1 !== this.productForm.dim1 && this.hasDim1()) {
         updateParams.updateParams.dim1 = this.productForm.dim1;

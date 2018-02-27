@@ -18,6 +18,14 @@ import { NewPacking } from '../models/new-packing';
 import { ViewPipeLineElmt } from '../models/view-pipe-line-elmt';
 import { PipeLineElmt } from '../models/pipe-line-elmt';
 import { ViewEquipment } from '../models/view-equipment';
+import { NewEquipment } from '../models/new-equipment';
+import { SaveEquipment } from '../models/save-equipment';
+import { SaveAsEquipment } from '../models/save-as-equipment';
+import { EquipmentFamily } from '../models/equipment-family';
+import { EquipmentSeries } from '../models/equipment-series';
+import { Ramps } from '../models/ramps';
+import { Shelves } from '../models/shelves';
+import { Consumptions } from '../models/consumptions';
 
 
 @Injectable()
@@ -31,11 +39,13 @@ export class ReferencedataService extends BaseService {
 
   /**
    * Get a list of family component
+   * @param compfamily - undefined
    */
-  getDataComponentResponse(): Observable<HttpResponse<ViewComponent>> {
+  getDataComponentResponse(compfamily: string): Observable<HttpResponse<ViewComponent>> {
     let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
+    if (compfamily != null) __params = __params.set("compfamily", compfamily.toString());
     let req = new HttpRequest<any>(
       "GET",
       this.rootUrl + `/referencedata/component`,
@@ -59,9 +69,10 @@ export class ReferencedataService extends BaseService {
 
   /**
    * Get a list of family component
+   * @param compfamily - undefined
    */
-  getDataComponent(): Observable<ViewComponent> {
-    return this.getDataComponentResponse().pipe(
+  getDataComponent(compfamily: string): Observable<ViewComponent> {
+    return this.getDataComponentResponse(compfamily).pipe(
       map(_r => _r.body)
     );
   }
@@ -840,6 +851,354 @@ export class ReferencedataService extends BaseService {
    */
   findRefEquipment(): Observable<ViewEquipment> {
     return this.findRefEquipmentResponse().pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * Create new equipment
+   * @param body - body create new equipment
+   */
+  newEquipmentResponse(body: NewEquipment): Observable<HttpResponse<number>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    __body = body;
+    let req = new HttpRequest<any>(
+      "PUT",
+      this.rootUrl + `/referencedata/equipments`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'text'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: number = null;
+        _body = parseFloat(_resp.body as string)
+        return _resp.clone({body: _body}) as HttpResponse<number>;
+      })
+    );
+  }
+
+  /**
+   * Create new equipment
+   * @param body - body create new equipment
+   */
+  newEquipment(body: NewEquipment): Observable<number> {
+    return this.newEquipmentResponse(body).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * save equipment
+   * @param body - body save equipment
+   */
+  saveEquipmentResponse(body: SaveEquipment): Observable<HttpResponse<number>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    __body = body;
+    let req = new HttpRequest<any>(
+      "POST",
+      this.rootUrl + `/referencedata/equipment`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'text'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: number = null;
+        _body = parseFloat(_resp.body as string)
+        return _resp.clone({body: _body}) as HttpResponse<number>;
+      })
+    );
+  }
+
+  /**
+   * save equipment
+   * @param body - body save equipment
+   */
+  saveEquipment(body: SaveEquipment): Observable<number> {
+    return this.saveEquipmentResponse(body).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * save as equipment
+   * @param body - body create new equipment
+   */
+  saveAsEquipmentResponse(body: SaveAsEquipment): Observable<HttpResponse<number>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    __body = body;
+    let req = new HttpRequest<any>(
+      "PUT",
+      this.rootUrl + `/referencedata/equipment`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'text'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: number = null;
+        _body = parseFloat(_resp.body as string)
+        return _resp.clone({body: _body}) as HttpResponse<number>;
+      })
+    );
+  }
+
+  /**
+   * save as equipment
+   * @param body - body create new equipment
+   */
+  saveAsEquipment(body: SaveAsEquipment): Observable<number> {
+    return this.saveAsEquipmentResponse(body).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * Get a list of equipment family
+   */
+  getEquipmentFamilyResponse(): Observable<HttpResponse<EquipmentFamily>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    let req = new HttpRequest<any>(
+      "GET",
+      this.rootUrl + `/referencedata/equipmentfamilys`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: EquipmentFamily = null;
+        _body = _resp.body as EquipmentFamily
+        return _resp.clone({body: _body}) as HttpResponse<EquipmentFamily>;
+      })
+    );
+  }
+
+  /**
+   * Get a list of equipment family
+   */
+  getEquipmentFamily(): Observable<EquipmentFamily> {
+    return this.getEquipmentFamilyResponse().pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * Get list equipment series
+   * @param idFamily - ID equipment family
+   */
+  getEquipmentSeriesResponse(idFamily: number): Observable<HttpResponse<EquipmentSeries>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    if (idFamily != null) __params = __params.set("idFamily", idFamily.toString());
+    let req = new HttpRequest<any>(
+      "GET",
+      this.rootUrl + `/referencedata/equipmentseries`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: EquipmentSeries = null;
+        _body = _resp.body as EquipmentSeries
+        return _resp.clone({body: _body}) as HttpResponse<EquipmentSeries>;
+      })
+    );
+  }
+
+  /**
+   * Get list equipment series
+   * @param idFamily - ID equipment family
+   */
+  getEquipmentSeries(idFamily: number): Observable<EquipmentSeries> {
+    return this.getEquipmentSeriesResponse(idFamily).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * Get list Ramps
+   * @param idEquip - ID equipment
+   */
+  getRampsResponse(idEquip: number): Observable<HttpResponse<Ramps[]>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    if (idEquip != null) __params = __params.set("idEquip", idEquip.toString());
+    let req = new HttpRequest<any>(
+      "GET",
+      this.rootUrl + `/referencedata/ramps`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: Ramps[] = null;
+        _body = _resp.body as Ramps[]
+        return _resp.clone({body: _body}) as HttpResponse<Ramps[]>;
+      })
+    );
+  }
+
+  /**
+   * Get list Ramps
+   * @param idEquip - ID equipment
+   */
+  getRamps(idEquip: number): Observable<Ramps[]> {
+    return this.getRampsResponse(idEquip).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * Get list Shelves
+   * @param idEquip - ID equipment
+   */
+  getShelvesResponse(idEquip: number): Observable<HttpResponse<Shelves[]>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    if (idEquip != null) __params = __params.set("idEquip", idEquip.toString());
+    let req = new HttpRequest<any>(
+      "GET",
+      this.rootUrl + `/referencedata/shelves`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: Shelves[] = null;
+        _body = _resp.body as Shelves[]
+        return _resp.clone({body: _body}) as HttpResponse<Shelves[]>;
+      })
+    );
+  }
+
+  /**
+   * Get list Shelves
+   * @param idEquip - ID equipment
+   */
+  getShelves(idEquip: number): Observable<Shelves[]> {
+    return this.getShelvesResponse(idEquip).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * Get list Consumptions
+   * @param idEquip - ID equipment
+   */
+  getConsumptionsResponse(idEquip: number): Observable<HttpResponse<Consumptions[]>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    if (idEquip != null) __params = __params.set("idEquip", idEquip.toString());
+    let req = new HttpRequest<any>(
+      "GET",
+      this.rootUrl + `/referencedata/consumptions`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: Consumptions[] = null;
+        _body = _resp.body as Consumptions[]
+        return _resp.clone({body: _body}) as HttpResponse<Consumptions[]>;
+      })
+    );
+  }
+
+  /**
+   * Get list Consumptions
+   * @param idEquip - ID equipment
+   */
+  getConsumptions(idEquip: number): Observable<Consumptions[]> {
+    return this.getConsumptionsResponse(idEquip).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * delete equipment
+   * @param id - undefined
+   */
+  deleteEquipmentResponse(id: number): Observable<HttpResponse<number>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    
+    let req = new HttpRequest<any>(
+      "DELETE",
+      this.rootUrl + `/referencedata/equipment/${id}`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'text'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: number = null;
+        _body = parseFloat(_resp.body as string)
+        return _resp.clone({body: _body}) as HttpResponse<number>;
+      })
+    );
+  }
+
+  /**
+   * delete equipment
+   * @param id - undefined
+   */
+  deleteEquipment(id: number): Observable<number> {
+    return this.deleteEquipmentResponse(id).pipe(
       map(_r => _r.body)
     );
   }}

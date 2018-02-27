@@ -3,12 +3,16 @@
 /**
  */
 export class EquipSizing {
-    idStudyEquipment?: number;
-    equipName?: string;
-    minWidth?: number;
     maxWidth?: number;
+    idStudyEquipment?: number;
+    initWidth?: number;
+    initLength?: number;
+    initSurface?: number;
+    minWidth?: number;
+    equipName?: string;
     minLength?: number;
     maxLength?: number;
     minSurf?: number;
     maxSurf?: number;
+    disabled?: boolean;
 }

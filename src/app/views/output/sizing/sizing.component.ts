@@ -12,6 +12,7 @@ import { ViewSizingEstimationResult } from '../../../api/models/view-sizing-esti
 import { ViewSizingResultOptimum } from '../../../api/models/view-sizing-result-optimum';
 import { BaseChartDirective } from 'ng2-charts/ng2-charts';
 import { CheckControl } from '../../../api/models/check-control';
+import { Chart } from 'angular-highcharts';
 
 @Component({
   selector: 'app-sizing',
@@ -58,6 +59,7 @@ export class SizingComponent implements OnInit, AfterViewInit {
   public selectedEquip: number;
   public selectedEquipList = [];
   public selectedActiveEquip = [];
+  public productFlowRate: number;
 
   public minGraphChart;
   public maxGraphChart;
@@ -74,7 +76,7 @@ export class SizingComponent implements OnInit, AfterViewInit {
   public equipmentList = [];
   public activeEquipment = [];
   public graphEstimationData;
-  public graphEstimationLabels = ['dump', 'TR-10°C', 'TR', 'TR+10°C', 'dump'];
+  public graphEstimationLabels = ['TR-10°C', 'TR', 'TR+10°C'];
   public graphEstimationOptions: any = {};
   public graphEstimationOptions01: any = {};
 
@@ -83,6 +85,9 @@ export class SizingComponent implements OnInit, AfterViewInit {
   public estimationAvailableOptions: any = {};
 
   public activePage = '';
+  public optimumBarChart;
+  public estimationBarChart;
+  public estimationEquipBarChart;
 
   ngOnInit() {
     if (localStorage.getItem('study')) {
@@ -99,81 +104,20 @@ export class SizingComponent implements OnInit, AfterViewInit {
       this.study = JSON.parse(localStorage.getItem('study'));
       this.api.getSymbol(this.study.ID_STUDY).subscribe(
         data => {
+          console.log(data);
           this.activePage = 'result';
           this.symbol = data;
           showLoaderChange.style.display = 'none';
-          this.graphEstimationOptions = {
-            scaleShowVerticalLines: false,
-            responsive: false,
-            legend: {
-              onClick: (e) => e.stopPropagation(),
-              position: 'bottom',
-              labels: {
-                padding: 10
-              }
-            },
-            title:
-            {
-              display: false,
-              text: 'Graph Chart',
-              fontColor: '#000',
-              fontSize: 20
-            },
-            tooltips: {
-              mode: 'index',
-              intersect: true
-            },
-            scales: {
-              xAxes: [{
-                ticks: {
-                  min: 'TR-10°C',
-                  max: 'TR+10°C'
-                }
-              }],
-              yAxes: [{
-                  type: 'linear',
-                  display: true,
-                  position: 'left',
-                  id: 'y-axis-1',
-                  scaleLabel: {
-                    display: true,
-                    labelString: this.translate.instant('Flow rate') + ' ' + this.symbol.productFlowSymbol,
-                    fontColor: '#f00',
-                    fontSize: 20
-                  },
-                  ticks: {
-                    min: 0
-                  }
-              }, {
-                  type: 'linear',
-                  display: true,
-                  position: 'right',
-                  id: 'y-axis-2',
-                  gridLines: {
-                    drawOnChartArea: false
-                  },
-                  scaleLabel: {
-                    display: true,
-                    labelString: this.translate.instant('Conso')
-                    + ' ' + this.symbol.consumSymbol + '/' + this.symbol.perUnitOfMassSymbol,
-                    fontColor: '#f00',
-                    fontSize: 20
-                  },
-                  ticks: {
-                    min: 0
-                  }
-              }],
-            }
-          };
           if (this.study.CALCULATION_MODE == 1) {
-            const params: ApiService.SizingEstimationResultParams = {
+            const paramsSizing: ApiService.SizingEstimationResultParams = {
               idStudy: this.study.ID_STUDY
             };
-            this.api.sizingEstimationResult(params).subscribe(
+            this.api.sizingEstimationResult(paramsSizing).subscribe(
               (dataCh: ViewSizingEstimationResult) => {
                 this.sizingEstimationValue = dataCh.result;
                 this.dataGraphChart = dataCh.dataGraphChart;
                 this.selectedEquip = this.dataGraphChart[0].id;
+                this.productFlowRate = dataCh.productFlowRate;
                 for (let i = 0; i < Object.keys(dataCh.dataGraphChart).length; i++) {
                   this.equipmentList.push(dataCh.dataGraphChart[i]);
                 }
@@ -190,6 +134,7 @@ export class SizingComponent implements OnInit, AfterViewInit {
                 this.availableEquipment = dataCh.availableEquipment;
                 this.equipmentList = this.availableEquipment;
                 this.activeEquipment = this.selectedEquipment;
+                this.productFlowRate = dataCh.productFlowRate;
                 this.loadOptimumAvailableChart();
               }
             );
@@ -224,7 +169,6 @@ export class SizingComponent implements OnInit, AfterViewInit {
       const index = this.activeEquipment.indexOf(this.selectedActiveEquip[i]);
       this.activeEquipment.splice(index, 1);
     }
-    console.log(this.equipmentList);
     this.selectedActiveEquip = [];
   }
   loadEstimationAvailableChart() {
@@ -239,117 +183,102 @@ export class SizingComponent implements OnInit, AfterViewInit {
       const dataDhpMax = [];
       const dataConso = [];
       const dataConsoMax = [];
-      /*labelGrap.push('dump');
-      dataCustomFlowRate.push(dataGraphChart[0].dhp);
-      dataDhp.push(0);
-      dataDhpMax.push(0);
-      dataConso.push(0);
-      dataConsoMax.push(0);*/
-      this.minGraphChart = dataGraphChart[0].equipName;
-      this.maxGraphChart = dataGraphChart[Object.keys(dataGraphChart).length - 1].equipName;
       for (let j = 0; j < Object.keys(dataGraphChart).length; j++) {
         labelGrap.push( dataGraphChart[j].equipName);
         const objDataGraph = dataGraphChart[j].data;
         for (let i = 0; i < Object.keys(objDataGraph).length; i++) {
           if (i == this.trGraph) {
-            dataCustomFlowRate.push(objDataGraph[i].dhp);
+            dataCustomFlowRate.push(this.productFlowRate);
             dataDhp.push(objDataGraph[i].dhp);
             dataDhpMax.push(objDataGraph[i].dhpMax);
             dataConso.push(objDataGraph[i].conso);
             dataConsoMax.push(objDataGraph[i].consoMax);
           }
         }
-        const chartEstimationData = [
-          {data: JSON.parse(JSON.stringify(dataCustomFlowRate)), label: this.translate.instant('Custom flow rate'),
-          type: 'line', radius: 0, fill: false, borderColor: '#f00', borderWidth: 2},
-          {data: JSON.parse(JSON.stringify(dataDhp)), label: this.translate.instant('Product flowrate'),
-                  backgroundColor: 'rgb(0, 0, 255)'},
-          {data: JSON.parse(JSON.stringify(dataDhpMax)), label: this.translate.instant('Maximum product flowrate'),
-                  backgroundColor: 'rgb(153, 204, 255)'},
-          {data: JSON.parse(JSON.stringify(dataConso)),
-                  label: this.translate.instant('Cryogen consumption (product + equipment heat losses)'),
-                  backgroundColor: 'rgb(51, 204, 51)', yAxisID: 'y-axis-2'},
-          {data: JSON.parse(JSON.stringify(dataConsoMax)),
-                  label: this.translate.instant('Maximum cryogen consumption (product + equipment heat losses)'),
-                  backgroundColor: 'rgb(102, 255, 153)', yAxisID: 'y-axis-2'}
-        ];
-        this.estimationAvailableChart = chartEstimationData;
-      }
-      /*labelGrap.push('dump');
-      dataCustomFlowRate.push(dataGraphChart[0].dhp);
-      dataDhp.push(0);
-      dataDhpMax.push(0);
-      dataConso.push(0);
-      dataConsoMax.push(0);*/
-      this.estimationAvailableLabels = labelGrap;
-      this.graphEstimationOptions01 = {
-        scaleShowVerticalLines: false,
-        responsive: false,
-        legend: {
-          onClick: (e) => e.stopPropagation(),
-          position: 'bottom',
-          labels: {
-            padding: 10
-          }
-        },
-        title:
-        {
-          display: false,
-          text: 'Graph Chart',
-          fontColor: '#000',
-          fontSize: 20
-        },
-        tooltips: {
-          mode: 'index',
-          intersect: true
-        },
-        scales: {
-          /*xAxes: [{
-            ticks: {
-              min: this.minGraphChart,
-              max: this.maxGraphChart
-            }
-          }],*/
-          yAxes: [{
-              type: 'linear',
-              display: true,
-              position: 'left',
-              id: 'y-axis-1',
-              scaleLabel: {
-                display: true,
-                labelString: this.translate.instant('Flow rate') + ' ' + this.symbol.productFlowSymbol,
-                fontColor: '#f00',
-                fontSize: 20
-              },
-              ticks: {
-                min: 0
+        this.estimationEquipBarChart = new Chart({
+          chart: {
+            type: 'column'
+          },
+          title: {
+            text: ''
+          },
+          xAxis: {
+            categories: labelGrap
+          },
+          yAxis: [
+            {
+              min: 1,
+              type: 'logarithmic',
+              plotLines: [{
+                color: '#F00',
+                width: 2,
+                value: this.productFlowRate
+              }],
+              title: {
+                text: this.translate.instant('Flow rate') + ' ' + this.symbol.productFlowSymbol,
               }
-          }, {
-              type: 'linear',
-              display: true,
-              position: 'right',
-              id: 'y-axis-2',
-              gridLines: {
-                drawOnChartArea: false
-              },
-              scaleLabel: {
-                display: true,
-                labelString: this.translate.instant('Conso')
-                + ' ' + this.symbol.consumSymbol + '/' + this.symbol.perUnitOfMassSymbol,
-                fontColor: '#f00',
-                fontSize: 20
-              },
-              ticks: {
-                min: 0
-              }
+            }, 
+            {
+            title: {
+              text: this.translate.instant('Conso') + ' ' + this.symbol.consumSymbol + '/' + this.symbol.perUnitOfMassSymbol
+            },
+            opposite: true
           }],
-        }
-      };
-      if (this.myEstimationAvailableChart) {
-        this.myEstimationAvailableChart.chart.config.data.labels = this.estimationAvailableLabels;
+          tooltip: {
+            formatter: function () {
+              return '<b>' + this.x + '</b><br/>' +
+                this.series.name + ': ' + this.y;
+            }
+          },
+          plotOptions: {
+            column: {
+              events: {
+                legendItemClick: function () {
+                    return false;
+                }
+              }
+            },
+            spline: {
+              events: {
+                legendItemClick: function () {
+                    return false;
+                }
+              },
+              lineWidth: 0
+            }
+          },
+          series: [{
+            name: this.translate.instant('Product flowrate'),
+            color: 'rgba(0, 0, 255, 1)',
+            data: JSON.parse(JSON.stringify(dataDhp)),
+            stack: 'male',
+          }, {
+            name: this.translate.instant('Maximum product flowrate'),
+            color: 'rgba(153, 204, 255, .9)',
+            data: JSON.parse(JSON.stringify(dataDhpMax)),
+            stack: 'male'
+          }, {
+            name: this.translate.instant('Cryogen consumption (product + equipment heat losses)'),
+            color: 'rgba(51, 204, 51, 1)',
+            data: JSON.parse(JSON.stringify(dataConso)),
+            stack: 'female',
+            yAxis: 1
+          }, {
+            name: this.translate.instant('Maximum cryogen consumption (product + equipment heat losses)'),
+            color: 'rgba(102, 255, 153, .9)',
+            data: JSON.parse(JSON.stringify(dataConsoMax)),
+            stack: 'female',
+            yAxis: 1
+          }, {
+            name: this.translate.instant('Custom flow rate'),
+            type: 'spline',
+            color: '#f00',
+            data: JSON.parse(JSON.stringify(dataCustomFlowRate)),
+          }]
+        });
       }
     } else {
-      this.estimationAvailableChart = '';
+      this.estimationEquipBarChart = '';
     }
     showLoaderChange.style.display = 'none';
   }
@@ -366,117 +295,97 @@ export class SizingComponent implements OnInit, AfterViewInit {
     const dataConso = [];
     const dataConsoMax = [];
     if (dataGrapChartLength > 0) {
-      /*labelGrap.push('dump');
-      dataCustomFlowRate.push(dataGraphChart[0].dhp);
-      dataDhp.push(0);
-      dataDhpMax.push(0);
-      dataConso.push(0);
-      dataConsoMax.push(0);*/
-      this.minGraphChart = dataGraphChart[0].equipName;
-      this.maxGraphChart = dataGraphChart[Object.keys(dataGraphChart).length - 1].equipName;
-      console.log(this.minGraphChart);
-      console.log(this.maxGraphChart);
-      console.log(dataCustomFlowRate);
       for (let i = 0; i < Object.keys(dataGraphChart).length; i++) {
         labelGrap.push(dataGraphChart[i].equipName);
-        dataCustomFlowRate.push(dataGraphChart[i].dhp);
+        dataCustomFlowRate.push(this.productFlowRate);
         dataDhp.push(dataGraphChart[i].dhp);
         dataDhpMax.push(dataGraphChart[i].dhpMax);
         dataConso.push(dataGraphChart[i].conso);
         dataConsoMax.push(dataGraphChart[i].consoMax);
       }
-      /* labelGrap.push('dump');
-      dataCustomFlowRate.push(dataGraphChart[0].dhp);
-      dataDhp.push(0);
-      dataDhpMax.push(0);
-      dataConso.push(0);
-      dataConsoMax.push(0); */
-      this.graphLabels = labelGrap;
-      const chartData = [
-        {data: JSON.parse(JSON.stringify(dataCustomFlowRate)), label: this.translate.instant('Custom flow rate'),
-        type: 'line', radius: 0, fill: false, borderColor: '#f00', borderWidth: 2},
-        {data: JSON.parse(JSON.stringify(dataDhp)), label: this.translate.instant('Product flowrate'),
-                backgroundColor: 'rgb(0, 0, 255)'},
-        {data: JSON.parse(JSON.stringify(dataDhpMax)), label: this.translate.instant('Maximum product flowrate'),
-                backgroundColor: 'rgb(153, 204, 255)'},
-        {data: JSON.parse(JSON.stringify(dataConso)),
-                label: this.translate.instant('Cryogen consumption (product + equipment heat losses)'),
-                backgroundColor: 'rgb(51, 204, 51)', yAxisID: 'y-axis-2'},
-        {data: JSON.parse(JSON.stringify(dataConsoMax)),
-                label: this.translate.instant('Maximum cryogen consumption (product + equipment heat losses)'),
-                backgroundColor: 'rgb(102, 255, 153)', yAxisID: 'y-axis-2'}
-      ];
-      this.graphData = chartData;
-      this.graphOptions = {
-        scaleShowVerticalLines: false,
-        responsive: false,
-        legend: {
-          onClick: (e) => e.stopPropagation(),
-          position: 'bottom',
-          labels: {
-            padding: 20
+      this.optimumBarChart = new Chart({
+        chart: {
+          type: 'column'
+        },
+        title: {
+          text: ''
+        },
+        xAxis: {
+          categories: labelGrap
+        },
+        yAxis: [
+          {
+            min: 1,
+            type: 'logarithmic',
+            plotLines: [{
+              color: '#F00',
+              width: 2,
+              value: this.productFlowRate
+            }],
+            title: {
+              text: this.translate.instant('Flow rate') + ' ' + this.symbol.productFlowSymbol,
+            }
+          },
+          {
+            title: {
+              text: this.translate.instant('Conso') + ' ' + this.symbol.consumSymbol + '/' + this.symbol.perUnitOfMassSymbol
+            },
+            opposite: true
+          }],
+        tooltip: {
+          formatter: function () {
+            return '<b>' + this.x + '</b><br/>' +
+              this.series.name + ': ' + this.y;
           }
         },
-        title:
-        {
-          display: false,
-          text: 'Graph Chart',
-          fontColor: '#000',
-          fontSize: 20
-        },
-        tooltips: {
-          mode: 'index',
-          intersect: true
-        },
-        scales: {
-          /*xAxes: [{
-            ticks: {
-              min: this.minGraphChart,
-              max: this.maxGraphChart
+        plotOptions: {
+          column: {
+            events: {
+              legendItemClick: function () {
+                  return false;
+              }
             }
-          }],*/
-          yAxes: [{
-              type: 'linear',
-              display: true,
-              position: 'left',
-              id: 'y-axis-1',
-              scaleLabel: {
-                display: true,
-                labelString: this.translate.instant('Flow rate') + ' ' + this.symbol.productFlowSymbol,
-                fontColor: '#f00',
-                fontSize: 20
-              },
-              ticks: {
-                min: 0
+          },
+          spline: {
+            events: {
+              legendItemClick: function () {
+                  return false;
               }
-          }, {
-              type: 'linear',
-              display: true,
-              position: 'right',
-              id: 'y-axis-2',
-              gridLines: {
-                  drawOnChartArea: false
-              },
-              scaleLabel: {
-                  display: true,
-                  labelString: this.translate.instant('Conso')
-                  + ' ' + this.symbol.consumSymbol + '/' + this.symbol.perUnitOfMassSymbol,
-                  fontColor: '#f00',
-                  fontSize: 20
-              },
-              ticks: {
-                min: 0
-              }
-          }],
-        }
-      };
-      if (this.myGraphOptimumData) {
-        // this.myGraphOptimumData.chart.config.data.datasets = this.graphData;
-        this.myGraphOptimumData.chart.config.data.labels = this.graphLabels;
-        // this.myGraphOptimumData.chart.update();
-      }
+            },
+            lineWidth: 0
+          }
+        },
+        series: [{
+          name: this.translate.instant('Product flowrate'),
+          color: 'rgba(0, 0, 255, 1)',
+          data: JSON.parse(JSON.stringify(dataDhp)),
+          stack: 'male',
+        }, {
+          name: this.translate.instant('Maximum product flowrate'),
+          color: 'rgba(153, 204, 255, .9)',
+          data: JSON.parse(JSON.stringify(dataDhpMax)),
+          stack: 'male'
+        }, {
+          name: this.translate.instant('Cryogen consumption (product + equipment heat losses)'),
+          color: 'rgba(51, 204, 51, 1)',
+          data: JSON.parse(JSON.stringify(dataConso)),
+          stack: 'female',
+          yAxis: 1
+        }, {
+          name: this.translate.instant('Maximum cryogen consumption (product + equipment heat losses)'),
+          color: 'rgba(102, 255, 153, .9)',
+          data: JSON.parse(JSON.stringify(dataConsoMax)),
+          stack: 'female',
+          yAxis: 1
+        }, {
+          name: this.translate.instant('Custom flow rate'),
+          type: 'spline',
+          color: '#f00',
+          data: JSON.parse(JSON.stringify(dataCustomFlowRate)),
+        }]
+      });
     } else {
-      this.graphData = '';
+      this.optimumBarChart = '';
     }
     showLoaderChange.style.display = 'none';
   }
@@ -498,35 +407,97 @@ export class SizingComponent implements OnInit, AfterViewInit {
         const objDataGraph = dataGraphChart[j].data;
         for (let i = 0; i < Object.keys(objDataGraph).length; i++) {
           if (i == this.trGraph) {
-            dataCustomFlowRate.push(objDataGraph[i].dhp);
+            dataCustomFlowRate.push(this.productFlowRate);
             dataDhp.push(objDataGraph[i].dhp);
             dataDhpMax.push(objDataGraph[i].dhpMax);
             dataConso.push(objDataGraph[i].conso);
             dataConsoMax.push(objDataGraph[i].consoMax);
           }
         }
-        const chartEstimationData = [
-          {data: JSON.parse(JSON.stringify(dataCustomFlowRate)), label: this.translate.instant('Custom flow rate'),
-          type: 'line', radius: 0, fill: false, borderColor: '#f00', borderWidth: 2},
-          {data: JSON.parse(JSON.stringify(dataDhp)), label: this.translate.instant('Product flowrate'),
-                  backgroundColor: 'rgb(0, 0, 255)'},
-          {data: JSON.parse(JSON.stringify(dataDhpMax)), label: this.translate.instant('Maximum product flowrate'),
-                  backgroundColor: 'rgb(153, 204, 255)'},
-          {data: JSON.parse(JSON.stringify(dataConso)),
-                  label: this.translate.instant('Cryogen consumption (product + equipment heat losses)'),
-                  backgroundColor: 'rgb(51, 204, 51)', yAxisID: 'y-axis-2'},
-          {data: JSON.parse(JSON.stringify(dataConsoMax)),
-                  label: this.translate.instant('Maximum cryogen consumption (product + equipment heat losses)'),
-                  backgroundColor: 'rgb(102, 255, 153)', yAxisID: 'y-axis-2'}
-        ];
-        this.estimationAvailableChart = chartEstimationData;
-      }
-      this.estimationAvailableLabels = labelGrap;
-      if (this.myEstimationAvailableChart) {
-        this.myEstimationAvailableChart.chart.config.data.labels = this.estimationAvailableLabels;
+        this.estimationEquipBarChart = new Chart({
+          chart: {
+            type: 'column'
+          },
+          title: {
+            text: ''
+          },
+          xAxis: {
+            categories: labelGrap
+          },
+          yAxis: [
+            {
+              min: 1,
+              type: 'logarithmic',
+              plotLines: [{
+                color: '#F00',
+                width: 2,
+                value: this.productFlowRate
+              }],
+              title: {
+                text: this.translate.instant('Flow rate') + ' ' + this.symbol.productFlowSymbol,
+              }
+            },
+            {
+            title: {
+              text: this.translate.instant('Conso') + ' ' + this.symbol.consumSymbol + '/' + this.symbol.perUnitOfMassSymbol
+            },
+            opposite: true
+          }],
+          tooltip: {
+            formatter: function () {
+              return '<b>' + this.x + '</b><br/>' +
+                this.series.name + ': ' + this.y;
+            }
+          },
+          plotOptions: {
+            column: {
+              events: {
+                legendItemClick: function () {
+                    return false;
+                }
+              }
+            },
+            spline: {
+              events: {
+                legendItemClick: function () {
+                    return false;
+                }
+              },
+              lineWidth: 0
+            }
+          },
+          series: [{
+            name: this.translate.instant('Product flowrate'),
+            color: 'rgba(0, 0, 255, 1)',
+            data: JSON.parse(JSON.stringify(dataDhp)),
+            stack: 'male',
+          }, {
+            name: this.translate.instant('Maximum product flowrate'),
+            color: 'rgba(153, 204, 255, .9)',
+            data: JSON.parse(JSON.stringify(dataDhpMax)),
+            stack: 'male'
+          }, {
+            name: this.translate.instant('Cryogen consumption (product + equipment heat losses)'),
+            color: 'rgba(51, 204, 51, 1)',
+            data: JSON.parse(JSON.stringify(dataConso)),
+            stack: 'female',
+            yAxis: 1
+          }, {
+            name: this.translate.instant('Maximum cryogen consumption (product + equipment heat losses)'),
+            color: 'rgba(102, 255, 153, .9)',
+            data: JSON.parse(JSON.stringify(dataConsoMax)),
+            stack: 'female',
+            yAxis: 1
+          }, {
+            name: this.translate.instant('Custom flow rate'),
+            type: 'spline',
+            color: '#f00',
+            data: JSON.parse(JSON.stringify(dataCustomFlowRate)),
+          }]
+        });
       }
     } else {
-      this.estimationAvailableChart = '';
+      this.estimationEquipBarChart = '';
     }
     showLoaderChange.style.display = 'none';
   }
@@ -544,10 +515,9 @@ export class SizingComponent implements OnInit, AfterViewInit {
     this.api.getSymbol(this.study.ID_STUDY).subscribe(
       dataSymbol => {
         this.symbol = dataSymbol;
-        this.api.getStudyEquipments(this.study.ID_STUDY).subscribe(
+        this.api.getstudyEquipmentByStudyId(this.study.ID_STUDY).subscribe(
           data => {
             this.studyEquipments = data;
-            // console.log(this.studyEquipments[0]);
             this.api.temperatureProfile(this.studyEquipments[0]['ID_STUDY_EQUIPMENTS']).subscribe(
               dataTempFirst => {
                 const tempChartDataObj =  dataTempFirst.tempChartData;
@@ -850,46 +820,100 @@ export class SizingComponent implements OnInit, AfterViewInit {
           if (data.dataGraphChart[j].id == element) {
             const objDataGraph = data.dataGraphChart[j].data;
             const dataGrapChartLength = Object.keys(objDataGraph).length;
-            dataCustomFlowRate.push(objDataGraph[0].dhp);
-            dataDhp.push(0);
-            dataDhpMax.push(0);
-            dataConso.push(0);
-            dataConsoMax.push(0);
             for (let i = dataGrapChartLength - 1; i >= 0; i--) {
-              dataCustomFlowRate.push(objDataGraph[i].dhp);
+              dataCustomFlowRate.push(this.productFlowRate);
               dataDhp.push(objDataGraph[i].dhp);
               dataDhpMax.push(objDataGraph[i].dhpMax);
               dataConso.push(objDataGraph[i].conso);
               dataConsoMax.push(objDataGraph[i].consoMax);
             }
-            dataCustomFlowRate.push(objDataGraph[0].dhp);
-            dataDhp.push(0);
-            dataDhpMax.push(0);
-            dataConso.push(0);
-            dataConsoMax.push(0);
-            console.log(dataCustomFlowRate);
-            const chartEstimationData = [
-              {data: JSON.parse(JSON.stringify(dataCustomFlowRate)), label: this.translate.instant('Custom flow rate'),
-              type: 'line', radius: 0, fill: false, borderColor: '#f00', borderWidth: 2},
-              {data: JSON.parse(JSON.stringify(dataDhp)), label: this.translate.instant('Product flowrate'),
-                      backgroundColor: 'rgb(0, 0, 255)'},
-              {data: JSON.parse(JSON.stringify(dataDhpMax)), label: this.translate.instant('Maximum product flowrate'),
-                      backgroundColor: 'rgb(153, 204, 255)'},
-              {data: JSON.parse(JSON.stringify(dataConso)),
-                      label: this.translate.instant('Cryogen consumption (product + equipment heat losses)'),
-                      backgroundColor: 'rgb(51, 204, 51)', yAxisID: 'y-axis-2'},
-              {data: JSON.parse(JSON.stringify(dataConsoMax)),
-                      label: this.translate.instant('Maximum cryogen consumption (product + equipment heat losses)'),
-                      backgroundColor: 'rgb(102, 255, 153)', yAxisID: 'y-axis-2'}
-            ];
-            this.graphEstimationData = chartEstimationData;
+            this.estimationBarChart = new Chart({
+              chart: {
+                type: 'column'
+              },
+              title: {
+                text: ''
+              },
+              xAxis: {
+                categories: this.graphEstimationLabels
+              },
+              yAxis: [
+                {
+                  min: 1,
+                  type: 'logarithmic',
+                  plotLines: [{
+                    color: '#F00',
+                    width: 2,
+                    value: this.productFlowRate
+                  }],
+                  title: {
+                    text: this.translate.instant('Flow rate') + ' ' + this.symbol.productFlowSymbol,
+                  }
+                },
+                {
+                title: {
+                  text: this.translate.instant('Conso') + ' ' + this.symbol.consumSymbol + '/' + this.symbol.perUnitOfMassSymbol
+                },
+                opposite: true
+              }],
+              tooltip: {
+                formatter: function () {
+                  return '<b>' + this.x + '</b><br/>' +
+                      this.series.name + ': ' + this.y;
+                }
+              },
+              plotOptions: {
+                column: {
+                  events: {
+                    legendItemClick: function () {
+                        return false;
+                    }
+                  }
+                },
+                spline: {
+                  events: {
+                    legendItemClick: function () {
+                        return false;
+                    }
+                  },
+                  lineWidth: 0
+                }
+              },
+              series: [{
+                  name: this.translate.instant('Product flowrate'),
+                  color: 'rgba(0, 0, 255, .9)',
+                  data: JSON.parse(JSON.stringify(dataDhp)),
+                  stack: 'male',
+              }, {
+                name: this.translate.instant('Maximum product flowrate'),
+                color: 'rgba(153, 204, 255, 1)',
+                data: JSON.parse(JSON.stringify(dataDhpMax)),
+                stack: 'male'
+              }, {
+                name: this.translate.instant('Cryogen consumption (product + equipment heat losses)'),
+                color: 'rgba(51, 204, 51, 1)',
+                data: JSON.parse(JSON.stringify(dataConso)),
+                stack: 'female',
+                yAxis: 1
+              }, {
+                name: this.translate.instant('Maximum cryogen consumption (product + equipment heat losses)'),
+                color: 'rgba(102, 255, 153, .9)',
+                data: JSON.parse(JSON.stringify(dataConsoMax)),
+                stack: 'female',
+                yAxis: 1
+              }, {
+                name: this.translate.instant('Custom flow rate'),
+                type: 'spline',
+                color: '#f00',
+                data: JSON.parse(JSON.stringify(dataCustomFlowRate)),
+              }]
+            });
           }
         }
-        if (this.myGraphEstimationData) {
-          this.myGraphEstimationData.chart.config.data.labels = this.graphEstimationLabels;
-        }
-        console.log(this.graphEstimationData);
       }
     );
+  }
+  isNumberic(number) {
+    return Number.isInteger(Math.floor(number));
   }
 }

@@ -1,9 +1,10 @@
 /* tslint:disable */
+import { EquipGeneration } from './equip-generation';
 
 /**
  */
 export class RefEquipment {
-    RENTAL_COST?: number;
+    NUMBER_OF_ZONES?: number;
     ID_EQUIP?: number;
     ID_COOLING_FAMILY?: number;
     ID_USER?: number;
@@ -24,12 +25,12 @@ export class RefEquipment {
     NB_TS?: number;
     NB_VC?: number;
     BUYING_COST?: number;
-    ID_EQUIPSERIES?: number;
+    RENTAL_COST?: number;
     INSTALL_COST?: number;
     MAX_FLOW_RATE?: number;
     MAX_NOZZLES_BY_RAMP?: number;
     MAX_RAMPS?: number;
-    NUMBER_OF_ZONES?: number;
+    ID_EQUIPSERIES?: number;
     TMP_REGUL_MIN?: number;
     CAPABILITIES?: number;
     ITEM_TR?: number;
@@ -39,10 +40,20 @@ export class RefEquipment {
     ITEM_TIMESTEP?: number;
     EQP_IMP_ID_STUDY?: number;
     OPEN_BY_OWNER?: number;
+    ID_FAMILY?: number;
     SERIES_NAME?: string;
-    BATCH_PROCESS?: boolean;
-    TEMP_SETPOINT?: number;
-    DWELLING_TIME?: number;
+    CONSTRUCTOR?: string;
+    BATCH_PROCESS?: number;
+    TYPE_CELL?: number;
+    equipGeneration?: EquipGeneration;
     capabilitiesCalc?: string;
-    symbol?: string;
+    capabilitiesCalc256?: string;
+    timeSymbol?: string;
+    temperatureSymbol?: string;
+    dimensionSymbol?: string;
+    consumptionSymbol1?: string;
+    consumptionSymbol2?: string;
+    consumptionSymbol3?: string;
+    shelvesWidthSymbol?: string;
+    rampsPositionSymbol?: string;
 }

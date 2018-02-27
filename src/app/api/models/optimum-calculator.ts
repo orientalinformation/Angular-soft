@@ -4,7 +4,7 @@ import { ViewSelect } from './view-select';
 /**
  */
 export class OptimumCalculator {
-    maxIter?: number;
+    tempPtIn?: number;
     sdisableFields?: number;
     checkOptim?: number;
     sdisableOptim?: number;
@@ -21,12 +21,12 @@ export class OptimumCalculator {
     storagestep?: number;
     hRadioOn?: number;
     hRadioOff?: number;
-    sdisableCalculate?: number;
+    maxIter?: number;
     relaxCoef?: number;
     vRadioOn?: number;
     vRadioOff?: number;
     tempPtSurf?: number;
-    tempPtIn?: number;
+    sdisableCalculate?: number;
     tempPtBot?: number;
     tempPtAvg?: number;
     isBrainCalculator?: number;
@@ -39,4 +39,13 @@ export class OptimumCalculator {
     select7?: ViewSelect[];
     select8?: ViewSelect[];
     select9?: ViewSelect[];
+    seValue1?: number;
+    seValue2?: number;
+    seValue3?: number;
+    seValue4?: number;
+    seValue5?: number;
+    seValue6?: number;
+    seValue7?: number;
+    seValue8?: number;
+    seValue9?: number;
 }

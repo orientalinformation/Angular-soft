@@ -29,7 +29,7 @@
                 <tbody>
                   <tr *ngIf="kernelMonetary && monetary">
                     <td style="vertical-align: middle">
-                      <a href="javascript:void(0)" (click)="onModalValuePrice()">Price</a>
+                    <a href="javascript:void(0)" (click)="onModalValuePrice()">{{'Price'|translate}}</a>
                     </td>
                     <td [innerHTML]="kernelMonetary.MONEY_SYMB" style="vertical-align: middle"></td>
                     <td>
@@ -44,7 +44,7 @@
                   </tr>
                   <tr *ngFor="let unit of listUnit, let i = index">
                     <td style="vertical-align: middle">
-                      <a href="javascript:void(0)">{{unit.name}}</a>
+                      <a href="javascript:void(0)" (click)="onModalValueUnit(i)">{{unit.name|translate}}</a>
                     </td>
                     <td style="vertical-align: middle">{{unit.SYMBOL}}</td>
                     <td>
@@ -165,19 +165,19 @@
       </div>
       <div class="modal-body col-md-12">
         <div class="form-group text-center ">
-          <label class="col-md-3 col-form-label "><strong>{{ 'Value type'|translate }} : </strong> NAME </label>
+          <label class="col-md-6 col-form-label "><strong>{{ 'Value type'|translate }} : </strong> {{valueUnitName|translate}} </label>
         </div>
         <div class="form-group row">
           <div class="col-md-4"></div>
           <div class="col-md-2" align="center" >
               <label class="custom-control custom-radio" >
-                <input type="radio" class="custom-control-input" name="statusComp">{{ 'New'|translate }}
+                <input type="radio" class="custom-control-input" name="statusComp" [value]="0" [(ngModel)]="modifyUnit" (change)="showUnitForm('new')">{{ 'New'|translate }}
                 <span class="custom-control-indicator"></span>
               </label>
           </div>
           <div class="col-md-2" align="center" >
               <label class="custom-control custom-radio" >
-                <input type="radio" class="custom-control-input" name="statusComp" checked>{{ 'Modify' | translate }}
+                <input type="radio" class="custom-control-input" name="statusComp" [value]="1" [(ngModel)]="modifyUnit" (change)="showUnitForm('modify')">{{ 'Modify' | translate }}
                 <span class="custom-control-indicator"></span>
               </label>
           </div>
@@ -192,17 +192,36 @@
                 </tr>
               </thead>
               <tbody>
-                <tr>
+                <tr *ngIf="showModifyUnit== true">
+                  <td align="center" style="vertical-align:middle">
+                    <input type="text" *ngIf="unitKernal == false;else valueKernalSymbol" [(ngModel)]="valueUnitSymbol" class="form-control">
+                    <ng-template #valueKernalSymbol>
+                      <span style="display:inline-block;line-height:35px">{{valueUnitSymbol}}</span>
+                    </ng-template>
+                  </td>
+                  <td align="center" style="vertical-align:middle">
+                    <input type="text" *ngIf="unitKernal == false;else valueKernalCoeffA" [(ngModel)]="valueUnitCoeffA" class="form-control">
+                    <ng-template #valueKernalCoeffA>
+                      <span style="display:inline-block;line-height:35px">{{valueUnitCoeffA}}</span>
+                    </ng-template>
+                  </td>
+                  <td align="center" style="vertical-align:middle">
+                    <input type="text" *ngIf="unitKernal == false;else valueKernalCoeffB"  [(ngModel)]="valueUnitCoeffB" class="form-control">
+                    <ng-template #valueKernalCoeffB>
+                      <span style="display:inline-block;line-height:35px">{{valueUnitCoeffB}}</span>
+                    </ng-template>
+                  </td>
+                </tr>
+                <tr *ngIf="showNewUnit == true">
                   <td align="center">
-                    <input type="text" class="form-control col-md-8">
+                    <input type="text" [(ngModel)]="newUnitSymbol" class="form-control">
                   </td>
                   <td align="center">
-                    <input type="text" class="form-control col-md-8">
+                    <input type="text" [(ngModel)]="newUnitCoeffA" class="form-control">
                   </td>
                   <td align="center">
-                    <input type="text" class="form-control col-md-8">
+                    <input type="text" [(ngModel)]="newUnitCoeffB" class="form-control">
                   </td>
-
                 </tr>
               </tbody>
             </table>
@@ -214,7 +233,7 @@
       </div>
       <div class="modal-footer">
         <button class="btn btn-secondary" data-dismiss="modal" (click)="modalValueUnit.hide()">{{ 'Cancel'|translate }}</button>
-        <button class="btn btn-primary" >{{ 'Confirm'|translate }}</button>
+        <button class="btn btn-primary" *ngIf="unitKernal == false || modifyUnit == 0" (click)="saveUnit()">{{ 'Confirm'|translate }}</button>
       </div>
     </div>
   </div>

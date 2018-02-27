@@ -68,41 +68,27 @@
                 </div>
               </div>
 
-              <div *ngIf="estimationAvailableChart" style="width:90%;margin:auto;margin-top:30px;margin-bottom:30px">
-                <div class="chart-wrapper">
-                  <canvas #myEstimationAvailableChart baseChart class="chart"
-                  [datasets]="estimationAvailableChart"
-                  [labels]="estimationAvailableLabels"
-                  [options]="graphEstimationOptions01"
-                  [colors]= "grapColours"
-                  [legend]="graphLegend"
-                  [chartType]="graphType"></canvas>
-                </div>
+              <div *ngIf="estimationEquipBarChart" style="width:90%;margin:auto;margin-top:30px;margin-bottom:30px">
+                <div [chart]="estimationEquipBarChart"></div>
               </div>
+              
 
               <div class="row">
                 <div class="col-md-3"></div>
                 <div class="col-md-6">
                   <div class="text-center form-group">
                     <select name="" [(ngModel)]="selectedEquip" class="form-control" (ngModelChange)="loadEquipmentEstimationChart()">
-                      <option *ngFor="let equip of dataGraphChart" [value]="equip.id" [selected]="equip.id == selectedEquip">{{equip.equipName}}</option>
+                      <option *ngFor="let equip of dataGraphChart" [value]="equip.id">{{equip.equipName}}</option>
                     </select>
                 </div>
                 </div>
                 <div class="col-md-3"></div>
               </div>
               
-              <div *ngIf="graphEstimationData" style="width:90%;margin:auto;margin-top:10px">
-                <div class="chart-wrapper">
-                  <canvas #myGraphEstimationData baseChart class="chart"
-                  [datasets]="graphEstimationData"
-                  [labels]="graphEstimationLabels"
-                  [options]="graphEstimationOptions"
-                  [colors]= "grapColours"
-                  [legend]="graphLegend"
-                  [chartType]="graphType"></canvas>
-                </div>
+              <div *ngIf="estimationBarChart" style="width:90%;margin:auto;margin-top:10px">
+                <div [chart]="estimationBarChart"></div>
               </div>
+              
             </tab>
             <tab>
               <ng-template tabHeading><i class="icon-doc"></i> {{'Value'|translate}}</ng-template>
@@ -199,16 +185,8 @@
                 </div>
               </div>
               
-              <div *ngIf="graphData" style="width:80%;margin:auto;margin-top:30px">
-                <div class="chart-wrapper">
-                  <canvas #myGraphOptimumData baseChart class="chart"
-                  [datasets]="graphData"
-                  [labels]="graphLabels"
-                  [options]="graphOptions"
-                  [colors]= "grapColours"
-                  [legend]="graphLegend"
-                  [chartType]="graphType"></canvas>
-                </div>
+              <div style="width:80%;margin:auto;margin-top:30px" *ngIf="optimumBarChart"> 
+                <div [chart]="optimumBarChart"></div>
               </div>
             </tab>
             <tab>
@@ -234,11 +212,44 @@
                   <td align="center" class="tdResultLink"style="vertical-align:middle">
                     <a href="javascript:;" class="tdResultLink">{{result.equipName}}</a>
                   </td>
-                  <td align="center" class="tdResultAna"style="vertical-align:middle">{{result.tr}}</td>
+                  <td align="center" class="tdResultAna" style="vertical-align:middle" *ngIf="isNumberic(result.tr) == true;else noTooltip">
+                    <a href="javascript:;" placement="right" [ngbTooltip]="tipContent">{{result.tr}}</a>
+                    <ng-template #tipContent>
+                      <div class="text-left" style="padding: 3px 0;font-size:13px">
+                        <div style="white-space:nowrap">{{'Control temperature'|translate}}: <b>{{result.tr}}</b> ({{symbol.temperatureSymbol}})</div>
+                        <div style="white-space:nowrap">{{'Residence/Dwell time'|translate}}: <b>{{result.ts}}</b> ({{symbol.timeSymbol}})</div>
+                        <div style="white-space:nowrap">{{'Convection Setting'|translate}}: <b>{{result.vc}}</b> ({{symbol.convectionSpeedSymbol}})</div>
+                      </div>
+                    </ng-template>
+                  </td>
+                  <ng-template #noTooltip>
+                  <td align="center" class="tdResultAna" style="vertical-align:middle">
+                    <a href="javascript:;">{{result.tr}}</a>
+                  </td>  
+                  </ng-template>
                   <td align="center" class="tdResultAna"style="vertical-align:middle">{{result.dhp}}</td>
-                  <td align="center" class="tdResultAna"style="vertical-align:middle">{{result.conso}}</td>
+                  <td align="center" class="tdResultAna"style="vertical-align:middle">
+                    <div *ngIf="result.conso_warning == 'warning_fluid'"><img src="assets/img/output/warning_fluid_overflow.gif" width="30"></div>
+                    <div *ngIf="result.conso_warning == 'warning_dhp'"><img src="assets/img/output/warning_dhp_overflow.gif" width="30"></div>
+                    <div *ngIf="result.conso_warning == 'warning_dhp_value'"><div>{{result.conso}}</div><img src="assets/img/output/warning_dhp_overflow.gif" width="30"></div>
+                    <div *ngIf="result.conso_warning != 'warning_fluid' && result.conso_warning != 'warning_dhp' && result.conso_warning != 'warning_dhp_value'">{{result.conso}}</div>
+                  </td>
                   <td align="center" class="tdResultAna"style="vertical-align:middle">{{result.toc}}</td>
-                  <td align="center" class="tdResultAna"style="vertical-align:middle">{{result.trMax}}</td>
+                  <td align="center" class="tdResultAna" style="vertical-align:middle" *ngIf="isNumberic(result.trMax) == true;else noTooltipMax">
+                      <a href="javascript:;" placement="right" [ngbTooltip]="tipContent">{{result.trMax}}</a>
+                      <ng-template #tipContent>
+                        <div class="text-left" style="padding: 3px 0;font-size:13px">
+                          <div style="white-space:nowrap">{{'Control temperature'|translate}}: <b>{{result.trMax}}</b> ({{symbol.temperatureSymbol}})</div>
+                          <div style="white-space:nowrap">{{'Residence/Dwell time'|translate}}: <b>{{result.tsMax}}</b> ({{symbol.timeSymbol}})</div>
+                          <div style="white-space:nowrap">{{'Convection Setting'|translate}}: <b>{{result.vcMax}}</b> ({{symbol.convectionSpeedSymbol}})</div>
+                        </div>
+                      </ng-template>
+                    </td>
+                    <ng-template #noTooltipMax>
+                    <td align="center" class="tdResultAna" style="vertical-align:middle">
+                      <a href="javascript:;">{{result.trMax}}</a>
+                    </td>  
+                    </ng-template>
                   <td align="center" class="tdResultAna"style="vertical-align:middle">{{result.dhpMax}}</td>
                   <td align="center" class="tdResultAna"style="vertical-align:middle">
                     <div *ngIf="result.consoMax == 'warning_fluid'"><img src="assets/img/output/warning_fluid_overflow.gif" width="30"></div>
@@ -262,7 +273,7 @@
         <div class="row">
             <strong class="col-md-2" >{{'Equipment'|translate}}</strong>
             <select name="" id="" class="form-control col-md-4" (change)="loadTempChart($event.target.value)">
-              <option *ngFor="let std of studyEquipments" [value]="std.ID_STUDY_EQUIPMENTS">{{ std.EQUIP_NAME }}</option>
+              <option *ngFor="let std of studyEquipments" [value]="std.ID_STUDY_EQUIPMENTS">{{ std.displayName }}</option>
             </select>
           </div>
         <div *ngIf="tempChartData; else showLoaderTerm">

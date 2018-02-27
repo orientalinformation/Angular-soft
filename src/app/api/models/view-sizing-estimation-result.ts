@@ -6,5 +6,6 @@ import { ViewSizingEstimationResult_dataGraphChart } from './view-sizing-estimat
  */
 export class ViewSizingEstimationResult {
     result?: SizingResultEStimation;
+    productFlowRate?: number;
     dataGraphChart?: ViewSizingEstimationResult_dataGraphChart;
 }

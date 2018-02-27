@@ -3,6 +3,10 @@
     <div class="card" *ngIf="study">
       <div class="card-header">
         <strong>{{'CALCULATION MODE'|translate}}</strong>
+        <button type="button" (click)="saveObjectiveView()" class="btn btn-sm btn-success float-right">
+          <i class="fa fa-floppy-o"></i> {{'SAVE'|translate}}
+        </button>
+        <!-- /.card-body -->
       </div>
       <div class="card-block">
         <div class="row">
@@ -72,7 +76,7 @@
           </div>
         </div>
       </div> <!-- /.card-body -->
-      <div class="card-header">
+      <div class="card-header" style="border-top: 1px solid #ddd">
         <strong>{{'PRODUCTION DUTY CYCLE'|translate}}</strong>
       </div>
       <!-- /.card-body -->
@@ -173,9 +177,7 @@
         </div>      
       </div>
       <!-- /.card-body -->
-      <div class="card-footer text-center">
-        <button type="button" (click)="saveObjectiveView()" class="btn btn-success">{{'SAVE'|translate}}</button>
-      </div><!-- /.card-body -->
+      
     </div> <!-- /.card -->
 </div><!-- #/container -->
 

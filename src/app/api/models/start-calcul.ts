@@ -4,7 +4,7 @@ import { ViewSelect } from './view-select';
 /**
  */
 export class StartCalcul {
-    vRadioOff?: number;
+    precisionlogstep?: number;
     idStudy?: number;
     epsilonTemp?: number;
     epsilonEnth?: number;
@@ -18,12 +18,12 @@ export class StartCalcul {
     maxIter?: number;
     relaxCoef?: number;
     vRadioOn?: number;
-    idStudyEquipment?: number;
+    vRadioOff?: number;
     tempPtSurf?: number;
     tempPtIn?: number;
     tempPtBot?: number;
     tempPtAvg?: number;
-    precisionlogstep?: number;
+    idStudyEquipment?: number;
     select1?: ViewSelect[];
     select2?: ViewSelect[];
     select3?: ViewSelect[];
@@ -33,4 +33,13 @@ export class StartCalcul {
     select7?: ViewSelect[];
     select8?: ViewSelect[];
     select9?: ViewSelect[];
+    seValue1?: number;
+    seValue2?: number;
+    seValue3?: number;
+    seValue4?: number;
+    seValue5?: number;
+    seValue6?: number;
+    seValue7?: number;
+    seValue8?: number;
+    seValue9?: number;
 }

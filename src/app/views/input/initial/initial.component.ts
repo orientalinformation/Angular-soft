@@ -1,20 +1,48 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
-import { AfterViewInit, AfterContentChecked } from '@angular/core/src/metadata/lifecycle_hooks';
+import { AfterViewInit, AfterContentChecked, AfterContentInit } from '@angular/core/src/metadata/lifecycle_hooks';
 import { ApiService } from '../../../api/services/api.service';
-import { Study, Product, ViewProduct, ViewMesh } from '../../../api/models';
+import { Study, Product, ViewProduct, ViewMesh, ProductElmt } from '../../../api/models';
 import { Router } from '@angular/router';
 import swal from 'sweetalert2';
 import * as THREE from 'three';
 import { OrbitControls } from 'three-orbitcontrols-ts';
 import { TextService } from '../../../shared/text.service';
 import { ModalDirective } from 'ngx-bootstrap';
+import { ValuesListService } from '../../../shared/values-list.service';
+
+import * as Highcharts from 'highcharts';
+import * as HC_draggablePoints from 'highcharts-draggable-points';
+HC_draggablePoints(Highcharts);
+
+import { HighchartsChartComponent } from '../../../components/highcharts-chart/highcharts-chart.component';
 
 @Component({
   selector: 'app-initial',
   templateUrl: './initial.component.html',
   styleUrls: ['./initial.component.scss']
 })
-export class InitialComponent implements OnInit, AfterContentChecked, AfterViewInit {
+export class InitialComponent implements OnInit, AfterContentInit, AfterViewInit {
+  @ViewChild('editElmtInitTempModal') public editElmtInitTempModal: ModalDirective;
+  @ViewChild('meshParametersModal') public meshParametersModal: ModalDirective;
+  @ViewChild('tempProfileChart') public tempProfileChart: HighchartsChartComponent;
+  @ViewChild('rendererContainer') rendererContainer: ElementRef;
+  @ViewChild('isoTempEditModal') isoTempEditModal: ModalDirective;
+
+  public Highcharts = Highcharts;
+  public chartOptions = {
+    chart: {
+      // inverted: true
+    },
+    tooltip: {
+      enabled: false
+    },
+    series: [{
+      data: [1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3],
+      draggableY: true,
+      dragMinY: 0
+    }]
+  };
+
   public study: Study;
   public productShape: number;
   public productView: ViewProduct;
@@ -26,6 +54,22 @@ export class InitialComponent implements OnInit, AfterContentChecked, AfterViewI
     initTemp: number
   };
 
+  public elmtEditForm: {
+    isoThermal?: boolean,
+    isoTemp?: number,
+    elementId?: number,
+    elmt?: ProductElmt,
+  };
+
+  public meshParamsForm: {
+    mesh_type?: number,
+    size1?: number,
+    size2?: number,
+    size3?: number
+  };
+
+  public isLoadingView = true;
+
   // renderer = new THREE.WebGLRenderer({ alpha: true });
   // scene = null;
   // camera = null;
@@ -33,10 +77,51 @@ export class InitialComponent implements OnInit, AfterContentChecked, AfterViewI
   // materials = null;
   // orbit = null;
 
-  @ViewChild('rendererContainer') rendererContainer: ElementRef;
-  @ViewChild('isoTempEditModal') isoTempEditModal: ModalDirective;
+  constructor(private api: ApiService, private router: Router, public text: TextService, private valuesList: ValuesListService) {
+    this.elmtEditForm = {
+      elementId: null,
+      isoThermal: true,
+      isoTemp: null,
+      elmt: null,
+    };
+  }
 
-  constructor(private api: ApiService, private router: Router, private text: TextService) {}
+  generateMeshWithParameters() {
+    this.api.generateMesh({
+      idProd: this.productView.product.ID_PROD,
+      body: {
+        mesh_type: this.meshParamsForm.mesh_type,
+        size1: this.meshParamsForm.size1,
+        size2: this.meshParamsForm.size2,
+        size3: this.meshParamsForm.size3
+      }
+    }).subscribe(
+      (resp) => {
+        console.log(resp);
+      },
+      (err) => {
+        console.log(err);
+      },
+      () => {
+        this.meshParametersModal.hide();
+        this.refreshView();
+      }
+    );
+  }
+
+  editElementTemp(element: ProductElmt) {
+    this.elmtEditForm.elmt = element;
+    this.elmtEditForm.elementId = element.ID_PRODUCT_ELMT;
+    this.elmtEditForm.isoThermal = element.PROD_ELMT_ISO == this.valuesList.PRODELT_ISOTHERM;
+    if (element.PROD_ELMT_ISO == this.valuesList.PRODELT_UNDEFINED) {
+      this.elmtEditForm.isoThermal = true;
+    }
+    this.editElmtInitTempModal.show();
+  }
+
+  saveElementInitTemp() {
+
+  }
 
   ngOnInit() {
     this.productTempForm = {
@@ -50,10 +135,21 @@ export class InitialComponent implements OnInit, AfterContentChecked, AfterViewI
     this.meshView = new ViewMesh();
   }
 
-  ngAfterViewInit() {
+  isRendering(): boolean {
+    return !this.laddaGeneratingMesh && !this.isLoadingView;
+  }
+
+  toggleTempProfileChart() {
+    if (!this.elmtEditForm.isoThermal) {
+      // this.tempProfileChart.options = this.chartOptions;
+    }
+  }
+
+  refreshView() {
     if (this.productShape == 0 || !this.productView.elements || this.productView.elements.length == 0) {
       return;
     }
+    this.isLoadingView = true;
     this.api.getMeshView(this.productView.product.ID_PROD).subscribe(
       (resp: ViewMesh) => {
         this.initMeshView(resp);
@@ -65,16 +161,11 @@ export class InitialComponent implements OnInit, AfterContentChecked, AfterViewI
     );
   }
 
-  // animate() {
-  //   window.requestAnimationFrame(() => this.animate());
-  //   this.orbit.update();
-  //   this.renderer.render(this.scene, this.camera);
-  // }
-
-  ngAfterContentChecked() {
+  ngAfterContentInit() {
     this.productShape = Number(localStorage.getItem('productShape'));
     this.study = JSON.parse(localStorage.getItem('study'));
     this.productView = JSON.parse(localStorage.getItem('productView'));
+    console.log('content checked');
     if (this.productShape == 0 || !this.productView.elements || this.productView.elements.length == 0) {
       swal('Oops..', 'Please define product along with elements first', 'error');
       this.router.navigate(['/input/product']);
@@ -82,8 +173,18 @@ export class InitialComponent implements OnInit, AfterContentChecked, AfterViewI
     }
   }
 
+  ngAfterViewInit() {
+    this.refreshView();
+  }
+
+  // animate() {
+  //   window.requestAnimationFrame(() => this.animate());
+  //   this.orbit.update();
+  //   this.renderer.render(this.scene, this.camera);
+  // }
+
   generateMesh() {
-    swal('Warning', 'Feature is not yet implement, please use default mesh generator!', 'warning');
+    this.meshParametersModal.show();
     // this.laddaGeneratingMesh = true;
     // this.api.generateMesh(this.productView.product.ID_PROD).subscribe(
     //   resp => {
@@ -115,6 +216,19 @@ export class InitialComponent implements OnInit, AfterContentChecked, AfterViewI
     if (this.productTempForm.flagIsoTemp) {
       this.productTempForm.initTemp = this.meshView.productIsoTemp;
     }
+    this.isLoadingView = false;
+    this.meshParamsForm = {};
+    this.meshParamsForm.mesh_type = this.meshView.meshGeneration.MESH_1_FIXED;
+    if (this.meshParamsForm.mesh_type == 1) { // regular
+      this.meshParamsForm.size1 = parseFloat((this.meshView.meshGeneration.MESH_1_SIZE * 1000).toFixed(2));
+      this.meshParamsForm.size2 = parseFloat((this.meshView.meshGeneration.MESH_2_SIZE * 1000).toFixed(2));
+      this.meshParamsForm.size3 = parseFloat((this.meshView.meshGeneration.MESH_3_SIZE * 1000).toFixed(2));
+    } else {
+      this.meshParamsForm.size1 = parseFloat((this.meshView.meshGeneration.MESH_1_INT * 1000).toFixed(2));
+      this.meshParamsForm.size2 = parseFloat((this.meshView.meshGeneration.MESH_2_INT * 1000).toFixed(2));
+      this.meshParamsForm.size3 = parseFloat((this.meshView.meshGeneration.MESH_3_INT * 1000).toFixed(2));
+    }
+  }
 
     // this.scene = new THREE.Scene();
 
@@ -169,7 +283,6 @@ export class InitialComponent implements OnInit, AfterContentChecked, AfterViewI
     // this.orbit.update();
 
     // this.animate();
-  }
 
   resetDefaultMesh() {
     this.laddaGeneratingMesh = true;
@@ -177,7 +290,7 @@ export class InitialComponent implements OnInit, AfterContentChecked, AfterViewI
       data => {
         this.api.generateDefaultMesh(this.productView.product.ID_PROD).subscribe(
           (resp: ViewMesh) => {
-            this.initMeshView(resp);
+            this.refreshView();
           },
           err => {
             console.log(err);
@@ -188,7 +301,7 @@ export class InitialComponent implements OnInit, AfterContentChecked, AfterViewI
         );
       },
       err => {
-
+        this.laddaGeneratingMesh = false;
       },
       () => {
         this.laddaGeneratingMesh = false;
@@ -208,15 +321,12 @@ export class InitialComponent implements OnInit, AfterContentChecked, AfterViewI
       initTemp: this.meshView.productIsoTemp
     }).subscribe(
       (resp) => {
-        console.log(resp);
         this.laddaInitializingTemp = false;
       },
       (err) => {
-        console.log(err);
         this.laddaInitializingTemp = false;
       },
       () => {
-        console.log('call init temp finished');
         this.laddaInitializingTemp = false;
       }
     );
@@ -227,13 +337,21 @@ export class InitialComponent implements OnInit, AfterContentChecked, AfterViewI
   }
 
   saveProductInitTemp() {
-    this.isoTempEditModal.hide();
-    if (!this.productTempForm.flagIsoTemp) {
-      swal('Warning', 'Feature of non-isothermal product init temperature is not yet implement!', 'warning');
-      this.productTempForm.flagIsoTemp = true;
+    console.log(this.productTempForm.initTemp);
+    if (this.productTempForm.flagIsoTemp && (isNaN(this.productTempForm.initTemp) || this.productTempForm.initTemp == null)) {
+      swal('Error', 'Please define initial temperature for the product!', 'error');
       return false;
     }
-    this.meshView.productIsoTemp = this.productTempForm.initTemp;
+    this.isoTempEditModal.hide();
+    if (!this.productTempForm.flagIsoTemp) {
+      this.productView.product.PROD_ISO = 0;
+      this.productTempForm.initTemp = null;
+      this.meshView.productIsoTemp = null;
+    } else {
+      this.meshView.productIsoTemp = this.productTempForm.initTemp;
+      this.productView.product.PROD_ISO = 1;
+      this.initTemperature();
+    }
   }
 
 }

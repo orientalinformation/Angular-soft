@@ -50,8 +50,10 @@ export class ComponentComponent implements OnInit {
   public selectComponent: VComponent;
   public filterString = '';
   public laddaIsCalculating = false;
+  public laddaIsFreeze = false;
   public compenths: Array<Compenth>;
   public dataCompenth: Compenth;
+  public total = 0;
 
   public generatedData: {
     isCalculated?: boolean,
@@ -65,7 +67,7 @@ export class ComponentComponent implements OnInit {
   ngOnInit() {
     this.activePageComponent = 'new';
     this.isLoading = true;
-    this.getDataComponent();
+    this.getDataComponent(0);
     this.getMyComponent();
     // this.generatedData = JSON.parse(localStorage.getItem('generatedData'));
   }
@@ -91,9 +93,9 @@ export class ComponentComponent implements OnInit {
     dataGen.style.display = 'none';
   }
 
-  getDataComponent() {
+  getDataComponent(compfamily) {
     this.isLoading = true;
-   this.apiReference.getDataComponent().subscribe(
+   this.apiReference.getDataComponent(compfamily).subscribe(
      data => {
       this.dataComponent = data;
       console.log(data);
@@ -106,6 +108,21 @@ export class ComponentComponent implements OnInit {
 
      }
    );
+  }
+
+  changCompFamily(compfamily) {
+    this.apiReference.getDataComponent(compfamily).subscribe(
+      data => {
+        this.dataComponent = data;
+        this.isLoading = false;
+      },
+      err => {
+        this.isLoading = false;
+      },
+      () => {
+
+      }
+    );
   }
 
   getMyComponent() {
@@ -161,7 +178,7 @@ export class ComponentComponent implements OnInit {
             if (response === 1) {
               this.toastr.success('Delete component', 'successfully');
             } else {
-              swal('Oops..', 'Delete component error!', 'error');
+              swal('Oops..', 'Delete component', 'error');
             }
           },
           err => {
@@ -285,6 +302,7 @@ export class ComponentComponent implements OnInit {
       SALT: comp.SALT,
       NON_FROZEN_WATER: comp.NON_FROZEN_WATER,
       release: this.dataComponent.release,
+      COMP_RELEASE: comp.COMP_RELEASE,
       Temperatures: this.fieldArray,
     }).subscribe(
       response => {
@@ -438,7 +456,7 @@ export class ComponentComponent implements OnInit {
   }
 
   runCalculateFreeze(idComp) {
-    this.laddaIsCalculating = true;
+    this.laddaIsFreeze = true;
     this.apiReference.calculateFreeze({
       PRODUCT_TYPE: this.dataComponent.PRODUCT_TYPE,
       SUB_TYPE: this.dataComponent.SUB_TYPE,
@@ -461,7 +479,7 @@ export class ComponentComponent implements OnInit {
       ID_COMP: idComp
     }).subscribe(
       response => {
-        this.laddaIsCalculating = false;
+        this.laddaIsFreeze = false;
         let success = true;
 
         if (response === 2) {
@@ -487,10 +505,10 @@ export class ComponentComponent implements OnInit {
         }
       },
       err => {
-        this.laddaIsCalculating = false;
+        this.laddaIsFreeze = false;
       },
       () => {
-        this.laddaIsCalculating = false;
+        this.laddaIsFreeze = false;
       }
     );
   }

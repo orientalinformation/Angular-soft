@@ -135,10 +135,10 @@ export class OpenStudyComponent implements OnInit, AfterViewInit {
     const studyName = this.name;
         // console.log(studyName);
         console.log(this.name);
-    this.api.saveStudyAs(
-      {id: this.studyID,
-      name: this.name}
-    ).subscribe(
+    this.api.saveStudyAs({
+      id: this.studyID,
+      name: this.name
+    }).subscribe(
       (data: Study) => {
         this.modalSaveAs.hide();
         this.refrestListStudies();

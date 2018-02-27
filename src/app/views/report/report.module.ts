@@ -6,17 +6,16 @@ import { ReportConfigComponent } from './report-config/report-config.component';
 import { LayoutComponent } from './layout/layout.component';
 
 import { TranslateModule } from '@ngx-translate/core';
-import { jqxTabsComponent } from 'jqwidgets-framework/jqwidgets-ts/angular_jqxtabs';
 import { SharedModule } from '../../shared/shared.module';
-import { FormsModule } from '@angular/forms';
+import { ModalModule } from 'ngx-bootstrap/modal';
 
 @NgModule({
   imports: [
     ReportRoutingModule,
     CommonModule,
-    FormsModule,
     SharedModule,
-    TranslateModule.forChild()
+    TranslateModule.forChild(),
+    ModalModule.forRoot()
   ],
   declarations: [
     ReportConfigComponent,

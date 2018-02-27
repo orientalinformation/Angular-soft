@@ -7,7 +7,7 @@
         <button class="btn btn-outline-primary btn-sm" (click)="loadheadExchage()" [class.active]="activePage == 'heatExchange'">{{'Heat Exchange'|translate}}</button>
         <button class="btn btn-outline-primary btn-sm" (click)="loadProductSection()" [class.active]="activePage == 'productSection'">{{'Product Section'|translate}}</button>
         <button class="btn btn-outline-primary btn-sm" (click)="loadTimeBased()" [class.active]="activePage == 'timeBased'">{{'Time Based'|translate}}</button>
-        <button class="btn btn-outline-primary btn-sm" (click)="loadOutlines2d()" [class.active]="activePage == 'outlines2d'">{{'2D Outlines'|translate}}</button>
+        <button class="btn btn-outline-primary btn-sm" *ngIf="shape != 1 && shape !=6" (click)="loadOutlines2d()" [class.active]="activePage == 'outlines2d'">{{'2D Outlines'|translate}}</button>
       </div>
     </div>
 
@@ -25,7 +25,7 @@
                 <div class="col-md-4">
                   <select name="" [(ngModel)]="selectedEquip" (ngModelChange)="changeEquipment()" class="form-control">
                     <ng-container *ngFor="let equip of outputProductChartList">
-                    <option *ngIf="equip" [value]="equip.ID_STUDY_EQUIPMENTS">{{equip.EQUIP_NAME}}</option>
+                    <option *ngIf="equip" [value]="equip.ID_STUDY_EQUIPMENTS">{{equip.displayName}}</option>
                     </ng-container>
                   </select>
                 </div>
@@ -137,7 +137,7 @@
             </div>
             <div class="row form-group" style="margin-top:30px">
               <div class="col-md-12 text-center">
-                <button class="btn btn-success">Save</button>
+                <button class="btn btn-success" (click)="savePoint()">Save</button>
               </div>
             </div>
             <div class="text-center" style="padding-top:15px">
@@ -152,7 +152,7 @@
           <tab>
             <ng-template tabHeading><i class="icon-graph"></i> {{'Curve'|translate}}</ng-template>
             <h5 class="text-danger" style="font-weight:600">{{'Curve'|translate}}</h5>
-            <div class="text-center" *ngIf="outputProductChart"><h4 style="color:#f00">{{outputProductChart.EQUIP_NAME}}</h4></div>
+            <div class="text-center" *ngIf="outputProductChart"><h4 style="color:#f00">{{outputProductChart.displayName}}</h4></div>
             <div class="chart-wrapper" *ngIf="heatExchangeChartData" style="width:70%;margin:auto">
               <canvas #heatExchangeChart class="chart" baseChart
                 [datasets]="heatExchangeChartData"
@@ -186,7 +186,7 @@
       </div>
       <div id="productSection" style="display:none;position:relative">
         <div class="text-center" id="showLoaderProductSection"></div>
-        <div class="text-center" *ngIf="outputProductChart"><h4 style="color:#f00">{{outputProductChart.EQUIP_NAME}}</h4></div>
+        <div class="text-center" *ngIf="outputProductChart"><h4 style="color:#f00">{{outputProductChart.displayName}}</h4></div>
         <h5 class="text-danger" style="font-weight:600">{{'Select'|translate}}</h5>
         <div class="row">
           <div class="col-md-10" style="margin-top:80px">
@@ -272,7 +272,7 @@
           <tab>
             <ng-template tabHeading><i class="icon-graph"></i> {{'Curve'|translate}}</ng-template> 
             <h5 class="text-danger" style="font-weight:600">{{'Curve'|translate}}</h5>
-            <div class="text-center" *ngIf="outputProductChart"><h4 style="color:#f00">{{outputProductChart.EQUIP_NAME}}</h4></div>
+            <div class="text-center" *ngIf="outputProductChart"><h4 style="color:#f00">{{outputProductChart.displayName}}</h4></div>
             <div class="chart-wrapper" *ngIf="timeBasedChartData" style="width:90%;margin:auto">
               <canvas class="chart" baseChart
                 [datasets]="timeBasedChartData"
@@ -324,8 +324,8 @@
         </tabset>
       </div>
       <div id="outlines2d" style="display:none;position:relative">
-        <div class="text-center" id="showLoaderOutline"></div>
-        <div class="text-center form-group" *ngIf="outputProductChart"><h4 style="color:#f00">{{outputProductChart.EQUIP_NAME}}</h4></div>
+        <div *ngIf="loadProductChart == false" class="text-center" id="showLoaderOutline"></div>
+        <div class="text-center form-group" *ngIf="outputProductChart"><h4 style="color:#f00">{{outputProductChart.displayName}}</h4></div>
         <div class="row" *ngIf="symbol">
           <div class="col-md-4">
             <div class="row">
@@ -333,7 +333,7 @@
                 {{'Temperature Step'|translate}}
               </label>
               <div class="col-md-4">
-                <input type="text" class="form-control" value="3">
+                <input type="text" class="form-control" id="temperatureStep" [(ngModel)]="temperatureStep">
               </div>
               <label class="col-md-2 col-form-label">({{symbol.temperatureSymbol}})</label>
             </div>
@@ -344,7 +344,7 @@
                 {{'Temperature Min'|translate}}
               </label>
               <div class="col-md-4">
-                <input type="text" class="form-control" value="3">
+                <input type="text" class="form-control" id="temperatureMin" [(ngModel)]="temperatureMin">
               </div>
               <label class="col-md-2 col-form-label">({{symbol.temperatureSymbol}})</label>
             </div>
@@ -355,15 +355,15 @@
                 {{'Temperature Max'|translate}}
               </label>
               <div class="col-md-4">
-                <input type="text" class="form-control" value="3">
+                <input type="text" class="form-control" id="temperatureMax" [(ngModel)]="temperatureMax">
               </div>
               <label class="col-md-2 col-form-label">({{symbol.temperatureSymbol}})</label>
             </div>
           </div>
         </div>
-        <p class="text-primary text-center">{{'The bounds of the interval temperature must be outside the minimum and maximum temperatures reached by the product. Each of these bounds must be a multiple of the temperature step'|translate}}</p>
+        <p class="text-primary">{{'The bounds of the interval temperature must be outside the minimum and maximum temperatures reached by the product. Each of these bounds must be a multiple of the temperature step'|translate}}</p>
         <div class="clearfix form-group">
-          <button class="btn btn-primary pull-right">{{'Refesh'|translate}}</button>
+          <button class="btn btn-primary pull-right" (click)="refreshStaticTemp()">{{'Refesh'|translate}}</button>
         </div>
         <div class="row">
           <div class="col-md-4 text-center">
@@ -438,7 +438,7 @@
               </div>
             </div>
             <div class="col-md-6">
-              <div [chart]="chart2D"></div>
+              <div id="contourChart"></div>
             </div>
           </div>
         </div>

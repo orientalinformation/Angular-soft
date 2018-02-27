@@ -8,6 +8,7 @@ import { DashboardLayoutComponent } from './layouts/dashboard-layout/dashboard-l
 import { NoStudyGuard } from './guards/no-study.guard';
 import { ProfileLayoutComponent } from './layouts/profile-layout/profile-layout.component';
 import { AdminLayoutComponent } from './layouts/admin-layout/admin-layout.component';
+import { PreloadAllModules } from '@angular/router';
 
 
 const routes: Routes = [
@@ -108,7 +109,7 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes, { useHash: true})],
+  imports: [RouterModule.forRoot(routes, { useHash: true, preloadingStrategy: PreloadAllModules})],
   exports: [RouterModule]
 })
 export class AppRoutingModule { }

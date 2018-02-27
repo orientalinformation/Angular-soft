@@ -1,531 +1,1442 @@
-<div class="container">
-  <div class="card product-container">
-    <div class="card-header">
-      <strong>{{ 'HEAT BANLANCE' | translate }}</strong>
-    </div>
-    <div class="card-body">
-      <strong style="padding:10px;">Customisation</strong>
-      <table class="table table-bordered table-sm" style="margin-top:10px;">
-        <tr>
-          <td>
-            <form action="" class="form-horizontal" style="margin:10px 0px 0px 10px;">
-              <div class="form-group row">
-                <strong class="col-md-3">Customer</strong>
-              </div>
-              <div class="form-group row">
-                <p class="col-md-4">Company name</p>
-                <div class="col-md"> 
-                  <input type="text" name="refContRepDestSurname" id="" class="form-control" style="height:30px;">
+<div class="container" *ngIf="!isLoading">
+  <div *ngIf="checkcontrol">
+    <div class="card product-container">
+        <div class="card-header">
+          <strong>{{ 'HEAT BANLANCE' | translate }}</strong>
+        </div>
+        <div class="card-body" *ngIf="report">
+          <strong style="padding:10px;">{{ 'Customisation' | translate }}</strong>
+          <table class="table table-bordered table-sm" style="margin-top:10px;">
+            <tr>
+              <td>
+                <div class="form-group row">
+                  <strong class="col-md-3">{{'Customer' | translate}}</strong>
                 </div>
-              </div>
-              <div class="form-group row">
-                <p class="col-md-4">Surname / Name</p>
-                <div class="col-md"> 
-                  <input type="text" name="refContRepDestName" id="" class="form-control"style="height:30px;">
-                </div>
-              </div>
-              <div class="form-group row">
-                <p class="col-md-4">Function</p>
-                <div class="col-md"> 
-                  <input type="text" name="refContRepDestFunction" id="" class="form-control"style="height:30px;">
-                </div>
-              </div>
-              <div class="form-group row">
-                <p class="col-md-4">Contact</p>
-                <div class="col-md"> 
-                  <input type="text" name="refContRepDestCoord" id="" class="form-control"style="height:30px;">
-                </div>
-              </div>
-            </form>
-          </td>
-          <td>
-            <form action="" class="form-horizontal"style="margin:10px 0px 0px 10px;">
-              <div class="form-group row">
-                <strong class="col-md-4">Study realized by</strong>
-              </div>
-              <div class="form-group row">
-                <p class="col-md-4">Company name</p>
-                <div class="col-md"> 
-                  <input type="text" name="refContRepWriterSurname" id="" class="form-control" style="height:30px;">
-                </div>
-              </div>
-              <div class="form-group row">
-                <p class="col-md-4">Surname / Name</p>
-                <div class="col-md"> 
-                  <input type="text" name="refContRepWriterName" id="" class="form-control"style="height:30px;">
-                </div>
-              </div>
-              <div class="form-group row">
-                <p class="col-md-4">Function</p>
-                <div class="col-md"> 
-                  <input type="text" name="refContRepWriterFunction" id="" class="form-control"style="height:30px;">
-                </div>
-              </div>
-              <div class="form-group row">
-                <p class="col-md-4">Contact</p>
-                <div class="col-md"> 
-                  <input type="text" name="refContRepWriterCoord" id="" class="form-control"style="height:30px;">
-                </div>
-              </div>
-            </form>
-          </td>
-        </tr>
-      </table>
-      <table class="table table-bordered table-sm">
-        <tr>
-          <td align="center" width="25%" ><strong>Customer's logo</strong></td>
-          <td align="center" width="25%"><strong>First page image</strong></td>
-          <td align="center" width="50%"><strong>Last page comment</strong></td>
-        </tr>
-        <tr>
-          <td align="center">
-              <img src="" width="100" height="100"><br><br>
-              <button class="btn btn-primary btn-sm">Change</button>
-          </td>
-          <td align="center">
-            <img src="" width="100" height="100"><br><br>
-            <button class="btn btn-primary btn-sm">Change</button>
-          </td>
-          <td align="center" valign="center">
-            <textarea name="refContRepReportComment" id="" cols="50" rows="6"></textarea>
-          </td>
-        </tr>
-      </table>
-      <strong style="padding:5px;"> Input data</strong>
-      <table class="table table-bordered table-sm" style="margin-top:10px;">
-        <tr>
-          <td>
-            <strong>Product</strong><br>
-            <label class="form-checkbox-label"style="padding:10px 0px 0px 20px;">
-              <label class="switch switch-icon switch-primary-outline-alt">
-                <input type="checkbox" class="switch-input" name="refContRepProdList" checked>
-                <span class="switch-label" data-on="&#xf00c;" data-off="&#xf00d;"></span>
-                <span class="switch-handle"></span>
-              </label>
-              Components list
-            </label><br>
-            <label class="form-checkbox-label"style="padding:10px 0px 0px 20px;">
-              <label class="switch switch-icon switch-primary-outline-alt">
-                <input type="checkbox" class="switch-input" name="refContRepProd3D" checked>
-                <span class="switch-label" data-on="&#xf00c;" data-off="&#xf00d;"></span>
-                <span class="switch-handle"></span>
-              </label>
-              Product 3D
-            </label>
-          </td>
-          <td>
-            <strong>Equipment</strong><br>
-            <label class="form-checkbox-label" style="padding:10px 0px 0px 20px;">
-              <label class="switch switch-icon switch-primary-outline-alt">
-                <input type="checkbox" class="switch-input" name="refContRepEquipList" checked>
-                <span class="switch-label" data-on="&#xf00c;" data-off="&#xf00d;"></span>
-                <span class="switch-handle"></span>
-              </label>
-              Equipment list
-            </label><br>
-            <label class="form-checkbox-label"style="padding:10px 0px 0px 20px;">
-              <label class="switch switch-icon switch-primary-outline-alt">
-                <input type="checkbox" class="switch-input" name="refContRepLayout" checked>
-                <span class="switch-label" data-on="&#xf00c;" data-off="&#xf00d;"></span>
-                <span class="switch-handle"></span>
-              </label>
-              Belt or shelves layout
-            </label>
-          </td>
-          <td>
-            <strong>Other inputs</strong><br>
-            <label class="form-checkbox-label"style="padding:10px 0px 0px 20px;">
-              <label class="switch switch-icon switch-primary-outline-alt">
-                <input type="checkbox" class="switch-input" name="refContRepCustomer" checked>
-                <span class="switch-label" data-on="&#xf00c;" data-off="&#xf00d;"></span>
-                <span class="switch-handle"></span>
-              </label>
-              Production
-            </label><br>
-            <label class="form-checkbox-label"style="padding:10px 0px 0px 20px;">
-              <label class="switch switch-icon switch-primary-outline-alt" >
-                <input type="checkbox" class="switch-input" name="refContRepPacking" checked>
-                <span class="switch-label" data-on="&#xf00c;" data-off="&#xf00d;"></span>
-                <span class="switch-handle"></span>
-              </label>
-              Packing data
-            </label><br>
-            <label class="form-checkbox-label"style="padding:10px 0px 0px 20px;">
-              <label class="switch switch-icon switch-primary-outline-alt">
-                <input type="checkbox" class="switch-input" name="refContRepPipeLine" checked>
-                <span class="switch-label" data-on="&#xf00c;" data-off="&#xf00d;"></span>
-                <span class="switch-handle"></span>
-              </label>
-              Pipeline Elements
-            </label>
-          </td>
-        </tr>
-      </table>
-      <strong style="padding:5px;">Calculation Output</strong>
-      <table class="table table-bordered table-sm" style="margin-top:10px;">
-        <tr>
-          <td colspan="11"><strong>Consumption & Prices</strong></td>
-        </tr>
-        <tr>
-          <td align="center" style="vertical-align:middle">
-            Overall Cryogen Consumption Ratio (product + equipment and pipeline losses) Unit of Cryogen, per piece of product.
-            (kg)
-          </td>
-          <td align="center" style="vertical-align:middle">
-            Total Cryogen Consumption (product + equipment and pipeline losses).(kg/kg)
-          </td>
-          <td align="center" style="vertical-align:middle">
-            Specific Cryogen Consumption Ratio (product only) Unit of Cryogen, per unit weight of product.(kg/kg)
-          </td>
-          <td align="center" style="vertical-align:middle">
-            Total Cryogen Consumption per hour (kg)
-          </td>
-          <td align="center" style="vertical-align:middle">
-            Total Cryogen Consumption per day (kg)
-          </td>
-          <td align="center" style="vertical-align:middle">
-            Total Cryogen Consumption per week (kg)
-          </td>
-          <td align="center" style="vertical-align:middle">
-            Total Cryogen Consumption per month (kg)
-          </td>
-          <td align="center" style="vertical-align:middle">
-            Total Cryogen Consumption per year (kg)
-          </td>
-          <td align="center" style="vertical-align:middle">
-            Equipment Cryogen Consumption (kg)	
-          </td>
-          <td align="center" style="vertical-align:middle">
-            Pipeline consumption (kg)
-          </td>
-          <td align="center" style="vertical-align:middle">
-            Tank losses (kg)
-          </td>
-        </tr>
-        <tr>
-          <td align="center">
-            <label class="custom-control custom-checkbox" style="margin-left:1.5em" >
-              <input type="checkbox" class="custom-control-input" name="refContRepConsOverall" id="" checked>
-              <span class="custom-control-indicator"></span>
-            </label>
-          </td>
-          <td align="center">
-            <label class="custom-control custom-checkbox" style="margin-left:1.5em" >
-              <input type="checkbox" class="custom-control-input" name="refContRepConsTotal" id="">
-              <span class="custom-control-indicator"></span>
-            </label>
-          </td>
-          <td align="center">
-            <label class="custom-control custom-checkbox" style="margin-left:1.5em" >
-              <input type="checkbox" class="custom-control-input" name="refContRepConsSpecific" id="">
-              <span class="custom-control-indicator"></span>
-            </label>
-          </td>
-          <td align="center">
-            <label class="custom-control custom-checkbox" style="margin-left:1.5em" >
-              <input type="checkbox" class="custom-control-input" name="refContRepConsHour" id="">
-              <span class="custom-control-indicator"></span>
-            </label>
-          </td>
-          <td align="center">
-            <label class="custom-control custom-checkbox" style="margin-left:1.5em" >
-              <input type="checkbox" class="custom-control-input" name="refContRepConsDay" id="">
-              <span class="custom-control-indicator"></span>
-            </label>
-          </td>
-          <td align="center">
-            <label class="custom-control custom-checkbox" style="margin-left:1.5em" >
-              <input type="checkbox" class="custom-control-input" name="refContRepConsWeek" id="">
-              <span class="custom-control-indicator"></span>
-            </label>
-          </td>
-          <td align="center">
-            <label class="custom-control custom-checkbox" style="margin-left:1.5em" >
-              <input type="checkbox" class="custom-control-input" name="refContRepConsMonth" id="">
-              <span class="custom-control-indicator"></span>
-            </label>
-          </td>
-          <td align="center">
-            <label class="custom-control custom-checkbox" style="margin-left:1.5em" >
-              <input type="checkbox" class="custom-control-input" name="refContRepConsYear" id="">
-              <span class="custom-control-indicator"></span>
-            </label>
-          </td>
-          <td align="center">
-            <label class="custom-control custom-checkbox" style="margin-left:1.5em" >
-              <input type="checkbox" class="custom-control-input" name="refContRepConsEquip" id="">
-              <span class="custom-control-indicator"></span>
-            </label>
-          </td>
-          <td align="center">
-            <label class="custom-control custom-checkbox" style="margin-left:1.5em" >
-              <input type="checkbox" class="custom-control-input" name="refContRepConsPipe" id="">
-              <span class="custom-control-indicator"></span>
-            </label>
-          </td>
-          <td align="center">
-            <label class="custom-control custom-checkbox" style="margin-left:1.5em" >
-              <input type="checkbox" class="custom-control-input" name="refContRepConsTank" id="">
-              <span class="custom-control-indicator"></span>
-            </label>
-          </td>
-        </tr>
-      </table>
-      <table class="table table-bordered table-sm">
-        <tr>
-          <td>
-            <form class="form form-horizontal">
-              <div class="form-group row">
-                <strong class="col-md-3">Sizing & Thermal Results</strong>
-              </div>
-              <div class="form-group row">
-                <div class="col-md-4">
-                  <label class="form-checkbox-label"style="margin-left:20px;">
-                    <label class="switch switch-icon switch-primary-outline-alt">
-                      <input type="checkbox" class="switch-input" name="refContRepSizingValuesChosen" checked>
-                      <span class="switch-label" data-on="&#xf00c;" data-off="&#xf00d;"></span>
-                      <span class="switch-handle"></span>
-                    </label>
-                    Values (Chosen product flowrate)
-                  </label>
-                </div>
-                <div class="col-md-4">
-                  <label class="form-checkbox-label"style="margin-left:20px;">
-                    <label class="switch switch-icon switch-primary-outline-alt">
-                      <input type="checkbox" class="switch-input" name="refContRepSizingValuesMax" checked>
-                      <span class="switch-label" data-on="&#xf00c;" data-off="&#xf00d;"></span>
-                      <span class="switch-handle"></span>
-                    </label>
-                    Values (Maximum product flowrate)
-                  </label>
-                </div>
-                <div class="col-md-4">
-                  <label class="form-checkbox-label"style="margin-left:20px;">
-                    <label class="switch switch-icon switch-primary-outline-alt">
-                      <input type="checkbox" class="switch-input"  name="refContRepSizingGraphe" checked>
-                      <span class="switch-label" data-on="&#xf00c;" data-off="&#xf00d;"></span>
-                      <span class="switch-handle"></span>
-                    </label>
-                    Graph
-                  </label>
-                </div>
-              </div>
-            </form>
-          </td>
-        </tr>
-      </table>
-      <table class="table table-bordered table-sm">
-        <tr>
-          <td>
-            <form class="form form-horizontal">
-              <div class="form-group row">
-                <strong class="col-md-3"> Enthalpies</strong>
-              </div>
-              <div class="form-group row">
-                <div class="col-md-4">
-                  <label class="form-checkbox-label"style="margin-left:20px;">
-                    <label class="switch switch-icon switch-primary-outline-alt">
-                      <input type="checkbox" class="switch-input" checked>
-                      <span class="switch-label" data-on="&#xf00c;" data-off="&#xf00d;"></span>
-                      <span class="switch-handle"></span>
-                    </label>
-                    Values 
-                  </label>
-                </div>
-                <div class="col-md-4">
-                  <label class="form-checkbox-label"style="margin-left:20px;">
-                    <label class="switch switch-icon switch-primary-outline-alt">
-                      <input type="checkbox" class="switch-input" checked>
-                      <span class="switch-label" data-on="&#xf00c;" data-off="&#xf00d;"></span>
-                      <span class="switch-handle"></span>
-                    </label>
-                    Graph
-                  </label>
-                </div>
-              </div>
-              <p style="margin-left:10px;">Number of samples <input type="text" name="" id=""></p>
-            </form>
-          </td>
-          <td>
-            <form class="form form-horizontal">
-              <div class="form-group row">
-                <strong class="col-md-4">Product Section</strong>
-              </div>
-              <div class="form-group row">
-                <div class="col-md-4">
-                  <label class="form-checkbox-label"style="margin-left:20px;">
-                    <label class="switch switch-icon switch-primary-outline-alt">
-                      <input type="checkbox" class="switch-input" checked>
-                      <span class="switch-label" data-on="&#xf00c;" data-off="&#xf00d;"></span>
-                      <span class="switch-handle"></span>
-                    </label>
-                    Values 
-                  </label>
-                </div>
-                <div class="col-md-4">
-                  <label class="form-checkbox-label"style="margin-left:20px;">
-                    <label class="switch switch-icon switch-primary-outline-alt">
-                      <input type="checkbox" class="switch-input" checked>
-                      <span class="switch-label" data-on="&#xf00c;" data-off="&#xf00d;"></span>
-                      <span class="switch-handle"></span>
-                    </label>
-                    Graph
-                  </label>
-                </div>
-              </div>
-              <p style="margin-left:10px;"> Number of samples <input type="text" name="" id=""></p>
-            </form>
-          </td>
-        </tr>
-        <tr>
-          <td>
-            <form class="form form-horizontal">
-              <div class="form-group row">
-                <strong class="col-md-3">Time Based</strong>
-              </div>
-              <div class="form-group row">
-                <div class="col-md-4">
-                  <label class="form-checkbox-label"style="margin-left:20px;">
-                    <label class="switch switch-icon switch-primary-outline-alt">
-                      <input type="checkbox" class="switch-input" checked>
-                      <span class="switch-label" data-on="&#xf00c;" data-off="&#xf00d;"></span>
-                      <span class="switch-handle"></span>
-                    </label>
-                    Values 
-                  </label>
-                </div>
-                <div class="col-md-4">
-                  <label class="form-checkbox-label"style="margin-left:20px;">
-                    <label class="switch switch-icon switch-primary-outline-alt">
-                      <input type="checkbox" class="switch-input" checked>
-                      <span class="switch-label" data-on="&#xf00c;" data-off="&#xf00d;"></span>
-                      <span class="switch-handle"></span>
-                    </label>
-                    Graph
-                  </label>
-                </div>
-              </div>
-              <p style="margin-left:10px;">Number of samples <input type="text" name="" id=""></p>
-            </form>
-          </td>
-          <td>
-            <form class="form form-horizontal">
-              <div class="form-group row">
-                <strong class="col-md-4">Contour</strong>
-              </div>
-              <div class="form-group row">
-                <div class="col-md-4">
-                  <label class="form-checkbox-label"style="margin-left:20px;">
-                    <label class="switch switch-icon switch-primary-outline-alt">
-                      <input type="checkbox" class="switch-input" checked>
-                      <span class="switch-label" data-on="&#xf00c;" data-off="&#xf00d;"></span>
-                      <span class="switch-handle"></span>
-                    </label>
-                  </label>
-                </div>
-              </div>
-              <div class="form-group row" style="margin-left:10px;">
-                <div class="col-md-4">
-                  Temperature step
-                </div>
-                <div class="col-md">
-                  <input type="text" name="" id="" style="width:80px;">
-                  <input type="text" name="" id="" style="width:80px;" disabled>
-                </div>
-              </div>
-              <div class="form-group row"style="margin-left:10px;">
-                <div class="col-md-4">
-                  Temperature Min (°C)
-                </div>
-                <div class="col-md">
-                  <input type="text" name="" id="" style="width:80px;">
-                  <input type="text" name="" id="" style="width:80px;"disabled>
-                </div>
-              </div>
-              <div class="form-group row"style="margin-left:10px;">
-                <div class="col-md-4">
-                  Temperature Max (°C)
+                <div class="form-group row">
+                  <p class="col-md-4">{{'Company name' | translate}}</p>
+                  <div class="col-md"> 
+                    <input type="text" [(ngModel)]="report.DEST_SURNAME" class="form-control">
                   </div>
-                  <div class="col-md">
-                    <input type="text" name="" id="" style="width:80px;">
-                    <input type="text" name="" id="" style="width:80px;" disabled>
                 </div>
-              </div>
-            </form>
-          </td>
-        </tr>
-      </table>
-      <table class="table table-bordered table-sm">
-        <tr>
-          <td colspan="3">
-              <strong>Following-up Point (mm)</strong>
-              <button class="btn btn-primary btn-sm" style="float:right;margin-right:50px;"> Selected points</button>
-          </td>
-        </tr>
-        <tr>
-          <td width="50%">
-            <strong >Points</strong>
-            <form action="" class="form form-horizontal" style="padding:10px ;">
-              <div class="form-group row">
-                <div class="col-md-2">Top:</div>
-                <div class="col-md-3">1 <select name="" id="" style="width:80px;"></select></div>
-                <div class="col-md-3">2 <select name="" id="" style="width:80px;"></select></div>
-                <div class="col-md-3">3 <select name="" id="" style="width:50px;"></select></div>
-              </div>
-              <div class="form-group row">
-                <div class="col-md-2">Internal:</div>
-                <div class="col-md-3">1 <select name="" id="" style="width:80px;"></select></div>
-                <div class="col-md-3">2 <select name="" id="" style="width:80px;"></select></div>
-                <div class="col-md-3">3 <select name="" id="" style="width:50px;"></select></div>
-              </div>
-              <div class="form-group row">
-                <div class="col-md-2">Bottom:</div>
-                <div class="col-md-3">1 <select name="" id="" style="width:80px;"></select></div>
-                <div class="col-md-3">2 <select name="" id="" style="width:80px;"></select></div>
-                <div class="col-md-3">3 <select name="" id="" style="width:50px;"></select></div>
-              </div>
-            </form>
-          </td>
-          <td width="35%">
-            <strong >Axes</strong>
-            <form action="" class="form form-horizontal" style="padding:10px ;">
-              <div class="form-group row">
-                <div class="col-md-3">Axes 1:</div>
-                <div class="col-md-5">2 <select name="" id="" style="width:70px;"></select></div>
-                <div class="col-md-4">3 <select name="" id="" style="width:50px;"></select></div>
-              </div>
-              <div class="form-group row">
-                <div class="col-md-3">Axes 2:</div>
-                <div class="col-md-5">1 <select name="" id="" style="width:70px;"></select></div>
-                <div class="col-md-4">3 <select name="" id="" style="width:50px;"></select></div>
-              </div>
-              
-            </form>
-          </td>
-          <td width="15%">
-            <strong>  Slices </strong>
-            <div class="form-group row"></div>
-            <div class="form-group row"></div>
-            <div class="form-group row"></div>
-            <div class="form-group row">
-              <p class="col-md-6">Slice 12:</p>
-              <p class="col-md-4"> <select name="" id="" style="width:50px;"></select></p>
-            </div>
-          </td>
-        </tr>
-      </table>
-      <button class="btn btn-primary" style="float:right;margin-right:20px;">Generate</button>
-      <div class="btn-group" data-toggle="buttons" >
-        <label class="btn btn-secondary active">
-          <input type="radio" name="" id="" >Format
-        </label>
-        <label class="btn btn-primary">
-          <input type="radio" name="" id="" >PDF
-        </label>
-        <label class="btn btn-primary">
-          <input type="radio" name="" id="" >HTML
-        </label>
+                <div class="form-group row">
+                  <p class="col-md-4">{{'Surname / Name' | translate}}</p>
+                  <div class="col-md"> 
+                    <input type="text" [(ngModel)]="report.DEST_NAME" class="form-control">
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <p class="col-md-4">{{'Function' | translate}}</p>
+                  <div class="col-md"> 
+                    <input type="text" [(ngModel)]="report.DEST_FUNCTION" class="form-control">
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <p class="col-md-4">{{'Contact' | translate}}</p>
+                  <div class="col-md"> 
+                    <input type="text" [(ngModel)]="report.DEST_COORD" class="form-control">
+                  </div>
+                </div>
+              </td>
+              <td>
+                <div class="form-group row">
+                  <strong class="col-md-4">{{'Study realized by' | translate}}</strong>
+                </div>
+                <div class="form-group row">
+                  <p class="col-md-4">{{'Company name' | translate}}</p>
+                  <div class="col-md"> 
+                    <input type="text" [(ngModel)]="report.WRITER_SURNAME" class="form-control">
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <p class="col-md-4">{{'Surname / Name' | translate}}</p>
+                  <div class="col-md"> 
+                    <input type="text" [(ngModel)]="report.WRITER_NAME" class="form-control">
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <p class="col-md-4">{{'Function' | translate}}</p>
+                  <div class="col-md"> 
+                    <input type="text" [(ngModel)]="report.WRITER_FUNCTION" class="form-control">
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <p class="col-md-4">{{'Contact' | translate}}</p>
+                  <div class="col-md"> 
+                    <input type="text" [(ngModel)]="report.WRITER_COORD" class="form-control">
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </table>
+          <table class="table table-bordered table-sm">
+            <tr>
+              <td align="center" width="25%" ><strong>{{"Customer's logo" | translate}}</strong></td>
+              <td align="center" width="25%"><strong>{{'First page image' | translate}}</strong></td>
+              <td align="center" width="50%"><strong>{{'Last page comment' | translate}}</strong></td>
+            </tr>
+            <tr>
+              <td align="center">
+                  <img src="" width="100" height="100"><br>
+                  <button class="btn btn-primary btn-sm" style="margin-top: 0.5em;">{{'Change' | translate}}</button>
+              </td>
+              <td align="center">
+                <img src="" width="100" height="100"><br>
+                <button class="btn btn-primary btn-sm" style="margin-top: 0.5em;">{{'Change' | translate}}</button>
+              </td>
+              <td align="center" valign="center">
+                <textarea class="form-control" style="height: 125px;" [(ngModel)]="report.REPORT_COMMENT"></textarea>
+              </td>
+            </tr>
+          </table>
+          <strong style="padding:5px;"> {{'Input data' | translate}}</strong>
+          <table class="table table-bordered table-sm" style="margin-top:10px;">
+            <tr>
+              <td>
+                <strong>{{'Product' | translate}}</strong><br>
+                <label class="form-checkbox-label"style="padding:10px 0px 0px 20px;">
+                  <label class="switch switch-icon switch-primary-outline-alt">
+                    <input type="checkbox" class="switch-input" name="refContRepProdList" [(ngModel)]="report.PROD_LIST" [checked]="report.PROD_LIST == 1" value="1">
+                    <span class="switch-label" data-on="&#xf00c;" data-off="&#xf00d;"></span>
+                    <span class="switch-handle"></span>
+                  </label>
+                  {{'Components list' | translate}}
+                </label><br>
+                <label class="form-checkbox-label"style="padding:10px 0px 0px 20px;">
+                  <label class="switch switch-icon switch-primary-outline-alt">
+                    <input type="checkbox" class="switch-input" name="refContRepProd3D" [(ngModel)]="report.PROD_3D" [checked]="report.PROD_3D == 1" value="1">
+                    <span class="switch-label" data-on="&#xf00c;" data-off="&#xf00d;"></span>
+                    <span class="switch-handle"></span>
+                  </label>
+                  {{'Product 3D' | translate}}
+                </label>
+              </td>
+              <td>
+                <strong>{{'Equipment' | translate}}</strong><br>
+                <label class="form-checkbox-label" style="padding:10px 0px 0px 20px;">
+                  <label class="switch switch-icon switch-primary-outline-alt">
+                    <input type="checkbox" class="switch-input" name="refContRepEquipList" [(ngModel)]="report.EQUIP_LIST" [checked]="report.EQUIP_LIST == 1" value="1">
+                    <span class="switch-label" data-on="&#xf00c;" data-off="&#xf00d;"></span>
+                    <span class="switch-handle"></span>
+                  </label>
+                  {{'Equipment list' | translate}}
+                </label><br>
+                <label class="form-checkbox-label"style="padding:10px 0px 0px 20px;">
+                  <label class="switch switch-icon switch-primary-outline-alt">
+                    <input type="checkbox" class="switch-input" name="refContRepLayout" [(ngModel)]="report.ASSES_ECO" [checked]="report.ASSES_ECO == 1" value="1">
+                    <span class="switch-label" data-on="&#xf00c;" data-off="&#xf00d;"></span>
+                    <span class="switch-handle"></span>
+                  </label>
+                  {{'Belt or shelves layout' | translate }}
+                </label>
+              </td>
+              <td>
+                <strong>{{'Other inputs' | translate}}</strong><br>
+                <label class="form-checkbox-label"style="padding:10px 0px 0px 20px;">
+                  <label class="switch switch-icon switch-primary-outline-alt">
+                    <input type="checkbox" class="switch-input" name="refContRepCustomer" [(ngModel)]="report.REP_CUSTOMER" [checked]="report.REP_CUSTOMER == 1" value="1">
+                    <span class="switch-label" data-on="&#xf00c;" data-off="&#xf00d;"></span>
+                    <span class="switch-handle"></span>
+                  </label>
+                  {{'Production' | translate }}
+                </label><br>
+                <label class="form-checkbox-label"style="padding:10px 0px 0px 20px;">
+                  <label class="switch switch-icon switch-primary-outline-alt" >
+                    <input type="checkbox" class="switch-input" name="refContRepPacking" [(ngModel)]="study.ID_PACKING" [checked]="study.ID_PACKING > 0" [disabled]="study.ID_PACKING == 0" value="1">
+                    <span class="switch-label" data-on="&#xf00c;" data-off="&#xf00d;"></span>
+                    <span class="switch-handle"></span>
+                  </label>
+                  {{'Packing data' | translate}}
+                </label><br>
+                <label class="form-checkbox-label"style="padding:10px 0px 0px 20px;">
+                  <label class="switch switch-icon switch-primary-outline-alt" *ngIf="study.OPTION_CRYOPIPELINE != null && !study.OPTION_CRYOPIPELINE; else notPipe">
+                    <input type="checkbox" class="switch-input" name="refContRepPipeLine" [(ngModel)]="report.PIPELINE" [checked]="report.PIPELINE == 1" value="1">
+                    <span class="switch-label" data-on="&#xf00c;" data-off="&#xf00d;"></span>
+                    <span class="switch-handle"></span>
+                  </label>
+                  <ng-template #notPipe>
+                    <label class="switch switch-icon switch-primary-outline-alt">
+                      <input type="checkbox" class="switch-input" name="refContRepPipeLine" disabled value="1">
+                      <span class="switch-label" data-on="&#xf00c;" data-off="&#xf00d;"></span>
+                      <span class="switch-handle"></span>
+                    </label>
+                  </ng-template>
+                  {{'Pipeline Elements' | translate}}
+                </label>
+              </td>
+            </tr>
+          </table>
+          <strong style="padding:5px;">{{'Calculation Output' | translate}}</strong>
+          <table class="table table-bordered table-sm" style="margin-top:10px; font-size: 12px;">
+            <tr>
+              <td colspan="11"><strong>{{'Consumption & Prices' | translate}}</strong></td>
+            </tr>
+            <tr>
+              <td align="center" style="vertical-align:middle">
+                {{'Overall Cryogen Consumption Ratio (product + equipment and pipeline losses) Unit of Cryogen, per piece of product.' | translate}}
+                (kg)
+              </td>
+              <td align="center" style="vertical-align:middle">
+                {{'Total Cryogen Consumption (product + equipment and pipeline losses).' | translate}}  (kg/kg)
+              </td>
+              <td align="center" style="vertical-align:middle">
+                {{'Specific Cryogen Consumption Ratio (product only) Unit of Cryogen, per unit weight of product.' | translate }}  (kg/kg)
+              </td>
+              <td align="center" style="vertical-align:middle">
+                {{'Total Cryogen Consumption per hour' | translate }} (kg)
+              </td>
+              <td align="center" style="vertical-align:middle">
+                {{'Total Cryogen Consumption per day' | translate}} (kg)
+              </td>
+              <td align="center" style="vertical-align:middle">
+                {{'Total Cryogen Consumption per week' | translate}} (kg)
+              </td>
+              <td align="center" style="vertical-align:middle">
+                {{'Total Cryogen Consumption per month' | translate}} (kg)
+              </td>
+              <td align="center" style="vertical-align:middle">
+                {{'Total Cryogen Consumption per year' | translate }} (kg)
+              </td>
+              <td align="center" style="vertical-align:middle">
+                {{'Equipment Cryogen Consumption' | translate}} (kg)	
+              </td>
+              <td align="center" style="vertical-align:middle">
+                {{'Pipeline consumption' | translate}} (kg)
+              </td>
+              <td align="center" style="vertical-align:middle">
+                {{'Tank losses' | translate}} (kg)
+              </td>
+            </tr>
+            <tr>
+              <td align="center">
+                <label class="custom-control custom-checkbox" style="margin-left:1.5em" >
+                  <input type="checkbox" class="custom-control-input" name="refContRepConsOverall" [(ngModel)]="report.CONS_OVERALL" [checked]="report.CONS_OVERALL == 1">
+                  <span class="custom-control-indicator"></span>
+                </label>
+              </td>
+              <td align="center">
+                <label class="custom-control custom-checkbox" style="margin-left:1.5em" >
+                  <input type="checkbox" class="custom-control-input" name="refContRepConsTotal" [(ngModel)]="report.CONS_TOTAL" [checked]="report.CONS_TOTAL == 1">
+                  <span class="custom-control-indicator"></span>
+                </label>
+              </td>
+              <td align="center">
+                <label class="custom-control custom-checkbox" style="margin-left:1.5em" >
+                  <input type="checkbox" class="custom-control-input" name="refContRepConsSpecific" [(ngModel)]="report.CONS_SPECIFIC" [checked]="report.CONS_SPECIFIC == 1">
+                  <span class="custom-control-indicator"></span>
+                </label>
+              </td>
+              <td align="center">
+                <label class="custom-control custom-checkbox" style="margin-left:1.5em" >
+                  <input type="checkbox" class="custom-control-input" name="refContRepConsHour" [(ngModel)]="report.CONS_HOUR" [checked]="report.CONS_HOUR == 1" value="1">
+                  <span class="custom-control-indicator"></span>
+                </label>
+              </td>
+              <td align="center">
+                <label class="custom-control custom-checkbox" style="margin-left:1.5em" >
+                  <input type="checkbox" class="custom-control-input" name="refContRepConsDay" [(ngModel)]="report.CONS_DAY" [checked]="report.CONS_DAY == 1" value="1">
+                  <span class="custom-control-indicator"></span>
+                </label>
+              </td>
+              <td align="center">
+                <label class="custom-control custom-checkbox" style="margin-left:1.5em" >
+                  <input type="checkbox" class="custom-control-input" name="refContRepConsWeek" [(ngModel)]="report.CONS_WEEK" [checked]="report.CONS_WEEK == 1" value="1" >
+                  <span class="custom-control-indicator"></span>
+                </label>
+              </td>
+              <td align="center">
+                <label class="custom-control custom-checkbox" style="margin-left:1.5em" >
+                  <input type="checkbox" class="custom-control-input" name="refContRepConsMonth" [(ngModel)]="report.CONS_MONTH" [checked]="report.CONS_MONTH == 1" value="1">
+                  <span class="custom-control-indicator"></span>
+                </label>
+              </td>
+              <td align="center">
+                <label class="custom-control custom-checkbox" style="margin-left:1.5em" >
+                  <input type="checkbox" class="custom-control-input" name="refContRepConsYear" [(ngModel)]="report.CONS_YEAR" [checked]="report.CONS_YEAR == 1" value="1">
+                  <span class="custom-control-indicator"></span>
+                </label>
+              </td>
+              <td align="center">
+                <label class="custom-control custom-checkbox" style="margin-left:1.5em" >
+                  <input type="checkbox" class="custom-control-input" name="refContRepConsEquip" [(ngModel)]="report.CONS_EQUIP" [checked]="report.CONS_EQUIP == 1" value="1">
+                  <span class="custom-control-indicator"></span>
+                </label>
+              </td>
+              <td align="center">
+                <label class="custom-control custom-checkbox" style="margin-left:1.5em" >
+                  <input type="checkbox" class="custom-control-input" name="refContRepConsPipe" [(ngModel)]="report.CONS_PIPE" [checked]="report.CONS_PIPE == 1" value="1">
+                  <span class="custom-control-indicator"></span>
+                </label>
+              </td>
+              <td align="center">
+                <label class="custom-control custom-checkbox" style="margin-left:1.5em" >
+                  <input type="checkbox" class="custom-control-input" name="refContRepConsTank" [(ngModel)]="report.CONS_TANK" [checked]="report.CONS_TANK == 1" value="1">
+                  <span class="custom-control-indicator"></span>
+                </label>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="11">
+                <label class="custom-control custom-checkbox" style="margin-left:1.5em" >
+                  <input type="checkbox" class="custom-control-input" name="refContRepConsPie" [(ngModel)]="report.REP_CONS_PIE" [checked]="report.REP_CONS_PIE == 1" value="1">
+                  <span class="custom-control-indicator"></span>  
+                  <span style="margin-top: 0.3em;">{{'Consumption pies' | translate}}</span>
+                </label>
+              </td>
+            </tr>
+          </table>
+
+          <!-- optimum -->
+          <div *ngIf="study.CALCULATION_MODE == 3">
+            <table class="table table-bordered table-sm" style="font-size: 12px;">
+              <tr>
+                <td>
+                  <form class="form form-horizontal">
+                    <div class="form-group row">
+                      <strong class="col-md-3">{{'Sizing & Thermal Results' | translate}}</strong>
+                    </div>
+                    <div class="form-group row">
+                      <div class="col-md-4">
+                        <label class="form-checkbox-label"style="margin-left:20px;">
+                          <label class="switch switch-icon switch-primary-outline-alt">
+                            <input type="checkbox" class="switch-input" name="refContRepSizingValuesChosen" [checked]="report.isSizingValuesChosen != 0" value="1">
+                            <span class="switch-label" data-on="&#xf00c;" data-off="&#xf00d;"></span>
+                            <span class="switch-handle"></span>
+                          </label>
+                          {{'Values (Chosen product flowrate)' | translate}}
+                        </label>
+                      </div>
+                      <div class="col-md-4">
+                        <label class="form-checkbox-label"style="margin-left:20px;">
+                          <label class="switch switch-icon switch-primary-outline-alt">
+                            <input type="checkbox" class="switch-input" name="refContRepSizingValuesMax" [checked]="report.isSizingValuesMax != 0" value="16">
+                            <span class="switch-label" data-on="&#xf00c;" data-off="&#xf00d;"></span>
+                            <span class="switch-handle"></span>
+                          </label>
+                          {{'Values (Maximum product flowrate)' | translate}}
+                        </label>
+                      </div>
+                      <div class="col-md-4">
+                        <label class="form-checkbox-label"style="margin-left:20px;">
+                          <label class="switch switch-icon switch-primary-outline-alt">
+                            <input type="checkbox" class="switch-input"  name="refContRepSizingGraphe" [(ngModel)]="report.SIZING_GRAPHE" [checked]="report.SIZING_GRAPHE == 1" value="1">
+                            <span class="switch-label" data-on="&#xf00c;" data-off="&#xf00d;"></span>
+                            <span class="switch-handle"></span>
+                          </label>
+                          {{'Graph' | translate}}
+                        </label>
+                      </div>
+                    </div>
+                  </form>
+                </td>
+              </tr>
+            </table>
+            <table class="table table-bordered table-sm" *ngIf="report.isThereCompleteNumericalResults">
+              <tr>
+                <td width="40%">
+                  <div class="form-group row">
+                    <strong class="col-md-12"> {{'Enthalpies' | translate}}</strong>
+                  </div>
+                  <div class="form-group row">
+                    <div class="col-md-6">
+                      <label class="form-checkbox-label"style="margin-left:20px;">
+                        <label class="switch switch-icon switch-primary-outline-alt">
+                          <input type="checkbox" class="switch-input" [(ngModel)]="report.ENTHALPY_V" [checked]="report.ENTHALPY_V == 1" value="1">
+                          <span class="switch-label" data-on="&#xf00c;" data-off="&#xf00d;"></span>
+                          <span class="switch-handle"></span>
+                        </label>
+                        {{'Values' | translate}} 
+                      </label>
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-checkbox-label"style="margin-left:20px;">
+                        <label class="switch switch-icon switch-primary-outline-alt">
+                          <input type="checkbox" class="switch-input" [(ngModel)]="report.ENTHALPY_G" [checked]="report.ENTHALPY_G == 1" value="1">
+                          <span class="switch-label" data-on="&#xf00c;" data-off="&#xf00d;"></span>
+                          <span class="switch-handle"></span>
+                        </label>
+                        {{'Graph' | translate}}
+                      </label>
+                    </div>
+                  </div>
+                  <div class="form-group row">
+                    <label class="col-md-5 col-form-label" for="text-input">{{'Number of samples' | translate}} </label>
+                    <div class="col-md-3">
+                      <div class="input-group">
+                        <input type="text" class="form-control form-control-sm" placeholder="0.00" [(ngModel)]="report.ENTHALPY_SAMPLE">
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                    <div class="form-group row">
+                      <strong class="col-md-12">{{'Product Section' | translate}}</strong>
+                    </div>
+                    <div class="form-group row">
+                      <div class="col-md-4">
+                        <label class="form-checkbox-label"style="margin-left:20px;">
+                          <label class="switch switch-icon switch-primary-outline-alt">
+                            <input type="checkbox" class="switch-input" [(ngModel)]="report.ISOCHRONE_V" [checked]="report.ISOCHRONE_V == 1" value="1">
+                            <span class="switch-label" data-on="&#xf00c;" data-off="&#xf00d;"></span>
+                            <span class="switch-handle"></span>
+                          </label>
+                          {{'Values' | translate}} 
+                        </label>
+                      </div>
+                      <div class="col-md-4">
+                        <label class="form-checkbox-label"style="margin-left:20px;">
+                          <label class="switch switch-icon switch-primary-outline-alt">
+                            <input type="checkbox" class="switch-input" [(ngModel)]="report.ISOCHRONE_G" [checked]="report.ISOCHRONE_G == 1" value="1">
+                            <span class="switch-label" data-on="&#xf00c;" data-off="&#xf00d;"></span>
+                            <span class="switch-handle"></span>
+                          </label>
+                          {{'Graph' | translate}}
+                        </label>
+                      </div>
+                    </div>
+                    <div class="form-group row">
+                      <label class="col-md-5 col-form-label" for="text-input">{{'Number of samples' | translate}} </label>
+                      <div class="col-md-2">
+                        <div class="input-group">
+                          <input type="text" class="form-control form-control-sm" placeholder="0.00" [(ngModel)]="report.ISOCHRONE_SAMPLE">
+                        </div>
+                      </div>
+                    </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                    <div class="form-group row">
+                      <strong class="col-md-12">{{'Time Based' | translate}}</strong>
+                    </div>
+                    <div class="form-group row">
+                      <div class="col-md-6">
+                        <label class="form-checkbox-label"style="margin-left:20px;">
+                          <label class="switch switch-icon switch-primary-outline-alt">
+                            <input type="checkbox" class="switch-input" [(ngModel)]="report.ISOVALUE_V" [checked]="report.ISOVALUE_V == 1" value="1">
+                            <span class="switch-label" data-on="&#xf00c;" data-off="&#xf00d;"></span>
+                            <span class="switch-handle"></span>
+                          </label>
+                          {{'Values' | translate}} 
+                        </label>
+                      </div>
+                      <div class="col-md-6">
+                        <label class="form-checkbox-label"style="margin-left:20px;">
+                          <label class="switch switch-icon switch-primary-outline-alt">
+                            <input type="checkbox" class="switch-input" [(ngModel)]="report.ISOVALUE_G" [checked]="report.ISOVALUE_G == 1" value="1">
+                            <span class="switch-label" data-on="&#xf00c;" data-off="&#xf00d;"></span>
+                            <span class="switch-handle"></span>
+                          </label>
+                          {{'Graph' | translate}}
+                        </label>
+                      </div>
+                    </div>
+                    <div class="form-group row">
+                      <label class="col-md-5 col-form-label" for="text-input">{{'Number of samples' | translate}} </label>
+                      <div class="col-md-3">
+                        <div class="input-group">
+                          <input type="text" class="form-control form-control-sm" placeholder="0.00" [(ngModel)]="report.ISOVALUE_SAMPLE">
+                        </div>
+                      </div>
+                    </div>
+                </td>
+                <td>
+                    <div class="form-group row">
+                      <strong class="col-md-12">{{'Contour' | translate}}</strong>
+                    </div>
+                    <div class="form-group row">
+                      <div class="col-md-4" *ngIf="report.productElmt.ID_SHAPE == 1 || report.productElmt.ID_SHAPE == 6; else checkContour">
+                        <label class="form-checkbox-label"style="margin-left:20px;">
+                          <label class="switch switch-icon switch-primary-outline-alt">
+                            <input type="checkbox" class="switch-input" disabled>
+                            <span class="switch-label" data-on="&#xf00c;" data-off="&#xf00d;"></span>
+                            <span class="switch-handle"></span>
+                          </label>
+                        </label>
+                      </div>
+                      <ng-template #checkContour>
+                        <div class="col-md-4">
+                          <label class="form-checkbox-label"style="margin-left:20px;">
+                            <label class="switch switch-icon switch-primary-outline-alt">
+                              <input type="checkbox" class="switch-input" [(ngModel)]="report.CONTOUR2D_G" [checked]="report.CONTOUR2D_G == 1" value="1">
+                              <span class="switch-label" data-on="&#xf00c;" data-off="&#xf00d;"></span>
+                              <span class="switch-handle"></span>
+                            </label>
+                          </label>
+                        </div>
+                      </ng-template>
+                    </div>
+      
+                    <div class="form-group row" style="margin-left:10px;" *ngIf="report.productElmt.ID_SHAPE == 1 || report.productElmt.ID_SHAPE == 6; else checkContourTemperature">
+                      <label class="col-md-4 col-form-label" for="text-input">{{'Temperature step' | translate}} </label>
+                      <div class="col-md-2">
+                        <div class="input-group">
+                          <input type="text" class="form-control form-control-sm" placeholder="0.00" disabled>
+                        </div>
+                      </div>
+                    </div>
+                    <ng-template #checkContourTemperature>
+                      <div class="form-group row" style="margin-left:10px;" >
+                        <label class="col-md-4 col-form-label" for="text-input">{{'Temperature step' | translate}} </label>
+                        <div class="col-md-2">
+                          <div class="input-group">
+                            <input type="text" class="form-control form-control-sm" placeholder="0.00" [(ngModel)]="report.CONTOUR2D_TEMP_STEP">
+                          </div>
+                        </div>
+                        <div class="col-md-2">
+                          <div class="input-group">
+                            <input type="text" class="form-control form-control-sm" placeholder="0.00" [(ngModel)]="report.refContRep2DTempStepRef" disabled>
+                          </div>
+                        </div>
+                      </div>
+                    </ng-template>
+      
+                    <div class="form-group row" style="margin-left:10px;" *ngIf="report.productElmt.ID_SHAPE == 1 || report.productElmt.ID_SHAPE == 6; else checkContourTemperatureMin">
+                      <label class="col-md-4 col-form-label" for="text-input">{{'Temperature Min' | translate}}  ({{ report.temperatureSymbol }})</label>
+                      <div class="col-md-2">
+                        <div class="input-group">
+                          <input type="text" class="form-control form-control-sm" placeholder="0.00" disabled>
+                        </div>
+                      </div>
+                    </div>
+                    <ng-template #checkContourTemperatureMin>
+                      <div class="form-group row" style="margin-left:10px;" >
+                        <label class="col-md-4 col-form-label" for="text-input">{{'Temperature Min' | translate}}  ({{ report.temperatureSymbol }})</label>
+                        <div class="col-md-2">
+                          <div class="input-group">
+                            <input type="text" class="form-control form-control-sm" placeholder="0.00" [(ngModel)]="report.CONTOUR2D_TEMP_MIN">
+                          </div>
+                        </div>
+                        <div class="col-md-2">
+                          <div class="input-group">
+                            <input type="text" class="form-control form-control-sm" placeholder="0.00" [(ngModel)]="report.refContRep2DTempMinRef" disabled>
+                          </div>
+                        </div>
+                      </div>
+                    </ng-template>
+                    <div class="form-group row" style="margin-left:10px;" *ngIf="report.productElmt.ID_SHAPE == 1 || report.productElmt.ID_SHAPE == 6; else checkContourTemperatureMax">
+                      <label class="col-md-4 col-form-label" for="text-input">{{'Temperature Max' | translate}}  ({{ report.temperatureSymbol }})</label>
+                      <div class="col-md-2">
+                        <div class="input-group">
+                          <input type="text" class="form-control form-control-sm" placeholder="0.00" disabled>
+                        </div>
+                      </div>
+                    </div>
+                    <ng-template #checkContourTemperatureMax>
+                      <div class="form-group row" style="margin-left:10px;" >
+                        <label class="col-md-4 col-form-label" for="text-input">{{'Temperature Max' | translate}}  ({{ report.temperatureSymbol }})</label>
+                        <div class="col-md-2">
+                          <div class="input-group">
+                            <input type="text" class="form-control form-control-sm" placeholder="0.00" [(ngModel)]="report.CONTOUR2D_TEMP_MAX">
+                          </div>
+                        </div>
+                        <div class="col-md-2">
+                          <div class="input-group">
+                            <input type="text" class="form-control form-control-sm" placeholder="0.00" [(ngModel)]="report.refContRep2DTempMaxRef" disabled>
+                          </div>
+                        </div>
+                      </div>
+                    </ng-template>
+                </td>
+              </tr>
+            </table>
+            <table class="table table-bordered table-sm" *ngIf="report.isThereCompleteNumericalResults">
+              <tr>
+                <td colspan="3">
+                    <strong>{{'Following-up Point (mm)' | translate}}</strong>
+                    <button class="btn btn-primary btn-sm" style="float:right;margin-right:10px;"> {{'Selected points' | translate}}</button>
+                </td>
+              </tr>
+              <tr>
+                <td width="60%">
+                    <strong >{{'Points' | translate}}</strong>
+                    <div class="form-group row">
+                      <label class="col-md-2 col-form-label" for="text-input">Top :</label>
+                      <label class="col-md-1 col-form-label">1</label>
+                      <div class="col-md-2" *ngIf="report.productElmt.ID_SHAPE != 1 || report.productElmt.ID_SHAPE != 6; else shapeEmpty ">
+                        <div class="input-group" *ngIf="meshAxisPos">
+                          <select class="form-control form-control-sm" [(ngModel)]="report.POINT1_X">
+                            <option *ngFor="let axis of meshAxisPos.axis1" [value]="axis.MESH_AXIS_POS">{{ axis.meshAxisPosValue }}</option>
+                          </select>
+                        </div>
+                      </div>
+                      <ng-template #shapeEmpty>
+                        <div class="col-md-2">
+                          <div class="input-group">
+                            <select class="form-control form-control-sm">
+                              <option value="0">None</option>
+                            </select>
+                          </div>
+                        </div>
+                      </ng-template>
+      
+                      <label class="col-md-1 col-form-label">2</label>
+                      <div class="col-md-2">
+                        <div class="input-group" *ngIf="meshAxisPos">
+                            <select class="form-control form-control-sm" [(ngModel)]="report.POINT1_Y">
+                              <option *ngFor="let axis of meshAxisPos.axis2" [value]="axis.MESH_AXIS_POS">{{ axis.meshAxisPosValue }}</option>
+                            </select>
+                        </div>
+                      </div>
+      
+                      <label class="col-md-1 col-form-label">3</label>
+                      <div class="col-md-2" *ngIf="report.productElmt.ID_SHAPE == 2 || report.productElmt.ID_SHAPE == 3 || report.productElmt.ID_SHAPE == 9; else shapeEmpty3 ">
+                        <div class="input-group" *ngIf="meshAxisPos">
+                          <select class="form-control form-control-sm" [(ngModel)]="report.POINT1_Z">
+                            <option *ngFor="let axis of meshAxisPos.axis3" [value]="axis.MESH_AXIS_POS">{{ axis.meshAxisPosValue }}</option>
+                          </select>
+                        </div>
+                      </div>
+                      <ng-template #shapeEmpty3>
+                        <div class="col-md-2">
+                          <div class="input-group">
+                            <select class="form-control form-control-sm">
+                              <option value="0"> None </option>
+                            </select>
+                          </div>
+                        </div>
+                      </ng-template>
+                    </div>
+                    <div class="form-group row">
+                      <label class="col-md-2 col-form-label" for="text-input">Internal :</label>
+                      <label class="col-md-1 col-form-label">1</label>
+                      <div class="col-md-2" *ngIf="report.productElmt.ID_SHAPE != 1 || report.productElmt.ID_SHAPE != 6; else shapeEmpty ">
+                        <div class="input-group" *ngIf="meshAxisPos">
+                          <select class="form-control form-control-sm" [(ngModel)]="report.POINT2_X">
+                            <option *ngFor="let axis of meshAxisPos.axis1" [value]="axis.MESH_AXIS_POS">{{ axis.meshAxisPosValue }}</option>
+                          </select>
+                        </div>
+                      </div>
+                      <ng-template #shapeEmpty>
+                        <div class="col-md-2">
+                          <div class="input-group">
+                            <select class="form-control form-control-sm">
+                              <option value="0"> None </option>
+                            </select>
+                          </div>
+                        </div>
+                      </ng-template>
+                      <label class="col-md-1 col-form-label">2</label>
+                      <div class="col-md-2">
+                        <div class="input-group" *ngIf="meshAxisPos">
+                            <select class="form-control form-control-sm" [(ngModel)]="report.POINT2_Y">
+                              <option *ngFor="let axis of meshAxisPos.axis2" [value]="axis.MESH_AXIS_POS">{{ axis.meshAxisPosValue }}</option>
+                            </select>
+                        </div>
+                      </div>
+                      <label class="col-md-1 col-form-label">3</label>
+                      <div class="col-md-2" *ngIf="report.productElmt.ID_SHAPE == 2 || report.productElmt.ID_SHAPE == 3 || report.productElmt.ID_SHAPE == 9; else shapeEmpty3 ">
+                        <div class="input-group" *ngIf="meshAxisPos">
+                          <select class="form-control form-control-sm" [(ngModel)]="report.POINT2_Z">
+                            <option *ngFor="let axis of meshAxisPos.axis3" [value]="axis.MESH_AXIS_POS">{{ axis.meshAxisPosValue }}</option>
+                          </select>
+                        </div>
+                      </div>
+                      <ng-template #shapeEmpty3>
+                        <div class="col-md-2">
+                          <div class="input-group">
+                            <select class="form-control form-control-sm">
+                              <option value="0"> None </option>
+                            </select>
+                          </div>
+                        </div>
+                      </ng-template>
+                    </div>
+                    <div class="form-group row">
+                      <label class="col-md-2 col-form-label" for="text-input">Bottom :</label>
+                      <label class="col-md-1 col-form-label">1</label>
+                      <div class="col-md-2" *ngIf="report.productElmt.ID_SHAPE != 1 || report.productElmt.ID_SHAPE != 6; else shapeEmpty ">
+                        <div class="input-group" *ngIf="meshAxisPos">
+                          <select class="form-control form-control-sm" [(ngModel)]="report.POINT3_X">
+                            <option *ngFor="let axis of meshAxisPos.axis1" [value]="axis.MESH_AXIS_POS">{{ axis.meshAxisPosValue }}</option>
+                          </select>
+                        </div>
+                      </div>
+                      <ng-template #shapeEmpty>
+                        <div class="col-md-2">
+                          <div class="input-group">
+                            <select class="form-control form-control-sm">
+                              <option value="0"> None </option>
+                            </select>
+                          </div>
+                        </div>
+                      </ng-template>
+                      <label class="col-md-1 col-form-label">2</label>
+                      <div class="col-md-2">
+                        <div class="input-group" *ngIf="meshAxisPos">
+                            <select class="form-control form-control-sm" [(ngModel)]="report.POINT3_Y">
+                              <option *ngFor="let axis of meshAxisPos.axis2" [value]="axis.MESH_AXIS_POS">{{ axis.meshAxisPosValue }}</option>
+                            </select>
+                        </div>
+                      </div>
+                      <label class="col-md-1 col-form-label">3</label>
+                      <div class="col-md-2" *ngIf="report.productElmt.ID_SHAPE == 2 || report.productElmt.ID_SHAPE == 3 || report.productElmt.ID_SHAPE == 9; else shapeEmpty3 ">
+                        <div class="input-group" *ngIf="meshAxisPos">
+                          <select class="form-control form-control-sm" [(ngModel)]="report.POINT3_Z">
+                            <option *ngFor="let axis of meshAxisPos.axis3" [value]="axis.MESH_AXIS_POS">{{ axis.meshAxisPosValue }}</option>
+                          </select>
+                        </div>
+                      </div>
+                      <ng-template #shapeEmpty3>
+                        <div class="col-md-2">
+                          <div class="input-group">
+                            <select class="form-control form-control-sm">
+                              <option value="0"> None </option>
+                            </select>
+                          </div>
+                        </div>
+                      </ng-template>
+                    </div>
+                </td>
+                <td width="40%">
+                    <strong >Axes</strong>
+                    <div class="form-group row" *ngIf="report.productElmt.ID_SHAPE != 1 && report.productElmt.ID_SHAPE != 6">
+                      <label class="col-md-3 col-form-label" for="text-input">Axes 1 :</label>
+                      <label class="col-md-1 col-form-label">2</label>
+                      <div class="col-md-3">
+                        <div class="input-group" *ngIf="meshAxisPos">
+                            <select class="form-control form-control-sm" [(ngModel)]="report.AXE3_Y">
+                              <option *ngFor="let axis of meshAxisPos.axis2" [value]="axis.MESH_AXIS_POS">{{ axis.meshAxisPosValue }}</option>
+                            </select>
+                        </div>
+                      </div>
+                      <label class="col-md-1 col-form-label">3</label>
+                      <div class="col-md-3" *ngIf="report.productElmt.ID_SHAPE == 2 || report.productElmt.ID_SHAPE == 3 || report.productElmt.ID_SHAPE == 9; else shapeEmpty3 ">
+                        <div class="input-group" *ngIf="meshAxisPos">
+                          <select class="form-control form-control-sm" [(ngModel)]="report.AXE3_Z">
+                            <option *ngFor="let axis of meshAxisPos.axis3" [value]="axis.MESH_AXIS_POS">{{ axis.meshAxisPosValue }}</option>
+                          </select>
+                        </div>
+                      </div>
+                      <ng-template #shapeEmpty3>
+                        <div class="col-md-3">
+                          <div class="input-group">
+                            <select class="form-control form-control-sm">
+                              <option value="0"> None </option>
+                            </select>
+                          </div>
+                        </div>
+                      </ng-template>
+                    </div>
+                    <div class="form-group row">
+                      <label class="col-md-3 col-form-label" for="text-input">Axes 2 :</label>
+                      <label class="col-md-1 col-form-label">1</label>
+                      <div class="col-md-3" *ngIf="report.productElmt.ID_SHAPE != 1 || report.productElmt.ID_SHAPE != 6; else shapeEmpty ">
+                        <div class="input-group" *ngIf="meshAxisPos">
+                          <select class="form-control form-control-sm" [(ngModel)]="report.AXE2_X">
+                            <option *ngFor="let axis of meshAxisPos.axis1" [value]="axis.MESH_AXIS_POS">{{ axis.meshAxisPosValue }}</option>
+                          </select>
+                        </div>
+                      </div>
+                      <ng-template #shapeEmpty>
+                        <div class="col-md-3">
+                          <div class="input-group">
+                            <select class="form-control form-control-sm">
+                              <option value="0"> None </option>
+                            </select>
+                          </div>
+                        </div>
+                      </ng-template>
+                      <label class="col-md-1 col-form-label">3</label>
+                      <div class="col-md-3" *ngIf="report.productElmt.ID_SHAPE == 2 || report.productElmt.ID_SHAPE == 3 || report.productElmt.ID_SHAPE == 9; else shapeEmpty3 ">
+                        <div class="input-group" *ngIf="meshAxisPos">
+                          <select class="form-control form-control-sm" [(ngModel)]="report.AXE2_Z">
+                            <option *ngFor="let axis of meshAxisPos.axis3" [value]="axis.MESH_AXIS_POS">{{ axis.meshAxisPosValue }}</option>
+                          </select>
+                        </div>
+                      </div>
+                      <ng-template #shapeEmpty3>
+                        <div class="col-md-3">
+                          <div class="input-group">
+                            <select class="form-control form-control-sm">
+                              <option value="0"> None</option>
+                            </select>
+                          </div>
+                        </div>
+                      </ng-template>
+                    </div>
+                    <div class="form-group row" *ngIf="report.productElmt.ID_SHAPE != 1 && report.productElmt.ID_SHAPE != 6 && report.productElmt.ID_SHAPE != 4 && report.productElmt.ID_SHAPE != 5 && report.productElmt.ID_SHAPE != 7 && report.productElmt.ID_SHAPE != 8">
+                      <label class="col-md-3 col-form-label" for="text-input">Axes 3 :</label>
+                      <label class="col-md-1 col-form-label">1</label>
+                      <div class="col-md-3" *ngIf="report.productElmt.ID_SHAPE != 1 || report.productElmt.ID_SHAPE != 6; else shapeEmpty ">
+                        <div class="input-group" *ngIf="meshAxisPos">
+                          <select class="form-control form-control-sm" [(ngModel)]="report.AXE1_X">
+                            <option *ngFor="let axis of meshAxisPos.axis1" [value]="axis.MESH_AXIS_POS">{{ axis.meshAxisPosValue }}</option>
+                          </select>
+                        </div>
+                      </div>
+                      <ng-template #shapeEmpty>
+                        <div class="col-md-3">
+                          <div class="input-group">
+                            <select class="form-control form-control-sm">
+                              <option value="0"> None </option>
+                            </select>
+                          </div>
+                        </div>
+                      </ng-template>
+                      <label class="col-md-1 col-form-label">2</label>
+                      <div class="col-md-3">
+                        <div class="input-group" *ngIf="meshAxisPos">
+                            <select class="form-control form-control-sm" [(ngModel)]="report.AXE1_Y">
+                              <option *ngFor="let axis of meshAxisPos.axis2" [value]="axis.MESH_AXIS_POS">{{ axis.meshAxisPosValue }}</option>
+                            </select>
+                        </div>
+                      </div>
+                    </div>
+                </td>
+              </tr>
+              <tr *ngIf="report.productElmt.ID_SHAPE != 1 && report.productElmt.ID_SHAPE != 6 && report.productElmt.ID_SHAPE != 4 && report.productElmt.ID_SHAPE != 5 && report.productElmt.ID_SHAPE != 7 && report.productElmt.ID_SHAPE != 8">
+                <td colspan="2">
+                  <strong>  Slices </strong>
+                  <div class="form-group row" >
+                    <label class="col-md-2 col-form-label" for="text-input">Slice 23</label>
+                    <div class="col-md-2" *ngIf="report.productElmt.ID_SHAPE != 1 || report.productElmt.ID_SHAPE != 6; else shapeEmpty ">
+                      <div class="input-group" *ngIf="meshAxisPos">
+                        <select class="form-control form-control-sm" [(ngModel)]="report.PLAN_X">
+                          <option *ngFor="let axis of meshAxisPos.axis1" [value]="axis.MESH_AXIS_POS">{{ axis.meshAxisPosValue }}</option>
+                        </select>
+                      </div>
+                    </div>
+                    <ng-template #shapeEmpty>
+                      <div class="col-md-2">
+                        <div class="input-group">
+                          <select class="form-control form-control-sm">
+                            <option value="0"> None </option>
+                          </select>
+                        </div>
+                      </div>
+                    </ng-template>
+                    <label class="col-md-2 col-form-label" for="text-input">Slice 13</label>
+                    <div class="col-md-2">
+                      <div class="input-group" *ngIf="meshAxisPos">
+                          <select class="form-control form-control-sm" [(ngModel)]="report.PLAN_Y">
+                            <option *ngFor="let axis of meshAxisPos.axis2" [value]="axis.MESH_AXIS_POS">{{ axis.meshAxisPosValue }}</option>
+                          </select>
+                      </div>
+                    </div>
+                    <label class="col-md-2 col-form-label" for="text-input" *ngIf="report.productElmt.ID_SHAPE != 1 && report.productElmt.ID_SHAPE != 6">Slice 12</label>
+                    <div class="col-md-2" *ngIf="report.productElmt.ID_SHAPE != 1 && report.productElmt.ID_SHAPE != 6">
+                      <div *ngIf="report.productElmt.ID_SHAPE == 2 || report.productElmt.ID_SHAPE == 3 || report.productElmt.ID_SHAPE == 9; else shapeEmpty3 ">
+                        <div class="input-group" *ngIf="meshAxisPos">
+                          <select class="form-control form-control-sm" [(ngModel)]="report.PLAN_Z">
+                            <option *ngFor="let axis of meshAxisPos.axis3" [value]="axis.MESH_AXIS_POS">{{ axis.meshAxisPosValue }}</option>
+                          </select>
+                        </div>
+                      </div>
+                      <ng-template #shapeEmpty3>
+                        <div class="col-md-2">
+                          <div class="input-group">
+                            <select class="form-control form-control-sm">
+                              <option value="0"> None </option>
+                            </select>
+                          </div>
+                        </div>
+                      </ng-template>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+          <!-- end optimum -->
+
+          <!-- estimation -->
+          <div *ngIf="study.CALCULATION_MODE == 1">
+            <table class="table table-bordered table-sm" style="font-size: 12px;">
+              <tr>
+                <td width="50%">
+                  <form class="form form-horizontal">
+                    <div class="form-group row">
+                      <strong class="col-md-12">{{'Sizing & Thermal Results' | translate}}</strong>
+                    </div>
+                    <div class="form-group row">
+                      <div class="col-md-4">
+                        <label class="form-checkbox-label"style="margin-left:20px;">
+                          <label class="switch switch-icon switch-primary-outline-alt">
+                            <input type="checkbox" class="switch-input" name="refContRepSizingValues" [checked]="report.SIZING_VALUES == 1" value="1">
+                            <span class="switch-label" data-on="&#xf00c;" data-off="&#xf00d;"></span>
+                            <span class="switch-handle"></span>
+                          </label>
+                          {{'Values' | translate}}
+                        </label>
+                      </div>
+                      <div class="col-md-4">
+                        <label class="form-checkbox-label"style="margin-left:20px;">
+                          <label class="switch switch-icon switch-primary-outline-alt">
+                            <input type="checkbox" class="switch-input"  name="refContRepSizingGraphe" [(ngModel)]="report.SIZING_GRAPHE" [checked]="report.SIZING_GRAPHE == 1" value="1">
+                            <span class="switch-label" data-on="&#xf00c;" data-off="&#xf00d;"></span>
+                            <span class="switch-handle"></span>
+                          </label>
+                          {{'Graph' | translate}}
+                        </label>
+                      </div>
+                    </div>
+                  </form>
+                </td>
+                <td>
+                  <form class="form form-horizontal">
+                    <div class="form-group row">
+                      <strong class="col-md-12">{{'Temperature' | translate}}</strong>
+                    </div>
+                    <div class="form-group row">
+                      <div class="col-md-12">
+                        <label class="form-checkbox-label"style="margin-left:20px;">
+                          <label class="switch switch-icon switch-primary-outline-alt">
+                            <input type="checkbox" class="switch-input" name="choixTR" [checked]="report.SIZING_TR == 1" value="1">
+                            <span class="switch-label" data-on="&#xf00c;" data-off="&#xf00d;"></span>
+                            <span class="switch-handle"></span>
+                          </label>
+                          {{'Control Temperature' | translate}}
+                        </label>
+                      </div>
+                    </div>
+                    <div class="form-group row">
+                      <div class="col-md-12">
+                        <label class="form-checkbox-label"style="margin-left:20px;">
+                          <label class="switch switch-icon switch-primary-outline-alt">
+                            <input type="checkbox" class="switch-input"  name="choixTR" [(ngModel)]="report.SIZING_GRAPHE" [checked]="report.SIZING_GRAPHE == 2" value="1">
+                            <span class="switch-label" data-on="&#xf00c;" data-off="&#xf00d;"></span>
+                            <span class="switch-handle"></span>
+                          </label>
+                          {{'Control Temperature 10°C (18°F) colder.' | translate}}
+                        </label>
+                      </div>
+                    </div>
+                    <div class="form-group row">
+                      <div class="col-md-12">
+                        <label class="form-checkbox-label"style="margin-left:20px;">
+                          <label class="switch switch-icon switch-primary-outline-alt">
+                            <input type="checkbox" class="switch-input"  name="choixTR" [(ngModel)]="report.SIZING_GRAPHE" [checked]="report.SIZING_GRAPHE == 0" value="1">
+                            <span class="switch-label" data-on="&#xf00c;" data-off="&#xf00d;"></span>
+                            <span class="switch-handle"></span>
+                          </label>
+                          {{'Control Temperature 10°C (18°F) warmer.' | translate}}
+                        </label>
+                      </div>
+                    </div>
+                  </form>
+                </td>
+              </tr>
+            </table>
+            <table class="table table-bordered table-sm">
+              <tr>
+                <td width="50%">
+                  <div class="form-group row">
+                    <strong class="col-md-12"> {{'Enthalpies' | translate}}</strong>
+                  </div>
+                  <div class="form-group row">
+                    <div class="col-md-6">
+                      <label class="form-checkbox-label"style="margin-left:20px;">
+                        <label class="switch switch-icon switch-primary-outline-alt">
+                          <input type="checkbox" class="switch-input" [(ngModel)]="report.ENTHALPY_V" [checked]="report.ENTHALPY_V == 1" value="1">
+                          <span class="switch-label" data-on="&#xf00c;" data-off="&#xf00d;"></span>
+                          <span class="switch-handle"></span>
+                        </label>
+                        {{'Values' | translate}} 
+                      </label>
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-checkbox-label"style="margin-left:20px;">
+                        <label class="switch switch-icon switch-primary-outline-alt">
+                          <input type="checkbox" class="switch-input" [(ngModel)]="report.ENTHALPY_G" [checked]="report.ENTHALPY_G == 1" value="1">
+                          <span class="switch-label" data-on="&#xf00c;" data-off="&#xf00d;"></span>
+                          <span class="switch-handle"></span>
+                        </label>
+                        {{'Graph' | translate}}
+                      </label>
+                    </div>
+                  </div>
+                  <div class="form-group row">
+                    <label class="col-md-5 col-form-label" for="text-input">{{'Number of samples' | translate}} </label>
+                    <div class="col-md-3">
+                      <div class="input-group">
+                        <input type="text" class="form-control form-control-sm" placeholder="0.00" [(ngModel)]="report.ENTHALPY_SAMPLE">
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                    <div class="form-group row">
+                      <strong class="col-md-12">{{'Product Section' | translate}}</strong>
+                    </div>
+                    <div class="form-group row">
+                      <div class="col-md-4">
+                        <label class="form-checkbox-label"style="margin-left:20px;">
+                          <label class="switch switch-icon switch-primary-outline-alt">
+                            <input type="checkbox" class="switch-input" [(ngModel)]="report.ISOCHRONE_V" [checked]="report.ISOCHRONE_V == 1" value="1">
+                            <span class="switch-label" data-on="&#xf00c;" data-off="&#xf00d;"></span>
+                            <span class="switch-handle"></span>
+                          </label>
+                          {{'Values' | translate}} 
+                        </label>
+                      </div>
+                      <div class="col-md-4">
+                        <label class="form-checkbox-label"style="margin-left:20px;">
+                          <label class="switch switch-icon switch-primary-outline-alt">
+                            <input type="checkbox" class="switch-input" [(ngModel)]="report.ISOCHRONE_G" [checked]="report.ISOCHRONE_G == 1" value="1">
+                            <span class="switch-label" data-on="&#xf00c;" data-off="&#xf00d;"></span>
+                            <span class="switch-handle"></span>
+                          </label>
+                          {{'Graph' | translate}}
+                        </label>
+                      </div>
+                    </div>
+                    <div class="form-group row">
+                      <label class="col-md-5 col-form-label" for="text-input">{{'Number of samples' | translate}} </label>
+                      <div class="col-md-2">
+                        <div class="input-group">
+                          <input type="text" class="form-control form-control-sm" placeholder="0.00" [(ngModel)]="report.ISOCHRONE_SAMPLE">
+                        </div>
+                      </div>
+                    </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                    <div class="form-group row">
+                      <strong class="col-md-12">{{'Time Based' | translate}}</strong>
+                    </div>
+                    <div class="form-group row">
+                      <div class="col-md-6">
+                        <label class="form-checkbox-label"style="margin-left:20px;">
+                          <label class="switch switch-icon switch-primary-outline-alt">
+                            <input type="checkbox" class="switch-input" [(ngModel)]="report.ISOVALUE_V" [checked]="report.ISOVALUE_V == 1" value="1">
+                            <span class="switch-label" data-on="&#xf00c;" data-off="&#xf00d;"></span>
+                            <span class="switch-handle"></span>
+                          </label>
+                          {{'Values' | translate}} 
+                        </label>
+                      </div>
+                      <div class="col-md-6">
+                        <label class="form-checkbox-label"style="margin-left:20px;">
+                          <label class="switch switch-icon switch-primary-outline-alt">
+                            <input type="checkbox" class="switch-input" [(ngModel)]="report.ISOVALUE_G" [checked]="report.ISOVALUE_G == 1" value="1">
+                            <span class="switch-label" data-on="&#xf00c;" data-off="&#xf00d;"></span>
+                            <span class="switch-handle"></span>
+                          </label>
+                          {{'Graph' | translate}}
+                        </label>
+                      </div>
+                    </div>
+                    <div class="form-group row">
+                      <label class="col-md-5 col-form-label" for="text-input">{{'Number of samples' | translate}} </label>
+                      <div class="col-md-3">
+                        <div class="input-group">
+                          <input type="text" class="form-control form-control-sm" placeholder="0.00" [(ngModel)]="report.ISOVALUE_SAMPLE">
+                        </div>
+                      </div>
+                    </div>
+                </td>
+                <td>
+                    <div class="form-group row">
+                      <strong class="col-md-12">{{'Contour' | translate}}</strong>
+                    </div>
+                    <div class="form-group row">
+                      <div class="col-md-4" *ngIf="report.productElmt.ID_SHAPE == 1 || report.productElmt.ID_SHAPE == 6; else checkContourEs">
+                        <label class="form-checkbox-label"style="margin-left:20px;">
+                          <label class="switch switch-icon switch-primary-outline-alt">
+                            <input type="checkbox" class="switch-input" disabled>
+                            <span class="switch-label" data-on="&#xf00c;" data-off="&#xf00d;"></span>
+                            <span class="switch-handle"></span>
+                          </label>
+                        </label>
+                      </div>
+                      <ng-template #checkContourEs>
+                        <div class="col-md-4">
+                          <label class="form-checkbox-label"style="margin-left:20px;">
+                            <label class="switch switch-icon switch-primary-outline-alt">
+                              <input type="checkbox" class="switch-input" [(ngModel)]="report.CONTOUR2D_G" [checked]="report.CONTOUR2D_G == 1" value="1">
+                              <span class="switch-label" data-on="&#xf00c;" data-off="&#xf00d;"></span>
+                              <span class="switch-handle"></span>
+                            </label>
+                          </label>
+                        </div>
+                      </ng-template>
+                    </div>
+      
+                    <div class="form-group row" style="margin-left:10px;" *ngIf="report.productElmt.ID_SHAPE == 1 || report.productElmt.ID_SHAPE == 6; else checkContourTemperatureEs">
+                      <label class="col-md-4 col-form-label" for="text-input">{{'Temperature step' | translate}} </label>
+                      <div class="col-md-2">
+                        <div class="input-group">
+                          <input type="text" class="form-control form-control-sm" placeholder="0.00" disabled>
+                        </div>
+                      </div>
+                    </div>
+                    <ng-template #checkContourTemperatureEs>
+                      <div class="form-group row" style="margin-left:10px;" >
+                        <label class="col-md-4 col-form-label" for="text-input">{{'Temperature step' | translate}} </label>
+                        <div class="col-md-2">
+                          <div class="input-group">
+                            <input type="text" class="form-control form-control-sm" placeholder="0.00" [(ngModel)]="report.CONTOUR2D_TEMP_STEP">
+                          </div>
+                        </div>
+                        <div class="col-md-2">
+                          <div class="input-group">
+                            <input type="text" class="form-control form-control-sm" placeholder="0.00" [(ngModel)]="report.refContRep2DTempStepRef" disabled>
+                          </div>
+                        </div>
+                      </div>
+                    </ng-template>
+      
+                    <div class="form-group row" style="margin-left:10px;" *ngIf="report.productElmt.ID_SHAPE == 1 || report.productElmt.ID_SHAPE == 6; else checkContourTemperatureMinEs">
+                      <label class="col-md-4 col-form-label" for="text-input">{{'Temperature Min' | translate}}  ({{ report.temperatureSymbol }})</label>
+                      <div class="col-md-2">
+                        <div class="input-group">
+                          <input type="text" class="form-control form-control-sm" placeholder="0.00" disabled>
+                        </div>
+                      </div>
+                    </div>
+                    <ng-template #checkContourTemperatureMinEs>
+                      <div class="form-group row" style="margin-left:10px;" >
+                        <label class="col-md-4 col-form-label" for="text-input">{{'Temperature Min' | translate}}  ({{ report.temperatureSymbol }})</label>
+                        <div class="col-md-2">
+                          <div class="input-group">
+                            <input type="text" class="form-control form-control-sm" placeholder="0.00" [(ngModel)]="report.CONTOUR2D_TEMP_MIN">
+                          </div>
+                        </div>
+                        <div class="col-md-2">
+                          <div class="input-group">
+                            <input type="text" class="form-control form-control-sm" placeholder="0.00" [(ngModel)]="report.refContRep2DTempMinRef" disabled>
+                          </div>
+                        </div>
+                      </div>
+                    </ng-template>
+                    <div class="form-group row" style="margin-left:10px;" *ngIf="report.productElmt.ID_SHAPE == 1 || report.productElmt.ID_SHAPE == 6; else checkContourTemperatureMaxEs">
+                      <label class="col-md-4 col-form-label" for="text-input">{{'Temperature Max' | translate}}  ({{ report.temperatureSymbol }})</label>
+                      <div class="col-md-2">
+                        <div class="input-group">
+                          <input type="text" class="form-control form-control-sm" placeholder="0.00" disabled>
+                        </div>
+                      </div>
+                    </div>
+                    <ng-template #checkContourTemperatureMaxEs>
+                      <div class="form-group row" style="margin-left:10px;" >
+                        <label class="col-md-4 col-form-label" for="text-input">{{'Temperature Max' | translate}}  ({{ report.temperatureSymbol }})</label>
+                        <div class="col-md-2">
+                          <div class="input-group">
+                            <input type="text" class="form-control form-control-sm" placeholder="0.00" [(ngModel)]="report.CONTOUR2D_TEMP_MAX">
+                          </div>
+                        </div>
+                        <div class="col-md-2">
+                          <div class="input-group">
+                            <input type="text" class="form-control form-control-sm" placeholder="0.00" [(ngModel)]="report.refContRep2DTempMaxRef" disabled>
+                          </div>
+                        </div>
+                      </div>
+                    </ng-template>
+                </td>
+              </tr>
+            </table>
+
+            <table class="table table-bordered table-sm">
+              <tr>
+                <td colspan="3">
+                    <strong>{{'Following-up Point (mm)' | translate}}</strong>
+                    <button class="btn btn-primary btn-sm" style="float:right;margin-right:10px;"> {{'Selected points' | translate}}</button>
+                </td>
+              </tr>
+              <tr>
+                <td width="50%">
+                    <strong >{{'Points' | translate}}</strong>
+                    <div class="form-group row">
+                      <label class="col-md-2 col-form-label" for="text-input">Top :</label>
+                      <label class="col-md-1 col-form-label">1</label>
+                      <div class="col-md-2" *ngIf="report.productElmt.ID_SHAPE != 1 || report.productElmt.ID_SHAPE != 6; else shapeEmptyEs ">
+                        <div class="input-group" *ngIf="meshAxisPos">
+                          <select class="form-control form-control-sm" [(ngModel)]="report.POINT1_X">
+                            <option *ngFor="let axis of meshAxisPos.axis1" [value]="axis.MESH_AXIS_POS">{{ axis.meshAxisPosValue }}</option>
+                          </select>
+                        </div>
+                      </div>
+                      <ng-template #shapeEmptyEs>
+                        <div class="col-md-2">
+                          <div class="input-group">
+                            <select class="form-control form-control-sm">
+                              <option></option>
+                            </select>
+                          </div>
+                        </div>
+                      </ng-template>
+      
+                      <label class="col-md-1 col-form-label">2</label>
+                      <div class="col-md-2">
+                        <div class="input-group" *ngIf="meshAxisPos">
+                            <select class="form-control form-control-sm" [(ngModel)]="report.POINT1_Y">
+                              <option *ngFor="let axis of meshAxisPos.axis2" [value]="axis.MESH_AXIS_POS">{{ axis.meshAxisPosValue }}</option>
+                            </select>
+                        </div>
+                      </div>
+      
+                      <label class="col-md-1 col-form-label">3</label>
+                      <div class="col-md-2" *ngIf="report.productElmt.ID_SHAPE == 2 || report.productElmt.ID_SHAPE == 3 || report.productElmt.ID_SHAPE == 9; else shapeEmpty3Es ">
+                        <div class="input-group" *ngIf="meshAxisPos">
+                          <select class="form-control form-control-sm" [(ngModel)]="report.POINT1_Z">
+                            <option *ngFor="let axis of meshAxisPos.axis3" [value]="axis.MESH_AXIS_POS">{{ axis.meshAxisPosValue }}</option>
+                          </select>
+                        </div>
+                      </div>
+                      <ng-template #shapeEmpty3Es>
+                        <div class="col-md-2">
+                          <div class="input-group">
+                            <select class="form-control form-control-sm">
+                              <option> </option>
+                            </select>
+                          </div>
+                        </div>
+                      </ng-template>
+                    </div>
+                    <div class="form-group row">
+                      <label class="col-md-2 col-form-label" for="text-input">Internal :</label>
+                      <label class="col-md-1 col-form-label">1</label>
+                      <div class="col-md-2" *ngIf="report.productElmt.ID_SHAPE != 1 || report.productElmt.ID_SHAPE != 6; else shapeEmptyEs ">
+                        <div class="input-group" *ngIf="meshAxisPos">
+                          <select class="form-control form-control-sm" [(ngModel)]="report.POINT2_X">
+                            <option *ngFor="let axis of meshAxisPos.axis1" [value]="axis.MESH_AXIS_POS">{{ axis.meshAxisPosValue }}</option>
+                          </select>
+                        </div>
+                      </div>
+                      <ng-template #shapeEmptyEs>
+                        <div class="col-md-2">
+                          <div class="input-group">
+                            <select class="form-control form-control-sm">
+                              <option > </option>
+                            </select>
+                          </div>
+                        </div>
+                      </ng-template>
+                      <label class="col-md-1 col-form-label">2</label>
+                      <div class="col-md-2">
+                        <div class="input-group" *ngIf="meshAxisPos">
+                            <select class="form-control form-control-sm" [(ngModel)]="report.POINT2_Y">
+                              <option *ngFor="let axis of meshAxisPos.axis2" [value]="axis.MESH_AXIS_POS">{{ axis.meshAxisPosValue }}</option>
+                            </select>
+                        </div>
+                      </div>
+                      <label class="col-md-1 col-form-label">3</label>
+                      <div class="col-md-2" *ngIf="report.productElmt.ID_SHAPE == 2 || report.productElmt.ID_SHAPE == 3 || report.productElmt.ID_SHAPE == 9; else shapeEmpty3Es ">
+                        <div class="input-group" *ngIf="meshAxisPos">
+                          <select class="form-control form-control-sm" [(ngModel)]="report.POINT2_Z">
+                            <option *ngFor="let axis of meshAxisPos.axis3" [value]="axis.MESH_AXIS_POS">{{ axis.meshAxisPosValue }}</option>
+                          </select>
+                        </div>
+                      </div>
+                      <ng-template #shapeEmpty3Es>
+                        <div class="col-md-2">
+                          <div class="input-group">
+                            <select class="form-control form-control-sm">
+                              <option></option>
+                            </select>
+                          </div>
+                        </div>
+                      </ng-template>
+                    </div>
+                    <div class="form-group row">
+                      <label class="col-md-2 col-form-label" for="text-input">Bottom :</label>
+                      <label class="col-md-1 col-form-label">1</label>
+                      <div class="col-md-2" *ngIf="report.productElmt.ID_SHAPE != 1 || report.productElmt.ID_SHAPE != 6; else shapeEmptyEs ">
+                        <div class="input-group" *ngIf="meshAxisPos">
+                          <select class="form-control form-control-sm" [(ngModel)]="report.POINT3_X">
+                            <option *ngFor="let axis of meshAxisPos.axis1" [value]="axis.MESH_AXIS_POS">{{ axis.meshAxisPosValue }}</option>
+                          </select>
+                        </div>
+                      </div>
+                      <ng-template #shapeEmptyEs>
+                        <div class="col-md-2">
+                          <div class="input-group">
+                            <select class="form-control form-control-sm">
+                              <option> </option>
+                            </select>
+                          </div>
+                        </div>
+                      </ng-template>
+                      <label class="col-md-1 col-form-label">2</label>
+                      <div class="col-md-2">
+                        <div class="input-group" *ngIf="meshAxisPos">
+                            <select class="form-control form-control-sm" [(ngModel)]="report.POINT3_Y">
+                              <option *ngFor="let axis of meshAxisPos.axis2" [value]="axis.MESH_AXIS_POS">{{ axis.meshAxisPosValue }}</option>
+                            </select>
+                        </div>
+                      </div>
+                      <label class="col-md-1 col-form-label">3</label>
+                      <div class="col-md-2" *ngIf="report.productElmt.ID_SHAPE == 2 || report.productElmt.ID_SHAPE == 3 || report.productElmt.ID_SHAPE == 9; else shapeEmpty3Es ">
+                        <div class="input-group" *ngIf="meshAxisPos">
+                          <select class="form-control form-control-sm" [(ngModel)]="report.POINT3_Z">
+                            <option *ngFor="let axis of meshAxisPos.axis3" [value]="axis.MESH_AXIS_POS">{{ axis.meshAxisPosValue }}</option>
+                          </select>
+                        </div>
+                      </div>
+                      <ng-template #shapeEmpty3Es>
+                        <div class="col-md-2">
+                          <div class="input-group">
+                            <select class="form-control form-control-sm">
+                              <option></option>
+                            </select>
+                          </div>
+                        </div>
+                      </ng-template>
+                    </div>
+                </td>
+                <td width="40%">
+                    <strong >Axes</strong>
+                    <div class="form-group row" *ngIf="report.productElmt.ID_SHAPE != 1 && report.productElmt.ID_SHAPE != 6">
+                      <label class="col-md-3 col-form-label" for="text-input">Axes 1 :</label>
+                      <label class="col-md-1 col-form-label">2</label>
+                      <div class="col-md-3">
+                        <div class="input-group" *ngIf="meshAxisPos">
+                            <select class="form-control form-control-sm" [(ngModel)]="report.AXE3_Y">
+                              <option *ngFor="let axis of meshAxisPos.axis2" [value]="axis.MESH_AXIS_POS">{{ axis.meshAxisPosValue }}</option>
+                            </select>
+                        </div>
+                      </div>
+                      <label class="col-md-1 col-form-label">3</label>
+                      <div class="col-md-3" *ngIf="report.productElmt.ID_SHAPE == 2 || report.productElmt.ID_SHAPE == 3 || report.productElmt.ID_SHAPE == 9; else shapeEmpty3Es ">
+                        <div class="input-group" *ngIf="meshAxisPos">
+                          <select class="form-control form-control-sm" [(ngModel)]="report.AXE3_Z">
+                            <option *ngFor="let axis of meshAxisPos.axis3" [value]="axis.MESH_AXIS_POS">{{ axis.meshAxisPosValue }}</option>
+                          </select>
+                        </div>
+                      </div>
+                      <ng-template #shapeEmpty3Es>
+                        <div class="col-md-3">
+                          <div class="input-group">
+                            <select class="form-control form-control-sm">
+                              <option></option>
+                            </select>
+                          </div>
+                        </div>
+                      </ng-template>
+                    </div>
+                    <div class="form-group row">
+                      <label class="col-md-3 col-form-label" for="text-input">Axes 2 :</label>
+                      <label class="col-md-1 col-form-label">1</label>
+                      <div class="col-md-3" *ngIf="report.productElmt.ID_SHAPE != 1 || report.productElmt.ID_SHAPE != 6; else shapeEmptyEs ">
+                        <div class="input-group" *ngIf="meshAxisPos">
+                          <select class="form-control form-control-sm" [(ngModel)]="report.AXE2_X">
+                            <option *ngFor="let axis of meshAxisPos.axis1" [value]="axis.MESH_AXIS_POS">{{ axis.meshAxisPosValue }}</option>
+                          </select>
+                        </div>
+                      </div>
+                      <ng-template #shapeEmptyEs>
+                        <div class="col-md-3">
+                          <div class="input-group">
+                            <select class="form-control form-control-sm">
+                              <option></option>
+                            </select>
+                          </div>
+                        </div>
+                      </ng-template>
+                      <label class="col-md-1 col-form-label">3</label>
+                      <div class="col-md-3" *ngIf="report.productElmt.ID_SHAPE == 2 || report.productElmt.ID_SHAPE == 3 || report.productElmt.ID_SHAPE == 9; else shapeEmpty3Es ">
+                        <div class="input-group" *ngIf="meshAxisPos">
+                          <select class="form-control form-control-sm" [(ngModel)]="report.AXE2_Z">
+                            <option *ngFor="let axis of meshAxisPos.axis3" [value]="axis.MESH_AXIS_POS">{{ axis.meshAxisPosValue }}</option>
+                          </select>
+                        </div>
+                      </div>
+                      <ng-template #shapeEmpty3Es>
+                        <div class="col-md-3">
+                          <div class="input-group">
+                            <select class="form-control form-control-sm">
+                              <option></option>
+                            </select>
+                          </div>
+                        </div>
+                      </ng-template>
+                    </div>
+                    <div class="form-group row" *ngIf="report.productElmt.ID_SHAPE != 1 && report.productElmt.ID_SHAPE != 6 && report.productElmt.ID_SHAPE != 4 && report.productElmt.ID_SHAPE != 5 && report.productElmt.ID_SHAPE != 7 && report.productElmt.ID_SHAPE != 8">
+                      <label class="col-md-3 col-form-label" for="text-input">Axes 3 :</label>
+                      <label class="col-md-1 col-form-label">1</label>
+                      <div class="col-md-3" *ngIf="report.productElmt.ID_SHAPE != 1 || report.productElmt.ID_SHAPE != 6; else shapeEmptyEs ">
+                        <div class="input-group" *ngIf="meshAxisPos">
+                          <select class="form-control form-control-sm" [(ngModel)]="report.AXE1_X">
+                            <option *ngFor="let axis of meshAxisPos.axis1" [value]="axis.MESH_AXIS_POS">{{ axis.meshAxisPosValue }}</option>
+                          </select>
+                        </div>
+                      </div>
+                      <ng-template #shapeEmptyEs>
+                        <div class="col-md-3">
+                          <div class="input-group">
+                            <select class="form-control form-control-sm">
+                              <option></option>
+                            </select>
+                          </div>
+                        </div>
+                      </ng-template>
+                      <label class="col-md-1 col-form-label">2</label>
+                      <div class="col-md-3">
+                        <div class="input-group" *ngIf="meshAxisPos">
+                            <select class="form-control form-control-sm" [(ngModel)]="report.AXE1_Y">
+                              <option *ngFor="let axis of meshAxisPos.axis2" [value]="axis.MESH_AXIS_POS">{{ axis.meshAxisPosValue }}</option>
+                            </select>
+                        </div>
+                      </div>
+                    </div>
+                </td>
+              </tr>
+              <tr *ngIf="report.productElmt.ID_SHAPE != 1 && report.productElmt.ID_SHAPE != 6 && report.productElmt.ID_SHAPE != 4 && report.productElmt.ID_SHAPE != 5 && report.productElmt.ID_SHAPE != 7 && report.productElmt.ID_SHAPE != 8">
+                <td colspan="2">
+                  <strong>  Slices </strong>
+                  <div class="form-group row" >
+                    <label class="col-md-2 col-form-label" for="text-input">Slice 23</label>
+                    <div class="col-md-2" *ngIf="report.productElmt.ID_SHAPE != 1 || report.productElmt.ID_SHAPE != 6; else shapeEmptyEs ">
+                      <div class="input-group" *ngIf="meshAxisPos">
+                        <select class="form-control form-control-sm" [(ngModel)]="report.PLAN_X">
+                          <option *ngFor="let axis of meshAxisPos.axis1" [value]="axis.MESH_AXIS_POS">{{ axis.meshAxisPosValue }}</option>
+                        </select>
+                      </div>
+                    </div>
+                    <ng-template #shapeEmptyEs>
+                      <div class="col-md-2">
+                        <div class="input-group">
+                          <select class="form-control form-control-sm">
+                            <option></option>
+                          </select>
+                        </div>
+                      </div>
+                    </ng-template>
+                    <label class="col-md-2 col-form-label" for="text-input">Slice 13</label>
+                    <div class="col-md-2">
+                      <div class="input-group" *ngIf="meshAxisPos">
+                          <select class="form-control form-control-sm" [(ngModel)]="report.PLAN_Y">
+                            <option *ngFor="let axis of meshAxisPos.axis2" [value]="axis.MESH_AXIS_POS">{{ axis.meshAxisPosValue }}</option>
+                          </select>
+                      </div>
+                    </div>
+                    <label class="col-md-2 col-form-label" for="text-input" *ngIf="report.productElmt.ID_SHAPE != 1 && report.productElmt.ID_SHAPE != 6">Slice 12</label>
+                    <div class="col-md-2" *ngIf="report.productElmt.ID_SHAPE != 1 && report.productElmt.ID_SHAPE != 6">
+                      <div *ngIf="report.productElmt.ID_SHAPE == 2 || report.productElmt.ID_SHAPE == 3 || report.productElmt.ID_SHAPE == 9; else shapeEmpty3Es ">
+                        <div class="input-group" *ngIf="meshAxisPos">
+                          <select class="form-control form-control-sm" [(ngModel)]="report.PLAN_Z">
+                            <option *ngFor="let axis of meshAxisPos.axis3" [value]="axis.MESH_AXIS_POS">{{ axis.meshAxisPosValue }}</option>
+                          </select>
+                        </div>
+                      </div>
+                      <ng-template #shapeEmpty3Es>
+                        <div class="col-md-2">
+                          <div class="input-group">
+                            <select class="form-control form-control-sm">
+                              <option></option>
+                            </select>
+                          </div>
+                        </div>
+                      </ng-template>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            </table>
+
+
+          </div>
+          <!-- end estimation -->
+
+          <button class="btn btn-primary" style="float:right;margin-right:20px;">Generate</button>
+        </div>
+        <div class="card-footer text-center">
+          <button class="btn btn-success" type="button" (click)="saveContentReport()" [ladda]="isSaveReport"><i class="fa fa-floppy-o"></i> {{ 'Save'|translate }}</button>
+          <button class="btn btn-secondary" (click)="downloadPDF()"><i class="fa fa-file"></i> PDF</button>
+          <button class="btn btn-secondary"> <i class="fa fa-code"></i> HTML</button>
+        </div>
       </div>
     </div>
-  </div>
 </div>
+<app-spinner *ngIf="isLoading"></app-spinner>

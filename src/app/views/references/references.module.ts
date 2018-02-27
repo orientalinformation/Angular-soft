@@ -6,7 +6,7 @@ import { ReferencesRoutingModule } from './references-routing.module';
 import { LayoutComponent } from './layout/layout.component';
 import { ComponentComponent, ComponentFilterPipe } from './component/component.component';
 import { PackingComponent, PackingElmtFilterPipe } from './packing/packing.component';
-import { EquipmentComponent } from './equipment/equipment.component';
+import { EquipmentComponent, EquipmentFilterPipe } from './equipment/equipment.component';
 import { PipelineComponent, PipeLineFilterPipe } from './pipeline/pipeline.component';
 import { ModalModule } from 'ngx-bootstrap/modal';
 import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
@@ -27,6 +27,6 @@ import { TranslateModule } from '@ngx-translate/core';
     PerfectScrollbarModule
   ],
   declarations: [LayoutComponent, ComponentComponent, PackingComponent, EquipmentComponent,
-    PipelineComponent, PackingElmtFilterPipe, PipeLineFilterPipe, ComponentFilterPipe]
+    PipelineComponent, PackingElmtFilterPipe, PipeLineFilterPipe, ComponentFilterPipe, EquipmentFilterPipe]
 })
 export class ReferencesModule { }

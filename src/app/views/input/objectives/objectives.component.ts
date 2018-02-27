@@ -14,6 +14,8 @@ export class ObjectivesComponent implements OnInit, AfterViewInit {
 
   public study: Study;
   public production: Production;
+  public laddaSavingStudy = false;
+  public laddaSavingProduction = false;
 
   public laddaSavingObjectives = false;
   public isLoading = false;
@@ -23,6 +25,7 @@ export class ObjectivesComponent implements OnInit, AfterViewInit {
   ngOnInit() {
     this.isLoading = true;
   }
+
 
   saveObjectiveView() {
     this.laddaSavingObjectives = true;
@@ -53,9 +56,31 @@ export class ObjectivesComponent implements OnInit, AfterViewInit {
       },
       err => {
         console.log(err);
+      },
+      () => {
+        this.laddaSavingStudy = false;
       }
     );
   }
+
+  saveProduction() {
+    this.laddaSavingProduction = true;
+    this.api.saveProduction({
+      id: this.study.ID_STUDY,
+      body: this.study
+    }).subscribe(
+      resp => {
+        console.log(resp);
+      },
+      err => {
+        console.log(err);
+      },
+      () => {
+        this.laddaSavingProduction = false;
+      }
+    );
+  }
+
 
   toggleChainControl() {
     if (this.study.CHAINING_CONTROLS) {

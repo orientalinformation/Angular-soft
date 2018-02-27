@@ -18,6 +18,7 @@ import { isNumber } from '@ng-bootstrap/ng-bootstrap/util/util';
 })
 export class EquipmentComponent implements OnInit, AfterContentInit {
   @ViewChild('addEquipModal') public addEquipModal: ModalDirective;
+  @ViewChild('editModal') public editModal: ModalDirective;
 
   public isUpdatePrice = false;
   public isUpdateInterval = false;
@@ -26,10 +27,17 @@ export class EquipmentComponent implements OnInit, AfterContentInit {
   public equipmentsView: Models.ViewStudyEquipment[];
   public laddaDeletingStudyEquip: boolean[];
   public laddaListingEquipments = false;
+  public laddaLoadingLayout = false;
   public laddaAddingEquipment = false;
   public equipments: Models.Equipment[];
+  public editLayoutForm: {
+    stdEquipId?: number,
+    widthInterval?: number,
+    lengthInterval?: number,
+    orientation?: number
+  };
 
-  constructor(private api: ApiService, private text: TextService, private translate: TranslateService, 
+  constructor(private api: ApiService, private text: TextService, private translate: TranslateService,
     private toastr: ToastrService, private router: Router) { }
   public selectedAddingEquipment: Models.Equipment;
   public filterString = '';
@@ -161,6 +169,7 @@ export class EquipmentComponent implements OnInit, AfterContentInit {
   getUnitData() {
     this.api.getUnitData(this.study.ID_STUDY).subscribe(
       resp => {
+        console.log(resp);
         this.unitData = resp;
         this.unitDataRes.price = resp.Price;
         this.unitDataRes.intervalL = resp.IntervalLength;
@@ -236,7 +245,7 @@ export class EquipmentComponent implements OnInit, AfterContentInit {
           this.getUnitData();
           this.isUpdateInterval = false;
 
-          // >>>>>>>>>>> Recalculate equipment parameter <<<<<<<<<<<<<<<
+          // Recalculate equipment parameter
 
         } else {
           swal('Oops..', 'Update interval Lenght Width error!', 'error');
@@ -248,6 +257,49 @@ export class EquipmentComponent implements OnInit, AfterContentInit {
       },
       () => {
         this.isUpdateInterval = false;
+      }
+    );
+  }
+
+  equipEditConfig(equip: Models.ViewStudyEquipment, index: number) {
+    swal('Warning', 'This feature is not yet implement', 'warning');
+  }
+
+  equipEditLayout(equip: Models.ViewStudyEquipment, index: number) {
+    this.editLayoutForm = {
+      stdEquipId: equip.ID_STUDY_EQUIPMENTS,
+      orientation: equip.ORIENTATION
+    };
+    this.editLayoutForm.lengthInterval = equip.layoutGen.LENGTH_INTERVAL;
+    if (equip.layoutGen.LENGTH_INTERVAL < 0) {
+      this.editLayoutForm.lengthInterval = this.unitData.IntervalLength;
+    }
+    this.editLayoutForm.widthInterval = equip.layoutGen.WIDTH_INTERVAL;
+    if (equip.layoutGen.WIDTH_INTERVAL < 0) {
+      this.editLayoutForm.widthInterval = this.unitData.IntervalWidth;
+    }
+    this.editModal.show();
+  }
+
+  updateStdEquipLayout() {
+    this.api.updateStudyEquipmentLayout({
+      id: this.editLayoutForm.stdEquipId,
+      body: {
+        lengthInterval: this.editLayoutForm.lengthInterval,
+        widthInterval: this.editLayoutForm.widthInterval,
+        orientation: this.editLayoutForm.orientation
+      }
+    }).subscribe(
+      (resp) => {
+
+      },
+      (err) => {
+        console.log(err);
+        this.editModal.hide();
+      },
+      () => {
+        this.editModal.hide();
+        this.refreshView();
       }
     );
   }

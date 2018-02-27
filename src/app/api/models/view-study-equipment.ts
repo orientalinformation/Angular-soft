@@ -1,4 +1,5 @@
 /* tslint:disable */
+import { LayoutGeneration } from './layout-generation';
 
 /**
  */
@@ -17,4 +18,5 @@ export class ViewStudyEquipment {
     ts?: number[];
     vc?: number[];
     top_or_QperBatch?: string;
+    layoutGen?: LayoutGeneration;
 }

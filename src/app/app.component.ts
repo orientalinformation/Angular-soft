@@ -1,5 +1,4 @@
 import { Component, isDevMode } from '@angular/core';
-import { jqxBarGaugeComponent } from 'jqwidgets-framework/jqwidgets-ts/angular_jqxbargauge';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs/Subscription';
 import { OnInit, OnDestroy } from '@angular/core';
