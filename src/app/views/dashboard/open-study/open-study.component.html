@@ -20,7 +20,9 @@
             <a *ngFor="let study of (studies.mine | filter: filterString)" class="list-group-item list-group-item-action" [ngClass]="study == selectedStudy? 'active' : ''" (click)="onSelect(study)">
               <div class="d-flex w-100 justify-content-between">
                 {{study.STUDY_NAME}}
-                <small>{{study.USERNAM}}</small>
+                <span>
+                  <i *ngIf="study.CHAINING_CONTROLS == 1" class="fa fa-chain text-muted"></i>
+                </span>
               </div>
             </a>
             <!-- others -->
@@ -29,7 +31,10 @@
               (click)="onSelect(study)">
               <div class="d-flex w-100 justify-content-between">
                 {{study.STUDY_NAME}}
-                <small>{{study.USERNAM}}</small>
+                <span>
+                  <small>{{study.USERNAM}}</small>
+                  <i *ngIf="study.CHAINING_CONTROLS == 1" class="fa fa-chain text-muted"></i>
+                </span>
               </div>
             </a>
           </div>
@@ -96,9 +101,8 @@
           
         <div class="card-footer text-center" *ngIf="selectedStudy">
           <button type="button" class="btn btn-danger" (click)="deleteStudy()" [ladda]="laddaDeletingStudy"><i class="fa fa-trash-o"></i> {{'Delete'|translate}}</button>
-            <button type="button" class="btn btn-info" (click)="chainStudy()"><i class="fa fa-chain"></i> {{'Chaining'|translate}}</button>
-            <button type="button" class="btn btn-secondary" (click)="modalSaveAs.show()" [ladda]="laddaSaveStudyAs"><i class="fa fa-copy"></i> {{'Save As'|translate}}</button>
-            <button type="button" class="btn btn-primary" (click)="openStudy()"><i class="fa fa-folder-open-o"></i> {{'Open'|translate}}</button>
+            <button type="button" class="btn btn-secondary" (click)="modalSaveAs.show()"><i class="fa fa-copy"></i> {{'Save As'|translate}}</button>
+            <button type="button" class="btn btn-primary" (click)="openStudy()" [ladda]="laddaOpeningStudy"><i class="fa fa-folder-open-o"></i> {{'Open'|translate}}</button>
         </div>
       </div>
     </div>
@@ -119,8 +123,8 @@
               <input class="form-control" type="text" [(ngModel)]="name" placeholder="Study Name">
       </div><!-- modal-body -->
       <div class="modal-footer">
-        <button class="btn btn-secondary" data-dismiss="modal" (click)="modalSaveAs.hide()">Cancel</button>
-        <button class="btn btn-primary" (click)="saveStudyAs()" >Confirm</button>
+        <button class="btn btn-secondary" data-dismiss="modal" (click)="modalSaveAs.hide()">{{'Cancel'|translate}}</button>
+        <button class="btn btn-primary" (click)="saveStudyAs()" [ladda]="laddaSaveStudyAs">{{'Confirm'|translate}}</button>
       </div>
     </div>
   </div>

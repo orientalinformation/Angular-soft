@@ -19,6 +19,7 @@ import { PerfectScrollbarModule, PerfectScrollbarConfigInterface } from 'ngx-per
 import { SelectModule } from 'ng-select';
 import { SharedModule } from '../../shared/shared.module';
 import { TabsModule } from 'ngx-bootstrap/tabs';
+import { ChainingComponent } from './chaining/chaining.component';
 
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   suppressScrollX: true
@@ -39,7 +40,8 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   declarations: [
     ObjectivesComponent, ProductComponent, InitialComponent,
     PackingComponent, EquipmentComponent, LineComponent, LayoutComponent,
-    CompFilterPipe
+    CompFilterPipe,
+    ChainingComponent
   ],
   providers: [
     StudyRequiredGuard

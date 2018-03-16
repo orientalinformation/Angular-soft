@@ -4,7 +4,7 @@ import { ViewSelect } from './view-select';
 /**
  */
 export class OptimumCalculator {
-    tempPtIn?: number;
+    tempPtBot?: number;
     sdisableFields?: number;
     checkOptim?: number;
     sdisableOptim?: number;
@@ -26,8 +26,8 @@ export class OptimumCalculator {
     vRadioOn?: number;
     vRadioOff?: number;
     tempPtSurf?: number;
+    tempPtIn?: number;
     sdisableCalculate?: number;
-    tempPtBot?: number;
     tempPtAvg?: number;
     isBrainCalculator?: number;
     select1?: ViewSelect[];
@@ -48,4 +48,6 @@ export class OptimumCalculator {
     seValue7?: number;
     seValue8?: number;
     seValue9?: number;
+    ID_USER_STUDY?: number;
+    ID_USER_CURRENT?: number;
 }

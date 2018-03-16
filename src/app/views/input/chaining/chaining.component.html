@@ -1,0 +1,133 @@
+<div *ngIf="visibleObjectives">
+  <div *ngIf="model != null">
+  <div class="card-header">
+    <strong>{{'CHAINING'|translate}}</strong>
+  </div>
+  <!-- /.card-header -->
+  <table class="table table-bordered table-sm mb-0" style="border-bottom: 1px solid #ddd">
+    <thead>
+      <tr>
+        <th width="20%">{{'Parent'|translate}}</th>
+        <th width="20"></th>
+        <th colspan="2">{{'Current'|translate}}</th>
+        <th width="20"></th>
+        <th width="20%">{{'Child(s)'|translate}}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style="vertical-align: middle; text-align: center" [attr.rowspan]="numberOfChildren">
+          <div *ngIf="model.parent">
+            <a href="javascript:void(0);" (click)="closeAndOpenStudy(model.parent.id)"><span style="white-space: nowrap">{{model.parent.name}}</span></a><br>
+            {{model.parent.equipName}}
+          </div>
+        </td>
+        <td style="vertical-align: middle;" [attr.rowspan]="numberOfChildren">
+          <i class="fa fa-play" *ngIf="model.parent"></i>
+        </td>
+        <td style="vertical-align: middle; text-align:center; min-width: 120px" width="1%" [attr.rowspan]="numberOfChildren">
+          <span style="white-space: nowrap">{{model.studyName}}</span>
+        </td>
+        <td style="vertical-align: middle; text-align:center">
+          <span *ngIf="model.children">{{model.children[0].equipName}}</span>
+        </td>
+        <td style="vertical-align: middle;">
+          <i class="fa fa-play" *ngIf="model.children"></i>
+        </td>
+        <td style="vertical-align: middle; text-align:center">
+          <a href="javascript:void(0);" (click)="closeAndOpenStudy(model.children[0].id)"><span *ngIf="model.children">{{model.children[0].name}}</span></a>
+        </td>
+      </tr>
+      <tr *ngFor="let child of model.children | slice:1">
+        <td style="vertical-align: middle; text-align:center">
+          <span>{{child.equipName}}</span>
+        </td>
+        <td style="vertical-align: middle;">
+          <i class="fa fa-play"></i>
+        </td>
+        <td style="vertical-align: middle; text-align:center">
+          <a href="javascript:void(0);" (click)="closeAndOpenStudy(child.id)"><span>{{child.name}}</span></a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <!-- /.card-body -->
+  </div>
+</div>
+
+<div *ngIf="visibleProduct && chainingEnabled()">
+  <div class="alert alert-warning" role="alert" *ngIf="!studyHasChild() && addingComponentAllowed()">
+    {{'Chaining enabled! Adding child component is ALLOWED.'|translate}}
+  </div>
+  <div class="alert alert-danger" role="alert" *ngIf="studyHasChild() || !addingComponentAllowed()">
+    {{'Chaining enabled! Adding more component is NOT ALLOWED.'|translate}}
+  </div>
+</div>
+
+<div *ngIf="visibleInitialTemp && chainingEnabled()">
+  <div class="alert alert-info" role="alert" *ngIf="!studyHasChild() && !studyHasParent()">
+    {{'Chaining enabled! No child study yet. Mesh modification is still ALLOWED.'|translate}}
+  </div>
+  <div class="alert alert-danger" role="alert" *ngIf="studyHasChild()">
+    {{'Chaining enabled! Child study exists. Modification is NOT ALLOWED'|translate}}
+  </div>
+  <div class="alert alert-warning" role="alert" *ngIf="!studyHasChild() && studyHasParent() && addingComponentAllowed()">
+    {{'Chaining enabled! Initial temperature modification of child component is ALLOWED'|translate}}
+  </div>
+</div>
+
+<div *ngIf="visiblePacking && chainingEnabled()">
+  <div class="alert alert-info" role="alert" *ngIf="!studyHasChild() && !studyHasParent()">
+    {{'Chaining enabled! No child study yet. Packing modification is still ALLOWED.'|translate}}
+  </div>
+  <div class="alert alert-danger" role="alert" *ngIf="studyHasChild()">
+    {{'Chaining enabled! Child study exists. Modification is NOT ALLOWED'|translate}}
+  </div>
+</div>
+
+<div *ngIf="visibleEquipment && chainingEnabled()">
+  <div class="alert alert-info" role="alert" *ngIf="!studyHasChild() && !studyHasParent()">
+    {{'Chaining enabled! No child study yet. Equipment modification is still ALLOWED.'|translate}}
+  </div>
+  <div class="alert alert-danger" role="alert" *ngIf="studyHasChild()">
+    {{'Chaining enabled! Child study exists. Modification is NOT ALLOWED'|translate}}
+  </div>
+</div>
+
+
+<div class="modal fade" bsModal #chainingModal="bs-modal" role="dialog" aria-labelledby="chainingModal" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <strong>{{'CREATE CHILD STUDY'|translate}}</strong>
+      </div>
+      <div class="modal-body" *ngIf="equipmentsLoaded">
+        <div class="row">
+          <div class="col-sm-12">
+            <div class="form-group">
+              <label for="name">{{'New child study name'|translate}}</label>
+              <input type="text" class="form-control" id="studyName" [(ngModel)]="childStudyName">
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-12">
+            <div class="form-group">
+              <label for="name">{{'Select equipment for chaining'|translate}}</label>
+              <select [(ngModel)]="selectedEquipmentId" id="studyEquipment" class="form-control">
+                <option *ngFor="let eqp of equipments" value="{{eqp.ID_STUDY_EQUIPMENTS}}">{{eqp.displayName}}</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-body" *ngIf="!equipmentsLoaded">
+        <app-spinner #spinner></app-spinner>
+      </div>
+      <div class="card-footer text-right">
+        <button class="btn btn-secondary" (click)="chainingModal.hide()">{{'Cancel'|translate}}</button>
+        <button class="btn btn-primary" [disabled]="!equipmentsLoaded" [ladda]="laddaConfirm" (click)="onConfirmCreateChildStudy()">{{'Confirm'|translate}}</button>
+      </div>
+    </div>
+  </div>
+</div>

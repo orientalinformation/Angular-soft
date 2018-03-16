@@ -25,6 +25,8 @@ import { ReferencesModule } from './views/references/references.module';
 import { SettingsModule } from './views/settings/settings.module';
 import { AdminModule } from './views/admin/admin.module';
 import { ProfileLayoutComponent } from './layouts/profile-layout/profile-layout.component';
+import { PdfViewerModule } from 'ng2-pdf-viewer';
+import { FormsModule } from '@angular/forms';
 
 // Import components
 import {
@@ -89,6 +91,7 @@ import { AdminLayoutComponent } from './layouts/admin-layout/admin-layout.compon
 
 import { TooltipModule } from 'ngx-bootstrap';
 
+
 // AoT requires an exported function for factories
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http);
@@ -104,16 +107,19 @@ export function HttpLoaderFactory(http: HttpClient) {
     DashboardLayoutComponent,
     AppSysUtilzComponent,
     ProfileLayoutComponent,
-    AdminLayoutComponent
+    AdminLayoutComponent,
   ],
   imports: [
     AppRoutingModule,
     BrowserModule,
     BrowserAnimationsModule,
+    PdfViewerModule,
+    FormsModule,
     SelectModule,
     HttpClientModule,
     ChartsModule,
     SharedModule,
+    BrowserModule,
     BsDropdownModule.forRoot(),
     ModalModule.forRoot(),
     TabsModule.forRoot(),
@@ -132,7 +138,7 @@ export function HttpLoaderFactory(http: HttpClient) {
       progressBar: false,
       preventDuplicates: true
     }),
-    TooltipModule.forRoot()
+    TooltipModule.forRoot(),
   ],
   providers: [
     AuthGuard,

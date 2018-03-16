@@ -1,9 +1,11 @@
 <div class="container" *ngIf="!isLoading">
+  <app-chaining #chainingControls (loaded)="onChainControlsLoaded()" *ngIf="study.CHAINING_CONTROLS"></app-chaining>
+
   <div class="card-group product-container mb-3">
     <div class="card">
       <div class="card-header">
         <strong>{{ 'PRODUCT DEFINITION' | translate }}</strong>
-        <button type="button" class="btn btn-sm btn-primary float-right" (click)="modalEditProduct.show()" *ngIf="productShape != 0">
+        <button type="button" class="btn btn-sm btn-primary float-right" [disabled]="study.CHAINING_CONTROLS && (study.HAS_CHILD || study.PARENT_ID != 0)" (click)="modalEditProduct.show()" *ngIf="productShape != 0">
           <i class="fa fa-pencil-square-o"></i> {{'EDIT'|translate}}
         </button>
       </div>
@@ -29,12 +31,12 @@
                   <label *ngIf="productShape == shapeNames.REC_LAY || productShape == shapeNames.CON_CYL_STAND
                                     || productShape == shapeNames.CON_CYL_LAY">{{'Height'|translate}}</label>
                 </div>
-                <div class="col-md-7">{{prodDim1 | formatNumber: 2}} m</div>
+                <div class="col-md-7" *ngIf="symbol">{{prodDim1}} {{symbol.prodDimensionSymbol}}</div>
               </div>
               <!-- dimension 3 -->
               <div class="row" *ngIf="(productShape == shapeNames.REC_STAND || productShape == shapeNames.REC_LAY || productShape == shapeNames.BREAD)">
                 <div class="col-md-5">{{'Width'|translate}}</div>
-                <div class="col-md-7">{{prodDim3 | formatNumber: 2}} m</div>
+                <div class="col-md-7" *ngIf="symbol">{{prodDim3}} {{symbol.prodDimensionSymbol}}</div>
               </div>
               <!-- variable dimension -->
               <div class="row">
@@ -48,17 +50,17 @@
                       || productShape == shapeNames.CON_CYL_LAY">{{'Diameter'|translate}}</label>
                   </strong>
                 </div>
-                <div class="col-md-7">{{prodDim2 | formatNumber: 2}} m</div>
+                <div class="col-md-7" *ngIf="symbol">{{prodDim2}} {{symbol.prodDimensionSymbol}}</div>
               </div>
             </div> <!-- /.container -->
             <div class="container border mt-3">
               <div class="row">
                 <div class="col-md-5">{{'Calculated mass'|translate}}</div>
-                <div class="col-md-7">{{product.PROD_WEIGHT | formatNumber: 3}} kg</div>
+                <div class="col-md-7">{{product.PROD_WEIGHT}} {{symbol.massSymbol}}</div>
               </div>
               <div class="row">
                 <div class="col-md-5"><strong>{{'Real mass/unit'|translate}}</strong></div>
-                <div class="col-md-7">{{product.PROD_REALWEIGHT | formatNumber: 3}} kg</div>
+                <div class="col-md-7">{{product.PROD_REALWEIGHT}} {{symbol.massSymbol}}</div>
               </div>
             </div>
           </div><!-- /col-md-10 -->
@@ -86,37 +88,49 @@
     <div class="card-header">
       <strong>{{'PRODUCT ELEMENTS'|translate}}</strong>
       <div class="float-right">
-        <button type="button" class="btn btn-success btn-sm"  data-style="slide-left" [ladda]="laddaAddComponent" (click)="onShowAddElement()">
-          <i class="fa fa-plus"></i> Add
+        <button type="button" class="btn btn-success btn-sm" 
+          [disabled]="study.CHAINING_CONTROLS && (study.HAS_CHILD || !study.CHAINING_ADD_COMP_ENABLE)"
+          data-style="slide-left" [ladda]="laddaAddComponent" (click)="onShowAddElement()">
+          <i class="fa fa-plus"></i> {{'ADD'|translate}}
         </button>
       </div>
     </div>
     <table class="table table-sm table-bordered table-hover mb-0" *ngIf="elements.length > 0">
       <thead>
-        <tr>
-          <th class="text-center" width="1%"><i class="fa fa-sort" aria-hidden="true"></i></th>
+        <tr *ngIf="symbol">
+          <th class="text-center" width="2%"><i class="fa fa-sort" aria-hidden="true"></i></th>
           <th class="text-center">{{'Component name'|translate}}</th>
           <th class="text-center">{{'Description'|translate}}</th>
-          <th class="text-center">{{'Specific Dim.'|translate}} (m)</th>
-          <th class="text-center">{{'Calculated Mass'|translate}} (kg)</th>
-          <th class="text-center">{{'Real mass'|translate}} (kg)</th>
+          <th class="text-center">{{'Specific Dim.'|translate}} ({{symbol.prodDimensionSymbol}})</th>
+          <th class="text-center">{{'Calculated Mass'|translate}} ({{symbol.massSymbol}})</th>
+          <th class="text-center">{{'Real mass'|translate}} ({{symbol.massSymbol}})</th>
           <th class="text-center" width="1%">{{'Actions'|translate}}</th>
         </tr>
       </thead>
       <tbody>
         <tr *ngFor="let element of elements; first as isFirst; last as isLast; let i = index">
           <td class="text-center nowrap">
-            <a *ngIf="!isFirst" (click)="onMoveUpElement(element)"><i class="fa fa-caret-up" aria-hidden="true"></i></a> 
-            <a *ngIf="!isLast" (click)="onMoveDownElement(element)"><i class="fa fa-caret-down" aria-hidden="true"></i></a>
+            <a *ngIf="!isFirst" (click)="onMoveUpElement(element)"><i class="fa fa-caret-up" aria-hidden="true"></i></a><a *ngIf="!isLast" (click)="onMoveDownElement(element)"><i class="fa fa-caret-down" aria-hidden="true"></i></a>
           </td>
-          <td>{{'components.'+element.ID_COMP|translate}}</td>
-          <td>{{ element.PROD_ELMT_NAME }}</td>
-          <td class="text-right">{{ element.SHAPE_PARAM2 | formatNumber:2 }}</td>
-          <td class="text-right">{{ element.PROD_ELMT_WEIGHT | formatNumber:3 }}</td>
-          <td class="text-right">{{ element.PROD_ELMT_REALWEIGHT | formatNumber:3 }}</td>
+          <td> <i class="fa fa-stop fa-lg" [style.color]="prodColors[i].CODE_HEXA"></i> {{'components.'+element.ID_COMP|translate}}</td>
+          <td class="text-center">
+            {{ element.PROD_ELMT_NAME }}
+            <div *ngIf="study.CHAINING_CONTROLS && study.PARENT_ID != 0 && element.INSERT_LINE_ORDER != study.ID_STUDY">
+              {{'(parent component)'|translate}}
+            </div>
+          </td>
+          <td class="text-center">{{ element.SHAPE_PARAM2 }}</td>
+          <td class="text-center">{{ element.PROD_ELMT_WEIGHT }}</td>
+          <td class="text-center">{{ element.PROD_ELMT_REALWEIGHT }}</td>
           <td class="text-center nowrap">
-            <button class="btn btn-sm btn-primary" (click)="onEditElement(element)"><i class="fa fa-pencil"></i></button>
-            <button class="btn btn-sm btn-danger" (click)="onRemoveElement(element, i)" [ladda]="laddaDeletingElmts[i]">
+            <button class="btn btn-sm btn-primary" 
+              (click)="onEditElement(element)" 
+              [disabled]="study.HAS_CHILD || element.INSERT_LINE_ORDER != study.ID_STUDY">
+                <i class="fa fa-pencil"></i>
+            </button>
+            <button class="btn btn-sm btn-danger" 
+              (click)="onRemoveElement(element, i)" 
+              [disabled]="study.HAS_CHILD ||element.INSERT_LINE_ORDER != study.ID_STUDY" [ladda]="laddaDeletingElmts[i]">
               <i class="fa fa-minus-circle"></i>
             </button>
           </td>
@@ -163,7 +177,7 @@
             <div class="col-md-9">
               <div class="input-group">
                 <input type="text" name="dim1" class="form-control" [(ngModel)]="productForm.dim1" [disabled]="productForm.shape == 0 || productForm.shape == shapeNames.SLAB || productForm.shape == shapeNames.SPHERE">
-                <span class="input-group-addon">m</span>
+                <span class="input-group-addon" *ngIf="symbol">{{symbol.prodDimensionSymbol}}</span>
               </div>              
             </div>
           </div>
@@ -175,7 +189,7 @@
                                 (productForm.shape == shapeNames.REC_STAND) || (productForm.shape == shapeNames.REC_LAY) || (productForm.shape == shapeNames.BREAD) ||
                                 (productForm.shape == shapeNames.CYL_STAND) || (productForm.shape == shapeNames.CYL_LAY) || (productForm.shape == shapeNames.CON_CYL_STAND) ||
                                 (productForm.shape == shapeNames.CON_CYL_LAY)">
-                <span class="input-group-addon">m</span>
+                <span class="input-group-addon" *ngIf="symbol">{{symbol.prodDimensionSymbol}}</span>
               </div>              
             </div>
           </div>
@@ -185,7 +199,7 @@
               <div class="input-group">
                 <input type="text" name="dim1" class="form-control" [(ngModel)]="productForm.dim3" [disabled]="productForm.shape == 0 || productForm.shape == shapeNames.SLAB || productForm.shape == shapeNames.SPHERE || (productForm.shape == shapeNames.CYL_STAND) || (productForm.shape
                                 == shapeNames.CYL_LAY) || (productForm.shape == shapeNames.CON_CYL_STAND) || (productForm.shape == shapeNames.CON_CYL_LAY)">
-                <span class="input-group-addon">m</span>
+                <span class="input-group-addon" *ngIf="symbol">{{symbol.prodDimensionSymbol}}</span>
               </div>
               
             </div>
@@ -204,7 +218,7 @@
   <div class="modal-dialog" role="document" style="max-width:70%;">
     <div class="modal-content">
       <div class="modal-header">
-        <strong>ADDING COMPONENTS</strong>
+        <strong>{{'ADDING COMPONENTS'|translate}}</strong>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="addElementModal.hide()">
           <span aria-hidden="true">×</span>
         </button>
@@ -279,8 +293,8 @@
           </div>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-secondary" data-dismiss="modal" (click)="addElementModal.hide()">Cancel</button>
-        <button class="btn btn-primary" (click)="onAddElement()" [ladda]="laddaConfirmAddComponent">Confirm</button>
+        <button class="btn btn-secondary" data-dismiss="modal" (click)="addElementModal.hide()">{{'Cancel'|translate}}</button>
+        <button class="btn btn-primary" (click)="onAddElement()" [ladda]="laddaConfirmAddComponent">{{'Confirm'|translate}}</button>
       </div>
     </div>
   </div>
@@ -311,7 +325,7 @@
             <div class="col-md-8">
               <div class="input-group">
                 <input type="text" name="specificDim" class="form-control" [(ngModel)]="elementForm.specific_dim">
-                <span class="input-group-addon">m</span>
+                <span class="input-group-addon" *ngIf="symbol">{{symbol.prodDimensionSymbol}}</span>
               </div>
             </div>
           </div>
@@ -320,7 +334,7 @@
             <div class="col-md-8">
               <div class="input-group">
                 <input type="text" name="calcMass" class="form-control" disabled [(ngModel)]="elementForm.computed_mass">
-                <span class="input-group-addon">kg</span>
+                <span class="input-group-addon" *ngIf="symbol">{{symbol.massSymbol}}</span>
               </div>
             </div>
           </div>
@@ -329,7 +343,7 @@
             <div class="col-md-8">
               <div class="input-group">
                 <input type="text" name="realMass" class="form-control" [(ngModel)]="elementForm.real_mass">
-                <span class="input-group-addon">kg</span>
+                <span class="input-group-addon" *ngIf="symbol">{{symbol.massSymbol}}</span>
               </div>
             </div>
           </div>

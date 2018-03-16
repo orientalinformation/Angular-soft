@@ -94,4 +94,5 @@ export class Report {
     refContRep2DTempMinRef?: number;
     refContRep2DTempMaxRef?: number;
     refContRep2DTempStepRef?: number;
+    ip?: string;
 }

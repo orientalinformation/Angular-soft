@@ -16,6 +16,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { SharedModule } from '../../shared/shared.module';
 import { Nl2BrPipe } from 'nl2br-pipe';
 import { ModalModule } from 'ngx-bootstrap';
+import { LoadingComponent } from './loading/loading.component';
 
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   suppressScrollX: true
@@ -31,7 +32,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     ModalModule.forRoot(),
     TranslateModule.forChild(),
   ],
-  declarations: [StartPageComponent, NewStudyComponent, OpenStudyComponent, ImportComponent, FilterPipe, Nl2BrPipe],
+  declarations: [StartPageComponent, NewStudyComponent, OpenStudyComponent, ImportComponent, FilterPipe, Nl2BrPipe, LoadingComponent],
   providers: [
     {
       provide: PERFECT_SCROLLBAR_CONFIG,

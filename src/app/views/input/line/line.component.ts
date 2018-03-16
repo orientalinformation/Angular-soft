@@ -1,10 +1,11 @@
 import { Component, OnInit, AfterContentChecked, AfterViewInit } from '@angular/core';
-import { Study, ViewProduct, PipeLineElmt} from '../../../api/models';
+import { Study, ViewProduct, PipeLineElmt } from '../../../api/models';
 import { ApiService } from '../../../api/services';
 import { Router } from '@angular/router';
 import swal from 'sweetalert2';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
+import { Symbol } from '../../../api/models/symbol';
 
 @Component({
   selector: 'app-line',
@@ -66,8 +67,8 @@ export class LineComponent implements OnInit, AfterContentChecked, AfterViewInit
   public statusNonInval: boolean;
   public statusInsulatedLine: boolean;
   public statusInsulatedVal: boolean;
-  public loading: boolean;
-
+  public isLoading: boolean;
+  public symbol: any;
   constructor(private api: ApiService, private router: Router, private translate: TranslateService,
     private toastr: ToastrService) { }
   ngOnInit() {
@@ -80,7 +81,7 @@ export class LineComponent implements OnInit, AfterContentChecked, AfterViewInit
     this.noninsulatedvalvesSelect = 0;
     this.diameterSelected = 0;
     this.teeSelect = 0;
-    this.loading = true;
+    this.isLoading = true;
     this.loadDisabled();
     // console.log(this.insulllenght);
   }
@@ -126,6 +127,15 @@ export class LineComponent implements OnInit, AfterContentChecked, AfterViewInit
           this.diameterParamShow = this.dataResultExist.diameterParam;
           this.storageTankParam = this.dataResultExist.storageTankParam;
           this.height = this.dataResultExist.height;
+          if (this.insulationTypeSelected == 0) {
+            this.statusInsulatedLine = true;
+            this.statusInsulatedVal = true;
+            this.insulatedLineSelected = 0;
+            this.insulatedvalSelected = 0;
+          } else {
+            this.statusInsulatedLine = false;
+            this.statusInsulatedVal = false;
+          }
           if (this.dataResultExist.pressuer != null) {
             this.pressuer = this.dataResultExist.pressuer;
           } else {
@@ -147,10 +157,10 @@ export class LineComponent implements OnInit, AfterContentChecked, AfterViewInit
           this.teeValue = this.dataResultExist.teeValue;
           this.elbowsValue = this.dataResultExist.elbowsValue;
           this.storageTankValue = this.dataResultExist.storageTankValue;
-          for (let ii = 0; ii <  this.idPipeLineEmlt.length; ii ++) {
+          for (let ii = 0; ii < this.idPipeLineEmlt.length; ii++) {
             if (this.idPipeLineEmlt[ii] == this.insulatedvalValue) {
               this.insulatedvalSelected = this.dataResultExist.insulatedlinevalValue;
-            } else if (this.idPipeLineEmlt[ii] == this.insulatedLineValue){
+            } else if (this.idPipeLineEmlt[ii] == this.insulatedLineValue) {
               this.insulatedLineSelected = this.dataResultExist.insulationLineValue;
             } else if (this.idPipeLineEmlt[ii] == this.non_insulated_valValue) {
               this.noninsulatedvalvesSelect = this.dataResultExist.non_insulated_valValue;
@@ -187,7 +197,7 @@ export class LineComponent implements OnInit, AfterContentChecked, AfterViewInit
           if (this.dataResultExist.tee == null) {
             this.tee = this.dataResultExist.teeSub;
           } else {
-          this.tee = this.dataResultExist.tee;
+            this.tee = this.dataResultExist.tee;
           }
           if (this.dataResultExist.elbows == null) {
             this.elbows = this.dataResultExist.elbowsSub;
@@ -209,7 +219,7 @@ export class LineComponent implements OnInit, AfterContentChecked, AfterViewInit
             this.insulationParamShow.push({
               value: i,
               name: this.insulationName
-          });
+            });
           }
           if (this.insulllenght != 0) {
             this.statusInLenght = false;
@@ -243,7 +253,7 @@ export class LineComponent implements OnInit, AfterContentChecked, AfterViewInit
           }
         } else {
           for (let i = 0; i < this.dataResult.length; i++) {
-            if (i == 0 ) {
+            if (i == 0) {
               this.insulationName = this.translate.instant('Not Insulated');
             } else if (i == 1) {
               this.insulationName = this.translate.instant('Polyrethane');
@@ -257,22 +267,28 @@ export class LineComponent implements OnInit, AfterContentChecked, AfterViewInit
             this.insulationParamShow.push({
               value: i,
               name: this.insulationName
-          });
+            });
           }
         }
-        this.loading = false;
+        this.isLoading = false;
+      }
+    );
+    this.api.getSymbol(this.study.ID_STUDY).subscribe(
+      data => {
+        console.log(data);
+        this.symbol = data;
       }
     );
   }
 
   loadInsulationType() {
-    this.insulatedLineValue = 0;
-    this.insulatedvalValue = 0;
+    this.insulatedLineSelected = 0;
+    this.insulatedvalSelected = 0;
     this.diameterSelected = 0;
-    this.non_insulated_valValue = 0;
-    this.non_insulated_lineValue = 0;
-    this.teeValue = 0;
-    this.elbowsValue = 0;
+    this.noninsulatedlineSelect = 0;
+    this.noninsulatedvalvesSelect = 0;
+    this.teeSelect = 0;
+    this.elbowsSelected = 0;
     this.diameterParams = [];
     this.storageTankValue = [];
     this.storageTankParam = [];
@@ -291,6 +307,7 @@ export class LineComponent implements OnInit, AfterContentChecked, AfterViewInit
       );
     }
     this.diameterParamShow = this.diameterParams;
+    console.log(this.diameterParamShow);
     this.loadDiameter();
     this.loadDisabled();
   }
@@ -332,7 +349,7 @@ export class LineComponent implements OnInit, AfterContentChecked, AfterViewInit
           this.statusNonInval = true;
         }
         this.non_insulated_lineValue = this.dataResult[this.insulationTypeSelected][j].non_insulated_lineValue;
-        if (this.non_insulated_lineValue == this. noninsulatedlineSelect) {
+        if (this.non_insulated_lineValue == this.noninsulatedlineSelect) {
           this.noninsullenght = this.dataResultExist.noninsullenght;
           this.statusNonInL = false;
         } else {
@@ -451,7 +468,7 @@ export class LineComponent implements OnInit, AfterContentChecked, AfterViewInit
     this.laddaSavingLine = true;
     this.api.savePipelines(params).subscribe(
       data => {
-        if (this.insulllenght == 0 ) {
+        if (this.insulllenght == 0) {
           this.insulatedLineSelected = 0;
           this.statusInLenght = true;
         } else if (this.noninsullenght == 0) {
@@ -462,7 +479,7 @@ export class LineComponent implements OnInit, AfterContentChecked, AfterViewInit
           this.statusInval = true;
         } else if (this.noninsulatevallenght == 0) {
           this.noninsulatedvalvesSelect = 0
-          this.statusNonInL = true;;
+          this.statusNonInL = true;
         } else if (this.elbowsnumber == 0) {
           this.elbowsSelected = 0;
           this.statusElbow = true;

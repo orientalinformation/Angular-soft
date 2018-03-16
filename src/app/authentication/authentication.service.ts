@@ -16,6 +16,10 @@ export class AuthenticationService {
 
   }
 
+  user(): any {
+    return JSON.parse(localStorage.getItem('user'));
+  }
+
   login(username: string, password: string) {
     console.log('auth service send login');
     return this.api.login({ username, password })

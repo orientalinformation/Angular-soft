@@ -1,4 +1,6 @@
 <div class="container" *ngIf="!isLoading">
+  <app-chaining #chainingControls (loaded)="onChainingControlsLoaded()" *ngIf="study.CHAINING_CONTROLS"></app-chaining>
+
   <div class="card product-container">
     <div class="card-header">
       <strong>{{ 'PRODUCT PACKING SPECIFICATIONS' | translate }}</strong>
@@ -8,7 +10,7 @@
     </div>
     <div class="card card-body">
       <p>
-        Packing name <input type="text" [(ngModel)]="packingName">
+        {{'Packing name'|translate}} <input type="text" [(ngModel)]="packingName" [disabled]="!studyModifiable()">
       </p>
       <div class="row">
         <div class="col-md-6">
@@ -17,7 +19,8 @@
               <th style="text-align:center">{{ getTopLabel(productShape)|translate }}</th>
               <th style="text-align:center" align="center">{{'Number of Layers'|translate}}</th>
               <td align="center">
-                <select name="toplayersNr" [(ngModel)]="topNrLayer" id="toplaynum" class="form-control" style="width:60px;height:30px;" (change)="onTopNrLayerChanged()" >
+                <select [disabled]="!studyModifiable()" name="toplayersNr" [(ngModel)]="topNrLayer"
+                  id="toplaynum" class="form-control" style="width:60px;height:30px;" (change)="onTopNrLayerChanged()" >
                   <option value="0">0</option>
                   <option value="1">1</option>
                   <option value="2">2</option>
@@ -38,12 +41,12 @@
             <tr *ngFor="let layer of topLayers; let idx = index">
               <td align="center" colspan="2">
                   {{idx + 1}}
-                  <select [(ngModel)]="layer.ID_PACKING_ELMT" style="width:200px;">
+                  <select [(ngModel)]="layer.ID_PACKING_ELMT" style="width:200px;" [disabled]="!studyModifiable()">
                     <option *ngFor="let element of packingElements" [value]="element.ID_PACKING_ELMT">{{'packings.'+element.ID_PACKING_ELMT|translate}}</option>
                   </select>                  
               </td>
-              <td align="center">
-                  <input type="text" style="width:50px;" [(ngModel)]="layer.THICKNESS" > (µm)
+              <td align="center" *ngIf="symbol">
+                  <input type="text" style="width:50px;" [(ngModel)]="layer.THICKNESS" [disabled]="!studyModifiable()"> ({{symbol.packingThicknessSymbol}})
               </td>
             </tr>          
           </table>
@@ -81,7 +84,8 @@
                   <div class="col-sm-12" >
                     <div class="input-group" >
                       <div class="input-group-btn dropdown"  style="margin-left:50px;">
-                        <button type="button" id="btnSpecificSide" class="btn btn-primary dropdown-toggle btn-sm dropdown-toggle-split " ngbDropdownToggle>
+                        <button type="button" [disabled]="!studyModifiable()" id="btnSpecificSide"
+                          class="btn btn-primary dropdown-toggle btn-sm dropdown-toggle-split " ngbDropdownToggle>
                           {{'Specific'|translate}}
                           <span class="caret"></span>
                             <span class="sr-only">Split button!</span>
@@ -90,7 +94,7 @@
                             <a class="dropdown-item" href="javascript:void(0)" (click)="onSideSameAsTop()"> {{'Same as' + getTopLabel(productShape)|translate}}</a>
                             <a class="dropdown-item" href="javascript:void(0)" (click)="onSideSameAsBottom()">{{'Same as' + getBottomLabel(productShape)|translate}}</a>
                         </div>
-                        <select name="sideLayersNr" [(ngModel)]="sideNrLayer" id="sidlaynum" class="form-control" style="height:30px;" (change)="onSideNrLayerChanged()" >
+                        <select name="sideLayersNr" [disabled]="!studyModifiable()" [(ngModel)]="sideNrLayer" id="sidlaynum" class="form-control" style="height:30px;" (change)="onSideNrLayerChanged()" >
                           <option value="0">0</option>
                           <option value="1">1</option>
                           <option value="2">2</option>
@@ -115,12 +119,12 @@
             <tr *ngFor="let layer of sideLayers; let idx = index">
               <td  align="center" colspan="2">
                   {{ idx + 1}}
-                  <select [(ngModel)]="layer.ID_PACKING_ELMT" style="width:200px;">
+                  <select [(ngModel)]="layer.ID_PACKING_ELMT" style="width:200px;" [disabled]="!studyModifiable()">
                     <option *ngFor="let element of packingElements" [value]="element.ID_PACKING_ELMT">{{'packings.'+element.ID_PACKING_ELMT|translate}}</option>
                   </select>
               </td>
-              <td align="center">
-                  <input type="text" style="width:50px;" [(ngModel)]="layer.THICKNESS" > (µm)
+              <td align="center" *ngIf="symbol">
+                  <input type="text" style="width:50px;" [(ngModel)]="layer.THICKNESS"  [disabled]="!studyModifiable()"> ({{symbol.packingThicknessSymbol}})
               </td>
             </tr>
            
@@ -141,12 +145,12 @@
                   <div class="col-sm-12" >
                     <div class="input-group" >
                       <div class="input-group-btn dropdown" style="margin-left:50px;" ngbDropdown>
-                        <button id="btnSpecificBottom" class="btn btn-primary dropdown-toggle btn-sm dropdown-toggle-split" ngbDropdownToggle>{{'Specific'|translate}}
+                        <button id="btnSpecificBottom" [disabled]="!studyModifiable()" class="btn btn-primary dropdown-toggle btn-sm dropdown-toggle-split" ngbDropdownToggle>{{'Specific'|translate}}
                         </button>
                         <div class="dropdown-menu" aria-labelledby="btnSpecificBottom" ngbDropdownMenu>
                             <a class="dropdown-item" href="javascript:void(0)" (click)="onBottomSameAsTop()">{{'Same as' + getTopLabel(productShape)|translate}}</a>
                         </div>
-                        <select name="bottomLayersNr" [(ngModel)]="bottomNrLayer" id="botlaynum" class="form-control" style="height:30px;" (change)="onBottomNrLayerChanged()">
+                        <select name="bottomLayersNr" [disabled]="!studyModifiable()" [disabled]="!studyModifiable()" [(ngModel)]="bottomNrLayer" id="botlaynum" class="form-control" style="height:30px;" (change)="onBottomNrLayerChanged()">
                           <option value="0">0</option>
                           <option value="1">1</option>
                           <option value="2">2</option>
@@ -171,12 +175,12 @@
             <tr *ngFor="let layer of bottomLayers; let idx = index">
               <td  align="center" colspan="2">
                   {{ idx + 1 }}
-                  <select [(ngModel)]="layer.ID_PACKING_ELMT" style="width:200px;">
+                  <select [(ngModel)]="layer.ID_PACKING_ELMT" style="width:200px;" [disabled]="!studyModifiable()">
                     <option *ngFor="let element of packingElements" [value]="element.ID_PACKING_ELMT">{{'packings.'+element.ID_PACKING_ELMT|translate}}</option>
                   </select>
               </td>
-              <td align="center">
-                  <input type="text" style="width:50px;" [(ngModel)]="layer.THICKNESS" > (µm)
+              <td align="center" *ngIf="symbol">
+                  <input type="text" style="width:50px;" [(ngModel)]="layer.THICKNESS" [disabled]="!studyModifiable()"> ({{symbol.packingThicknessSymbol}})
               </td>
             </tr>
           </table>       

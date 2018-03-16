@@ -1,3 +1,61 @@
-<p>
-  calculation-status works!
-</p>
+<div class="container" *ngIf="!isLoading">
+  <div class="card product-container">
+    <div class="card-header">
+      <strong>{{'Status Of Users Studies' | translate}}</strong>
+      <div class="float-right">
+        <button class="btn btn-sm btn-primary" (click)="refreshCalculateStatus();"><i class="fa fa-refresh"></i>{{' Refresh'|translate}}</button>
+      </div>
+    </div>
+    <table class="table table-bordered table-sm mb-0 table-study" *ngIf="studies">
+      <thead>
+        <tr>
+          <th class="text-center align-middle">
+            <small>{{'Study name'|translate}}</small>
+          </th>
+          <th class="text-center align-middle">
+            <small>{{'Study status'|translate}}</small>
+          </th>
+          <th class="text-center align-middle">
+            <small>{{'Actions'|translate}}</small>
+          </th>
+        </tr>
+      </thead>
+      <tbody *ngFor="let study of studies">
+        <tr [ngClass]="(study.IS_STUDY_CURRENT == 1) ? 'study-active':'study-no'">
+          <td class="study-text align-middle" [attr.rowspan]="study.row_span + 1">
+            <span class="d-block">{{ study.STUDY_NAME }}</span>
+          </td>
+          <td class="text-center align-middle">
+            &nbsp;
+          </td>
+          <td class="text-center align-middle" width="1%">
+            <div style="margin-top:0.5em; white-space: nowrap">
+            </div>
+          </td>
+        </tr>
+        <tr *ngFor="let equip of study.studyEquipments" [ngClass]="(study.IS_STUDY_CURRENT == 1) ? 'study-active':'study-no'">
+          <td class="study-text" [ngClass]="(equip.EQUIP_STATUS == 1 || equip.EQUIP_STATUS == 0) ? '' : 'study-err'">
+            {{ equip.EQUIP_NAME }} - 
+            <b *ngIf="(equip.EQUIP_STATUS == 1 || equip.EQUIP_STATUS == 0); else errcode">{{ 'Successful'|translate}}</b> 
+            <ng-template #errcode>
+              <b >{{ 'Error code'|translate}} {{ equip.EQUIP_STATUS }}</b>
+            </ng-template>
+          </td>
+          <td class="text-center align-middle" width="1%">
+            <div style="margin-top:0.5em; white-space: nowrap" *ngIf="((equip.EQUIP_STATUS == 1) || (equip.EQUIP_STATUS == 0)); else stopcode">
+            </div>
+            <ng-template #stopcode>
+              <div style="margin-top:0.5em; white-space: nowrap"> 
+                <button type="button" class="btn btn-danger btn-sm" ngbTooltip="Stop">
+                  <i class="fa fa-stop"></i>
+                </button>
+              </div>
+            </ng-template>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<app-spinner *ngIf="isLoading"></app-spinner>

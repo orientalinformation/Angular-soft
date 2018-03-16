@@ -16,12 +16,13 @@
                   <perfect-scrollbar style="max-height: 400px;">
                     <div class="list-group" *ngIf="listPipeLines">
                         <h6 class="dropdown-header">MINE</h6>
-                        <a *ngFor="let line of (listPipeLines.mine | pipeLineFilter: filterString)" [ngClass]="line == selectLine? 'active' : ''" class="list-group-item list-group-item-action" (click)="onSelectPipeLine(line)">
+                        <a *ngFor="let line of (listPipeLines.mine | pipeLineFilter: filterString)" [ngClass]="checkActiveLine == line.ID_PIPELINE_ELMT || line == selectLine ? 'active' : ''" class="list-group-item list-group-item-action" (click)="onSelectPipeLine(line)">
                             <div class="d-flex w-100 justify-content-between">
                             
-                             {{ line.LABEL }}
-                             <i *ngIf="line.LINE_RELEASE == 4" class="fa fa-check text-success"></i>
-                             <i *ngIf="line.LINE_RELEASE == 5" class="fa fa-trash text-secondary"></i>
+                             {{ line.LABEL }} - (v{{ line.LINE_VERSION }})
+                             <i *ngIf="line.LINE_RELEASE == 3" class="fa fa-check text-success"></i>
+                             <i *ngIf="line.LINE_RELEASE == 4" class="fa fa-certificate text-success"></i>
+                             <i *ngIf="line.LINE_RELEASE == 5" class="fa fa-lock text-secondary"></i>
                              <i *ngIf="line.LINE_RELEASE == 9" class="fa fa-exclamation-circle text-danger"></i>
                             </div>
                         </a>
@@ -29,9 +30,10 @@
                         <a *ngFor="let line of (listPipeLines.others | pipeLineFilter: filterString)" [ngClass]="line == selectLine? 'active' : ''" class="list-group-item list-group-item-action" (click)="onSelectPipeLine(line)">
                             <div class="d-flex w-100 justify-content-between">
                             
-                             {{ line.LABEL }}
-                             <i *ngIf="line.LINE_RELEASE == 4" class="fa fa-check text-success"></i>
-                             <i *ngIf="line.LINE_RELEASE == 5" class="fa fa-trash text-secondary"></i>
+                             {{ line.LABEL }} - (v{{ line.LINE_VERSION }})
+                             <i *ngIf="line.LINE_RELEASE == 3" class="fa fa-check text-success"></i>
+                             <i *ngIf="line.LINE_RELEASE == 4" class="fa fa-certificate text-success"></i>
+                             <i *ngIf="line.LINE_RELEASE == 5" class="fa fa-lock text-secondary"></i>
                              <i *ngIf="line.LINE_RELEASE == 9" class="fa fa-exclamation-circle text-danger"></i>
                             </div>
                         </a>
@@ -48,12 +50,7 @@
                 <div class="card-header">
                   <strong>{{ 'DESCRIPTION'|translate }}</strong>
                 </div>
-                <div class="card-body" *ngIf="!selectLine">
-                  <div class="text-muted text-center" style="min-height: 200px;padding-top:90px;">
-                      Please select a pipe line from the list before process.
-                  </div>
-                </div>
-                <div class="card-body" *ngIf="selectLine">
+                <div class="card-body" *ngIf="selectLine && !checkHideInfo; else hideInfo">
                   <div class="row">
                     <div class="col-md-12">
                       <div class="form-group row">
@@ -195,7 +192,14 @@
                     </div>
                   </div>  
                 </div>
-                <div class="card-footer text-center" *ngIf="selectLine">
+                <ng-template #hideInfo>
+                  <div class="card-body">
+                    <div class="text-muted text-center" style="min-height: 200px;padding-top:90px;">
+                        Please select a pipe line from the list before process.
+                    </div>
+                  </div>
+                </ng-template>
+                <div class="card-footer text-center" *ngIf="selectLine && !checkHideInfo">
                     <button type="button" class="btn btn-success" (click)="updatePipeLineElmt(updatePipeLine)" [ladda]="isUpdatePipeLine" [disabled]="selectLine.ID_USER != userLogon.ID_USER || selectLine.LINE_RELEASE == 5 || selectLine.LINE_RELEASE == 9"><i class="fa fa-floppy-o" aria-hidden="true"></i> {{ 'Save'|translate }}</button>
                     <button type="button" class="btn btn-danger" (click)="deletePipeLine(selectLine)" [ladda]="isDeletePipeLine" [disabled]="selectLine.ID_USER != userLogon.ID_USER || selectLine.LINE_RELEASE == 5 || selectLine.LINE_RELEASE == 9"><i class="fa fa-trash-o"></i> {{ 'Delete'|translate }}</button>
                     <button class="btn btn-secondary" type="button" (click)="modalSaveAs.show()"><i class="fa fa-copy"></i> {{ 'Save As'|translate }}</button>
@@ -359,7 +363,7 @@
   </div>
 </div>
 <div bsModal class="modal fade" #modalSaveAs="bs-modal" role="dialog" aria-hidden="true">
-  <div class="modal-dialog modal-lg modal-primary" role="document">
+  <div class="modal-dialog modal-primary" role="document">
       <div class="modal-content">
           <div class="modal-header ">
               <strong>{{ 'Save as'|translate }}</strong>

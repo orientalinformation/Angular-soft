@@ -326,10 +326,10 @@ export class PreliminaryComponent implements OnInit, AfterViewInit {
     return Number.isInteger(Math.floor(number));
   }
   isInRangeOutput(value, min, max) {
-      if (value < min || value > max) {
-          return false;
-      } else {
-        return true;
-      }
+    if (value < min || value > max) {
+      return false;
+    } else {
+      return true;
+    }
   }
 }

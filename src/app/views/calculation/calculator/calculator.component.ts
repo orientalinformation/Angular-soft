@@ -47,7 +47,7 @@ export class CalculatorComponent implements OnInit, AfterViewInit {
     if (localStorage.getItem('study')) {
       this.study = JSON.parse(localStorage.getItem('study'));
     }
-    this.isLoading = true;
+    // this.isLoading = true;
   }
 
   ngAfterViewInit() {
@@ -78,7 +78,8 @@ export class CalculatorComponent implements OnInit, AfterViewInit {
             this.router.navigate(['/output/preliminary']);
             this.calcModal.hide();
           }
-          console.log(data);
+
+          this.calcModal.show();
           this.isLoading = false;
         },
         () => {
@@ -86,7 +87,6 @@ export class CalculatorComponent implements OnInit, AfterViewInit {
         }
       );
       this.loadProgressBar();
-      this.calcModal.show();
     }
   }
 
@@ -102,15 +102,14 @@ export class CalculatorComponent implements OnInit, AfterViewInit {
     this.api.getStudyEquipmentCalculation(params).subscribe(
       data => {
         this.brainCalculator = data;
-        console.log(data);
         localStorage.setItem('studyEquipment', JSON.stringify({ id: idStudyEquipment, optimized: isOptimized, typeCalculate: type }));
         this.isLoading = false;
+        this.refineMode.show();
       },
       () => {
         this.isLoading = false;
       }
     );
-    this.refineMode.show();
   }
 
   openBrain(idStudyEquipment: number) {
@@ -126,14 +125,13 @@ export class CalculatorComponent implements OnInit, AfterViewInit {
       data => {
         this.brainCalculator = data;
         localStorage.setItem('studyEquipment', JSON.stringify({ id: idStudyEquipment, optimized: null }));
-        console.log(data);
+        this.brainCalculate.show();
         this.isLoading = false;
       },
       () => {
         this.isLoading = false;
       }
     );
-    this.brainCalculate.show();
   }
 
   openSetting() {
@@ -220,10 +218,10 @@ export class CalculatorComponent implements OnInit, AfterViewInit {
 
   startEstimation() {
     this.laddaIsCalculating = true;
-    if (this.study.OPTION_CRYOPIPELINE) {
-      swal('Oops..', 'This calculate does not have enabled CryoPipeline calculation option', 'error');
-      this.router.navigate(['/input/objectives']);
-    }
+    // if (this.study.OPTION_CRYOPIPELINE) {
+    //   swal('Oops..', 'This calculate does not have enabled CryoPipeline calculation option', 'error');
+    //   this.router.navigate(['/input/objectives']);
+    // }
 
     if (this.study.OPTION_EXHAUSTPIPELINE) {
       swal('Oops..', 'This calculate does not have enabled ExhaustPipeline calculation option', 'error');

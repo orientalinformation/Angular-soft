@@ -49,7 +49,7 @@
 
             <table class="table table-bordered table-sm" *ngIf="symbol">
               <tr>
-                <td rowspan="2" align="center" style="vertical-align:middle">{{'Calculate'|translate}}</td>
+                <td rowspan="2" align="center" style="vertical-align:middle;width:19%">{{'Calculate'|translate}}</td>
                 <td rowspan="2" align="center" style="vertical-align:middle">{{'Control temperature'|translate}} ({{symbol.temperatureSymbol}})</td>
                 <td rowspan="2" align="center" style="vertical-align:middle">{{'Product Heat Load'|translate}} ({{symbol.enthalpySymbol}})</td>
                 <td rowspan="2" align="center" style="vertical-align:middle">{{'Final Average Product temperature'|translate}} ({{symbol.temperatureSymbol}})</td>
@@ -190,7 +190,7 @@
               <div id="headBalaceMaxPage" style=display:none>
                 <table class="table table-bordered table-sm" *ngIf="symbol">
                   <tr>
-                    <td rowspan="2" align="center" style="vertical-align:middle">{{'Equipment'|translate}}</td>
+                    <td rowspan="2" align="center" style="vertical-align:middle;width:19%">{{'Equipment'|translate}}</td>
                     <td rowspan="2" align="center" style="vertical-align:middle">{{'Control temperature'|translate}} ({{symbol.temperatureSymbol}})</td>
                     <td rowspan="2" align="center" style="vertical-align:middle">{{'Residence / Dwell time'|translate}} ({{symbol.timeSymbol}})</td>
                     <td rowspan="2" align="center" style="vertical-align:middle">{{'Product Heat Load'|translate}} ({{symbol.enthalpySymbol}})</td>
@@ -232,7 +232,7 @@
         <h5 class="text-danger" style="font-weight:600">{{'Consumptions'|translate}}</h5>
         <table class="table table-bordered table-sm" style="margin-top:10px;" *ngIf="symbol">
           <tr>
-            <td rowspan="2" align="center"style="vertical-align:middle;font-size:12px;">{{'Equipment'|translate}}</td>
+            <td rowspan="2" align="center"style="vertical-align:middle;font-size:12px;width:19%">{{'Equipment'|translate}}</td>
             <td rowspan="2"style="vertical-align:middle;font-size:12px;" align="center">
               {{'Overall Cryogen Consumption Ratio (product + equipment and pipeline losses) Unit of Cryogen, per piece of product.'|translate}} ({{symbol.consumSymbol}})
             </td>
@@ -288,7 +288,7 @@
         <h5 class="text-danger" style="font-weight:600">{{'Economic results'|translate}}</h5>
         <table class="table table-bordered table-sm" style="margin-top:10px;" *ngIf="symbol">
             <tr>
-              <td rowspan="2" align="center"style="vertical-align:middle;font-size:12px;">{{'Equipment'|translate}}</td>
+              <td rowspan="2" align="center"style="vertical-align:middle;font-size:12px;width:19%">{{'Equipment'|translate}}</td>
               <td rowspan="2"style="vertical-align:middle;font-size:12px;" align="center">
                 {{'Overall Cryogen Consumption Ratio (product + equipment and pipeline losses) Unit of Cryogen, per piece of product.'|translate}}<br>(<span [innerHTML]="symbol.monetarySymbol"></span>)
               </td>
@@ -420,15 +420,15 @@
           <tbody>
             <tr>
               <td align="center" style="vertical-align:middle">
-                <input *ngIf="equipSizingDisable == false;else equipSizingWidthOther" type="text" [(ngModel)]="equipSizingWidth" class="form-control">
-                <ng-template #equipSizingWidthOther>
-                  <span style="display:inline-block;line-height:35px">{{equipSizingWidth}}</span>
+                <input *ngIf="equipSizingDisable == false;else equipSizingLengthOther" type="text" [(ngModel)]="equipSizingLength" class="form-control">
+                <ng-template #equipSizingLengthOther>
+                  <span style="display:inline-block;line-height:35px">{{equipSizingLength}}</span>
                 </ng-template>
               </td>
               <td align="center" style="vertical-align:middle">
-                  <input *ngIf="equipSizingDisable == false;else equipSizingLengthOther" type="text" [(ngModel)]="equipSizingLength" class="form-control">
-                  <ng-template #equipSizingLengthOther>
-                    <span style="display:inline-block;line-height:35px">{{equipSizingLength}}</span>
+                  <input *ngIf="equipSizingDisable == false;else equipSizingWidthOther" type="text" [(ngModel)]="equipSizingWidth" class="form-control">
+                  <ng-template #equipSizingWidthOther>
+                    <span style="display:inline-block;line-height:35px">{{equipSizingWidth}}</span>
                   </ng-template>
               </td>
               <td align="center" style="vertical-align:middle">

@@ -1,20 +1,24 @@
 <div class="container" *ngIf="!isLoading">
-
     <div class="card" *ngIf="study">
+      <app-chaining #chainingControls (loaded)="onChainingControlsLoaded()" *ngIf="study.CHAINING_CONTROLS"></app-chaining>
+      
       <div class="card-header">
         <strong>{{'CALCULATION MODE'|translate}}</strong>
-        <button type="button" (click)="saveObjectiveView()" class="btn btn-sm btn-success float-right">
+        <button type="button" (click)="saveObjectiveView()" class="ml-2 btn btn-sm btn-success float-right">
           <i class="fa fa-floppy-o"></i> {{'SAVE'|translate}}
         </button>
+        <button class="btn btn-warning btn-sm text float-right" *ngIf="studyState.CHAINING_CONTROLS && study.CHAINING_CONTROLS" (click)="createChildStudyDialog()">
+          <i class="fa fa-chain"></i> <span>{{'CHAINING'|translate}}</span>
+        </button>
         <!-- /.card-body -->
-      </div>
+      </div><!-- /.card-header -->
       <div class="card-block">
         <div class="row">
           <div class="col-md-6">
-            <div class="form-check">
+            <div class="form-check" [class.text-muted]="disabledField()">
               <label class="form-check-label">
                 <label class="switch switch-icon switch-pill switch-primary">
-                  <input type="radio" class="switch-input" [(ngModel)]="study.CALCULATION_MODE" value="1" [checked]="study.CALCULATION_MODE == 1">
+                  <input type="radio" class="switch-input" [disabled]="disabledField()" [(ngModel)]="study.CALCULATION_MODE" value="1" [checked]="study.CALCULATION_MODE == 1">
                   <span class="switch-label" data-on="&#xf00c;" data-off="&#xf00d;"></span>
                   <span class="switch-handle"></span>
                 </label>
@@ -22,9 +26,9 @@
               </label>
             </div>
             <div class="form-check">
-              <label class="form-check-label">
+              <label class="form-check-label" [class.text-muted]="disabledField()">
                 <label class="switch switch-icon switch-pill switch-primary">
-                  <input type="radio" class="switch-input" [(ngModel)]="study.CALCULATION_MODE" value="3" [checked]="study.CALCULATION_MODE == 3">
+                  <input type="radio" class="switch-input" [disabled]="disabledField()" [(ngModel)]="study.CALCULATION_MODE" value="3" [checked]="study.CALCULATION_MODE == 3">
                   <span class="switch-label" data-on="&#xf00c;" data-off="&#xf00d;"></span>
                   <span class="switch-handle"></span>
                 </label>
@@ -34,9 +38,9 @@
           </div> <!-- #col-md-6 -->
           <div class="col-md-6">
             <div class="form-check">
-              <label class="form-check-label">
+              <label class="form-check-label" [class.text-muted]="disabledField()">
                 <label class="switch switch-icon switch-primary-outline-alt">
-                  <input type="checkbox" class="switch-input" [(ngModel)]="study.OPTION_ECO">
+                  <input type="checkbox" class="switch-input" [(ngModel)]="study.OPTION_ECO" [disabled]="disabledField()">
                   <span class="switch-label" data-on="&#xf00c;" data-off="&#xf00d;"></span>
                   <span class="switch-handle"></span>
                 </label>
@@ -44,9 +48,9 @@
               </label>
             </div>
             <div class="form-check">
-              <label class="form-check-label" [ngClass]="study.CHAINING_CONTROLS == 1?'text-muted':''">
+              <label class="form-check-label" [class.text-muted]="disabledField()">
                 <label class="switch switch-icon switch-primary-outline-alt">
-                  <input type="checkbox" class="switch-input" [(ngModel)]="study.OPTION_CRYOPIPELINE" [disabled]="study.CHAINING_CONTROLS == 1">
+                  <input type="checkbox" class="switch-input" [(ngModel)]="study.OPTION_CRYOPIPELINE" [disabled]="disabledField()">
                   <span class="switch-label" data-on="&#xf00c;" data-off="&#xf00d;"></span>
                   <span class="switch-handle"></span>
                 </label>
@@ -54,9 +58,9 @@
               </label>
             </div>
             <div class="form-check">
-              <label class="form-check-label">
+              <label class="form-check-label" [class.text-muted]="disabledField()">
                 <label class="switch switch-icon switch-primary-outline-alt">
-                  <input type="checkbox" class="switch-input" [(ngModel)]="study.CHAINING_CONTROLS" (change)="toggleChainControl()">
+                  <input type="checkbox" class="switch-input" [(ngModel)]="study.CHAINING_CONTROLS" (change)="toggleChainControl()" [disabled]="disabledField()">
                   <span class="switch-label" data-on="&#xf00c;" data-off="&#xf00d;"></span>
                   <span class="switch-handle"></span>
                 </label>
@@ -64,9 +68,9 @@
               </label>
             </div>
             <div class="form-check">
-              <label class="form-check-label" [ngClass]="study.CHAINING_CONTROLS != 1?'text-muted':''">
+              <label class="form-check-label" [class.text-muted]="disabledField() || !study.CHAINING_CONTROLS">
                 <label class="switch switch-icon switch-primary-outline-alt">
-                  <input type="checkbox" class="switch-input" [(ngModel)]="study.CHAINING_ADD_COMP_ENABLE" [disabled]="study.CHAINING_CONTROLS != 1">
+                  <input type="checkbox" class="switch-input" [(ngModel)]="study.CHAINING_ADD_COMP_ENABLE" [disabled]="disabledField() || !study.CHAINING_CONTROLS">
                   <span class="switch-label" data-on="&#xf00c;" data-off="&#xf00d;"></span>
                   <span class="switch-handle"></span>
                 </label>
@@ -78,51 +82,50 @@
       </div> <!-- /.card-body -->
       <div class="card-header" style="border-top: 1px solid #ddd">
         <strong>{{'PRODUCTION DUTY CYCLE'|translate}}</strong>
-      </div>
-      <!-- /.card-body -->
-      <div class="card-block">
-        <div class="row">
+      </div><!-- /.card-header -->
+      <div class="card-block" *ngIf="production">
+        <div class="row" *ngIf="symbol">
           <div class="col-md-6">
             <div class="form-group row">
-              <label class="col-md-7 col-form-label" for="text-input">Daily production</label>
+              <label class="col-md-7 col-form-label" for="text-input">{{'Daily production'|translate}}</label>
               <div class="col-md-5">
                 <div class="input-group">
-                  <input type="text" name="text-input" class="form-control" [(ngModel)]="production.DAILY_PROD">
+                  <input type="text" name="text-input" class="form-control" [(ngModel)]="production.DAILY_PROD" [disabled]="disabledField()">
                   <span class="input-group-addon">
-                    <small>hours/day</small>
+                    <small>{{'hours/day'|translate}}</small>
                   </span>
                 </div>
               </div>
             </div>
             <div class="form-group row">
-              <label class="col-md-7 col-form-label" for="text-input">Weekly production</label>
+              <label class="col-md-7 col-form-label" for="text-input">{{'Weekly production'|translate}}</label>
               <div class="col-md-5">
                 <div class="input-group">
-                  <input type="text" name="text-input" class="form-control" [(ngModel)]="production.WEEKLY_PROD">
+                  <input type="text" name="text-input" class="form-control" [(ngModel)]="production.WEEKLY_PROD" [disabled]="disabledField()">
                   <span class="input-group-addon">
-                    <small>days/week</small>
+                    <small>{{'days/week'|translate}}</small>
                   </span>
                 </div>
               </div>
             </div>
             <div class="form-group row">
-              <label class="col-md-7 col-form-label" for="text-input">Annual production</label>
+              <label class="col-md-7 col-form-label" for="text-input">{{'Annual production'|translate}}</label>
               <div class="col-md-5">
                 <div class="input-group">
-                  <input type="text" name="text-input" class="form-control" [(ngModel)]="production.NB_PROD_WEEK_PER_YEAR">
+                  <input type="text" name="text-input" class="form-control" [(ngModel)]="production.NB_PROD_WEEK_PER_YEAR" [disabled]="disabledField()">
                   <span class="input-group-addon">
-                    <small>weeks/year</small>
+                    <small>{{'weeks/year'|translate}}</small>
                   </span>
                 </div>
               </div>
             </div>
             <div class="form-group row">
-              <label class="col-md-7 col-form-label" for="text-input">Number of equipment cooldowns</label>
+              <label class="col-md-7 col-form-label" for="text-input">{{'Number of equipment cooldowns'|translate}}</label>
               <div class="col-md-5">
                 <div class="input-group">
-                  <input type="text" name="text-input" class="form-control" [(ngModel)]="production.DAILY_STARTUP">
+                  <input type="text" name="text-input" class="form-control" [(ngModel)]="production.DAILY_STARTUP" [disabled]="disabledField()">
                   <span class="input-group-addon">
-                    <small>per day</small>
+                    <small>{{'per day'|translate}}</small>
                   </span>
                 </div>
               </div>
@@ -130,21 +133,21 @@
           </div>
           <div class="col-md-6">
             <div class="form-group row">
-              <label class="col-md-7 col-form-label" for="text-input">Factory Air temperature</label>
+              <label class="col-md-7 col-form-label" for="text-input">{{'Factory Air temperature'|translate}}</label>
               <div class="col-md-5">
                 <div class="input-group">
-                  <input type="text" name="text-input" class="form-control" [(ngModel)]="production.AMBIENT_TEMP">
+                  <input type="text" name="text-input" class="form-control" [(ngModel)]="production.AMBIENT_TEMP" [disabled]="disabledField()">
                   <span class="input-group-addon">
-                    <small>&#8451;</small>
+                    <small>{{ symbol.temperatureSymbol }}</small>
                   </span>
                 </div>
               </div>
             </div>
             <div class="form-group row">
-              <label class="col-md-7 col-form-label" for="text-input">Relative Humidity of Factory Air</label>
+              <label class="col-md-7 col-form-label" for="text-input">{{'Relative Humidity of Factory Air'|translate}}</label>
               <div class="col-md-5">
                 <div class="input-group">
-                  <input type="text" name="text-input" class="form-control" [(ngModel)]="production.AMBIENT_HUM">
+                  <input type="text" name="text-input" class="form-control" [(ngModel)]="production.AMBIENT_HUM" [disabled]="disabledField()">
                   <span class="input-group-addon">
                     <small>%</small>
                   </span>
@@ -152,23 +155,23 @@
               </div>
             </div>
             <div class="form-group row">
-              <label class="col-md-7 col-form-label" for="text-input">Required Average temperature</label>
+              <label class="col-md-7 col-form-label" for="text-input">{{'Required Average temperature'|translate}}</label>
               <div class="col-md-5">
                 <div class="input-group">
                   <input type="text" id="text-input" name="text-input" class="form-control" [(ngModel)]="production.AVG_T_DESIRED">
-                  <span class="input-group-addon">
-                    <small>&#8451;</small>
+                  <span class="input-group-addon" *ngIf="symbol">
+                    <small>{{ symbol.temperatureSymbol }}</small>
                   </span>
                 </div>
               </div>
             </div>
             <div class="form-group row">
-              <label class="col-md-7 col-form-label" for="text-input">Required Production Rate</label>
+              <label class="col-md-7 col-form-label" for="text-input">{{'Required Production Rate'|translate}}</label>
               <div class="col-md-5">
                 <div class="input-group">
-                  <input type="text" name="text-input" class="form-control" [(ngModel)]="production.PROD_FLOW_RATE">
-                  <span class="input-group-addon">
-                    <small>kg/h</small>
+                  <input type="text" name="text-input" class="form-control" [(ngModel)]="production.PROD_FLOW_RATE" [disabled]="disabledField()">
+                  <span class="input-group-addon" *ngIf="symbol">
+                    <small>{{ symbol.productFlowSymbol }}</small>
                   </span>
                 </div>
               </div>

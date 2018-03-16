@@ -9,6 +9,8 @@ import { ModalDirective } from 'ngx-bootstrap/modal/modal.directive';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { isNumber } from '@ng-bootstrap/ng-bootstrap/util/util';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs/Observable';
 
 @Component({
   selector: 'app-report-config',
@@ -18,18 +20,28 @@ import { isNumber } from '@ng-bootstrap/ng-bootstrap/util/util';
 export class ReportConfigComponent implements OnInit, AfterViewInit {
   public report: Models.Report;
   public study: Models.Study;
-  public isLoading = false;
   public isSaveReport = false;
   public meshAxisPos: Models.ViewMeshPosition;
   public checkcontrol = false;
   public user: Models.User;
+  public studyID: any;
+  public optionSelected: number;
+  public typeGenerate: number;
+  public loading: boolean;
+  public laddaGenerate = false;
+  public fileToUpload: File = null;
+  public checkUpload = 0;
+  public urlLogo = '';
+  public urlFirstpage = '';
 
-  constructor(private api: ApiService, private toastr: ToastrService, private router: Router) {
+  constructor(private api: ApiService, private toastr: ToastrService, private router: Router, private http: HttpClient) {
     this.study = JSON.parse(localStorage.getItem('study'));
     this.user = JSON.parse(localStorage.getItem('user'));
   }
 
   ngOnInit() {
+    this.optionSelected = 0;
+    this.typeGenerate = 0;
   }
 
   ngAfterViewInit() {
@@ -53,6 +65,7 @@ export class ReportConfigComponent implements OnInit, AfterViewInit {
   loadReport() {
     this.api.getReport(this.study.ID_STUDY).subscribe(
       resp => {
+        localStorage.setItem('ip', resp.ip);
         resp.ASSES_CONSUMP = Number(resp.ASSES_CONSUMP);
         resp.ASSES_ECO = Number(resp.ASSES_ECO);
         resp.ASSES_TERMAL = Number(resp.ASSES_TERMAL);
@@ -154,12 +167,88 @@ export class ReportConfigComponent implements OnInit, AfterViewInit {
     }
   }
 
-  savePDFs() {
-    console.log('save pdf testing');
+  viewPDF() {
+    this.api.downLoadPDF(this.study.ID_STUDY).subscribe(
+    data => {
+      window.location.href = data.url;
+    },
+    err => {
+      console.log(err);
+      swal('Oops..', 'Generate the report have some error!', 'error');
+      this.laddaGenerate = false;
+    },
+    () => {
+    }
+  );
   }
 
-  downloadPDF() {
-    this.api.downLoadPDF({}).subscribe(data => {
+  viewHTML() {
+    this.api.downLoadHtmlToPDF(this.study.ID_STUDY).subscribe(
+      data => {
+        window.location.href = data.url;
+      },
+      err => {
+        console.log(err);
+        swal('Oops..', 'Generate the report have some error!', 'error');
+        this.laddaGenerate = false;
+      },
+      () => {
+      }
+    );
+  }
+
+  generatePDF() {
+    if (Number(this.typeGenerate) === 1) {
+      this.loading = true;
+      this.laddaGenerate = true;
+      this.viewPDF();
+    } else if (Number(this.typeGenerate) === 0)  {
+      this.loading = true;
+      this.laddaGenerate = true;
+      this.viewHTML();
+    }
+  }
+
+  handleFileInput(files: FileList) {
+    this.checkUpload = 1;
+    this.fileToUpload = files.item(0);
+    console.log('logo');
+    this.uploadFileToActivity();
+  }
+
+  handleFilePhotoPath(files: FileList) {
+    this.checkUpload = 2;
+    this.fileToUpload = files.item(0);
+    console.log('photo path');
+    this.uploadFileToActivity();
+  }
+
+  uploadFileToActivity() {
+    this.postFile(this.fileToUpload).subscribe(
+      data => {
+        console.log(data);
+      },
+      error => {
+        console.log(error);
+      },
+      () => {
+      });
+  }
+
+  postFile(fileToUpload: File): Observable<boolean> {
+    const endpoint = localStorage.getItem('ip') + '/api/v1/upload';
+    const formData: FormData = new FormData();
+    formData.append('fileKey', fileToUpload, fileToUpload.name);
+
+    return this.http.post(endpoint, formData, {responseType: 'text'}).map(res => {
+      if (this.checkUpload === 1) {
+        this.report.CUSTOMER_LOGO = res;
+      } else if (this.checkUpload === 2) {
+        this.report.PHOTO_PATH = res;
+      }
+
+      return true;
     });
   }
 }
+

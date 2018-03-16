@@ -8,12 +8,14 @@ import { NgxLocalizedNumbersService } from 'ngx-localized-numbers';
 import { LocalizationFormatCurrencyPipe } from 'ngx-localized-numbers';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { AppSpinnerComponent } from '../../../components';
+import { ChainingComponent } from '../chaining/chaining.component';
 
 import swal from 'sweetalert2';
 
 import { Pipe } from '@angular/core';
 import { PipeTransform } from '@angular/core';
 import * as Models from '../../../api/models';
+import { Symbol } from '../../../api/models/symbol';
 
 @Pipe({ name: 'compFilter' })
 export class CompFilterPipe implements PipeTransform {
@@ -43,11 +45,13 @@ export class ProductComponent implements OnInit, AfterViewInit {
   @ViewChild('addElementModal') public addElementModal: ModalDirective;
   @ViewChild('modalEditProduct') public modalEditProduct: ModalDirective;
   @ViewChild('editCompModal') public editCompModal: ModalDirective;
+  @ViewChild('chainingControls') public chainingControls: ChainingComponent;
 
   public laddaAddComponent = false;
   public laddaConfirmAddComponent = false;
   public laddaUpdateElement = false;
   public isLoading = true;
+  public prodColors: Models.Color[];
 
   public elementForm = {
     description: '',
@@ -70,14 +74,24 @@ export class ProductComponent implements OnInit, AfterViewInit {
   public shapeSelect = 0;
   public productShape = 0;
   public product: Models.Product;
-  private study: Models.Study;
+  public study: Models.Study;
   private productModel: Models.ViewProduct;
 
   public elements: Models.ProductElmt[] = [];
 
   public selectedAddingElement: Models.Component;
 
-  public shapeNames;
+  public shapeNames = {
+    SLAB: 1,
+    REC_STAND: 2,
+    REC_LAY: 3,
+    CYL_STAND: 4,
+    CYL_LAY: 5,
+    SPHERE: 6,
+    CON_CYL_STAND: 7,
+    CON_CYL_LAY: 8,
+    BREAD: 9
+  };
 
   public prodDim1: number;
   public prodDim2: number;
@@ -86,6 +100,7 @@ export class ProductComponent implements OnInit, AfterViewInit {
   public laddaDeletingElmts: boolean[];
 
   public filterString = '';
+  public symbol: Symbol;
 
   columns =
     [
@@ -125,6 +140,7 @@ export class ProductComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
+    this.prodColors = JSON.parse(localStorage.getItem('colors'));
     this.isLoading = true;
     this.study = JSON.parse(localStorage.getItem('study'));
     this.api.getShapes().subscribe(
@@ -133,6 +149,12 @@ export class ProductComponent implements OnInit, AfterViewInit {
         this.previewImgSrc = this.shapeImgShim(shapes[0].SHAPEPICT);
         localStorage.setItem('shapes', JSON.stringify(this.availShapes));
         this.refreshViewModel();
+      }
+    );
+    this.api.getSymbol(this.study.ID_STUDY).subscribe(
+      data => {
+        console.log(data);
+        this.symbol = data;
       }
     );
   }
@@ -190,12 +212,18 @@ export class ProductComponent implements OnInit, AfterViewInit {
   onShowAddElement() {
     this.laddaAddComponent = true;
     this.laddaConfirmAddComponent = false;
-    if (this.productShape == 0) {
+    if (this.productShape === 0) {
       swal('Oops...', 'Product must be defined before adding elements!', 'error');
 
       return false;
     }
     this.addElementModal.show();
+  }
+
+  onChainControlsLoaded() {
+    if (this.study.HAS_CHILD || this.study.PARENT_ID !== 0) {
+      this.chainingControls.showProduct();
+    }
   }
 
   refreshViewModel() {
@@ -210,8 +238,8 @@ export class ProductComponent implements OnInit, AfterViewInit {
         if (this.elements.length > 0) {
           this.productShape = this.elements[0].ID_SHAPE;
           localStorage.setItem('productShape', this.productShape.toString());
-          this.prodDim1 = Number(Number(this.elements[0].SHAPE_PARAM1).toFixed(3));
-          this.prodDim3 = Number(Number(this.elements[0].SHAPE_PARAM3).toFixed(3));
+          this.prodDim1 = this.elements[0].SHAPE_PARAM1;
+          this.prodDim3 = this.elements[0].SHAPE_PARAM3;
 
           this.productForm.shape = this.productShape;
           this.productForm.dim1 = this.prodDim1;
@@ -220,12 +248,10 @@ export class ProductComponent implements OnInit, AfterViewInit {
         } else {
           localStorage.removeItem('productShape');
         }
+        this.isLoading = false;
       },
       err => {
         console.log(err);
-      },
-      () => {
-        this.isLoading = false;
       }
     );
   }
@@ -235,16 +261,16 @@ export class ProductComponent implements OnInit, AfterViewInit {
   }
 
   hasDim3() {
-    return (this.productShape == this.shapeNames.REC_LAY 
+    return (this.productShape == this.shapeNames.REC_LAY
       || this.productShape == this.shapeNames.REC_STAND || this.productShape == this.shapeNames.BREAD);
   }
 
   onAddElement() {
-    if (this.selectedAddingElement.COMP_RELEASE == 6) {
+    if (this.selectedAddingElement.COMP_RELEASE === 6) {
       swal('Error', 'Adding sleeping component is under development, not ready to use! Please select an active component.', 'error');
       return false;
     }
-    let params: ApiService.AppendElementsToProductParams = {
+    const params: ApiService.AppendElementsToProductParams = {
       id: this.product.ID_PROD,
       shapeId: this.productShape,
       componentId: this.selectedAddingElement.ID_COMP
@@ -300,11 +326,11 @@ export class ProductComponent implements OnInit, AfterViewInit {
   }
 
   onEditElement(element: Models.ProductElmt) {
-    this.elementForm.computed_mass = Number(Number(element.PROD_ELMT_WEIGHT).toPrecision(3));
-    this.elementForm.real_mass = Number(Number(element.PROD_ELMT_REALWEIGHT).toPrecision(3));
+    this.elementForm.computed_mass = element.PROD_ELMT_WEIGHT;
+    this.elementForm.real_mass = element.PROD_ELMT_REALWEIGHT;
     this.elementForm.description = element.PROD_ELMT_NAME;
     this.elementForm.elementId = element.ID_PRODUCT_ELMT;
-    this.elementForm.specific_dim = Number(Number(element.SHAPE_PARAM2).toPrecision(3));
+    this.elementForm.specific_dim = element.SHAPE_PARAM2;
     this.editCompModal.show();
   }
 

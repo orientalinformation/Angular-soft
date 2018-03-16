@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { AfterViewInit, AfterContentChecked, AfterContentInit } from '@angular/core/src/metadata/lifecycle_hooks';
 import { ApiService } from '../../../api/services/api.service';
+import { InputService } from '../../../api/services/input.service';
 import { Study, Product, ViewProduct, ViewMesh, ProductElmt } from '../../../api/models';
 import { Router } from '@angular/router';
 import swal from 'sweetalert2';
@@ -15,6 +16,8 @@ import * as HC_draggablePoints from 'highcharts-draggable-points';
 HC_draggablePoints(Highcharts);
 
 import { HighchartsChartComponent } from '../../../components/highcharts-chart/highcharts-chart.component';
+import { Symbol } from '../../../api/models/symbol';
+import { ChainingComponent } from '../chaining/chaining.component';
 
 @Component({
   selector: 'app-initial',
@@ -27,6 +30,7 @@ export class InitialComponent implements OnInit, AfterContentInit, AfterViewInit
   @ViewChild('tempProfileChart') public tempProfileChart: HighchartsChartComponent;
   @ViewChild('rendererContainer') rendererContainer: ElementRef;
   @ViewChild('isoTempEditModal') isoTempEditModal: ModalDirective;
+  @ViewChild('chainingControls') chainingControls: ChainingComponent;
 
   public Highcharts = Highcharts;
   public chartOptions = {
@@ -49,6 +53,7 @@ export class InitialComponent implements OnInit, AfterContentInit, AfterViewInit
   public meshView: ViewMesh;
   public laddaGeneratingMesh = false;
   public laddaInitializingTemp = false;
+  public symbol: Symbol;
   public productTempForm: {
     flagIsoTemp: boolean,
     initTemp: number
@@ -77,13 +82,18 @@ export class InitialComponent implements OnInit, AfterContentInit, AfterViewInit
   // materials = null;
   // orbit = null;
 
-  constructor(private api: ApiService, private router: Router, public text: TextService, private valuesList: ValuesListService) {
+  constructor(private api: ApiService, private router: Router, public text: TextService,
+    private valuesList: ValuesListService, private inputApi: InputService) {
     this.elmtEditForm = {
       elementId: null,
       isoThermal: true,
       isoTemp: null,
       elmt: null,
     };
+  }
+
+  onChainingControlsLoaded() {
+    this.chainingControls.showInitialTemp();
   }
 
   generateMeshWithParameters() {
@@ -146,19 +156,29 @@ export class InitialComponent implements OnInit, AfterContentInit, AfterViewInit
   }
 
   refreshView() {
+    this.study = JSON.parse(localStorage.getItem('study'));
     if (this.productShape == 0 || !this.productView.elements || this.productView.elements.length == 0) {
       return;
     }
     this.isLoadingView = true;
-    this.api.getMeshView(this.productView.product.ID_PROD).subscribe(
-      (resp: ViewMesh) => {
-        this.initMeshView(resp);
-      },
-      (err) => {
-        console.log(err);
-        // swal('Oops..', 'Error getting mesh view', 'error');
+    this.api.getSymbol(this.study.ID_STUDY).subscribe(
+      data => {
+        this.symbol = data;
+        this.api.getMeshView(this.productView.product.ID_PROD).subscribe(
+          (resp: ViewMesh) => {
+            this.initMeshView(resp);
+          },
+          (err) => {
+            console.log(err);
+            // swal('Oops..', 'Error getting mesh view', 'error');
+          }
+        );
       }
     );
+
+    if (this.study) {
+      this.initTempRecordPts();
+    }
   }
 
   ngAfterContentInit() {
@@ -207,11 +227,11 @@ export class InitialComponent implements OnInit, AfterContentInit, AfterViewInit
     this.meshView = resp;
     console.log(resp);
     if (!this.meshView.meshGeneration) {
-      this.resetDefaultMesh();
+      return this.resetDefaultMesh();
     } else {
       localStorage.setItem('meshView', JSON.stringify(this.meshView));
     }
-
+    console.log(this.meshView.meshGeneration);
     this.productTempForm.flagIsoTemp = this.productView.product.PROD_ISO != 0;
     if (this.productTempForm.flagIsoTemp) {
       this.productTempForm.initTemp = this.meshView.productIsoTemp;
@@ -220,69 +240,15 @@ export class InitialComponent implements OnInit, AfterContentInit, AfterViewInit
     this.meshParamsForm = {};
     this.meshParamsForm.mesh_type = this.meshView.meshGeneration.MESH_1_FIXED;
     if (this.meshParamsForm.mesh_type == 1) { // regular
-      this.meshParamsForm.size1 = parseFloat((this.meshView.meshGeneration.MESH_1_SIZE * 1000).toFixed(2));
-      this.meshParamsForm.size2 = parseFloat((this.meshView.meshGeneration.MESH_2_SIZE * 1000).toFixed(2));
-      this.meshParamsForm.size3 = parseFloat((this.meshView.meshGeneration.MESH_3_SIZE * 1000).toFixed(2));
+      this.meshParamsForm.size1 = this.meshView.meshGeneration.MESH_1_SIZE;
+      this.meshParamsForm.size2 = this.meshView.meshGeneration.MESH_2_SIZE;
+      this.meshParamsForm.size3 = this.meshView.meshGeneration.MESH_3_SIZE;
     } else {
-      this.meshParamsForm.size1 = parseFloat((this.meshView.meshGeneration.MESH_1_INT * 1000).toFixed(2));
-      this.meshParamsForm.size2 = parseFloat((this.meshView.meshGeneration.MESH_2_INT * 1000).toFixed(2));
-      this.meshParamsForm.size3 = parseFloat((this.meshView.meshGeneration.MESH_3_INT * 1000).toFixed(2));
+      this.meshParamsForm.size1 = this.meshView.meshGeneration.MESH_1_INT;
+      this.meshParamsForm.size2 = this.meshView.meshGeneration.MESH_2_INT;
+      this.meshParamsForm.size3 = this.meshView.meshGeneration.MESH_3_INT;
     }
   }
-
-    // this.scene = new THREE.Scene();
-
-    // this.camera = new THREE.PerspectiveCamera(75, 600 / 400, 1, 10000);
-    // this.camera.position.z = 400;
-
-    // // this.createRubixMaterial();
-
-    // let geometry = null;
-    // switch (this.productShape) {
-    //   case this.text.shapeNames.BREAD:
-    //   case this.text.shapeNames.REC_LAY:
-    //   case this.text.shapeNames.REC_STAND:
-    //   case this.text.shapeNames.SLAB:
-    //     geometry = new THREE.BoxGeometry(200, 200, 200);
-    //     break;
-
-    //   case this.text.shapeNames.SPHERE:
-    //     geometry = new THREE.SphereGeometry(200);
-    //     break;
-
-    //   case this.text.shapeNames.CON_CYL_LAY:
-    //   case this.text.shapeNames.CON_CYL_STAND:
-    //   case this.text.shapeNames.CYL_LAY:
-    //   case this.text.shapeNames.CYL_STAND:
-    //     geometry = new THREE.CylinderGeometry(150, 150, 300);
-    //     break;
-
-    //   default:
-    //     return false;
-    // }
-
-    // // var meshFaceMaterial = new THREE.MeshFaceMaterial(this.materials);
-    // this.materials = new THREE.MeshBasicMaterial({
-    //   color: 0x333333,
-    //   wireframe: true
-    // });
-    // this.mesh = new THREE.Mesh(geometry, this.materials);
-    // const axisHelper = new THREE.AxisHelper(120);
-    // this.scene.add(axisHelper);
-
-    // this.scene.add(this.mesh);
-
-    // this.renderer.setPixelRatio(window.devicePixelRatio);
-    // this.renderer.setSize(180, 200);
-
-    // this.orbit = new OrbitControls(this.camera, this.renderer.domElement);
-    // this.orbit.enableZoom = true;
-    // // this.renderer.domElement.style.display = 'block';
-    // // this.renderer.domElement.style.margin = 'auto';
-    // this.rendererContainer.nativeElement.appendChild(this.renderer.domElement);
-    // this.orbit.update();
-
-    // this.animate();
 
   resetDefaultMesh() {
     this.laddaGeneratingMesh = true;
@@ -353,5 +319,19 @@ export class InitialComponent implements OnInit, AfterContentInit, AfterViewInit
       this.initTemperature();
     }
   }
+
+  // oriental add initial tempRecordpts
+  initTempRecordPts() {
+    this.inputApi.initTempRecordPts(this.study.ID_STUDY).subscribe(
+      response => {
+        console.log('ok');
+      },
+      err => {
+
+      },
+      () => {}
+    );
+  }
+  // end add initial tempRecordpts
 
 }

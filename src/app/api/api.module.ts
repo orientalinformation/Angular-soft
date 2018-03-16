@@ -5,6 +5,7 @@ import { ApiConfiguration } from './api-configuration';
 import { ApiService } from './services/api.service';
 import { AdminService } from './services/admin.service';
 import { CalculatorService } from './services/calculator.service';
+import { InputService } from './services/input.service';
 import { ReferencedataService } from './services/referencedata.service';
 import { ProfileService } from './services/profile.service';
 
@@ -24,6 +25,7 @@ import { ProfileService } from './services/profile.service';
    ApiService,
    AdminService,
    CalculatorService,
+   InputService,
    ReferencedataService,
    ProfileService
   ],

@@ -51,6 +51,7 @@ export class OpenStudyComponent implements OnInit, AfterViewInit {
   public name = '';
   public laddaOpeningStudy = false;
   public laddaDeletingStudy = false;
+  public laddaSaveStudyAs = false;
 
   constructor(private api: ApiService, private router: Router) {}
   ngOnInit() {
@@ -62,10 +63,28 @@ export class OpenStudyComponent implements OnInit, AfterViewInit {
     this.api.openStudy(this.selectedStudy.ID_STUDY)
       .subscribe(
         data => {
-          this.router.navigate(['/input']);
+          this.api.getProductViewModel(this.selectedStudy.ID_PROD).subscribe(
+            (response: Models.ViewProduct) => {
+              localStorage.setItem('productView', JSON.stringify(response));
+              const elements = response.elements;
+              if (elements.length > 0) {
+                localStorage.setItem('productShape', elements[0].ID_SHAPE.toString());
+              } else {
+                localStorage.removeItem('productShape');
+              }
+              this.laddaOpeningStudy = false;
+              this.router.navigate(['/input']);
+            },
+            err => {
+              console.log(err);
+            },
+            () => {
+            }
+          );
         },
         err => {
-
+          console.log(err);
+          this.laddaOpeningStudy = false;
         },
         () => {
           this.laddaOpeningStudy = false;
@@ -103,26 +122,38 @@ export class OpenStudyComponent implements OnInit, AfterViewInit {
   }
 
   deleteStudy() {
-    this.laddaDeletingStudy = true;
-    this.api.deleteStudyById(this.selectedStudy.ID_STUDY).subscribe(
-      data => {
-        console.log(data);
-        this.laddaDeletingStudy = false;
-        this.refrestListStudies();
-      },
-      err => {
-        this.laddaDeletingStudy = false;
-        console.log(err);
-      },
-      () => {
-        this.laddaDeletingStudy = false;
+    swal({
+      title: 'Are you sure?',
+      text: 'You won\'t be able to revert this!',
+      type: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+      if (result.value) {
+        this.laddaDeletingStudy = true;
+        this.api.deleteStudyById(this.selectedStudy.ID_STUDY).subscribe(
+          data => {
+            console.log(data);
+            this.laddaDeletingStudy = false;
+            swal(
+              'Deleted!',
+              'Your study has been deleted.',
+              'success'
+            );
+            this.refrestListStudies();
+          },
+          err => {
+            this.laddaDeletingStudy = false;
+            console.log(err);
+          },
+          () => {
+            this.laddaDeletingStudy = false;
+          }
+        );
       }
-    );
-  }
-
-  chainStudy() {
-    swal('Warning', 'This feature is under development!', 'warning');
-
+    });
   }
 
   saveStudyAs() {
@@ -131,6 +162,7 @@ export class OpenStudyComponent implements OnInit, AfterViewInit {
       swal('Error', 'Please specify study name!', 'error');
       return false;
     }
+    this.laddaSaveStudyAs = true;
     this.studyID = this.selectedStudy.ID_STUDY;
     const studyName = this.name;
         // console.log(studyName);
@@ -141,16 +173,18 @@ export class OpenStudyComponent implements OnInit, AfterViewInit {
     }).subscribe(
       (data: Study) => {
         this.modalSaveAs.hide();
+        this.laddaSaveStudyAs = false;
         this.refrestListStudies();
       },
       (err) => {
         swal('Error', err.error.message, 'error');
         console.log(err);
+        this.laddaSaveStudyAs = false;
       },
       () => {
+        this.laddaSaveStudyAs = false;
       }
     );
-    // swal('Warning', 'This feature is under developmente!', 'warning');
   }
 
 }

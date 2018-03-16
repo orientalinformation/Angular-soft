@@ -8,18 +8,24 @@ import { LayoutComponent } from './layout/layout.component';
 import { TranslateModule } from '@ngx-translate/core';
 import { SharedModule } from '../../shared/shared.module';
 import { ModalModule } from 'ngx-bootstrap/modal';
+import { ReportPdfviewerComponent } from './report-pdfviewer/report-pdfviewer.component';
+import { PdfViewerModule } from 'ng2-pdf-viewer';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   imports: [
     ReportRoutingModule,
     CommonModule,
+    PdfViewerModule,
+    FormsModule,
     SharedModule,
     TranslateModule.forChild(),
     ModalModule.forRoot()
   ],
   declarations: [
-    ReportConfigComponent,
     LayoutComponent,
+    ReportConfigComponent,
+    ReportPdfviewerComponent,
   ]
 })
 export class ReportModule { }

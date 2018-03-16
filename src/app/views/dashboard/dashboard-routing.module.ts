@@ -2,6 +2,7 @@ import { OpenStudyComponent } from './open-study/open-study.component';
 import { StartPageComponent } from './start-page/start-page.component';
 import { NewStudyComponent } from './new-study/new-study.component';
 import { ImportComponent } from './import/import.component';
+import { LoadingComponent } from './loading/loading.component';
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
@@ -21,6 +22,10 @@ const routes: Routes = [
   {
     path: 'import',
     component: ImportComponent,
+  },
+  {
+    path: 'loading',
+    component: LoadingComponent,
   }
 ];
 

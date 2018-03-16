@@ -6,6 +6,7 @@ import { Router } from '@angular/router';
 import swal from 'sweetalert2';
 import { ToastrService } from 'ngx-toastr';
 import { TextService } from '../../shared/text.service';
+import { ApiService } from '../../api/services';
 
 @Component({
   selector: 'app-signin',
@@ -15,7 +16,8 @@ import { TextService } from '../../shared/text.service';
 export class SigninComponent implements OnInit {
   user: Login = new Login();
 
-  constructor(private auth: AuthenticationService, private router: Router, private toastr: ToastrService, private text: TextService) { }
+  constructor(private auth: AuthenticationService, private api: ApiService,
+    private router: Router, private toastr: ToastrService, private text: TextService) { }
 
   ngOnInit() {
   }
@@ -26,6 +28,11 @@ export class SigninComponent implements OnInit {
         data => {
           console.log('User is logged in');
           this.toastr.success('Welcome back', 'Authenticated successfully');
+          this.api.getColorDefs().subscribe(
+            (resp) => {
+              localStorage.setItem('colors', JSON.stringify(resp));
+            }
+          );
           this.router.navigate(['/']);
         },
         error => {

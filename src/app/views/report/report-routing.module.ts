@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { LayoutComponent } from './layout/layout.component';
 import { ReportConfigComponent } from './report-config/report-config.component';
-
+import { ReportPdfviewerComponent } from './report-pdfviewer/report-pdfviewer.component';
 const routes: Routes = [
   {
     path: '',
@@ -17,6 +17,10 @@ const routes: Routes = [
         path: 'reportconfig',
         component: ReportConfigComponent,
       },
+      {
+        path: 'reportview',
+        component: ReportPdfviewerComponent,
+      }
     ]
   }
 ];

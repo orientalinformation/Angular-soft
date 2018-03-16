@@ -1,4 +1,5 @@
 /* tslint:disable */
+import { EquipGenZone } from './equip-gen-zone';
 
 /**
  */
@@ -12,4 +13,5 @@ export class NewEquipment {
     dwellingTime?: number;
     newPos?: number;
     typeEquipment?: number;
+    equipGenZone?: EquipGenZone[];
 }

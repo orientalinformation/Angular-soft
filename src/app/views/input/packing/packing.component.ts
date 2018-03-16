@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterContentChecked } from '@angular/core';
+import { Component, OnInit, AfterContentChecked, ViewChild } from '@angular/core';
 import { ApiService } from '../../../api/services/api.service';
 import { Study } from '../../../api/models/study';
 import { PackingLayer } from '../../../api/models/packing-layer';
@@ -10,6 +10,9 @@ import { ViewProduct } from '../../../api/models/view-product';
 import swal from 'sweetalert2';
 import { ToastrService } from 'ngx-toastr';
 import { TextService } from '../../../shared/text.service';
+import { Symbol } from '../../../api/models/symbol';
+import { ChainingComponent } from '../chaining/chaining.component';
+import { AuthenticationService } from '../../../authentication/authentication.service';
 
 @Component({
   selector: 'app-packing',
@@ -28,7 +31,7 @@ export class PackingComponent implements OnInit, AfterContentChecked, AfterViewI
   public sideLayers: PackingLayer[] = [];
   public bottomLayers: PackingLayer[] = [];
 
-  public defaultThickness = 10;
+  public defaultThickness = parseFloat((10 * 1).toFixed()).toFixed(2);
   public productShape = 0;
   public imgSrc = '';
   public study: Study;
@@ -40,13 +43,17 @@ export class PackingComponent implements OnInit, AfterContentChecked, AfterViewI
 
   public laddaSavingPacking = false;
 
-  constructor(private api: ApiService, private router: Router, private toastr: ToastrService, public text: TextService) {
+  public isLoading = true;
+  public symbol: Symbol;
+
+  @ViewChild('chainingControls') chainingControls: ChainingComponent;
+
+  constructor(private api: ApiService, private router: Router,
+    private toastr: ToastrService, public text: TextService, private auth: AuthenticationService) {
     this.topNrLayer = 0;
     this.sideNrLayer = 0;
     this.bottomNrLayer = 0;
   }
-
-  public isLoading = true;
 
   ngOnInit() {
   }
@@ -88,7 +95,11 @@ export class PackingComponent implements OnInit, AfterContentChecked, AfterViewI
         this.isLoading = false;
       }
     );
-
+    this.api.getSymbol(this.study.ID_STUDY).subscribe(
+      data => {
+        this.symbol = data;
+      }
+    );
     this.api.findPackingElements().subscribe(
       (response: PackingElement[]) => {
         this.packingElements = response;
@@ -101,7 +112,7 @@ export class PackingComponent implements OnInit, AfterContentChecked, AfterViewI
     this.productShape = Number(localStorage.getItem('productShape'));
     this.productView = JSON.parse(localStorage.getItem('productView'));
 
-    if (this.productShape == 0 || !this.productView.elements || this.productView.elements.length == 0) {
+    if (this.productShape === 0 || !this.productView.elements || this.productView.elements.length === 0) {
       swal('Oops..', 'Please define product first', 'error');
       this.router.navigate(['/input/product']);
       return;
@@ -209,7 +220,7 @@ export class PackingComponent implements OnInit, AfterContentChecked, AfterViewI
     this.topLayers = [];
 
     for (let index = 0; index < this.topNrLayer; index++) {
-      let p = new PackingLayer();
+      const p = new PackingLayer();
       p.THICKNESS = this.defaultThickness;
       p.PACKING_LAYER_ORDER = index;
       p.PACKING_SIDE_NUMBER = 1;
@@ -220,7 +231,7 @@ export class PackingComponent implements OnInit, AfterContentChecked, AfterViewI
   onSideNrLayerChanged() {
     this.sideLayers = [];
     for (let index = 0; index < this.sideNrLayer; index++) {
-      let p = new PackingLayer();
+      const p = new PackingLayer();
       p.THICKNESS = this.defaultThickness;
       p.PACKING_LAYER_ORDER = index;
       p.PACKING_SIDE_NUMBER = 2;
@@ -231,7 +242,7 @@ export class PackingComponent implements OnInit, AfterContentChecked, AfterViewI
   onBottomNrLayerChanged() {
     this.bottomLayers = [];
     for (let index = 0; index < this.bottomNrLayer; index++) {
-      let p = new PackingLayer();
+      const p = new PackingLayer();
       p.THICKNESS = this.defaultThickness;
       p.PACKING_LAYER_ORDER = index;
       p.PACKING_SIDE_NUMBER = 3;
@@ -258,6 +269,16 @@ export class PackingComponent implements OnInit, AfterContentChecked, AfterViewI
 
     this.onBottomNrLayerChanged();
     this.bottomLayers = this.topLayers;
+  }
+
+  onChainingControlsLoaded() {
+    this.chainingControls.showPacking();
+  }
+
+  studyModifiable() {
+    if (!this.study) { return false; }
+    const owned = this.auth.user().ID_USER === this.study.ID_USER;
+    return owned && ((!this.study.CHAINING_CONTROLS) || (!this.study.HAS_CHILD && this.study.PARENT_ID === 0));
   }
 
 }

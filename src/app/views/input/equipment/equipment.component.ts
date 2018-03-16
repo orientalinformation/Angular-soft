@@ -10,6 +10,9 @@ import { ModalDirective } from 'ngx-bootstrap/modal/modal.directive';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { isNumber } from '@ng-bootstrap/ng-bootstrap/util/util';
+import { Symbol } from '../../../api/models/symbol';
+import { ChainingComponent } from '../chaining/chaining.component';
+import { AuthenticationService } from '../../../authentication/authentication.service';
 
 @Component({
   selector: 'app-equipment',
@@ -19,6 +22,7 @@ import { isNumber } from '@ng-bootstrap/ng-bootstrap/util/util';
 export class EquipmentComponent implements OnInit, AfterContentInit {
   @ViewChild('addEquipModal') public addEquipModal: ModalDirective;
   @ViewChild('editModal') public editModal: ModalDirective;
+  @ViewChild('chainingControls') chainingControls: ChainingComponent;
 
   public isUpdatePrice = false;
   public isUpdateInterval = false;
@@ -38,7 +42,7 @@ export class EquipmentComponent implements OnInit, AfterContentInit {
   };
 
   constructor(private api: ApiService, private text: TextService, private translate: TranslateService,
-    private toastr: ToastrService, private router: Router) { }
+    private toastr: ToastrService, private router: Router, private auth: AuthenticationService) { }
   public selectedAddingEquipment: Models.Equipment;
   public filterString = '';
   public unitData: Models.UnitDataEquipment;
@@ -47,6 +51,9 @@ export class EquipmentComponent implements OnInit, AfterContentInit {
     intervalL: 0,
     intervalW: 0
   };
+  public symbol: Symbol;
+  public equipment;
+  public loadInterval = false;
 
   ngOnInit() {
     this.study = null;
@@ -80,17 +87,23 @@ export class EquipmentComponent implements OnInit, AfterContentInit {
   }
 
   refreshView() {
-    this.api.getStudyEquipments(this.study.ID_STUDY).subscribe(
-      (equips: Models.ViewStudyEquipment[]) => {
-        this.laddaDeletingStudyEquip = new Array<boolean>(equips.length);
-        this.laddaDeletingStudyEquip.fill(false);
-        this.equipmentsView = equips;
-        console.log(this.equipmentsView);
-      },
-      (err) => {
-        console.log(err);
-      },
-      () => {
+    this.api.getSymbol(this.study.ID_STUDY).subscribe(
+      data => {
+        this.symbol = data;
+        this.api.getStudyEquipments(this.study.ID_STUDY).subscribe(
+          (equips: Models.ViewStudyEquipment[]) => {
+            console.log(equips);
+            this.laddaDeletingStudyEquip = new Array<boolean>(equips.length);
+            this.laddaDeletingStudyEquip.fill(false);
+            this.equipmentsView = equips;
+            console.log(this.equipmentsView);
+          },
+          (err) => {
+            console.log(err);
+          },
+          () => {
+          }
+        );
       }
     );
   }
@@ -233,6 +246,7 @@ export class EquipmentComponent implements OnInit, AfterContentInit {
       return;
     }
     this.isUpdateInterval = true;
+    this.loadInterval = true;
     this.api.updateInterval({
       id: this.study.ID_STUDY,
       lenght: this.unitData.IntervalLength,
@@ -243,7 +257,9 @@ export class EquipmentComponent implements OnInit, AfterContentInit {
           this.toastr.success('Update interval Lenght Width', 'successfully');
           this.router.navigate(['/input/equipment']);
           this.getUnitData();
+          this.refreshView();
           this.isUpdateInterval = false;
+          this.loadInterval = false;
 
           // Recalculate equipment parameter
 
@@ -266,6 +282,8 @@ export class EquipmentComponent implements OnInit, AfterContentInit {
   }
 
   equipEditLayout(equip: Models.ViewStudyEquipment, index: number) {
+    console.log(equip);
+    this.equipment = equip;
     this.editLayoutForm = {
       stdEquipId: equip.ID_STUDY_EQUIPMENTS,
       orientation: equip.ORIENTATION
@@ -278,6 +296,7 @@ export class EquipmentComponent implements OnInit, AfterContentInit {
     if (equip.layoutGen.WIDTH_INTERVAL < 0) {
       this.editLayoutForm.widthInterval = this.unitData.IntervalWidth;
     }
+    console.log(this.editLayoutForm);
     this.editModal.show();
   }
 
@@ -291,16 +310,49 @@ export class EquipmentComponent implements OnInit, AfterContentInit {
       }
     }).subscribe(
       (resp) => {
-
+        this.api.getStudyEquipments(this.study.ID_STUDY).subscribe(
+          (equips: Models.ViewStudyEquipment[]) => {
+            this.laddaDeletingStudyEquip = new Array<boolean>(equips.length);
+            this.laddaDeletingStudyEquip.fill(false);
+            this.equipmentsView = equips;
+            console.log(this.equipmentsView);
+            for (let i = 0; i < Object.keys(this.equipmentsView).length; i++) {
+              if (this.equipmentsView[i].ID_STUDY_EQUIPMENTS == this.editLayoutForm.stdEquipId) {
+                this.equipment = this.equipmentsView[i];
+              }
+            }
+            console.log(this.equipment);
+          },
+          (err) => {
+            console.log(err);
+          },
+          () => {
+          }
+        );
       },
       (err) => {
         console.log(err);
         this.editModal.hide();
       },
       () => {
-        this.editModal.hide();
-        this.refreshView();
+        // this.editModal.hide();
+        // this.refreshView();
       }
     );
+  }
+
+  onChainingControlsLoaded() {
+    this.chainingControls.showEquipment();
+  }
+
+  studyModifiable() {
+    if (!this.study) { return false; }
+    const owned = this.auth.user().ID_USER === this.study.ID_USER;
+    return owned && ((!this.study.CHAINING_CONTROLS) || (!this.study.HAS_CHILD));
+  }
+
+  closeEditModal() {
+    this.editModal.hide();
+    this.refreshView();
   }
 }

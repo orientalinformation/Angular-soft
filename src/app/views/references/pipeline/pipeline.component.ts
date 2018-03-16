@@ -52,6 +52,8 @@ export class PipelineComponent implements OnInit, AfterViewInit {
   public pipeLineSaveAs = {
     newName: ''
   };
+  public checkHideInfo = false;
+  public checkActiveLine = 0;
 
   constructor(private referencedata: ReferencedataService, private toastr: ToastrService,
     private router: Router, private api: ApiService) {
@@ -59,6 +61,7 @@ export class PipelineComponent implements OnInit, AfterViewInit {
     this.newPipeLine = new PipeLineElmt();
     this.userLogon = JSON.parse(localStorage.getItem('user'));
     this.updatePipeLine = new PipeLineElmt();
+    localStorage.setItem('pipelineCurr', '');
   }
 
   ngOnInit() {
@@ -79,6 +82,18 @@ export class PipelineComponent implements OnInit, AfterViewInit {
     this.referencedata.findRefPipeline()
       .subscribe(
       data => {
+        for (let i = 0; i < data.mine.length ; i++) {
+          data.mine[i].ELMT_PRICE = Number(data.mine[i].ELMT_PRICE);
+          data.mine[i].ELT_LOSSES_1 = Number(data.mine[i].ELT_LOSSES_1);
+          data.mine[i].ELT_LOSSES_2 = Number(data.mine[i].ELT_LOSSES_2);
+          data.mine[i].ID_COOLING_FAMILY = Number(data.mine[i].ID_COOLING_FAMILY);
+        }
+        for (let i = 0; i < data.others.length ; i++) {
+          data.others[i].ELMT_PRICE = Number(data.others[i].ELMT_PRICE);
+          data.others[i].ELT_LOSSES_1 = Number(data.others[i].ELT_LOSSES_1);
+          data.others[i].ELT_LOSSES_2 = Number(data.others[i].ELT_LOSSES_2);
+          data.others[i].ID_COOLING_FAMILY = Number(data.others[i].ID_COOLING_FAMILY);
+        }
         this.listPipeLines = data;
         this.isLoading = false;
       },
@@ -86,9 +101,14 @@ export class PipelineComponent implements OnInit, AfterViewInit {
         console.log(err);
       },
       () => {
-
+          if (localStorage.getItem('pipelineCurr') !== '') {
+            const lineCurr = JSON.parse(localStorage.getItem('pipelineCurr'));
+            this.checkActiveLine = Number(lineCurr.ID_PIPELINE_ELMT);
+            this.updatePipeLine = lineCurr;
+            this.selectLine = lineCurr;
+          }
       }
-      );
+    );
   }
 
   getListLineType() {
@@ -122,6 +142,8 @@ export class PipelineComponent implements OnInit, AfterViewInit {
   }
 
   onSelectPipeLine(line) {
+    localStorage.setItem('pipelineCurr', '');
+    this.checkActiveLine = 0;
     this.selectLine = line;
     this.updatePipeLine.LABEL = line.LABEL;
     this.updatePipeLine.LINE_VERSION = line.LINE_VERSION;
@@ -135,10 +157,11 @@ export class PipelineComponent implements OnInit, AfterViewInit {
     this.updatePipeLine.ELT_LOSSES_1 = line.ELT_LOSSES_1;
     this.updatePipeLine.ELT_LOSSES_2 = line.ELT_LOSSES_2;
     this.updatePipeLine.LINE_RELEASE = line.LINE_RELEASE;
+    this.checkHideInfo = false;
   }
 
   savePipeLine() {
-    // console.log(this.newPipeLine);
+
     if (!this.newPipeLine.LABEL || this.newPipeLine.LABEL === undefined) {
       swal('Oops..', 'Please specify name!', 'warning');
       return;
@@ -188,23 +211,30 @@ export class PipelineComponent implements OnInit, AfterViewInit {
       this.newPipeLine.LINE_COMMENT = '';
     }
     this.isAddLine = true;
-    // console.log(this.newPipeLine);
     this.referencedata.newPipeLine(this.newPipeLine).subscribe(
       response => {
         let success = true;
-        if (response === 0) {
+
+        if (response === undefined) {
           success = false;
         }
 
-        if (success) {
-          this.modalAddPipeLine.hide();
-          this.toastr.success('Create pipe line', 'successfully');
-          this.router.navigate(['/references/pipeline']);
-          this.refrestListLineElmt();
-          this.newPipeLine = new PipeLineElmt();
-          this.ngOnInit();
+        if (response === 0) {
+          swal('Oops..', 'Name and version already in use!', 'error');
         } else {
-          swal('Oops..', 'Create pipeline error!', 'error');
+          if (success) {
+            localStorage.setItem('pipelineCurr', JSON.stringify(response));
+            this.modalAddPipeLine.hide();
+            this.toastr.success('Create pipe line', 'successfully');
+            this.router.navigate(['/references/pipeline']);
+            this.refrestListLineElmt();
+            this.ngOnInit();
+            this.checkHideInfo = false;
+            this.newPipeLine = new PipeLineElmt();
+  
+          } else {
+              swal('Oops..', 'Create pipeline error!', 'error');
+          }
         }
         this.isAddLine = false;
       },
@@ -238,9 +268,10 @@ export class PipelineComponent implements OnInit, AfterViewInit {
         this.referencedata.deletePipeLine(pipeLineElmt.ID_PIPELINE_ELMT)
         .subscribe(
         data => {
-          console.log(data);
           if (data === 1) {
             this.toastr.success('Delete pipe line', 'successfully');
+            this.updatePipeLine = new PipeLineElmt();
+            this.checkHideInfo = true;
           } else {
             swal('Oops..', 'Delete pipe line error!', 'error');
           }
@@ -261,7 +292,7 @@ export class PipelineComponent implements OnInit, AfterViewInit {
   }
 
   updatePipeLineElmt(pipeLine) {
-    // console.log(pipeLine);
+
     if (!pipeLine.LABEL || pipeLine.LABEL === undefined) {
       swal('Oops..', 'Please specify name!', 'warning');
       return;
@@ -312,23 +343,38 @@ export class PipelineComponent implements OnInit, AfterViewInit {
     }
     this.isUpdatePipeLine = true;
     this.referencedata.updatePipeLine({
-      id: this.selectLine.ID_PIPELINE_ELMT,
-      body: pipeLine
+      ID_PIPELINE_ELMT: this.selectLine.ID_PIPELINE_ELMT,
+      LABEL: pipeLine.LABEL,
+      LINE_VERSION: pipeLine.LINE_VERSION,
+      LINE_COMMENT: pipeLine.LINE_COMMENT,
+      MANUFACTURER: pipeLine.MANUFACTURER,
+      ELT_TYPE: pipeLine.ELT_TYPE,
+      ID_COOLING_FAMILY: pipeLine.ID_COOLING_FAMILY,
+      INSULATION_TYPE: pipeLine.INSULATION_TYPE,
+      ELMT_PRICE: pipeLine.ELMT_PRICE,
+      ELT_SIZE: pipeLine.ELT_SIZE,
+      ELT_LOSSES_1: pipeLine.ELT_LOSSES_1,
+      ELT_LOSSES_2: pipeLine.ELT_LOSSES_2,
+      LINE_RELEASE: pipeLine.LINE_RELEASE
     }).subscribe(
       response => {
         let success = true;
-        if (response === 0) {
+        if (response === undefined) {
           success = false;
         }
 
-        if (success) {
-          this.modalAddPipeLine.hide();
-          this.toastr.success('Update pipe line', 'successfully');
-          this.router.navigate(['/references/pipeline']);
-          this.refrestListLineElmt();
-          this.updatePipeLine = new PipeLineElmt();
+        if (response === 0) {
+          swal('Oops..', 'Name and version already in use!', 'error');
         } else {
-          swal('Oops..', 'Update pipeline error!', 'error');
+          if (success) {
+            localStorage.setItem('pipelineCurr', JSON.stringify(response));
+            this.modalAddPipeLine.hide();
+            this.toastr.success('Update pipe line', 'successfully');
+            this.router.navigate(['/references/pipeline']);
+            this.refrestListLineElmt();
+          } else {
+              swal('Oops..', 'Update pipeline error!', 'error');
+          }
         }
         this.isUpdatePipeLine = false;
       },
@@ -338,35 +384,46 @@ export class PipelineComponent implements OnInit, AfterViewInit {
       },
       () => {
         this.isUpdatePipeLine = false;
-        this.selectLine = new PipeLineElmt();
       }
     );
   }
 
   saveAsPipeLine(oldPipeLine) {
+    if (!this.pipeLineSaveAs.newName || this.pipeLineSaveAs.newName === undefined) {
+      swal('Oops..', 'Please specify name!', 'warning');
+      return;
+    }
+    if (typeof this.pipeLineSaveAs.newName === 'number') {
+      swal('Oops..', 'Not a valid string in Name !', 'warning');
+      return;
+    }
     this.isSaveAs = true;
     this.referencedata.saveAsPipeLine({
-      id: oldPipeLine.ID_PIPELINE_ELMT,
-      name: this.pipeLineSaveAs.newName
+      ID_PIPELINE_ELMT: oldPipeLine.ID_PIPELINE_ELMT,
+      LABEL: this.pipeLineSaveAs.newName
     })
       .subscribe(
         response => {
         let success = true;
-        if (response === 0) {
+        if (response === undefined) {
           success = false;
         }
 
-        if (success) {
-          this.modalSaveAs.hide();
-          this.toastr.success('Save as success !', 'successfully');
-          this.router.navigate(['/references/pipeline']);
-          this.refrestListLineElmt();
-          this.updatePipeLine = new PipeLineElmt();
-          this.pipeLineSaveAs = {
-            newName: ''
-          };
+        if (response === 0) {
+          swal('Oops..', 'Name and version already in use!', 'error');
         } else {
-          swal('Oops..', 'Save as pipe line error!', 'error');
+          if (success) {
+            localStorage.setItem('pipelineCurr', JSON.stringify(response));
+            this.modalSaveAs.hide();
+            this.toastr.success('Save as success !', 'successfully');
+            this.router.navigate(['/references/pipeline']);
+            this.refrestListLineElmt();
+            this.pipeLineSaveAs = {
+              newName: ''
+            };
+          } else {
+              swal('Oops..', 'Save as pipe line error!', 'error');
+          }
         }
         this.isSaveAs = false;
       },

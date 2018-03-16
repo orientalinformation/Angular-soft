@@ -9,7 +9,7 @@
     </div>
     <div class="card-body">
       <!-- Component -->
-      <div style="margin-top:10px;" id="page-new-component">
+      <div style="margin-top:10px;" id="page-new-component" *ngIf="!isLoading">
         <div class="row">
           <div class="col-md-5">
             <div class="card">
@@ -24,12 +24,14 @@
               <perfect-scrollbar style="max-height: 400px;" *ngIf="components">
                 <div class="list-group">
                   <h6 class="dropdown-header">MINE</h6>
-                  <a *ngFor="let comp of (components.mine | pipeLineFilter: filterString)" [ngClass]="comp == selectComponent? 'active' : ''"
+                  <a *ngFor="let comp of (components.mine | pipeLineFilter: filterString)" [ngClass]="checkActiveComp == comp.ID_COMP || comp == selectComponent? 'active' : ''"
                     (click)="onSelectComponent(comp);onGetTemperature(comp);" class="list-group-item list-group-item-action">
                     <div class="d-flex w-100 justify-content-between">
-                      {{ comp.LABEL }}
+                      {{ comp.LABEL }} - (v{{ comp.COMP_VERSION }})
                       <i *ngIf="comp.COMP_RELEASE == 3" class="fa fa-check text-success"></i>
                       <i *ngIf="comp.COMP_RELEASE == 6" class="fa fa-lock text-secondary"></i>
+                      <i *ngIf="comp.COMP_RELEASE == 4" class="fa fa-certificate text-success"></i> 
+                      <i *ngIf="comp.COMP_RELEASE == 9" class="fa fa-exclamation-circle text-danger"></i>
                       <!-- <i class="fa fa-trash text-secondary"></i>
                             <i class="fa fa-exclamation-circle text-danger"></i> -->
                     </div>
@@ -38,9 +40,11 @@
                   <a *ngFor="let comp of (components.others | pipeLineFilter: filterString)" [ngClass]="comp == selectComponent? 'active' : ''"
                     (click)="onSelectComponent(comp);onGetTemperature(comp);" class="list-group-item list-group-item-action">
                     <div class="d-flex w-100 justify-content-between">
-                      {{ comp.LABEL }}
+                      {{ comp.LABEL }} - (v{{ comp.COMP_VERSION }})
                       <i *ngIf="comp.COMP_RELEASE == 3" class="fa fa-check text-success"></i>
                       <i *ngIf="comp.COMP_RELEASE == 6" class="fa fa-lock text-secondary"></i>
+                      <i *ngIf="comp.COMP_RELEASE == 4" class="fa fa-certificate text-success"></i>
+                      <i *ngIf="comp.COMP_RELEASE == 9" class="fa fa-exclamation-circle text-danger"></i>
                       <!-- <i class="fa fa-lock text-secondary"></i>
                             <i class="fa fa-info-circle text-danger"></i>  -->
                     </div>
@@ -59,91 +63,93 @@
                   <i class="fa fa-refresh"></i> {{ 'Refresh'|translate }}</button>
               </div>
             </div>
-            <div class="card" *ngIf="selectComponent && selectComponent.COMP_RELEASE != 6">
-              <div class="card-header">
-                <strong>{{ 'STATUS'|translate }}</strong>
-              </div>
-              <div class="row card-status">
-                <div class="col">
-                  <div class="col-md-2" align="center">
-                    <label class="custom-control custom-radio">
-                      <input type="radio" class="custom-control-input" name="statusComp" [checked]="selectComponent.COMP_RELEASE == 1" [value]="1">{{ 'Draft'|translate }}
-                      <span class="custom-control-indicator"></span>
-                    </label>
+            <div *ngIf="selectComponent && !checkHideInfo">
+              <div class="card" *ngIf="selectComponent && selectComponent.COMP_RELEASE != 6">
+                <div class="card-header">
+                  <strong>{{ 'STATUS'|translate }}</strong>
+                </div>
+                <div class="row card-status">
+                  <div class="col">
+                    <div class="col-md-2" align="center">
+                      <label class="custom-control custom-radio">
+                        <input type="radio" class="custom-control-input" name="statusComp"  value="1" [(ngModel)]="selectComponent.COMP_RELEASE">{{ 'Draft'|translate }}
+                        <span class="custom-control-indicator"></span>
+                      </label>
+                    </div>
+                    <div class="col-md-2" align="center">
+                      <label class="custom-control custom-radio">
+                        <input type="radio" class="custom-control-input" name="statusComp" value="2" [(ngModel)]="selectComponent.COMP_RELEASE" [disabled]="selectComponent.COMP_GEN_STATUS != 1">{{ 'Test'|translate }}
+                        <span class="custom-control-indicator"></span>
+                      </label>
+                    </div>
+                    <div class="col-md-2" align="center">
+                      <label class="custom-control custom-radio">
+                        <input type="radio" class="custom-control-input" name="statusComp" value="3" [(ngModel)]="selectComponent.COMP_RELEASE" [disabled]="selectComponent.COMP_GEN_STATUS != 1">{{ 'Active'|translate }}
+                        <span class="custom-control-indicator"></span>
+                      </label>
+                    </div>
                   </div>
-                  <div class="col-md-2" align="center">
-                    <label class="custom-control custom-radio">
-                      <input type="radio" class="custom-control-input" name="statusComp" [checked]="selectComponent.COMP_RELEASE == 2" [value]="2" [disabled]="selectComponent.COMP_GEN_STATUS != 1">{{ 'Test'|translate }}
-                      <span class="custom-control-indicator"></span>
-                    </label>
-                  </div>
-                  <div class="col-md-2" align="center">
-                    <label class="custom-control custom-radio">
-                      <input type="radio" class="custom-control-input" name="statusComp" [checked]="selectComponent.COMP_RELEASE == 3" [value]="3" [disabled]="selectComponent.COMP_GEN_STATUS != 1">{{ 'Active'|translate }}
-                      <span class="custom-control-indicator"></span>
-                    </label>
+                  <div class="col">
+                    <div class="col-md-2" align="center">
+                      <label class="custom-control custom-radio">
+                        <input type="radio" class="custom-control-input" name="statusComp"  value="4" [(ngModel)]="selectComponent.COMP_RELEASE" [disabled]="selectComponent.COMP_GEN_STATUS != 1">{{ 'Certified'|translate }}
+                        <span class="custom-control-indicator"></span>
+                      </label>
+                    </div>
+                    <div class="col-md-2" align="center">
+                      <label class="custom-control custom-radio">
+                        <input type="radio" class="custom-control-input" name="statusComp" value="9" [(ngModel)]="selectComponent.COMP_RELEASE" [disabled]="selectComponent.COMP_GEN_STATUS != 1">{{ 'Obsolete'|translate }}
+                        <span class="custom-control-indicator"></span>
+                      </label>
+                    </div>
                   </div>
                 </div>
-                <div class="col">
-                  <div class="col-md-2" align="center">
-                    <label class="custom-control custom-radio">
-                      <input type="radio" class="custom-control-input" name="statusComp" [checked]="selectComponent.COMP_RELEASE == 4" [value]="4" [disabled]="selectComponent.COMP_GEN_STATUS != 1">{{ 'Certified'|translate }}
-                      <span class="custom-control-indicator"></span>
-                    </label>
-                  </div>
-                  <div class="col-md-2" align="center">
-                    <label class="custom-control custom-radio">
-                      <input type="radio" class="custom-control-input" name="statusComp" [checked]="selectComponent.COMP_RELEASE == 9" [value]="9" [disabled]="selectComponent.COMP_GEN_STATUS != 1">{{ 'Obsolete'|translate }}
-                      <span class="custom-control-indicator"></span>
-                    </label>
-                  </div>
+              </div>
+              <div class="card" *ngIf="selectComponent && selectComponent.COMP_RELEASE != 6">
+                <div class="card-header">
+                  <strong>{{ 'CALCULATION PARAMETER'|translate }}</strong>
                 </div>
-              </div>
-            </div>
-            <div class="card" *ngIf="selectComponent && selectComponent.COMP_RELEASE != 6">
-              <div class="card-header">
-                <strong>{{ 'CALCULATION PARAMETER'|translate }}</strong>
-              </div>
-              <table class="table table-bordered table-sm mb-0">
-                <thead>
-                  <tr>
-                    <th style="vertical-align:middle;text-align:center">{{ 'Temperature'|translate }}(°C)</th>
-                    <th style="vertical-align:middle;text-align:center">{{ 'Action'|translate }}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <td colspan="2">
-                    <perfect-scrollbar style="max-height: 150px;">
-                      <table>
-                        <tr *ngFor="let field of fieldArray; let i = index">
-                          <td align="center" style="vertical-align:middle;text-align:center">{{ field.temperature }}
-                            <!-- <input [(ngModel)]="field.temperature" class="form-control" type="text" name="{{field.temperature}}" /> -->
-                          </td>
-                          <td align="center" width="10%">
-                            <div style="margin-top:0.5em">
-                              <button type="button" class="btn btn-danger btn-sm" (click)="deleteFieldValue(i)">
-                                <i class="fa fa-minus-circle" aria-hidden="true"></i>
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      </table>
-                    </perfect-scrollbar>
-                  </td>
-                  <tr>
-                    <td align="center" style="vertical-align:middle">
-                      <input type="text" class="form-control col-md-6" [(ngModel)]="newAttribute.temperature">
+                <table class="table table-bordered table-sm mb-0">
+                  <thead>
+                    <tr>
+                      <th style="vertical-align:middle;text-align:center">{{ 'Temperature'|translate }}(°C)</th>
+                      <th style="vertical-align:middle;text-align:center">{{ 'Action'|translate }}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <td colspan="2">
+                      <perfect-scrollbar style="max-height: 150px;">
+                        <table>
+                          <tr *ngFor="let field of fieldArray; let i = index">
+                            <td align="center" style="vertical-align:middle;text-align:center">{{ field.temperature }}
+                              <!-- <input [(ngModel)]="field.temperature" class="form-control" type="text" name="{{field.temperature}}" /> -->
+                            </td>
+                            <td align="center" width="10%">
+                              <div style="margin-top:0.5em">
+                                <button type="button" class="btn btn-danger btn-sm" (click)="deleteFieldValue(i)" ngbTooltip="Delete one temperature">
+                                  <i class="fa fa-minus-circle" aria-hidden="true"></i>
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        </table>
+                      </perfect-scrollbar>
                     </td>
-                    <td align="center">
-                      <div style="margin-top:0.5em">
-                        <button type="button" class="btn btn-success btn-sm" (click)="addFieldValue()">
-                          <i class="fa fa-plus-circle" aria-hidden="true"></i>
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+                    <tr>
+                      <td align="center" style="vertical-align:middle">
+                        <input type="text" class="form-control col-md-6" [(ngModel)]="newAttribute.temperature">
+                      </td>
+                      <td align="center">
+                        <div style="margin-top:0.5em">
+                          <button type="button" class="btn btn-success btn-sm" (click)="addFieldValue()" ngbTooltip="Add one temperature">
+                            <i class="fa fa-plus-circle" aria-hidden="true"></i>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
           <div class="col-md-7">
@@ -151,22 +157,17 @@
               <div class="card-header">
                 <strong>{{ 'DESCRIPTION'|translate }}</strong>
               </div>
-              <div class="card-body" *ngIf="!selectComponent">
-                <div class="text-muted text-center" style="min-height: 200px;padding-top:90px;">
-                  Please select a component from the list before process.
-                </div>
-              </div>
-              <div class="card-body" *ngIf="selectComponent">
+              <div class="card-body" *ngIf="selectComponent && !checkHideInfo; else hideInfo">
                 <div class="row" *ngIf="dataComponent">
                   <div class="col-md-12">
                     <div class="form-group row">
                       <label class="col-md-3 col-form-label" for="name-component">{{ 'Name'|translate }}</label>
                       <div class="col-md-5">
-                        <input type="text" id="name-component" name="name-component" class="form-control" [(ngModel)]="selectComponent.LABEL">
+                        <input type="text" id="name-component" name="name-component" class="form-control form-control-sm" [(ngModel)]="selectComponent.LABEL">
                       </div>
                       <label class="col-md-2 col-form-label" for="version-component">{{ 'Version'|translate }}</label>
                       <div class="col-md-2">
-                        <input type="text" id="version-component" name="version-component" class="form-control" placeholder="0.0" [(ngModel)]="selectComponent.COMP_VERSION">
+                        <input type="text" id="version-component" name="version-component" class="form-control form-control-sm" placeholder="0.0" [(ngModel)]="selectComponent.COMP_VERSION">
                       </div>
                     </div>
                     <div class="form-group row">
@@ -177,7 +178,7 @@
                     </div>
                     <div class="form-group row">
                       <label class="col-md-8 col-form-label" for="text-input">
-                        <button type="button" class="btn btn-primary btn-sm" id="caluclateFreeze" (click)="runCalculateFreeze(selectComponent.ID_COMP)"
+                        <button type="button" class="btn btn-primary btn-sm" id="caluclateFreeze" (click)="runSelectCalculateFreeze(selectComponent);"
                           [ladda]="laddaIsFreeze">
                           <i class="icon-energy"></i>&nbsp; {{ 'Freeze temperature'|translate }}</button>
                       </label>
@@ -339,14 +340,23 @@
                   </div>
                 </div>
               </div>
+              <ng-template #hideInfo>
+                <div class="card-body">
+                  <div class="text-muted text-center" style="min-height: 200px;padding-top:90px;">
+                    Please select a component from the list before process.
+                  </div>
+                </div>
+              </ng-template>
             </div>
           </div>
-          <div class="btn-component text-center" *ngIf="selectComponent && selectComponent.COMP_RELEASE != 6">
-            <button type="button" class="btn btn-primary" id="calulationRun" (click)="runCalculate(selectComponent);"
-             [disabled]="selectComponent.ID_USER != dataComponent.ID_USER" [ladda]="laddaIsCalculating">
-              <i class="icon-energy"></i>&nbsp; {{ 'Calculate'|translate }}</button>
-            <!-- <button type="button" class="btn btn-success">
-              <i></i> {{ 'Data generated'|translate}}</button> -->
+          <div *ngIf="selectComponent && !checkHideInfo">
+            <div class="btn-component text-center" *ngIf="selectComponent && selectComponent.COMP_RELEASE != 6">
+              <button type="button" class="btn btn-primary" id="calulationRun" (click)="runCalculate(selectComponent);"
+               [disabled]="selectComponent.ID_USER != dataComponent.ID_USER" [ladda]="laddaIsCalculating">
+                <i class="icon-energy"></i>&nbsp; {{ 'Calculate'|translate }}</button>
+              <!-- <button type="button" class="btn btn-success">
+                <i></i> {{ 'Data generated'|translate}}</button> -->
+            </div>
           </div>
         </div>
         <div class="btn-component text-center" *ngIf="selectComponent && selectComponent.COMP_RELEASE == 6">
@@ -356,7 +366,7 @@
       </div>
       <!-- End Component -->
       <!-- Generate data -->
-      <div style="margin-top:10px;display:none" id="page-datagenerated-component">
+      <div style="margin-top:10px;display:none" id="page-datagenerated-component" *ngIf="!isLoading">
         <table class="table table-bordered table-sm mb-0" *ngIf="compenths">
           <tr>
             <td align="center"></td>
@@ -367,7 +377,7 @@
           </tr>
           <tr *ngFor="let compenth of compenths" class="text-center nowrap">
             <td>
-              <button type="button" class="btn btn-sm btn-primary" (click)="getElementCompenth(compenth);">
+              <button type="button" class="btn btn-sm btn-primary" (click)="getElementCompenth(compenth);" ngbTooltip="Edit one compenth">
                 <i class="fa fa-pencil-square-o"></i>
               </button>
             </td>
@@ -385,7 +395,7 @@
 
 <!-- Model new component -->
 <div bsModal class="modal fade" #modalAddComponent="bs-modal" role="dialog" aria-hidden="true">
-  <div class="modal-dialog modal-lg modal-primary" role="document" style="max-width:70%;">
+  <div class="modal-dialog modal-lg modal-primary" role="document" style="max-width:80%;">
     <div class="modal-content">
       <div class="modal-header ">
         <strong>{{ 'Component - New'|translate }}</strong>
@@ -439,7 +449,7 @@
                     <div class="row form-group">
                       <label class="col-md-4 col-form-label">{{ 'Product family'|translate }}</label>
                       <div class="col-md-8">
-                        <select class="form-control" [(ngModel)]="dataComponent.PRODUCT_TYPE">
+                        <select class="form-control" [(ngModel)]="dataComponent.PRODUCT_TYPE" (change)="changCompFamily(dataComponent.PRODUCT_TYPE);">
                           <option [value]="0">{{ 'Select a family'|translate }}</option>
                           <option *ngFor="let family of dataComponent.productFamily" [value]="family.ID_TRANSLATION">
                             {{ family.LABEL|translate }}
@@ -620,8 +630,8 @@
                     <div class="col">
                       <div class="col-md-2" align="center">
                         <label class="custom-control custom-radio">
-                          <input type="radio" class="custom-control-input" name="statusComp" [(ngModel)]="dataComponent.release" [checked]="dataComponent.release == 1"
-                            [value]="1">{{ 'Draft'|translate }}
+                          <input type="radio" class="custom-control-input" name="statusComp" [(ngModel)]="dataComponent.release"
+                            value=1>{{ 'Draft'|translate }}
                           <span class="custom-control-indicator"></span>
                         </label>
                       </div>

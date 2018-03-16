@@ -10,14 +10,19 @@ import { map } from 'rxjs/operators/map';
 import { filter } from 'rxjs/operators/filter';
 
 import { ViewComponent } from '../models/view-component';
+import { VComponent } from '../models/vcomponent';
+import { ViewFamily } from '../models/view-family';
 import { ViewTemperature } from '../models/view-temperature';
+import { ResultCalculateFreeze } from '../models/result-calculate-freeze';
 import { MyComponent } from '../models/my-component';
 import { Compenth } from '../models/compenth';
+import { FilterEquipment } from '../models/filter-equipment';
 import { ViewPackingElmt } from '../models/view-packing-elmt';
-import { NewPacking } from '../models/new-packing';
+import { PackingElmt } from '../models/packing-elmt';
 import { ViewPipeLineElmt } from '../models/view-pipe-line-elmt';
 import { PipeLineElmt } from '../models/pipe-line-elmt';
 import { ViewEquipment } from '../models/view-equipment';
+import { RefEquipment } from '../models/ref-equipment';
 import { NewEquipment } from '../models/new-equipment';
 import { SaveEquipment } from '../models/save-equipment';
 import { SaveAsEquipment } from '../models/save-as-equipment';
@@ -26,6 +31,11 @@ import { EquipmentSeries } from '../models/equipment-series';
 import { Ramps } from '../models/ramps';
 import { Shelves } from '../models/shelves';
 import { Consumptions } from '../models/consumptions';
+import { EquipCharact } from '../models/equip-charact';
+import { ViewHighChart } from '../models/view-high-chart';
+import { ViewCurve } from '../models/view-curve';
+import { ViewTempSetPoint } from '../models/view-temp-set-point';
+import { ResultBuildForNewTR } from '../models/result-build-for-new-tr';
 
 
 @Injectable()
@@ -80,7 +90,7 @@ export class ReferencedataService extends BaseService {
    * Save data component
    * @param body - body save Component
    */
-  saveDataComponentResponse(body: ViewComponent): Observable<HttpResponse<number>> {
+  saveDataComponentResponse(body: ViewComponent): Observable<HttpResponse<VComponent>> {
     let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
@@ -92,16 +102,16 @@ export class ReferencedataService extends BaseService {
       {
         headers: __headers,
         params: __params,
-        responseType: 'text'
+        responseType: 'json'
       });
 
     return this.http.request<any>(req).pipe(
       filter(_r => _r instanceof HttpResponse),
       map(_r => {
         let _resp = _r as HttpResponse<any>;
-        let _body: number = null;
-        _body = parseFloat(_resp.body as string)
-        return _resp.clone({body: _body}) as HttpResponse<number>;
+        let _body: VComponent = null;
+        _body = _resp.body as VComponent
+        return _resp.clone({body: _body}) as HttpResponse<VComponent>;
       })
     );
   }
@@ -110,8 +120,86 @@ export class ReferencedataService extends BaseService {
    * Save data component
    * @param body - body save Component
    */
-  saveDataComponent(body: ViewComponent): Observable<number> {
+  saveDataComponent(body: ViewComponent): Observable<VComponent> {
     return this.saveDataComponentResponse(body).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * Get a list of family component
+   * @param compfamily - undefined
+   */
+  getDataSubFamilyResponse(compfamily?: string): Observable<HttpResponse<ViewFamily[]>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    if (compfamily != null) __params = __params.set("compfamily", compfamily.toString());
+    let req = new HttpRequest<any>(
+      "GET",
+      this.rootUrl + `/referencedata/subfamily`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: ViewFamily[] = null;
+        _body = _resp.body as ViewFamily[]
+        return _resp.clone({body: _body}) as HttpResponse<ViewFamily[]>;
+      })
+    );
+  }
+
+  /**
+   * Get a list of family component
+   * @param compfamily - undefined
+   */
+  getDataSubFamily(compfamily?: string): Observable<ViewFamily[]> {
+    return this.getDataSubFamilyResponse(compfamily).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * Get a list of family component
+   * @param compfamily - undefined
+   */
+  getFilterComponentResponse(compfamily: string): Observable<HttpResponse<ViewComponent>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    if (compfamily != null) __params = __params.set("compfamily", compfamily.toString());
+    let req = new HttpRequest<any>(
+      "GET",
+      this.rootUrl + `/referencedata/component/filter`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: ViewComponent = null;
+        _body = _resp.body as ViewComponent
+        return _resp.clone({body: _body}) as HttpResponse<ViewComponent>;
+      })
+    );
+  }
+
+  /**
+   * Get a list of family component
+   * @param compfamily - undefined
+   */
+  getFilterComponent(compfamily: string): Observable<ViewComponent> {
+    return this.getFilterComponentResponse(compfamily).pipe(
       map(_r => _r.body)
     );
   }
@@ -195,7 +283,7 @@ export class ReferencedataService extends BaseService {
    * run calculatefreeze component
    * @param body - body run calculatefreeze
    */
-  calculateFreezeResponse(body: ViewComponent): Observable<HttpResponse<number>> {
+  calculateFreezeResponse(body: ViewComponent): Observable<HttpResponse<ResultCalculateFreeze>> {
     let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
@@ -207,16 +295,16 @@ export class ReferencedataService extends BaseService {
       {
         headers: __headers,
         params: __params,
-        responseType: 'text'
+        responseType: 'json'
       });
 
     return this.http.request<any>(req).pipe(
       filter(_r => _r instanceof HttpResponse),
       map(_r => {
         let _resp = _r as HttpResponse<any>;
-        let _body: number = null;
-        _body = parseFloat(_resp.body as string)
-        return _resp.clone({body: _body}) as HttpResponse<number>;
+        let _body: ResultCalculateFreeze = null;
+        _body = _resp.body as ResultCalculateFreeze
+        return _resp.clone({body: _body}) as HttpResponse<ResultCalculateFreeze>;
       })
     );
   }
@@ -225,7 +313,7 @@ export class ReferencedataService extends BaseService {
    * run calculatefreeze component
    * @param body - body run calculatefreeze
    */
-  calculateFreeze(body: ViewComponent): Observable<number> {
+  calculateFreeze(body: ViewComponent): Observable<ResultCalculateFreeze> {
     return this.calculateFreezeResponse(body).pipe(
       map(_r => _r.body)
     );
@@ -423,6 +511,45 @@ export class ReferencedataService extends BaseService {
     );
   }
   /**
+   * Get data equipment of filter
+   * @param id - Equipment id
+   */
+  getEquipmentFilterResponse(id: number): Observable<HttpResponse<FilterEquipment>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    
+    let req = new HttpRequest<any>(
+      "GET",
+      this.rootUrl + `/referencedata/equipment/${id}/filter`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: FilterEquipment = null;
+        _body = _resp.body as FilterEquipment
+        return _resp.clone({body: _body}) as HttpResponse<FilterEquipment>;
+      })
+    );
+  }
+
+  /**
+   * Get data equipment of filter
+   * @param id - Equipment id
+   */
+  getEquipmentFilter(id: number): Observable<FilterEquipment> {
+    return this.getEquipmentFilterResponse(id).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
    * Get a list of packingelmt
    */
   findRefPackingElmtResponse(): Observable<HttpResponse<ViewPackingElmt>> {
@@ -459,58 +586,17 @@ export class ReferencedataService extends BaseService {
     );
   }
   /**
-   * Create new packing
-   * @param body - body create new packing
+   * update packing
+   * @param body - body update packing
    */
-  newPackingResponse(body: NewPacking): Observable<HttpResponse<number>> {
+  updatePackingResponse(body: PackingElmt): Observable<HttpResponse<PackingElmt>> {
     let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
     __body = body;
     let req = new HttpRequest<any>(
-      "PUT",
-      this.rootUrl + `/referencedata/packing`,
-      __body,
-      {
-        headers: __headers,
-        params: __params,
-        responseType: 'text'
-      });
-
-    return this.http.request<any>(req).pipe(
-      filter(_r => _r instanceof HttpResponse),
-      map(_r => {
-        let _resp = _r as HttpResponse<any>;
-        let _body: number = null;
-        _body = parseFloat(_resp.body as string)
-        return _resp.clone({body: _body}) as HttpResponse<number>;
-      })
-    );
-  }
-
-  /**
-   * Create new packing
-   * @param body - body create new packing
-   */
-  newPacking(body: NewPacking): Observable<number> {
-    return this.newPackingResponse(body).pipe(
-      map(_r => _r.body)
-    );
-  }
-  /**
-   * update packing
-   * @param id - undefined
-   * @param body - body update packing
-   */
-  updatePackingResponse(params: ReferencedataService.UpdatePackingParams): Observable<HttpResponse<number[]>> {
-    let __params = this.newParams();
-    let __headers = new HttpHeaders();
-    let __body: any = null;
-    
-    __body = params.body;
-    let req = new HttpRequest<any>(
       "POST",
-      this.rootUrl + `/referencedata/packing/${params.id}`,
+      this.rootUrl + `/referencedata/packing`,
       __body,
       {
         headers: __headers,
@@ -522,62 +608,58 @@ export class ReferencedataService extends BaseService {
       filter(_r => _r instanceof HttpResponse),
       map(_r => {
         let _resp = _r as HttpResponse<any>;
-        let _body: number[] = null;
-        _body = _resp.body as number[]
-        return _resp.clone({body: _body}) as HttpResponse<number[]>;
+        let _body: PackingElmt = null;
+        _body = _resp.body as PackingElmt
+        return _resp.clone({body: _body}) as HttpResponse<PackingElmt>;
       })
     );
   }
 
   /**
    * update packing
-   * @param id - undefined
    * @param body - body update packing
    */
-  updatePacking(params: ReferencedataService.UpdatePackingParams): Observable<number[]> {
-    return this.updatePackingResponse(params).pipe(
+  updatePacking(body: PackingElmt): Observable<PackingElmt> {
+    return this.updatePackingResponse(body).pipe(
       map(_r => _r.body)
     );
   }
   /**
-   * save as packing
-   * @param id - undefined
-   * @param body - body save as packing
+   * Create new packing
+   * @param body - body create new packing
    */
-  saveAsPackingResponse(params: ReferencedataService.SaveAsPackingParams): Observable<HttpResponse<number>> {
+  newPackingResponse(body: PackingElmt): Observable<HttpResponse<PackingElmt>> {
     let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
-    
-    __body = params.body;
+    __body = body;
     let req = new HttpRequest<any>(
       "PUT",
-      this.rootUrl + `/referencedata/packing/${params.id}`,
+      this.rootUrl + `/referencedata/packing`,
       __body,
       {
         headers: __headers,
         params: __params,
-        responseType: 'text'
+        responseType: 'json'
       });
 
     return this.http.request<any>(req).pipe(
       filter(_r => _r instanceof HttpResponse),
       map(_r => {
         let _resp = _r as HttpResponse<any>;
-        let _body: number = null;
-        _body = parseFloat(_resp.body as string)
-        return _resp.clone({body: _body}) as HttpResponse<number>;
+        let _body: PackingElmt = null;
+        _body = _resp.body as PackingElmt
+        return _resp.clone({body: _body}) as HttpResponse<PackingElmt>;
       })
     );
   }
 
   /**
-   * save as packing
-   * @param id - undefined
-   * @param body - body save as packing
+   * Create new packing
+   * @param body - body create new packing
    */
-  saveAsPacking(params: ReferencedataService.SaveAsPackingParams): Observable<number> {
-    return this.saveAsPackingResponse(params).pipe(
+  newPacking(body: PackingElmt): Observable<PackingElmt> {
+    return this.newPackingResponse(body).pipe(
       map(_r => _r.body)
     );
   }
@@ -585,7 +667,7 @@ export class ReferencedataService extends BaseService {
    * delete Packing
    * @param id - undefined
    */
-  deletePackingResponse(id: number): Observable<HttpResponse<void>> {
+  deletePackingResponse(id: number): Observable<HttpResponse<number>> {
     let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
@@ -604,9 +686,9 @@ export class ReferencedataService extends BaseService {
       filter(_r => _r instanceof HttpResponse),
       map(_r => {
         let _resp = _r as HttpResponse<any>;
-        let _body: void = null;
-        
-        return _resp.clone({body: _body}) as HttpResponse<void>;
+        let _body: number = null;
+        _body = parseFloat(_resp.body as string)
+        return _resp.clone({body: _body}) as HttpResponse<number>;
       })
     );
   }
@@ -615,8 +697,47 @@ export class ReferencedataService extends BaseService {
    * delete Packing
    * @param id - undefined
    */
-  deletePacking(id: number): Observable<void> {
+  deletePacking(id: number): Observable<number> {
     return this.deletePackingResponse(id).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * save as packing
+   * @param body - body save as packing
+   */
+  saveAsPackingResponse(body: PackingElmt): Observable<HttpResponse<PackingElmt>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    __body = body;
+    let req = new HttpRequest<any>(
+      "PUT",
+      this.rootUrl + `/referencedata/packingelmt`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: PackingElmt = null;
+        _body = _resp.body as PackingElmt
+        return _resp.clone({body: _body}) as HttpResponse<PackingElmt>;
+      })
+    );
+  }
+
+  /**
+   * save as packing
+   * @param body - body save as packing
+   */
+  saveAsPacking(body: PackingElmt): Observable<PackingElmt> {
+    return this.saveAsPackingResponse(body).pipe(
       map(_r => _r.body)
     );
   }
@@ -657,10 +778,49 @@ export class ReferencedataService extends BaseService {
     );
   }
   /**
+   * update pipe line
+   * @param body - body update pipe line
+   */
+  updatePipeLineResponse(body: PipeLineElmt): Observable<HttpResponse<PipeLineElmt>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    __body = body;
+    let req = new HttpRequest<any>(
+      "POST",
+      this.rootUrl + `/referencedata/pipeline`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: PipeLineElmt = null;
+        _body = _resp.body as PipeLineElmt
+        return _resp.clone({body: _body}) as HttpResponse<PipeLineElmt>;
+      })
+    );
+  }
+
+  /**
+   * update pipe line
+   * @param body - body update pipe line
+   */
+  updatePipeLine(body: PipeLineElmt): Observable<PipeLineElmt> {
+    return this.updatePipeLineResponse(body).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
    * Create new pipeline
    * @param body - body create new pipeline
    */
-  newPipeLineResponse(body: PipeLineElmt): Observable<HttpResponse<number>> {
+  newPipeLineResponse(body: PipeLineElmt): Observable<HttpResponse<PipeLineElmt>> {
     let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
@@ -672,16 +832,16 @@ export class ReferencedataService extends BaseService {
       {
         headers: __headers,
         params: __params,
-        responseType: 'text'
+        responseType: 'json'
       });
 
     return this.http.request<any>(req).pipe(
       filter(_r => _r instanceof HttpResponse),
       map(_r => {
         let _resp = _r as HttpResponse<any>;
-        let _body: number = null;
-        _body = parseFloat(_resp.body as string)
-        return _resp.clone({body: _body}) as HttpResponse<number>;
+        let _body: PipeLineElmt = null;
+        _body = _resp.body as PipeLineElmt
+        return _resp.clone({body: _body}) as HttpResponse<PipeLineElmt>;
       })
     );
   }
@@ -690,92 +850,8 @@ export class ReferencedataService extends BaseService {
    * Create new pipeline
    * @param body - body create new pipeline
    */
-  newPipeLine(body: PipeLineElmt): Observable<number> {
+  newPipeLine(body: PipeLineElmt): Observable<PipeLineElmt> {
     return this.newPipeLineResponse(body).pipe(
-      map(_r => _r.body)
-    );
-  }
-  /**
-   * update pipe line
-   * @param id - undefined
-   * @param body - body update pipe line
-   */
-  updatePipeLineResponse(params: ReferencedataService.UpdatePipeLineParams): Observable<HttpResponse<number>> {
-    let __params = this.newParams();
-    let __headers = new HttpHeaders();
-    let __body: any = null;
-    
-    __body = params.body;
-    let req = new HttpRequest<any>(
-      "POST",
-      this.rootUrl + `/referencedata/pipeline/${params.id}`,
-      __body,
-      {
-        headers: __headers,
-        params: __params,
-        responseType: 'text'
-      });
-
-    return this.http.request<any>(req).pipe(
-      filter(_r => _r instanceof HttpResponse),
-      map(_r => {
-        let _resp = _r as HttpResponse<any>;
-        let _body: number = null;
-        _body = parseFloat(_resp.body as string)
-        return _resp.clone({body: _body}) as HttpResponse<number>;
-      })
-    );
-  }
-
-  /**
-   * update pipe line
-   * @param id - undefined
-   * @param body - body update pipe line
-   */
-  updatePipeLine(params: ReferencedataService.UpdatePipeLineParams): Observable<number> {
-    return this.updatePipeLineResponse(params).pipe(
-      map(_r => _r.body)
-    );
-  }
-  /**
-   * save as pipe line
-   * @param name - undefined
-   * @param id - undefined
-   */
-  saveAsPipeLineResponse(params: ReferencedataService.SaveAsPipeLineParams): Observable<HttpResponse<number>> {
-    let __params = this.newParams();
-    let __headers = new HttpHeaders();
-    let __body: any = null;
-    if (params.name != null) __params = __params.set("name", params.name.toString());
-    
-    let req = new HttpRequest<any>(
-      "PUT",
-      this.rootUrl + `/referencedata/pipeline/${params.id}`,
-      __body,
-      {
-        headers: __headers,
-        params: __params,
-        responseType: 'text'
-      });
-
-    return this.http.request<any>(req).pipe(
-      filter(_r => _r instanceof HttpResponse),
-      map(_r => {
-        let _resp = _r as HttpResponse<any>;
-        let _body: number = null;
-        _body = parseFloat(_resp.body as string)
-        return _resp.clone({body: _body}) as HttpResponse<number>;
-      })
-    );
-  }
-
-  /**
-   * save as pipe line
-   * @param name - undefined
-   * @param id - undefined
-   */
-  saveAsPipeLine(params: ReferencedataService.SaveAsPipeLineParams): Observable<number> {
-    return this.saveAsPipeLineResponse(params).pipe(
       map(_r => _r.body)
     );
   }
@@ -819,6 +895,45 @@ export class ReferencedataService extends BaseService {
     );
   }
   /**
+   * save as pipe line
+   * @param body - body save as pipe line
+   */
+  saveAsPipeLineResponse(body: PipeLineElmt): Observable<HttpResponse<PipeLineElmt>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    __body = body;
+    let req = new HttpRequest<any>(
+      "PUT",
+      this.rootUrl + `/referencedata/lineelmt`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: PipeLineElmt = null;
+        _body = _resp.body as PipeLineElmt
+        return _resp.clone({body: _body}) as HttpResponse<PipeLineElmt>;
+      })
+    );
+  }
+
+  /**
+   * save as pipe line
+   * @param body - body save as pipe line
+   */
+  saveAsPipeLine(body: PipeLineElmt): Observable<PipeLineElmt> {
+    return this.saveAsPipeLineResponse(body).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
    * Get a list of equipment
    */
   findRefEquipmentResponse(): Observable<HttpResponse<ViewEquipment>> {
@@ -858,7 +973,7 @@ export class ReferencedataService extends BaseService {
    * Create new equipment
    * @param body - body create new equipment
    */
-  newEquipmentResponse(body: NewEquipment): Observable<HttpResponse<number>> {
+  newEquipmentResponse(body: NewEquipment): Observable<HttpResponse<RefEquipment>> {
     let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
@@ -870,16 +985,16 @@ export class ReferencedataService extends BaseService {
       {
         headers: __headers,
         params: __params,
-        responseType: 'text'
+        responseType: 'json'
       });
 
     return this.http.request<any>(req).pipe(
       filter(_r => _r instanceof HttpResponse),
       map(_r => {
         let _resp = _r as HttpResponse<any>;
-        let _body: number = null;
-        _body = parseFloat(_resp.body as string)
-        return _resp.clone({body: _body}) as HttpResponse<number>;
+        let _body: RefEquipment = null;
+        _body = _resp.body as RefEquipment
+        return _resp.clone({body: _body}) as HttpResponse<RefEquipment>;
       })
     );
   }
@@ -888,7 +1003,7 @@ export class ReferencedataService extends BaseService {
    * Create new equipment
    * @param body - body create new equipment
    */
-  newEquipment(body: NewEquipment): Observable<number> {
+  newEquipment(body: NewEquipment): Observable<RefEquipment> {
     return this.newEquipmentResponse(body).pipe(
       map(_r => _r.body)
     );
@@ -1164,6 +1279,45 @@ export class ReferencedataService extends BaseService {
     );
   }
   /**
+   * run equipment calculate
+   * @param id - undefined
+   */
+  startEquipmentCalculateResponse(id: number): Observable<HttpResponse<number>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    
+    let req = new HttpRequest<any>(
+      "PUT",
+      this.rootUrl + `/referencedata/equipment/${id}`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'text'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: number = null;
+        _body = parseFloat(_resp.body as string)
+        return _resp.clone({body: _body}) as HttpResponse<number>;
+      })
+    );
+  }
+
+  /**
+   * run equipment calculate
+   * @param id - undefined
+   */
+  startEquipmentCalculate(id: number): Observable<number> {
+    return this.startEquipmentCalculateResponse(id).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
    * delete equipment
    * @param id - undefined
    */
@@ -1201,23 +1355,439 @@ export class ReferencedataService extends BaseService {
     return this.deleteEquipmentResponse(id).pipe(
       map(_r => _r.body)
     );
+  }
+  /**
+   * Get list equipment chart by Id equipment
+   * @param idEquip - equipment id
+   */
+  getEquipmentCharactsResponse(idEquip: number): Observable<HttpResponse<EquipCharact[]>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    
+    let req = new HttpRequest<any>(
+      "GET",
+      this.rootUrl + `/referencedata/equipcharacts/${idEquip}`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: EquipCharact[] = null;
+        _body = _resp.body as EquipCharact[]
+        return _resp.clone({body: _body}) as HttpResponse<EquipCharact[]>;
+      })
+    );
+  }
+
+  /**
+   * Get list equipment chart by Id equipment
+   * @param idEquip - equipment id
+   */
+  getEquipmentCharacts(idEquip: number): Observable<EquipCharact[]> {
+    return this.getEquipmentCharactsResponse(idEquip).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * delete list equip charact
+   * @param idEquip - undefined
+   */
+  deleteEquipCharactsResponse(idEquip: number): Observable<HttpResponse<number>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    
+    let req = new HttpRequest<any>(
+      "DELETE",
+      this.rootUrl + `/referencedata/equipcharacts/${idEquip}`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'text'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: number = null;
+        _body = parseFloat(_resp.body as string)
+        return _resp.clone({body: _body}) as HttpResponse<number>;
+      })
+    );
+  }
+
+  /**
+   * delete list equip charact
+   * @param idEquip - undefined
+   */
+  deleteEquipCharacts(idEquip: number): Observable<number> {
+    return this.deleteEquipCharactsResponse(idEquip).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * Get data highchart
+   * @param profilType - undefined
+   * @param profilFace - undefined
+   * @param ID_EQUIP - undefined
+   */
+  getDataHighChartResponse(params: ReferencedataService.GetDataHighChartParams): Observable<HttpResponse<ViewHighChart>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    if (params.profilType != null) __params = __params.set("profilType", params.profilType.toString());
+    if (params.profilFace != null) __params = __params.set("profilFace", params.profilFace.toString());
+    if (params.IDEQUIP != null) __params = __params.set("ID_EQUIP", params.IDEQUIP.toString());
+    let req = new HttpRequest<any>(
+      "GET",
+      this.rootUrl + `/referencedata/highchart`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: ViewHighChart = null;
+        _body = _resp.body as ViewHighChart
+        return _resp.clone({body: _body}) as HttpResponse<ViewHighChart>;
+      })
+    );
+  }
+
+  /**
+   * Get data highchart
+   * @param profilType - undefined
+   * @param profilFace - undefined
+   * @param ID_EQUIP - undefined
+   */
+  getDataHighChart(params: ReferencedataService.GetDataHighChartParams): Observable<ViewHighChart> {
+    return this.getDataHighChartResponse(params).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * Get equipcharact by id
+   * @param id - Compenth id
+   */
+  getEquipCharactByIdResponse(id: number): Observable<HttpResponse<EquipCharact>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    
+    let req = new HttpRequest<any>(
+      "GET",
+      this.rootUrl + `/referencedata/equipcharact/${id}`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: EquipCharact = null;
+        _body = _resp.body as EquipCharact
+        return _resp.clone({body: _body}) as HttpResponse<EquipCharact>;
+      })
+    );
+  }
+
+  /**
+   * Get equipcharact by id
+   * @param id - Compenth id
+   */
+  getEquipCharactById(id: number): Observable<EquipCharact> {
+    return this.getEquipCharactByIdResponse(id).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * delete equip charact
+   * @param id - undefined
+   */
+  deleteEquipCharactResponse(id: number): Observable<HttpResponse<number>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    
+    let req = new HttpRequest<any>(
+      "DELETE",
+      this.rootUrl + `/referencedata/equipcharact/${id}`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'text'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: number = null;
+        _body = parseFloat(_resp.body as string)
+        return _resp.clone({body: _body}) as HttpResponse<number>;
+      })
+    );
+  }
+
+  /**
+   * delete equip charact
+   * @param id - undefined
+   */
+  deleteEquipCharact(id: number): Observable<number> {
+    return this.deleteEquipCharactResponse(id).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * @param body - add equip EquipCharact
+   */
+  addEquipCharactResponse(body: EquipCharact): Observable<HttpResponse<EquipCharact>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    __body = body;
+    let req = new HttpRequest<any>(
+      "POST",
+      this.rootUrl + `/referencedata/equipcharact`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: EquipCharact = null;
+        _body = _resp.body as EquipCharact
+        return _resp.clone({body: _body}) as HttpResponse<EquipCharact>;
+      })
+    );
+  }
+
+  /**
+   * @param body - add equip EquipCharact
+   */
+  addEquipCharact(body: EquipCharact): Observable<EquipCharact> {
+    return this.addEquipCharactResponse(body).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * @param body - update equip EquipCharact
+   */
+  updateEquipCharactResponse(body: EquipCharact): Observable<HttpResponse<number>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    __body = body;
+    let req = new HttpRequest<any>(
+      "PUT",
+      this.rootUrl + `/referencedata/equipcharact`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'text'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: number = null;
+        _body = parseFloat(_resp.body as string)
+        return _resp.clone({body: _body}) as HttpResponse<number>;
+      })
+    );
+  }
+
+  /**
+   * @param body - update equip EquipCharact
+   */
+  updateEquipCharact(body: EquipCharact): Observable<number> {
+    return this.updateEquipCharactResponse(body).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * Get data curve
+   * @param idEquip - undefined
+   */
+  getDataCurveResponse(idEquip: number): Observable<HttpResponse<ViewCurve>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    
+    let req = new HttpRequest<any>(
+      "GET",
+      this.rootUrl + `/referencedata/curve/${idEquip}`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: ViewCurve = null;
+        _body = _resp.body as ViewCurve
+        return _resp.clone({body: _body}) as HttpResponse<ViewCurve>;
+      })
+    );
+  }
+
+  /**
+   * Get data curve
+   * @param idEquip - undefined
+   */
+  getDataCurve(idEquip: number): Observable<ViewCurve> {
+    return this.getDataCurveResponse(idEquip).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * @param body - redrawCurves
+   */
+  redrawCurvesResponse(body: ViewCurve): Observable<HttpResponse<number>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    __body = body;
+    let req = new HttpRequest<any>(
+      "PUT",
+      this.rootUrl + `/referencedata/redrawcurves`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'text'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: number = null;
+        _body = parseFloat(_resp.body as string)
+        return _resp.clone({body: _body}) as HttpResponse<number>;
+      })
+    );
+  }
+
+  /**
+   * @param body - redrawCurves
+   */
+  redrawCurves(body: ViewCurve): Observable<number> {
+    return this.redrawCurvesResponse(body).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * Get set temp point
+   * @param idEquip - equipment id
+   */
+  getTempSetPointResponse(idEquip: number): Observable<HttpResponse<ViewTempSetPoint>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    
+    let req = new HttpRequest<any>(
+      "GET",
+      this.rootUrl + `/referencedata/tempsetpoint/${idEquip}`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: ViewTempSetPoint = null;
+        _body = _resp.body as ViewTempSetPoint
+        return _resp.clone({body: _body}) as HttpResponse<ViewTempSetPoint>;
+      })
+    );
+  }
+
+  /**
+   * Get set temp point
+   * @param idEquip - equipment id
+   */
+  getTempSetPoint(idEquip: number): Observable<ViewTempSetPoint> {
+    return this.getTempSetPointResponse(idEquip).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * @param body - build for new TR
+   */
+  buildForNewTRResponse(body: ViewTempSetPoint): Observable<HttpResponse<ResultBuildForNewTR>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    __body = body;
+    let req = new HttpRequest<any>(
+      "PUT",
+      this.rootUrl + `/referencedata/tempsetpoint`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: ResultBuildForNewTR = null;
+        _body = _resp.body as ResultBuildForNewTR
+        return _resp.clone({body: _body}) as HttpResponse<ResultBuildForNewTR>;
+      })
+    );
+  }
+
+  /**
+   * @param body - build for new TR
+   */
+  buildForNewTR(body: ViewTempSetPoint): Observable<ResultBuildForNewTR> {
+    return this.buildForNewTRResponse(body).pipe(
+      map(_r => _r.body)
+    );
   }}
 
 export module ReferencedataService {
-  export interface UpdatePackingParams {
-    id: number;
-    body: NewPacking;
-  }
-  export interface SaveAsPackingParams {
-    id: number;
-    body: NewPacking;
-  }
-  export interface UpdatePipeLineParams {
-    id: number;
-    body: PipeLineElmt;
-  }
-  export interface SaveAsPipeLineParams {
-    name: string;
-    id: number;
+  export interface GetDataHighChartParams {
+    profilType: number;
+    profilFace: number;
+    IDEQUIP: number;
   }
 }

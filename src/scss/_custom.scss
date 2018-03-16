@@ -3,6 +3,10 @@
   padding-bottom: 45px;
 }
 
+.hidden {
+  display: none;
+}
+
 .form-check-label {
   cursor: pointer;
 }
@@ -49,4 +53,8 @@
       }
     }
   }
+}
+
+button.btn:disabled {
+    cursor: not-allowed;
 }

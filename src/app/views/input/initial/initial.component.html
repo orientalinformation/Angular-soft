@@ -1,6 +1,6 @@
 <div class="container" *ngIf="!isLoadingView && (productShape != 0 && productView.elements && productView.elements.length>0)">
+  <app-chaining #chainingControls (loaded)="onChainingControlsLoaded()" *ngIf="study.CHAINING_CONTROLS"></app-chaining>
   <div class="card-group">
-
       <div class="card">
         <div class="card-header">
           <strong>{{'PRODUCT MESH'|translate}}</strong>
@@ -21,31 +21,31 @@
                 </tr>
                 <tr>
                   <td>
-                    <div *ngIf="meshView.meshGeneration.MESH_1_FIXED==1">Regular</div>
-                    <div *ngIf="meshView.meshGeneration.MESH_1_FIXED==0">Irregular</div>
+                    <div *ngIf="meshView.meshGeneration.MESH_1_FIXED==1">{{'Regular'|translate}}</div>
+                    <div *ngIf="meshView.meshGeneration.MESH_1_FIXED==0">{{'Irregular'|translate}}</div>
                   </td>
                   <td>
                     <span *ngIf="meshView.meshGeneration.MESH_1_FIXED==1">
-                      {{meshView.meshGeneration.MESH_1_SIZE*1000 | formatNumber: 2}}
+                      {{meshView.meshGeneration.MESH_1_SIZE}}
                     </span>
                     <span *ngIf="meshView.meshGeneration.MESH_1_FIXED==0">
-                      {{meshView.meshGeneration.MESH_1_INT *1000 | formatNumber: 2}}
-                    </span>
-                  </td>
-                  <td>
-                    <span *ngIf="meshView.meshGeneration.MESH_1_FIXED==1">
-                      {{meshView.meshGeneration.MESH_2_SIZE*1000 | formatNumber: 2}}
-                    </span>
-                    <span *ngIf="meshView.meshGeneration.MESH_1_FIXED==0">
-                      {{meshView.meshGeneration.MESH_2_INT *1000 | formatNumber: 2}}
+                      {{meshView.meshGeneration.MESH_1_INT}}
                     </span>
                   </td>
                   <td>
                     <span *ngIf="meshView.meshGeneration.MESH_1_FIXED==1">
-                      {{meshView.meshGeneration.MESH_3_SIZE*1000 | formatNumber: 2}}
+                      {{meshView.meshGeneration.MESH_2_SIZE}}
                     </span>
                     <span *ngIf="meshView.meshGeneration.MESH_1_FIXED==0">
-                      {{meshView.meshGeneration.MESH_3_INT *1000 | formatNumber: 2}}
+                      {{meshView.meshGeneration.MESH_2_INT}}
+                    </span>
+                  </td>
+                  <td>
+                    <span *ngIf="meshView.meshGeneration.MESH_1_FIXED==1">
+                      {{meshView.meshGeneration.MESH_3_SIZE}}
+                    </span>
+                    <span *ngIf="meshView.meshGeneration.MESH_1_FIXED==0">
+                      {{meshView.meshGeneration.MESH_3_INT}}
                     </span>
                   </td>
                 </tr>
@@ -77,8 +77,12 @@
         </div>
         <!-- /.card-body -->
         <div class="card-footer text-center">
-          <button type="button" class="btn btn-sm btn-primary" (click)="generateMesh()" [ladda]="laddaGeneratingMesh">{{'(RE)GENERATE MESH'|translate}}</button>
-          <button type="button" class="btn btn-sm btn-success" (click)="resetDefaultMesh()" [ladda]="laddaGeneratingMesh">{{'DEFAULT MESH'|translate}}</button>
+          <button type="button" class="btn btn-sm btn-primary" 
+            [disabled]="study.CHAINING_CONTROLS && (study.HAS_CHILD || study.PARENT_ID !=0)"
+            (click)="generateMesh()" [ladda]="laddaGeneratingMesh">{{'(RE)GENERATE MESH'|translate}}</button>
+          <button type="button" class="btn btn-sm btn-success"
+            [disabled]="study.CHAINING_CONTROLS && (study.HAS_CHILD || study.PARENT_ID !=0)"
+            (click)="resetDefaultMesh()" [ladda]="laddaGeneratingMesh">{{'DEFAULT MESH'|translate}}</button>
         </div>
       </div>
     
@@ -101,7 +105,7 @@
             </div>
           </div>
           <div class="row">
-            <label class="col-sm-8 col-form-label">{{'Initial temperature'|translate}} (°C)</label>
+            <label class="col-sm-8 col-form-label" *ngIf="symbol">{{'Initial temperature'|translate}} ({{symbol.temperatureSymbol}})</label>
             <div class="col-sm-4 col-form-label" *ngIf="productView.product.PROD_ISO == 0">
                 {{'Non-isothermal'|translate}}
             </div>
@@ -110,17 +114,20 @@
             </div>
              
             <div class="col-sm-4 col-form-label" *ngIf="productView.product.PROD_ISO == 1 && meshView.productIsoTemp != null">
-              {{ this.meshView.productIsoTemp | formatNumber: 2 }}
+              {{ this.meshView.productIsoTemp }}
             </div>
           </div>
           
         </div>
         <!-- /.card-body -->
         <div class="card-footer text-center">
-          <button type="button" class="btn btn-sm btn-primary" (click)="editProductTemp()">
+          <button type="button" class="btn btn-sm btn-primary"
+            [disabled]="study.HAS_CHILD || study.PARENT_ID != 0"
+            (click)="editProductTemp()">
             {{'CHANGE'|translate}}
           </button>
-          <button type="button" class="btn btn-sm btn-success" (click)="initTemperature()" [ladda]="laddaInitializingTemp">
+          <button type="button" class="btn btn-sm btn-success"
+            (click)="initTemperature()" [ladda]="laddaInitializingTemp">
             {{'INITIALIZE TEMPERATURE'|translate}}
           </button>          
         </div>
@@ -138,12 +145,17 @@
           <td align="center" width="40%">{{'Product Component'|translate}}</td>
           <td align="center" width="25%">{{'Description'|translate}}</td>
           <td align="center" width="150">{{'Same temperature throughout product'|translate}}</td>
-          <td align="center">{{'Initial temperature'|translate}} (°C)</td>
+          <td align="center" *ngIf="symbol">{{'Initial temperature'|translate}} ({{symbol.temperatureSymbol}})</td>
         </tr>
         <ng-template ngFor let-element [ngForOf]="productView.elements">
           <tr>
             <td>{{'components.'+element.ID_COMP|translate}}</td>
-            <td>{{ element.PROD_ELMT_NAME }}</td>
+            <td class="text-center">
+              {{ element.PROD_ELMT_NAME }}
+              <div *ngIf="study.CHAINING_CONTROLS && study.PARENT_ID != 0 && element.INSERT_LINE_ORDER != study.ID_STUDY">
+                {{'(parent component)'|translate}}
+              </div>
+            </td>
             <td class="text-center">
               <i class="fa fa-check-square text-muted" *ngIf="(productView.product.PROD_ISO == 1)"></i>
               <i class="fa fa-check-square" *ngIf="(productView.product.PROD_ISO == 0) || (element.PROD_ELMT_ISO == 1)"></i>
@@ -196,7 +208,14 @@
           </div>
         </div>
         <div class="form-group row" *ngIf="!elmtEditForm.isoThermal">
-          <highcharts-chart #tempProfileChart [Highcharts]="Highcharts" [options]="chartOptions"></highcharts-chart>
+          <svg>
+            <svg:circle id="c71" cx="30" cy="30.0" r="3" fill="gray" fill-opacity="0,5" stroke="black" stroke-width="1" onmouseover="mouseover(evt,71)"
+              onmouseout="mouseout(evt,71)" onmousedown="cliquer(evt,71)" onmouseup="relacher(evt,71)" />
+            
+            <svg:circle id="c70" cx="30" cy="40" r="3" fill="gray" fill-opacity="0,5" stroke="black" stroke-width="1" onmouseover="mouseover(evt,70)"
+              onmouseout="mouseout(evt,70)" onmousedown="cliquer(evt,70)" onmouseup="relacher(evt,70)" />
+
+          </svg>
         </div>
       </div>
       <div class="card-footer text-right">
@@ -234,7 +253,7 @@
           </div>
         </div>
         <div class="row">
-          <label class="col-sm-7 col-form-label">{{'Initial temperature'|translate}} (°C)</label>
+          <label class="col-sm-7 col-form-label" *ngIf="symbol">{{'Initial temperature'|translate}} ({{symbol.temperatureSymbol}})</label>
           <div class="col-sm-5 col-form-label">
             <input type="text" class="form-control" [disabled]="!productTempForm.flagIsoTemp" [(ngModel)]="productTempForm.initTemp">
           </div>
@@ -285,7 +304,7 @@
               <input type="text" class="form-control" id="mesh1param" 
                 [(ngModel)]="meshParamsForm.size1" 
                 [disabled]="productShape == text.shapeNames.SLAB || productShape == text.shapeNames.SPHERE">
-              <span class="input-group-addon">mm</span>
+              <span class="input-group-addon" *ngIf="symbol">{{symbol.meshesSymbol}}</span>
             </div>
           </div>
         </div>
@@ -296,7 +315,7 @@
           <div class="col-md-7">
             <div class="input-group">
               <input type="text" class="form-control" id="mesh2param" [(ngModel)]="meshParamsForm.size2">
-              <span class="input-group-addon">mm</span>
+              <span class="input-group-addon" *ngIf="symbol">{{symbol.meshesSymbol}}</span>
             </div>
           </div>
         </div>
@@ -309,7 +328,7 @@
               <input type="text" class="form-control" id="mesh3param"
                 [(ngModel)]="meshParamsForm.size3"
                 [disabled]="!(productShape == text.shapeNames.REC_STAND || productShape == text.shapeNames.REC_LAY || productShape == text.shapeNames.BREAD)">
-              <span class="input-group-addon">mm</span>
+              <span class="input-group-addon" *ngIf="symbol">{{symbol.meshesSymbol}}</span>
             </div>
           </div>
         </div>

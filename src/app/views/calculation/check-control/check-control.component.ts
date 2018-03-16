@@ -48,7 +48,7 @@ export class CheckControlComponent implements OnInit, AfterViewInit {
         this.isLoading = false;
 
         if (this.checkcontrol.checkcontrol) {
-          this.calculator.open();
+          // this.calculator.open();
         }
       }
     );

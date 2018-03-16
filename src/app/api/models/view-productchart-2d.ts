@@ -11,5 +11,5 @@ export class ViewProductchart2D {
     lfDwellingTime?: number;
     lftimeInterval?: number;
     axisName?: number[];
-    dataContour?: Coordinates;
+    imageContour?: string[];
 }

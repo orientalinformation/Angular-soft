@@ -1,13 +1,15 @@
 import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { ApiService } from '../../../api/services/api.service';
 import { TranslateService } from '@ngx-translate/core';
+import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import swal from 'sweetalert2';
 
 import { ViewChild } from '@angular/core';
 import { BaseChartDirective } from 'ng2-charts/ng2-charts';
-import { ViewLocation } from '../../../api/models/view-location';
-import { NgxLocalizedNumbersService } from 'ngx-localized-numbers/src/localized-numbers.service';
+import { ModalDirective } from 'ngx-bootstrap/modal/modal.directive';
+import { HttpClient } from '@angular/common/http';
+import { Symbol } from '../../../api/models/symbol';
 declare var Plotly: any;
 
 @Component({
@@ -16,11 +18,17 @@ declare var Plotly: any;
   styleUrls: ['./output-charts.component.scss']
 })
 export class OutputChartsComponent implements OnInit, AfterViewInit {
-
+  @ViewChild('valuesModal') public valuesModal: ModalDirective;
   public study;
-  public symbol;
+  public symbol: Symbol;
   public activePage = '';
   public activeBtn = '';
+
+  public displayLocationPage = true;
+  public displayHeatExchangePage = false;
+  public displayProductSectionPage = false;
+  public displayTimeBasePage = false;
+  public display2dOutlinePage = false;
 
   public outputProductChartList;
   public outputProductChart;
@@ -33,6 +41,10 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
   public mesAxisX;
   public mesAxisY;
   public mesAxisZ;
+  public locationAxisSelected;
+  public mesAxisXSelected: number;
+  public mesAxisYSelected: number;
+  public mesAxisZSelected: number;
 
   public rbpoint01;
   public rbpoint02;
@@ -80,6 +92,7 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
   public productSectionMesAxis;
   public productSectionAxisTemp;
   public axis1Disable: boolean;
+  public axis2Disable: boolean;
   public axis3Disable: boolean;
 
   public productSectionChartData;
@@ -102,6 +115,11 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
     { backgroundColor: ['rgb(0,0,255)', 'rgb(0,192,192)', 'rgb(0,255,255)', 'rgb(0,255,0)'], }
   ];
 
+  public loadLocationData: boolean;
+  public loadHeatExchangeData: boolean;
+  public loadTimeBaseData: boolean;
+  public loadProductSectionData: boolean;
+  public loadProductChartData: boolean;
   public loadProductChart: boolean;
   public temperatureStep: number;
   public temperatureMin: number;
@@ -120,6 +138,7 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
   public axisName: Array<any> = [];
   public axisX;
   public axisY;
+  public dataFile = '';
 
   public dataContour = {
     X: [],
@@ -131,9 +150,18 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
   public maxTempStep: number;
   public minTemperature: number;
   public maxTemperature: number;
+  public displayContourChart: boolean;
+  public contourImage: HTMLImageElement = new Image();
+  public contourImages: Array<HTMLImageElement> = [];
+  public activeContour = 0;
+  public x: number;
+  public displayAnimationContour;
+  public sort = 1;
+  public percent = 0;
+  public contourValue;
 
-  constructor(private api: ApiService, private translate: TranslateService, private router: Router,
-    private localizedNumbersService: NgxLocalizedNumbersService) {
+
+  constructor(private api: ApiService, private translate: TranslateService, private router: Router, private http: HttpClient) {
       this.tempForm.nbSteps = '';
     }
 
@@ -153,6 +181,7 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
       this.radioChecked = null;
       this.selectedAxe = 2;
       this.axis1Disable = false;
+      this.axis2Disable = false;
       this.axis3Disable = false;
       this.selectedPlan = 3;
       this.plan1Disable = false;
@@ -161,7 +190,14 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
       this.selectedSpeed = 1;
       this.axisX = '';
       this.axisY = '';
+      this.loadLocationData = false;
+      this.loadHeatExchangeData = false;
+      this.loadTimeBaseData = false;
+      this.loadProductSectionData = false;
+      this.loadProductChartData = false;
       this.loadProductChart = false;
+      this.x = -1;
+      this.displayContourChart = false;
     }
   }
 
@@ -189,8 +225,6 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
     }
   }
   refeshView() {
-    const showLoader = <HTMLElement>document.getElementById('showLoaderLocation');
-    showLoader.style.display = 'block';
     this.api.getSymbol(this.study.ID_STUDY).subscribe(
       data => {
         this.symbol = data;
@@ -201,9 +235,9 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
             this.tempRecordPts = dataTemp;
             this.nbSteps = dataTemp.NB_STEPS;
             this.NB_STEPS = this.nbSteps;
+            this.loadLocationData = true;
           }
         );
-        showLoader.style.display = 'none';
       }
     );
   }
@@ -215,11 +249,16 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
     this.activeBtn = '';
     this.radioDisable = true;
     this.selectDisable = true;
+    this.radioChecked = null;
+    this.mesAxisX = [];
+    this.mesAxisY = [];
+    this.mesAxisZ = [];
     this.selectedAxe = 2;
     this.loadData();
   }
 
   loadData() {
+    console.log(this.shape);
     this.api.getstudyEquipmentProductChart(this.study.ID_STUDY).subscribe(
       dataEquip => {
         this.outputProductChartList = dataEquip;
@@ -229,15 +268,22 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
           }
         }
         if (this.shape == 1) {
-          this.folderImg = 'SLAB';
+          if (this.outputProductChart.ORIENTATION == 1) {
+            this.folderImg = 'SLAB';
+          }
           this.axis1Disable = true;
+          this.axis2Disable = false;
           this.axis3Disable = true;
         } else if (this.shape == 2) {
           if (this.outputProductChart.ORIENTATION == 1) {
             this.folderImg = 'STANDING_PLPD/parallel';
             this.axis1Disable = true;
+            this.axis2Disable = false;
+            this.axis3Disable = false;
           } else {
             this.folderImg = 'STANDING_PLPD/perpendicular';
+            this.axis1Disable = false;
+            this.axis2Disable = false;
             this.axis3Disable = true;
           }
         } else if (this.shape == 3) {
@@ -249,6 +295,8 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
           this.axis3Disable = true;
         } else if (this.shape == 4) {
           this.folderImg = 'STANDING_CYL';
+          this.axis1Disable = false;
+          this.axis2Disable = false;
           this.axis3Disable = true;
         } else if (this.shape == 5) {
           if (this.outputProductChart.ORIENTATION == 1) {
@@ -256,10 +304,13 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
           } else {
             this.folderImg = 'LAYING_CYL/perpendicular';
           }
+          this.axis1Disable = false;
+          this.axis2Disable = false;
           this.axis3Disable = true;
         } else if (this.shape == 6) {
           this.folderImg = 'SPHERE';
           this.axis1Disable = true;
+          this.axis2Disable = false;
           this.axis3Disable = true;
         } else if (this.shape == 7) {
           this.folderImg = 'STANDING_CYL_C';
@@ -275,30 +326,41 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
           if (this.outputProductChart.ORIENTATION == 1) {
             this.folderImg = 'BREADED/parallel';
             this.axis1Disable = true;
+            this.axis2Disable = false;
+            this.axis3Disable = false;
           } else {
             this.folderImg = 'BREADED/perpendicular';
             this.axis3Disable = true;
+            this.axis2Disable = false;
+            this.axis3Disable = false;
           }
         }
         console.log(this.axis3Disable);
         if (this.shape == 2 || this.shape == 9) {
           if (this.outputProductChart.ORIENTATION == 1) {
+            this.plan1Disable = false;
             this.plan2Disable = true;
             this.plan3Disable = true;
             this.selectedPlan = 1;
           } else {
             this.plan1Disable = true;
             this.plan2Disable = true;
+            this.plan3Disable = false;
             this.selectedPlan = 3;
           }
         } else if (this.shape == 3) {
           this.plan1Disable = true;
           this.plan2Disable = true;
+          this.plan3Disable = false;
           this.selectedPlan = 3;
         } else {
+          this.plan1Disable = false;
+          this.plan2Disable = false;
+          this.plan3Disable = false;
           this.selectedPlan = 3;
         }
         this.imgProd3D = 'assets/img/output/' + this.folderImg + '/shape.png';
+        console.log(this.plan3Disable);
       }
     );
   }
@@ -411,8 +473,12 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
   onrbChange(recordType, value) {
     this.selectDisable = false;
     this.radioChecked = value;
+    console.log(this.shape);
+    console.log(value);
+    console.log(recordType);
     this.api.getMeshPoints(this.study.ID_STUDY).subscribe(
       data => {
+        console.log(data);
         if (recordType === 'points') {
           this.mesAxisX = data[2];
           this.mesAxisY = data[1];
@@ -450,123 +516,177 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
         }
       }
     );
-    if (recordType === 'points') {
-      if (value === 0) {
-        this.imgProd3D = 'assets/img/output/' + this.folderImg + '/point_top.png';
-      } else if (value === 1) {
-        this.imgProd3D = 'assets/img/output/' + this.folderImg + '/point_int.png';
-      } else {
-        this.imgProd3D = 'assets/img/output/' + this.folderImg + '/point_bot.png';
-      }
-    }
-    if (recordType === 'axis') {
-      if (this.shape == 2 || this.shape == 9) {
-        if (this.outputProductChart.ORIENTATION == 1) {
-          this.imgAxis.axis1 = 'axe3.png';
-          this.imgAxis.axis2 = 'axe2.png';
-          this.imgAxis.axis3 = 'axe1.png';
+    this.api.getlocationAxisSelected(this.study.ID_STUDY).subscribe(
+      data => {
+        console.log(data);
+        this.locationAxisSelected = data;
+        if (recordType === 'points') {
+          if (value === 0) {
+            this.mesAxisXSelected = this.locationAxisSelected.top[2];
+            this.mesAxisYSelected = this.locationAxisSelected.top[1];
+            this.mesAxisZSelected = this.locationAxisSelected.top[0];
+            this.imgProd3D = 'assets/img/output/' + this.folderImg + '/point_top.png';
+          } else if (value === 1) {
+            this.mesAxisXSelected = this.locationAxisSelected.int[2];
+            this.mesAxisYSelected = this.locationAxisSelected.int[1];
+            this.mesAxisZSelected = this.locationAxisSelected.int[0];
+            this.imgProd3D = 'assets/img/output/' + this.folderImg + '/point_int.png';
+          } else {
+            this.mesAxisXSelected = this.locationAxisSelected.bot[2];
+            this.mesAxisYSelected = this.locationAxisSelected.bot[1];
+            this.mesAxisZSelected = this.locationAxisSelected.bot[0];
+            this.imgProd3D = 'assets/img/output/' + this.folderImg + '/point_bot.png';
+          }
         }
-      } else if (this.shape == 7 || this.shape == 8) {
-        this.imgAxis.axis1 = 'axe2.png';
-        this.imgAxis.axis2 = 'axe1.png';
-        this.imgAxis.axis3 = 'axe3.png';
-      } else if (this.shape == 3) {
-        if (this.outputProductChart.ORIENTATION == 1) {
-          this.imgAxis.axis1 = 'axe3.png';
-          this.imgAxis.axis2 = 'axe1.png';
-          this.imgAxis.axis3 = 'axe2.png';
-        } else {
-          this.imgAxis.axis1 = 'axe2.png';
-          this.imgAxis.axis2 = 'axe1.png';
-          this.imgAxis.axis3 = 'axe3.png';
+        if (recordType === 'axis') {
+          console.log(this.shape);
+          if (this.shape == 2 || this.shape == 9) {
+            if (this.outputProductChart.ORIENTATION == 1) {
+              this.imgAxis.axis1 = 'axe3.png';
+              this.imgAxis.axis2 = 'axe2.png';
+              this.imgAxis.axis3 = 'axe1.png';
+              this.mesAxisXSelected = this.locationAxisSelected.int[2];
+              this.mesAxisYSelected = this.locationAxisSelected.int[1];
+              this.mesAxisZSelected = this.locationAxisSelected.int[0];
+            } else {
+              this.imgAxis.axis1 = 'axe1.png';
+              this.imgAxis.axis2 = 'axe2.png';
+              this.imgAxis.axis3 = 'axe3.png';
+              this.mesAxisXSelected = this.locationAxisSelected.int[2];
+              this.mesAxisYSelected = this.locationAxisSelected.int[1];
+              this.mesAxisZSelected = this.locationAxisSelected.int[0];
+            }
+          } else if (this.shape == 7 || this.shape == 8) {
+            this.imgAxis.axis1 = 'axe2.png';
+            this.imgAxis.axis2 = 'axe1.png';
+            this.imgAxis.axis3 = 'axe3.png';
+            this.mesAxisXSelected = this.locationAxisSelected.int[1];
+            this.mesAxisYSelected = this.locationAxisSelected.int[2];
+            this.mesAxisZSelected = this.locationAxisSelected.int[0];
+          } else if (this.shape == 3) {
+            if (this.outputProductChart.ORIENTATION == 1) {
+              this.imgAxis.axis1 = 'axe3.png';
+              this.imgAxis.axis2 = 'axe1.png';
+              this.imgAxis.axis3 = 'axe2.png';
+              this.mesAxisXSelected = this.locationAxisSelected.int[0];
+              this.mesAxisYSelected = this.locationAxisSelected.int[0];
+              this.mesAxisZSelected = this.locationAxisSelected.int[2];
+            } else {
+              this.imgAxis.axis1 = 'axe2.png';
+              this.imgAxis.axis2 = 'axe1.png';
+              this.imgAxis.axis3 = 'axe3.png';
+              this.mesAxisXSelected = this.locationAxisSelected.int[1];
+              this.mesAxisYSelected = this.locationAxisSelected.int[2];
+              this.mesAxisZSelected = this.locationAxisSelected.int[0];
+            }
+          } else if (this.shape == 1) {
+            this.imgAxis.axis1 = 'axe3.png';
+            this.imgAxis.axis2 = 'axe2.png';
+            this.imgAxis.axis3 = 'axe1.png';
+            this.mesAxisXSelected = this.locationAxisSelected.int[0];
+            this.mesAxisYSelected = this.locationAxisSelected.int[1];
+            this.mesAxisZSelected = this.locationAxisSelected.int[2];
+          }
+          if (value === 0) {
+            this.imgProd3D = 'assets/img/output/' + this.folderImg + '/' + this.imgAxis.axis1;
+            this.mesAxisX = [];
+          } else if (value === 1) {
+            this.imgProd3D = 'assets/img/output/' + this.folderImg + '/' + this.imgAxis.axis2;
+          } else {
+            this.imgProd3D = 'assets/img/output/' + this.folderImg + '/' + this.imgAxis.axis3;
+          }
         }
-      } else if (this.shape == 1) {
-        this.imgAxis.axis1 = 'axe3.png';
-        this.imgAxis.axis2 = 'axe2.png';
-        this.imgAxis.axis3 = 'axe1.png';
-      }
-      if (value === 0) {
-        this.imgProd3D = 'assets/img/output/' + this.folderImg + '/' + this.imgAxis.axis1;
-        this.mesAxisX = [];
-      } else if (value === 1) {
-        this.imgProd3D = 'assets/img/output/' + this.folderImg + '/' + this.imgAxis.axis2;
-      } else {
-        this.imgProd3D = 'assets/img/output/' + this.folderImg + '/' + this.imgAxis.axis3;
-      }
-    }
-    if (recordType === 'plans') {
-      if (this.shape == 2 || this.shape == 9) {
-        if (this.outputProductChart.ORIENTATION == 1) {
-          this.imgPlan.plan1 = 'plan12.png';
-          this.imgPlan.plan2 = 'plan13.png';
-          this.imgPlan.plan3 = 'plan23.png';
-        } else {
-          this.imgPlan.plan1 = 'plan23.png';
-          this.imgPlan.plan2 = 'plan13.png';
-          this.imgPlan.plan3 = 'plan12.png';
+        if (recordType === 'plans') {
+          if (this.shape == 2 || this.shape == 9) {
+            if (this.outputProductChart.ORIENTATION == 1) {
+              this.imgPlan.plan1 = 'plan12.png';
+              this.imgPlan.plan2 = 'plan13.png';
+              this.imgPlan.plan3 = 'plan23.png';
+              this.mesAxisXSelected = this.locationAxisSelected.int[2];
+              this.mesAxisYSelected = this.locationAxisSelected.int[1];
+              this.mesAxisZSelected = this.locationAxisSelected.int[0];
+            } else {
+              this.imgPlan.plan1 = 'plan23.png';
+              this.imgPlan.plan2 = 'plan13.png';
+              this.imgPlan.plan3 = 'plan12.png';
+              this.mesAxisXSelected = this.locationAxisSelected.int[0];
+              this.mesAxisYSelected = this.locationAxisSelected.int[1];
+              this.mesAxisZSelected = this.locationAxisSelected.int[2];
+            }
+          } else if (this.shape == 5 || this.shape == 7) {
+            this.imgPlan.plan1 = 'plan13.png';
+            this.imgPlan.plan2 = 'plan23.png';
+            this.imgPlan.plan3 = 'plan12.png';
+            this.mesAxisXSelected = this.locationAxisSelected.int[1];
+            this.mesAxisYSelected = this.locationAxisSelected.int[0];
+            this.mesAxisZSelected = this.locationAxisSelected.int[2];
+          } else if (this.shape == 8) {
+            this.imgPlan.plan1 = 'plan23.png';
+            this.imgPlan.plan2 = 'plan13.png';
+            this.imgPlan.plan3 = 'plan12.png';
+            this.mesAxisXSelected = this.locationAxisSelected.int[0];
+            this.mesAxisYSelected = this.locationAxisSelected.int[1];
+            this.mesAxisZSelected = this.locationAxisSelected.int[2];
+          } else if (this.shape == 3) {
+            if (this.outputProductChart.ORIENTATION == 1) {
+              this.imgPlan.plan1 = 'plan12.png';
+              this.imgPlan.plan2 = 'plan23.png';
+              this.imgPlan.plan3 = 'plan13.png';
+              this.mesAxisXSelected = this.locationAxisSelected.int[0];
+              this.mesAxisYSelected = this.locationAxisSelected.int[2];
+              this.mesAxisZSelected = this.locationAxisSelected.int[1];
+            } else {
+              this.imgPlan.plan1 = 'plan13.png';
+              this.imgPlan.plan2 = 'plan23.png';
+              this.imgPlan.plan3 = 'plan12.png';
+              this.mesAxisXSelected = this.locationAxisSelected.int[1];
+              this.mesAxisYSelected = this.locationAxisSelected.int[0];
+              this.mesAxisZSelected = this.locationAxisSelected.int[2];
+            }
+          } else if (this.shape == 4) {
+            this.imgPlan.plan1 = 'plan23.png';
+            this.imgPlan.plan2 = 'plan13.png';
+            this.imgPlan.plan3 = 'plan12.png';
+            this.mesAxisXSelected = this.locationAxisSelected.int[0];
+            this.mesAxisYSelected = this.locationAxisSelected.int[1];
+            this.mesAxisZSelected = this.locationAxisSelected.int[2];
+          }
+          if (value === 0) {
+            this.imgProd3D = 'assets/img/output/' + this.folderImg + '/' + this.imgPlan.plan1;
+          } else if (value === 1) {
+            this.imgProd3D = 'assets/img/output/' + this.folderImg + '/' + this.imgPlan.plan2;
+          } else {
+            this.imgProd3D = 'assets/img/output/' + this.folderImg + '/' + this.imgPlan.plan3;
+          }
         }
-      } else if (this.shape == 5 || this.shape == 7) {
-        this.imgPlan.plan1 = 'plan13.png';
-        this.imgPlan.plan2 = 'plan23.png';
-        this.imgPlan.plan3 = 'plan12.png';
-      } else if (this.shape == 8) {
-        this.imgPlan.plan1 = 'plan23.png';
-        this.imgPlan.plan2 = 'plan13.png';
-        this.imgPlan.plan3 = 'plan12.png';
-      } else if (this.shape == 3) {
-        if (this.outputProductChart.ORIENTATION == 1) {
-          this.imgPlan.plan1 = 'plan12.png';
-          this.imgPlan.plan2 = 'plan23.png';
-          this.imgPlan.plan3 = 'plan13.png';
-        } else {
-          this.imgPlan.plan1 = 'plan13.png';
-          this.imgPlan.plan2 = 'plan23.png';
-          this.imgPlan.plan3 = 'plan12.png';
-        }
-      } else if (this.shape == 4) {
-        this.imgPlan.plan1 = 'plan23.png';
-        this.imgPlan.plan2 = 'plan13.png';
-        this.imgPlan.plan3 = 'plan12.png';
+        console.log(this.mesAxisXSelected);
+        console.log(this.mesAxisYSelected);
+        console.log(this.mesAxisZSelected);
       }
-      if (value === 0) {
-        this.imgProd3D = 'assets/img/output/' + this.folderImg + '/' + this.imgPlan.plan1;
-      } else if (value === 1) {
-        this.imgProd3D = 'assets/img/output/' + this.folderImg + '/' + this.imgPlan.plan2;
-      } else {
-        this.imgProd3D = 'assets/img/output/' + this.folderImg + '/' + this.imgPlan.plan3;
-      }
-    }
+    );
   }
 
   loadLocation() {
     this.activePage = 'location';
-    const locationPage = <HTMLElement>document.getElementById('location');
-    const headExchangePage = <HTMLElement>document.getElementById('headExchange');
-    const productSectionPage = <HTMLElement>document.getElementById('productSection');
-    const timeBasedPage = <HTMLElement>document.getElementById('timeBased');
-    const outlines2dPage = <HTMLElement>document.getElementById('outlines2d');
-    locationPage.style.display = 'block';
-    headExchangePage.style.display = 'none';
-    productSectionPage.style.display = 'none';
-    timeBasedPage.style.display = 'none';
-    outlines2dPage.style.display = 'none';
+    this.displayContourChart = true;
+    this.stopAnimationContour();
+    this.displayLocationPage = true;
+    this.displayHeatExchangePage = false;
+    this.displayProductSectionPage = false;
+    this.displayTimeBasePage = false;
+    this.display2dOutlinePage = false;
     this.refeshView();
   }
 
   loadheadExchage() {
     this.activePage = 'heatExchange';
-    const showLoader = <HTMLElement>document.getElementById('showLoader');
-    showLoader.style.display = 'block';
-    const locationPage = <HTMLElement>document.getElementById('location');
-    const headExchangePage = <HTMLElement>document.getElementById('headExchange');
-    const productSectionPage = <HTMLElement>document.getElementById('productSection');
-    const timeBasedPage = <HTMLElement>document.getElementById('timeBased');
-    const outlines2dPage = <HTMLElement>document.getElementById('outlines2d');
-    locationPage.style.display = 'none';
-    headExchangePage.style.display = 'block';
-    productSectionPage.style.display = 'none';
-    timeBasedPage.style.display = 'none';
-    outlines2dPage.style.display = 'none';
+    this.displayContourChart = true;
+    this.stopAnimationContour();
+    this.displayLocationPage = false;
+    this.displayHeatExchangePage = true;
+    this.displayProductSectionPage = false;
+    this.displayTimeBasePage = false;
+    this.display2dOutlinePage = false;
     this.api.getstudyEquipmentProductChart(this.study.ID_STUDY).subscribe(
       data => {
         console.log(data);
@@ -575,7 +695,6 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
             this.outputProductChart = data[i];
           }
         }
-        showLoader.style.display = 'none';
         const params: ApiService.HeatExchangeParams = {
           idStudy: this.study.ID_STUDY,
           idStudyEquipment: this.outputProductChart['ID_STUDY_EQUIPMENTS']
@@ -633,24 +752,20 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
             };
           }
         );
+        this.loadHeatExchangeData = true;
       }
     );
   }
 
   loadProductSection() {
     this.activePage = 'productSection';
-    const showLoader = <HTMLElement>document.getElementById('showLoaderProductSection');
-    showLoader.style.display = 'block';
-    const locationPage = <HTMLElement>document.getElementById('location');
-    const headExchangePage = <HTMLElement>document.getElementById('headExchange');
-    const productSectionPage = <HTMLElement>document.getElementById('productSection');
-    const timeBasedPage = <HTMLElement>document.getElementById('timeBased');
-    const outlines2dPage = <HTMLElement>document.getElementById('outlines2d');
-    locationPage.style.display = 'none';
-    headExchangePage.style.display = 'none';
-    productSectionPage.style.display = 'block';
-    timeBasedPage.style.display = 'none';
-    outlines2dPage.style.display = 'none';
+    this.displayContourChart = true;
+    this.stopAnimationContour();
+    this.displayLocationPage = false;
+    this.displayHeatExchangePage = false;
+    this.displayProductSectionPage = true;
+    this.displayTimeBasePage = false;
+    this.display2dOutlinePage = false;
     const params: ApiService.ProductSectionParams = {
       idStudy: this.study.ID_STUDY,
       idStudyEquipment: this.outputProductChart['ID_STUDY_EQUIPMENTS'],
@@ -658,7 +773,6 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
     };
     this.api.productSection(params).subscribe(
       data => {
-        showLoader.style.display = 'none';
         this.productSectionDataChart = data.dataChart;
         this.productSectionResult = data.resultLabel;
         this.productSectionValue = data.result.resultValue;
@@ -672,24 +786,19 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
           this.productSectionAxisTemp = data.axeTemp[0] + ',' + data.axeTemp[1] + ',*';
         }
         this.loadChartProductSection(this.productSectionDataChart, this.productSectionResult);
+        this.loadProductSectionData = true;
       }
     );
   }
 
   loadTimeBased() {
     this.activePage = 'timeBased';
-    const showLoader = <HTMLElement>document.getElementById('showLoaderTimeBased');
-    showLoader.style.display = 'block';
-    const locationPage = <HTMLElement>document.getElementById('location');
-    const headExchangePage = <HTMLElement>document.getElementById('headExchange');
-    const productSectionPage = <HTMLElement>document.getElementById('productSection');
-    const timeBasedPage = <HTMLElement>document.getElementById('timeBased');
-    const outlines2dPage = <HTMLElement>document.getElementById('outlines2d');
-    locationPage.style.display = 'none';
-    headExchangePage.style.display = 'none';
-    productSectionPage.style.display = 'none';
-    timeBasedPage.style.display = 'block';
-    outlines2dPage.style.display = 'none';
+    this.stopAnimationContour();
+    this.displayLocationPage = false;
+    this.displayHeatExchangePage = false;
+    this.displayProductSectionPage = false;
+    this.displayTimeBasePage = true;
+    this.display2dOutlinePage = false;
     this.api.getstudyEquipmentProductChart(this.study.ID_STUDY).subscribe(
       data => {
         console.log(data);
@@ -705,7 +814,6 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
         this.api.timeBased(params).subscribe(
           dataTimeBased => {
             console.log(dataTimeBased);
-            showLoader.style.display = 'none';
             this.timeBasedResult = dataTimeBased.result;
             this.timeBasedCurve = dataTimeBased.curve;
             this.timeBasedLabel = dataTimeBased.label;
@@ -766,6 +874,7 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
                   }],
               }
             };
+            this.loadTimeBaseData = true;
           }
         );
       }
@@ -774,20 +883,16 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
 
   loadOutlines2d() {
     this.activePage = 'outlines2d';
-    const locationPage = <HTMLElement>document.getElementById('location');
-    const headExchangePage = <HTMLElement>document.getElementById('headExchange');
-    const productSectionPage = <HTMLElement>document.getElementById('productSection');
-    const timeBasedPage = <HTMLElement>document.getElementById('timeBased');
-    const outlines2dPage = <HTMLElement>document.getElementById('outlines2d');
-    locationPage.style.display = 'none';
-    headExchangePage.style.display = 'none';
-    productSectionPage.style.display = 'none';
-    timeBasedPage.style.display = 'none';
-    outlines2dPage.style.display = 'block';
+    this.displayLocationPage = false;
+    this.displayHeatExchangePage = false;
+    this.displayProductSectionPage = false;
+    this.displayTimeBasePage = false;
+    this.display2dOutlinePage = true;
     const params: ApiService.Productchart2DParams = {
       idStudy: this.study.ID_STUDY,
       idStudyEquipment: this.outputProductChart['ID_STUDY_EQUIPMENTS'],
-      selectedPlan: this.selectedPlan
+      selectedPlan: this.selectedPlan,
+      dimension: this.translate.instant('Dimension')
     };
     this.api.getstudyEquipmentProductChart(this.study.ID_STUDY).subscribe(
     data => {
@@ -817,39 +922,25 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
           this.temperatureStep = dataPr.chartTempInterval[2];
           this.axisName = dataPr.axisName;
           if (typeof this.axisName[0] !== 'undefined') {
-            this.axisX = ' ' + this.axisName[0];
+            this.axisX = this.axisName[0];
           }
           if (typeof this.axisName[1] !== 'undefined') {
-            this.axisY = ' ' + this.axisName[1];
+            this.axisY = this.axisName[1];
           }
-          if ((Object.keys(dataPr.dataContour).length) > 0) {
-            for (let i = 0; i < Object.keys(dataPr.dataContour).length; i++) {
-              this.dataContour.X.push(dataPr.dataContour[i].X);
-              this.dataContour.Y.push(dataPr.dataContour[i].Y);
-              this.dataContour.Z.push(dataPr.dataContour[i].Z);
-            }
-            console.log(this.dataContour);
-            this.contourChart(this.dataContour);
-          }
+
+          this.contourImage.src = dataPr.imageContour[0];
           this.loadProductChart = true;
+          this.loadProductChartData = true;
+          this.displayContourChart = true;
         }
       );
     });
-    for (let i = 0; i < 300; i++) {
-      const x = 200 * Math.random() - 100;
-      const y = 200 * Math.random() - 100;
-      const value = Math.random();
-      this.contourData.push([x, y, value]);
-    }
-    console.log(this.contourData);
-    console.log(this.tempRecordPts);
   }
 
   changeAxePS() {
     console.log(this.selectedAxe);
 
-    const showLoader = <HTMLElement>document.getElementById('showLoaderProductSection');
-    showLoader.style.display = 'block';
+    this.loadProductSectionData = false;
     const params: ApiService.ProductSectionParams = {
       idStudy: this.study.ID_STUDY,
       idStudyEquipment: this.outputProductChart['ID_STUDY_EQUIPMENTS'],
@@ -857,7 +948,7 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
     };
     this.api.productSection(params).subscribe(
       data => {
-        showLoader.style.display = 'none';
+        console.log(data);
         this.productSectionResult = data.resultLabel;
         this.productSectionValue = data.result.resultValue;
         this.productSectionRecAxis = data.result.recAxis;
@@ -871,13 +962,17 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
         }
         this.productSectionDataChart = data.dataChart;
         this.loadChartProductSection(this.productSectionDataChart, this.productSectionResult);
+        this.loadProductSectionData = true;
       }
     );
   }
 
   saveNbStep() {
-    if (!this.NB_STEPS || Number.isInteger(this.NB_STEPS) === false) {
+    if (!this.NB_STEPS) {
       swal('Oops', this.translate.instant('Enter a value in Curve Number !'), 'error');
+      return;
+    } else if (!this.isNumberic(this.NB_STEPS)) {
+      swal('Oops', this.translate.instant('Not a valid number in Curve Number !'), 'error');
       return;
     }
     const showLoader = <HTMLElement>document.getElementById('showLoaderProductSection');
@@ -910,6 +1005,7 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
       (err) => {
         swal('Error', err.error.message, 'error');
         console.log(err);
+        showLoader.style.display = 'none';
       },
       () => {
       }
@@ -984,7 +1080,7 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
             id: 'y-axis-1',
             scaleLabel: {
                 display: true,
-                labelString: this.translate.instant(this.symbol.timeSymbol),
+                labelString: this.translate.instant(this.symbol.temperatureSymbol),
                 fontColor: '#f00',
                 fontSize: 20
             }
@@ -1005,36 +1101,249 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
     if (!this.temperatureStep) {
       temperatureStepId.focus();
       swal('Oops', this.translate.instant('Enter a value in Temperature step !'), 'error');
+      return;
     } else if (!this.isNumberic(this.temperatureStep)) {
       temperatureStepId.focus();
       swal('Oops', this.translate.instant('Not a valid number in Temperature step !'), 'error');
+      return;
     } else if (this.isInRangeOutput(this.temperatureStep, this.minTempStep, this.maxTempStep) === false) {
       temperatureStepId.focus();
       swal('Oops',
       this.translate.instant('Value out of range in Temperature step (' + this.minTempStep + ' : ' + this.maxTempStep + ') !'), 'error');
+      return;
     } else if (!this.temperatureMin) {
       temperatureMinId.focus();
       swal('Oops', this.translate.instant('Enter a value in Temperature Min !'), 'error');
+      return;
     } else if (!this.isNumberic(this.temperatureMin)) {
       temperatureMinId.focus();
       swal('Oops', this.translate.instant('Not a valid number in Temperature Min !'), 'error');
+      return;
     } else if (this.isInRangeOutput(this.temperatureMin, this.minTemperature, this.maxTemperature) === false) {
       temperatureMinId.focus();
       swal('Oops',
       this.translate.instant('Value out of range in Temperature Min (' + this.minTemperature + ' : ' + this.maxTemperature + ') !'),
       'error');
+      return;
     } else if (!this.temperatureMax) {
       temperatureMaxId.focus();
       swal('Oops', this.translate.instant('Enter a value in Temperature Max !'), 'error');
     } else if (!this.isNumberic(this.temperatureMax)) {
       temperatureMaxId.focus();
       swal('Oops', this.translate.instant('Not a valid number in Temperature Max !'), 'error');
+      return;
     } else if (this.isInRangeOutput(this.temperatureMax, this.minTemperature, this.maxTemperature) === false) {
       temperatureMaxId.focus();
       swal('Oops',
       this.translate.instant('Value out of range in Temperature Max (' + this.minTemperature + ' : ' + this.maxTemperature + ') !'),
       'error');
+      return;
     }
+    this.loadProductChart = false;
+    const params = {
+      idStudy: this.study.ID_STUDY,
+      idStudyEquipment: this.outputProductChart['ID_STUDY_EQUIPMENTS'],
+      selectedPlan: this.selectedPlan,
+      temperatureStep: this.temperatureStep,
+      temperatureMin: this.temperatureMin,
+      temperatureMax: this.temperatureMax,
+      timeSelected: this.timeSelected,
+      timeInterval: this.timeInterval,
+      axisX: this.axisX,
+      axisY: this.axisY,
+      dimension: this.translate.instant('Dimension'),
+    };
+    this.api.productChart2DStatic(params).subscribe(
+      dataPr => {
+        console.log(dataPr);
+        this.temperatureMin = dataPr.chartTempInterval[0];
+        this.temperatureMax = dataPr.chartTempInterval[1];
+        this.temperatureStep = dataPr.chartTempInterval[2];
+        this.contourImage.src = dataPr.imageContour[0];
+        this.loadProductChart = true;
+        this.displayContourChart = true;
+      }
+    );
+  }
+
+  rewindForwardStatic(type) {
+    const temperatureStepId = <HTMLElement>document.getElementById('temperatureStep');
+    const temperatureMinId = <HTMLElement>document.getElementById('temperatureMin');
+    const temperatureMaxId = <HTMLElement>document.getElementById('temperatureMax');
+    console.log(Number.isInteger(this.temperatureStep));
+    if (!this.temperatureStep) {
+      temperatureStepId.focus();
+      swal('Oops', this.translate.instant('Enter a value in Temperature step !'), 'error');
+      return;
+    } else if (!this.isNumberic(this.temperatureStep)) {
+      temperatureStepId.focus();
+      swal('Oops', this.translate.instant('Not a valid number in Temperature step !'), 'error');
+      return;
+    } else if (this.isInRangeOutput(this.temperatureStep, this.minTempStep, this.maxTempStep) === false) {
+      temperatureStepId.focus();
+      swal('Oops',
+      this.translate.instant('Value out of range in Temperature step (' + this.minTempStep + ' : ' + this.maxTempStep + ') !'), 'error');
+      return;
+    } else if (!this.temperatureMin) {
+      temperatureMinId.focus();
+      swal('Oops', this.translate.instant('Enter a value in Temperature Min !'), 'error');
+      return;
+    } else if (!this.isNumberic(this.temperatureMin)) {
+      temperatureMinId.focus();
+      swal('Oops', this.translate.instant('Not a valid number in Temperature Min !'), 'error');
+      return;
+    } else if (this.isInRangeOutput(this.temperatureMin, this.minTemperature, this.maxTemperature) === false) {
+      temperatureMinId.focus();
+      swal('Oops',
+      this.translate.instant('Value out of range in Temperature Min (' + this.minTemperature + ' : ' + this.maxTemperature + ') !'),
+      'error');
+      return;
+    } else if (!this.temperatureMax) {
+      temperatureMaxId.focus();
+      swal('Oops', this.translate.instant('Enter a value in Temperature Max !'), 'error');
+    } else if (!this.isNumberic(this.temperatureMax)) {
+      temperatureMaxId.focus();
+      swal('Oops', this.translate.instant('Not a valid number in Temperature Max !'), 'error');
+      return;
+    } else if (this.isInRangeOutput(this.temperatureMax, this.minTemperature, this.maxTemperature) === false) {
+      temperatureMaxId.focus();
+      swal('Oops',
+      this.translate.instant('Value out of range in Temperature Max (' + this.minTemperature + ' : ' + this.maxTemperature + ') !'),
+      'error');
+      return;
+    }
+    this.displayContourChart = true;
+    this.loadProductChart = false;
+    for (let i = 0; i < Object.keys(this.timeRecords).length; i++) {
+      if (this.timeSelected == this.timeRecords[i]['RECORD_TIME']) {
+        if (type == 0) {
+          console.log(this.timeSelected);
+          if (i > 0) {
+            this.timeSelected = this.timeRecords[i - 1]['RECORD_TIME'];
+          } else {
+            this.loadProductChart = true;
+            return;
+          }
+        } else if (type == 1) {
+          console.log(this.timeSelected);
+          if (i < Object.keys(this.timeRecords).length - 1) {
+            this.timeSelected = this.timeRecords[i + 1]['RECORD_TIME'];
+            break;
+          } else {
+            this.loadProductChart = true;
+            return;
+          }
+        }
+      }
+    }
+    const params = {
+      idStudy: this.study.ID_STUDY,
+      idStudyEquipment: this.outputProductChart['ID_STUDY_EQUIPMENTS'],
+      selectedPlan: this.selectedPlan,
+      temperatureStep: this.temperatureStep,
+      temperatureMin: this.temperatureMin,
+      temperatureMax: this.temperatureMax,
+      timeSelected: this.timeSelected,
+      timeInterval: this.timeInterval,
+      axisX: this.axisX,
+      axisY: this.axisY,
+      dimension: this.translate.instant('Dimension'),
+    };
+    this.api.productChart2DStatic(params).subscribe(
+      dataPr => {
+        console.log(dataPr);
+        this.temperatureMin = dataPr.chartTempInterval[0];
+        this.temperatureMax = dataPr.chartTempInterval[1];
+        this.temperatureStep = dataPr.chartTempInterval[2];
+        this.loadProductChart = true;
+      }
+    );
+  }
+
+  refreshAnim() {
+    this.stopAnimationContour();
+    const timeIntervalId = <HTMLElement>document.getElementById('timeInterval');
+    if (!this.timeInterval) {
+      timeIntervalId.focus();
+      swal('Oops', this.translate.instant('Enter a value in Interval of time (s) !'), 'error');
+      return;
+    } else if (!this.isNumberic(this.timeInterval) || this.timeInterval <= 0) {
+      timeIntervalId.focus();
+      swal('Oops', this.translate.instant('Not a valid number in Interval of time (s) !'), 'error');
+      return;
+    }
+    this.loadProductChart = false;
+    const params = {
+      idStudy: this.study.ID_STUDY,
+      idStudyEquipment: this.outputProductChart['ID_STUDY_EQUIPMENTS'],
+      selectedPlan: this.selectedPlan,
+      temperatureStep: this.temperatureStep,
+      temperatureMin: this.temperatureMin,
+      temperatureMax: this.temperatureMax,
+      timeSelected: this.timeSelected,
+      timeInterval: this.timeInterval,
+      axisX: this.axisX,
+      axisY: this.axisY,
+      dimension: this.translate.instant('Dimension'),
+    };
+    this.api.productchart2DAnim(params).subscribe(
+      data => {
+        console.log(data);
+        this.temperatureMin = data.chartTempInterval[0];
+        this.temperatureMax = data.chartTempInterval[1];
+        this.temperatureStep = data.chartTempInterval[2];
+        this.contourImages = [];
+        for (let i = 0; i < data.imageContour.length; i++) {
+          const contourImage: HTMLImageElement = new Image();
+          contourImage.src = data.imageContour[i];
+          this.contourImages.push(contourImage);
+        }
+        console.log(this.contourImages);
+        this.displayContourChart = false;
+        this.loadProductChart = true;
+        this.displayAnimationContour = setInterval(() => {
+          this.displayNextImage();
+        }, this.selectedSpeed * 1000);
+      }
+    );
+  }
+
+  getValueContour() {
+    this.api.readDataContour(this.outputProductChart['ID_STUDY_EQUIPMENTS']).subscribe(
+      data => {
+        this.contourValue = JSON.parse(data.valueContour);
+        console.log(this.contourValue);
+        this.valuesModal.show();
+      }
+    );
+  }
+
+  displayNextImage() {
+    if (!this.contourImages) {
+      return; // no data
+    }
+    if (this.activeContour < this.contourImages.length - 1) {
+      this.activeContour++;
+    } else {
+      this.activeContour = 0;
+    }
+    if (this.sort < this.contourImages.length) {
+      this.sort++;
+    } else {
+      this.sort = 1;
+    }
+    this.percent = 100 - (100 - (this.sort / this.contourImages.length) * 100);
+    console.log(this.percent);
+  }
+
+  stopAnimationContour() {
+    if (this.displayAnimationContour) {
+      clearInterval(this.displayAnimationContour);
+      this.displayContourChart = true;
+    }
+  }
+  getConfig(url) {
+    return this.http.get(url);
   }
 
   isNumberic(number) {
@@ -1086,18 +1395,20 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
 
   const layout = {
     title: '',
+    autosize: true,
+    height: 400,
     showlegend: false,
     margin: {
       t: 10, r: 0, b: 43, l: 40
     },
     xaxis: {
-      title: this.translate.instant('Dimension') + this.axisX + ' (' + this.symbol.prodchartDimensionSymbol + ')',
+      title: this.translate.instant('Dimension') + ' ' + this.axisX + ' (' + this.symbol.prodchartDimensionSymbol + ')',
       titlefont: {
         color: '#f00'
       }
     },
     yaxis: {
-      title: this.translate.instant('Dimension')  + this.axisY + ' (' + this.symbol.prodchartDimensionSymbol + ')',
+      title: this.translate.instant('Dimension') + ' '   + this.axisY + ' (' + this.symbol.prodchartDimensionSymbol + ')',
       titlefont: {
         color: '#f00'
       }

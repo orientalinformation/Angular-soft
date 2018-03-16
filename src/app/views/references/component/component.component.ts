@@ -59,9 +59,12 @@ export class ComponentComponent implements OnInit {
     isCalculated?: boolean,
     idComp?: number,
   };
+  public checkHideInfo = false;
+  public checkActiveComp = 0;
 
   constructor(private api: ApiService, private apiReference: ReferencedataService,
     private router: Router, private toastr: ToastrService) {
+      localStorage.setItem('CompCurr', '');
   }
 
   ngOnInit() {
@@ -95,22 +98,6 @@ export class ComponentComponent implements OnInit {
 
   getDataComponent(compfamily) {
     this.isLoading = true;
-   this.apiReference.getDataComponent(compfamily).subscribe(
-     data => {
-      this.dataComponent = data;
-      console.log(data);
-      this.isLoading = false;
-     },
-     err => {
-       this.isLoading = false;
-     },
-     () => {
-
-     }
-   );
-  }
-
-  changCompFamily(compfamily) {
     this.apiReference.getDataComponent(compfamily).subscribe(
       data => {
         this.dataComponent = data;
@@ -120,7 +107,24 @@ export class ComponentComponent implements OnInit {
         this.isLoading = false;
       },
       () => {
+        this.isLoading = false;
+      }
+    );
+  }
 
+  changCompFamily(compfamily) {
+    this.isLoading = true;
+    this.apiReference.getDataSubFamily(compfamily).subscribe(
+      data => {
+        this.dataComponent.subFamily = data;
+        // this.dataComponent = data;
+        this.isLoading = false;
+      },
+      err => {
+        this.isLoading = false;
+      },
+      () => {
+        this.isLoading = false;
       }
     );
   }
@@ -137,26 +141,34 @@ export class ComponentComponent implements OnInit {
       },
       () => {
         this.isLoading = false;
+        if (localStorage.getItem('CompCurr') !== '') {
+          const compCurr = JSON.parse(localStorage.getItem('CompCurr'));
+          this.checkActiveComp = Number(compCurr.ID_COMP);
+          this.selectComponent = compCurr;
+        }
       }
     );
   }
 
   onSelectComponent(comp) {
+    localStorage.setItem('CompCurr', '');
+    this.checkActiveComp = 0;
     this.selectComponent = comp;
-    console.log(comp);
+    this.checkHideInfo = false;
   }
 
   onGetTemperature(comp) {
+    this.isLoading = true;
     this.apiReference.getTemperaturesByIdComp(comp.ID_COMP).subscribe(
       data => {
         this.fieldArray = data;
-        console.log(data);
+        this.isLoading = false;
       },
       err => {
-
+        this.isLoading = false;
       },
       () => {
-
+        this.isLoading = false;
       }
     );
   }
@@ -174,9 +186,9 @@ export class ComponentComponent implements OnInit {
       if (result.value) {
         this.apiReference.deleteComponent(comp.ID_COMP).subscribe(
           response => {
-            console.log(response);
             if (response === 1) {
               this.toastr.success('Delete component', 'successfully');
+              this.checkHideInfo = true;
             } else {
               swal('Oops..', 'Delete component', 'error');
             }
@@ -231,6 +243,7 @@ export class ComponentComponent implements OnInit {
       CONDUCT_TYPE: this.dataComponent.CONDUCT_TYPE,
       FATTYPE: this.dataComponent.FATTYPE,
       COMP_NAME: this.dataComponent.COMP_NAME,
+      WATER: this.dataComponent.WATER,
       AIR: this.dataComponent.AIR,
       CLASS_TYPE: this.dataComponent.CLASS_TYPE,
       COMP_COMMENT: this.dataComponent.COMP_COMMENT,
@@ -246,6 +259,7 @@ export class ComponentComponent implements OnInit {
     }).subscribe(
       response => {
         let success = true;
+        console.log(response);
 
         if (response === -2) {
           success = false;
@@ -266,9 +280,11 @@ export class ComponentComponent implements OnInit {
         }
 
         if (success) {
+          localStorage.setItem('CompCurr', JSON.stringify(response));
           this.toastr.success('Create component', 'successfully');
           this.modalAddComponent.hide();
           this.refrestComponent();
+          this.checkHideInfo = false;
         } else {
           this.toastr.error('Create component', 'Error');
         }
@@ -292,6 +308,7 @@ export class ComponentComponent implements OnInit {
       FATTYPE: comp.FAT_TYPE,
       COMP_NAME: comp.LABEL,
       AIR: comp.AIR,
+      WATER: comp.WATER,
       CLASS_TYPE: comp.CLASS_TYPE,
       COMP_COMMENT: comp.COMP_COMMENT,
       COMP_VERSION: comp.COMP_VERSION,
@@ -327,9 +344,13 @@ export class ComponentComponent implements OnInit {
         }
 
         if (success) {
+          localStorage.setItem('CompCurr', JSON.stringify(response));
           this.toastr.success('Save as component', 'successfully');
           this.modalSaveAsComponent.hide();
           this.refrestComponent();
+          this.checkHideInfo = false;
+          this.dataComponent.COMP_NAME_NEW = '';
+          this.dataComponent.COMP_VERSION_NEW = 0;
         } else {
           this.toastr.error('Save as component', 'Error');
         }
@@ -343,22 +364,37 @@ export class ComponentComponent implements OnInit {
   }
 
   getGeneratedData(comp) {
+    // this.isLoading = true;
     this.apiReference.getCompenthsByIdComp(comp.ID_COMP).subscribe(
       data => {
         this.compenths = data;
+        // this.isLoading = false;
+      },
+      err => {
+        this.isLoading = false;
+      },
+      () => {
+        this.isLoading = false;
       }
     );
   }
 
   getElementCompenth(compenth) {
+    // this.isLoading = true;
     this.apiReference.getCompenthById(compenth.ID_COMPENTH).subscribe(
       data => {
         data.ID_COMP = Number(data.ID_COMP);
         this.dataCompenth = data;
-        console.log(data);
+        this.displayCTComponent.show();
+        this.isLoading = false;
+      },
+      err => {
+        this.isLoading = false;
+      },
+      () => {
+        this.isLoading = false;
       }
     );
-    this.displayCTComponent.show();
   }
 
   refreshCompenth(id) {
@@ -401,6 +437,7 @@ export class ComponentComponent implements OnInit {
       FATTYPE: comp.FAT_TYPE,
       COMP_NAME: comp.LABEL,
       AIR: comp.AIR,
+      WATER: comp.WATER,
       CLASS_TYPE: comp.CLASS_TYPE,
       COMP_COMMENT: comp.COMP_COMMENT,
       COMP_VERSION: comp.COMP_VERSION,
@@ -436,9 +473,10 @@ export class ComponentComponent implements OnInit {
         }
 
         if (success) {
+          localStorage.setItem('CompCurr', JSON.stringify(response));
           this.toastr.success('Awake component', 'successfully');
-          this.modalSaveAsComponent.hide();
           this.refrestComponent();
+          this.checkHideInfo = false;
         } else {
           this.toastr.error('Awake component', 'Error');
         }
@@ -455,7 +493,24 @@ export class ComponentComponent implements OnInit {
     this.getMyComponent();
   }
 
-  runCalculateFreeze(idComp) {
+  runCalculateFreeze() {
+    if (!this.dataComponent.COMP_NAME || this.dataComponent.COMP_NAME === undefined || this.dataComponent.COMP_NAME === '') {
+      swal('Oops..', 'Please specify name!', 'warning');
+      return;
+    }
+    if (typeof this.dataComponent.COMP_NAME === 'number') {
+      swal('Oops..', 'Not a valid string in Name !', 'warning');
+      return;
+    }
+    if (String(this.dataComponent.COMP_VERSION) === '') {
+      swal('Oops..', 'Please specify version!', 'warning');
+      return;
+    }
+    if (isNaN(this.dataComponent.COMP_VERSION)) {
+      swal('Oops..', 'Not a valid number in Version !', 'warning');
+      return;
+    }
+
     this.laddaIsFreeze = true;
     this.apiReference.calculateFreeze({
       PRODUCT_TYPE: this.dataComponent.PRODUCT_TYPE,
@@ -469,6 +524,7 @@ export class ComponentComponent implements OnInit {
       COMP_COMMENT: this.dataComponent.COMP_COMMENT,
       COMP_VERSION: this.dataComponent.COMP_VERSION,
       FREEZE_TEMP: this.dataComponent.FREEZE_TEMP,
+      WATER: this.dataComponent.WATER,
       PROTID: this.dataComponent.PROTID,
       LIPID: this.dataComponent.LIPID,
       GLUCID: this.dataComponent.GLUCID,
@@ -476,25 +532,32 @@ export class ComponentComponent implements OnInit {
       NON_FROZEN_WATER: this.dataComponent.NON_FROZEN_WATER,
       release: this.dataComponent.release,
       Temperatures: this.fieldArray,
-      ID_COMP: idComp
     }).subscribe(
       response => {
+
+        console.log(response);
         this.laddaIsFreeze = false;
         let success = true;
 
-        if (response === 2) {
+        if (response.CheckCalculate === -2) {
           success = false;
-          this.toastr.error('Create component', 'Please, select the components family!');
+          this.toastr.error('Freeze temperature', 'Please, select the components family!');
           return;
         }
 
-        if (response === 3) {
+        if (response.CheckCalculate === -3) {
           success = false;
-          this.toastr.error('Create component', 'Component name can not be null!');
+          this.toastr.error('Freeze temperature', 'Component name can not be null!');
           return;
         }
 
-        if (response !== 0) {
+        if (response.CheckCalculate === -5) {
+          success = false;
+          this.toastr.error('Freeze temperature', 'Value out of range in Composition total (90 : 110) !');
+          return;
+        }
+
+        if (response.CheckCalculate !== 0) {
           success = false;
         }
 
@@ -502,6 +565,84 @@ export class ComponentComponent implements OnInit {
           this.toastr.success('Freeze temperature', 'successfully');
         } else {
           this.toastr.error('Freeze temperature', 'Run freeze temperature false');
+        }
+        if (response.VComponent) {
+          localStorage.setItem('CompCurr', JSON.stringify(response.VComponent));
+          this.checkHideInfo = false;
+          this.refrestComponent();
+          this.modalAddComponent.hide();
+        }
+      },
+      err => {
+        this.laddaIsFreeze = false;
+      },
+      () => {
+        this.laddaIsFreeze = false;
+      }
+    );
+  }
+
+  runSelectCalculateFreeze(comp) {
+    this.laddaIsFreeze = true;
+    this.apiReference.calculateFreeze({
+      PRODUCT_TYPE: comp.CLASS_TYPE,
+      SUB_TYPE: comp.SUB_FAMILY,
+      NATURE_TYPE: comp.COMP_NATURE,
+      CONDUCT_TYPE: comp.COND_DENS_MODE,
+      FATTYPE: comp.FAT_TYPE,
+      COMP_NAME: comp.LABEL,
+      AIR: comp.AIR,
+      CLASS_TYPE: comp.CLASS_TYPE,
+      COMP_COMMENT: comp.COMP_COMMENT,
+      COMP_VERSION: comp.COMP_VERSION,
+      FREEZE_TEMP: comp.FREEZE_TEMP,
+      WATER: comp.WATER,
+      PROTID: comp.PROTID,
+      LIPID: comp.LIPID,
+      GLUCID: comp.GLUCID,
+      SALT: comp.SALT,
+      NON_FROZEN_WATER: comp.NON_FROZEN_WATER,
+      COMP_RELEASE: comp.COMP_RELEASE,
+      Temperatures: this.fieldArray,
+      ID_COMP: comp.ID_COMP,
+      COMP_VERSION_NEW: -2
+    }).subscribe(
+      response => {
+        console.log(response);
+        this.laddaIsFreeze = false;
+        let success = true;
+
+        if (response.CheckCalculate === -2) {
+          success = false;
+          this.toastr.error('Freeze temperature', 'Please, select the components family!');
+          return;
+        }
+
+        if (response.CheckCalculate === -3) {
+          success = false;
+          this.toastr.error('Freeze temperature', 'Component name can not be null!');
+          return;
+        }
+
+        if (response.CheckCalculate === -5) {
+          success = false;
+          this.toastr.error('Freeze temperature', 'Value out of range in Composition total (90 : 110) !');
+          return;
+        }
+
+        if (response.CheckCalculate !== 0) {
+          success = false;
+        }
+
+        if (success) {
+          this.toastr.success('Freeze temperature', 'successfully');
+        } else {
+          this.toastr.error('Freeze temperature', 'Run freeze temperature false');
+        }
+        if (response.VComponent) {
+          localStorage.setItem('CompCurr', JSON.stringify(response.VComponent));
+          this.checkHideInfo = false;
+          this.refrestComponent();
         }
       },
       err => {
@@ -525,6 +666,7 @@ export class ComponentComponent implements OnInit {
       COMP_NAME: comp.LABEL,
       COMP_RELEASE: comp.COMP_RELEASE,
       AIR: comp.AIR,
+      WATER: comp.WATER,
       CLASS_TYPE: comp.CLASS_TYPE,
       COMP_COMMENT: comp.COMP_COMMENT,
       COMP_VERSION: comp.COMP_VERSION,
@@ -535,6 +677,7 @@ export class ComponentComponent implements OnInit {
       SALT: comp.SALT,
       NON_FROZEN_WATER: comp.NON_FROZEN_WATER,
       Temperatures: this.fieldArray,
+      COMP_VERSION_NEW: -2
     }).subscribe(
       response => {
         this.laddaIsCalculating = false;
