@@ -11,6 +11,10 @@ import { ViewProgressBar } from '../../../api/models/view-progress-bar';
 import { Router } from '@angular/router';
 import swal from 'sweetalert2';
 import { EventEmitter } from '@angular/core';
+import { ToastrService } from 'ngx-toastr';
+import { Units } from '../../../api/models';
+import { isNullOrUndefined } from 'util';
+import { isInteger } from '@ng-bootstrap/ng-bootstrap/util/util';
 
 @Component({
   selector: 'app-calculator',
@@ -39,15 +43,33 @@ export class CalculatorComponent implements OnInit, AfterViewInit {
     optimized?: boolean,
     typeCalculate?: number
   };
+  public temperatureSymbol = '';
+  public timeSymbol = '';
+  public meshesSymbol = '';
+  public listUnits: Array<Units>;
+
 
   constructor(private modalService: BsModalService, private api: ApiService, private router: Router,
-     private apicalculator: CalculatorService) { }
+     private apicalculator: CalculatorService, private toastr: ToastrService) { }
 
   ngOnInit() {
     if (localStorage.getItem('study')) {
       this.study = JSON.parse(localStorage.getItem('study'));
     }
-    // this.isLoading = true;
+    this.listUnits = JSON.parse(localStorage.getItem('UnitUser'));
+    if (this.listUnits) {
+      for (let i = 0; i < this.listUnits.length; i++) {
+        if (Number(this.listUnits[i].TYPE_UNIT) === 8) {
+          this.temperatureSymbol = this.listUnits[i].SYMBOL;
+        }
+        if (Number(this.listUnits[i].TYPE_UNIT) === 5) {
+          this.timeSymbol = this.listUnits[i].SYMBOL;
+        }
+        if (Number(this.listUnits[i].TYPE_UNIT) === 20) {
+          this.meshesSymbol = this.listUnits[i].SYMBOL;
+        }
+      }
+    }
   }
 
   ngAfterViewInit() {
@@ -61,19 +83,19 @@ export class CalculatorComponent implements OnInit, AfterViewInit {
       idStudyEquipment: null
     };
 
-    if (this.study.CALCULATION_MODE == 1) {
+    if (Number(this.study.CALCULATION_MODE) === 1) {
       this.isLoading = false;
       this.estimationMode.show();
       // this.loadProgressBar();
       // this.brainOptimum.show();
-    } else if (this.study.CALCULATION_MODE == 2) {
+    } else if (Number(this.study.CALCULATION_MODE) === 2) {
       this.isLoading = false;
       this.calcModal.show();
-    } else if (this.study.CALCULATION_MODE == 3) {
+    } else if (Number(this.study.CALCULATION_MODE) === 3) {
       this.apicalculator.getOptimumCalculator(params).subscribe(
         data => {
           this.calculate = data;
-          if (Number(data.timeStep) == -1) {
+          if (Number(data.timeStep) === -1) {
             swal('Oops..', 'All equipments selected to be calculated have some results. Please, go to analytic results output.', 'error');
             this.router.navigate(['/output/preliminary']);
             this.calcModal.hide();
@@ -101,6 +123,7 @@ export class CalculatorComponent implements OnInit, AfterViewInit {
 
     this.api.getStudyEquipmentCalculation(params).subscribe(
       data => {
+        console.log(data);
         this.brainCalculator = data;
         localStorage.setItem('studyEquipment', JSON.stringify({ id: idStudyEquipment, optimized: isOptimized, typeCalculate: type }));
         this.isLoading = false;
@@ -123,6 +146,7 @@ export class CalculatorComponent implements OnInit, AfterViewInit {
 
     this.api.getStudyEquipmentCalculation(params).subscribe(
       data => {
+        console.log(data);
         this.brainCalculator = data;
         localStorage.setItem('studyEquipment', JSON.stringify({ id: idStudyEquipment, optimized: null }));
         this.brainCalculate.show();
@@ -154,7 +178,138 @@ export class CalculatorComponent implements OnInit, AfterViewInit {
     }
   }
 
+  checkCalculationParameters() {
+    if (Number(this.calculate.checkOptim) === 1) {
+      if (isNullOrUndefined(this.calculate.epsilonTemp) || String(this.calculate.epsilonTemp) === ''
+      || isNaN(this.calculate.epsilonTemp)) {
+        this.toastr.error('Please specify Temperature margin', 'Error');
+        return;
+      }
+
+      if (isNullOrUndefined(this.calculate.epsilonEnth) || String(this.calculate.epsilonEnth) === ''
+      || isNaN(this.calculate.epsilonEnth)) {
+        this.toastr.error('Please specify Enthalpy error', 'Error');
+        return;
+      }
+
+      if (isNullOrUndefined(this.calculate.nbOptimIter) || String(this.calculate.nbOptimIter) === ''
+      || isNaN(this.calculate.nbOptimIter)) {
+        this.toastr.error('Please specify Number of iterations', 'Error');
+        return;
+      }
+    }
+
+    if (Number(this.calculate.sdisableTimeStep) !== 1) {
+      if (isNullOrUndefined(this.calculate.timeStep) || String(this.calculate.timeStep) === ''
+     || isNaN(this.calculate.timeStep)) {
+        this.toastr.error('Please specify Time Step', 'Error');
+        return;
+      }
+    }
+
+    if (Number(this.calculate.sdisablePrecision) !== 1) {
+      if (isNullOrUndefined(this.calculate.precision) || String(this.calculate.precision) === ''
+       || isNaN(this.calculate.precision)) {
+        this.toastr.error('Please specify Precision of numerical modelling', 'Error');
+        return;
+      }
+    }
+
+    if (Number(this.calculate.sdisableNbOptim) !== 1) {
+      if (isNullOrUndefined(this.calculate.storagestep) || String(this.calculate.storagestep) === ''
+       || isNaN(this.calculate.storagestep)) {
+        this.toastr.error('Please specify Step', 'Error');
+        return;
+      }
+    }
+
+    if (Number(this.calculate.sdisableFields) !== 1) {
+      if (isNullOrUndefined(this.calculate.maxIter) || String(this.calculate.maxIter) === ''
+       || isNaN(this.calculate.maxIter)) {
+        this.toastr.error('Please specify Max of iterations', 'Error');
+        return;
+      }
+
+      if (isNullOrUndefined(this.calculate.relaxCoef) || String(this.calculate.relaxCoef) === ''
+       || isNaN(this.calculate.relaxCoef)) {
+        this.toastr.error('Please specify Coef. of relaxation', 'Error');
+        return;
+      }
+
+      if (isNullOrUndefined(this.calculate.tempPtSurf) || String(this.calculate.tempPtSurf) === ''
+       || isNaN(this.calculate.tempPtSurf)) {
+        this.toastr.error('Please specify Surface', 'Error');
+        return;
+      }
+
+      if (isNullOrUndefined(this.calculate.tempPtIn) || String(this.calculate.tempPtIn) === ''
+       || isNaN(this.calculate.tempPtIn)) {
+        this.toastr.error('Please specify Internal', 'Error');
+        return;
+      }
+
+      if (isNullOrUndefined(this.calculate.tempPtBot) || String(this.calculate.tempPtBot) === ''
+       || isNaN(this.calculate.tempPtBot)) {
+        this.toastr.error('Please specify Bottom', 'Error');
+        return;
+      }
+
+      if (isNullOrUndefined(this.calculate.tempPtAvg) || String(this.calculate.tempPtAvg) === ''
+       || isNaN(this.calculate.tempPtAvg)) {
+        this.toastr.error('Please specify Average', 'Error');
+        return;
+      }
+    }
+
+    this.apicalculator.checkCalculationParameters({
+      checkOptim: Number(this.calculate.checkOptim),
+      epsilonTemp: Number(this.calculate.epsilonTemp),
+      epsilonEnth: Number(this.calculate.epsilonEnth),
+      nbOptimIter: Number(this.calculate.nbOptimIter),
+
+      timeStep: Number(this.calculate.timeStep),
+      precision: Number(this.calculate.precision),
+      scheckStorage: Number(this.calculate.scheckStorage),
+      sdisableOptim: Number(this.calculate.sdisableOptim),
+      storagestep: Number(this.calculate.storagestep),
+
+      hRadioOn: Number(this.calculate.hRadioOn),
+      vRadioOn: Number(this.calculate.vRadioOn),
+
+      maxIter: Number(this.calculate.maxIter),
+      relaxCoef: Number(this.calculate.relaxCoef),
+      tempPtSurf: Number(this.calculate.tempPtSurf),
+      tempPtIn: Number(this.calculate.tempPtIn),
+      tempPtBot: Number(this.calculate.tempPtBot),
+      tempPtAvg: Number(this.calculate.tempPtAvg),
+      sdisableFields: Number(this.calculate.sdisableFields),
+      sdisableCalculate: Number(this.calculate.sdisableCalculate),
+      sdisableNbOptim: Number(this.calculate.sdisableNbOptim),
+      sdisableTimeStep: Number(this.calculate.sdisableTimeStep),
+      sdisablePrecision: Number(this.calculate.sdisablePrecision),
+      sdisableStorage: Number(this.calculate.sdisableStorage),
+
+    }).subscribe(
+      (res) => {
+        console.log(res);
+        if (res === 1) {
+          this.startCalculate();
+          this.calcModal.hide();
+        } else {
+          this.toastr.error(res.Message, 'Error');
+        }
+      },
+      err => {
+        console.log(err);
+      },
+      () => {
+
+      }
+      );
+  }
+
   startCalculate() {
+    this.brainOptimum.show();
     this.laddaIsCalculating = true;
     this.apicalculator.startCalculate({
       idStudy: this.study.ID_STUDY,
@@ -185,19 +340,25 @@ export class CalculatorComponent implements OnInit, AfterViewInit {
       seValue7: Number(this.calculate.seValue7),
       seValue8: Number(this.calculate.seValue8),
       seValue9: Number(this.calculate.seValue9),
+      sdisableFields: Number(this.calculate.sdisableFields),
+      sdisableCalculate: Number(this.calculate.sdisableCalculate),
+      sdisableNbOptim: Number(this.calculate.sdisableNbOptim),
+      sdisableTimeStep: Number(this.calculate.sdisableTimeStep),
+      sdisablePrecision: Number(this.calculate.sdisablePrecision),
+      sdisableStorage: Number(this.calculate.sdisableStorage),
 
     }).subscribe(
-      (response: any[]) => {
+      (res) => {
+        console.log(res);
         this.laddaIsCalculating = false;
         let success = true;
-        for (let i = 0; i < response.length; i++) {
-          const element = response[i];
+        for (let i = 0; i < res.length; i++) {
+          const element = res[i];
           if (element !== 0) {
             success = false;
             break;
           }
         }
-
         if (success) {
           this.router.navigate(['/output/preliminary']);
         } else {
@@ -257,9 +418,170 @@ export class CalculatorComponent implements OnInit, AfterViewInit {
     );
   }
 
+  checkBrainCalculationParameters() {
+    if (Number(this.brainCalculator.typeCalculate) !== 3 || Number(this.brainCalculator.sdisableTS) !== 1) {
+      for (let i = 0 ; i < this.brainCalculator.dwellingTimes.length; i++ ) {
+        if (isNullOrUndefined(this.brainCalculator.dwellingTimes[i].value) || String(this.brainCalculator.dwellingTimes[i].value) === ''
+        || isNaN(this.brainCalculator.dwellingTimes[i].value)) {
+          this.toastr.error('Please specify Residence / Dwell time', 'Error');
+          return;
+        }
+      }
+    }
+
+    if (Number(this.brainCalculator.sdisableTR) !== 1) {
+      for (let i = 0 ; i < this.brainCalculator.temperatures.length; i++ ) {
+        if (isNullOrUndefined(this.brainCalculator.temperatures[i].value) || String(this.brainCalculator.temperatures[i].value) === ''
+        || isNaN(this.brainCalculator.temperatures[i].value)) {
+          this.toastr.error('Please specify Control temperature', 'Error');
+          return;
+        }
+      }
+    }
+
+    if (Number(this.brainCalculator.typeCalculate) !== 1 || Number(this.brainCalculator.typeCalculate) !== 2
+    ||  Number(this.brainCalculator.sdisableTOC) !== 1) {
+      if (isNullOrUndefined(this.brainCalculator.toc) || String(this.brainCalculator.toc) === ''
+      || isNaN(this.brainCalculator.toc)) {
+        this.toastr.error('Please specify Loading rate', 'Error');
+        return;
+      }
+    }
+
+    if (Number(this.brainCalculator.checkOptim) === 1 || Number(this.brainCalculator.sdisableOptim)) {
+      if (isNullOrUndefined(this.brainCalculator.epsilonTemp) || String(this.brainCalculator.epsilonTemp) === ''
+      || isNaN(this.brainCalculator.epsilonTemp)) {
+        this.toastr.error('Please specify Temperature margin', 'Error');
+        return;
+      }
+
+      if (isNullOrUndefined(this.brainCalculator.epsilonEnth) || String(this.brainCalculator.epsilonEnth) === ''
+      || isNaN(this.brainCalculator.epsilonEnth)) {
+        this.toastr.error('Please specify Enthalpy error', 'Error');
+        return;
+      }
+    }
+
+    if (Number(this.brainCalculator.checkOptim) === 1 || Number(this.brainCalculator.typeCalculate) !== 3
+    || Number(this.brainCalculator.sdisableNbOptim) !== 1) {
+      if (isNullOrUndefined(this.brainCalculator.nbOptimIter) || String(this.brainCalculator.nbOptimIter) === ''
+      || isNaN(this.brainCalculator.nbOptimIter)) {
+        this.toastr.error('Please specify Number of iterations', 'Error');
+        return;
+      }
+    }
+
+    if (Number(this.brainCalculator.sdisableTimeStep) !== 1) {
+      if (isNullOrUndefined(this.brainCalculator.timeStep) || String(this.brainCalculator.timeStep) === ''
+     || isNaN(this.brainCalculator.timeStep)) {
+        this.toastr.error('Please specify Time Step', 'Error');
+        return;
+      }
+
+      if (isNullOrUndefined(this.brainCalculator.precision) || String(this.brainCalculator.precision) === ''
+        || isNaN(this.brainCalculator.precision)) {
+        this.toastr.error('Please specify Precision of numerical modelling', 'Error');
+        return;
+      }
+    }
+
+    if (Number(this.brainCalculator.scheckStorage) === 1 || Number(this.brainCalculator.sdisableStorage) !== 1) {
+      if (isNullOrUndefined(this.brainCalculator.storagestep) || String(this.brainCalculator.storagestep) === ''
+       || isNaN(this.brainCalculator.storagestep)) {
+        this.toastr.error('Please specify Step', 'Error');
+        return;
+      }
+    }
+
+    if (Number(this.brainCalculator.sdisableFields) !== 1) {
+      if (isNullOrUndefined(this.brainCalculator.maxIter) || String(this.brainCalculator.maxIter) === ''
+       || isNaN(this.brainCalculator.maxIter)) {
+        this.toastr.error('Please specify Max of iterations', 'Error');
+        return;
+      }
+
+      if (isNullOrUndefined(this.brainCalculator.relaxCoef) || String(this.brainCalculator.relaxCoef) === ''
+       || isNaN(this.brainCalculator.relaxCoef)) {
+        this.toastr.error('Please specify Coef. of relaxation', 'Error');
+        return;
+      }
+
+      if (isNullOrUndefined(this.brainCalculator.tempPtSurf) || String(this.brainCalculator.tempPtSurf) === ''
+       || isNaN(this.brainCalculator.tempPtSurf)) {
+        this.toastr.error('Please specify Surface', 'Error');
+        return;
+      }
+
+      if (isNullOrUndefined(this.brainCalculator.tempPtIn) || String(this.brainCalculator.tempPtIn) === ''
+       || isNaN(this.brainCalculator.tempPtIn)) {
+        this.toastr.error('Please specify Internal', 'Error');
+        return;
+      }
+
+      if (isNullOrUndefined(this.brainCalculator.tempPtBot) || String(this.brainCalculator.tempPtBot) === ''
+       || isNaN(this.brainCalculator.tempPtBot)) {
+        this.toastr.error('Please specify Bottom', 'Error');
+        return;
+      }
+
+      if (isNullOrUndefined(this.brainCalculator.tempPtAvg) || String(this.brainCalculator.tempPtAvg) === ''
+       || isNaN(this.brainCalculator.tempPtAvg)) {
+        this.toastr.error('Please specify Average', 'Error');
+        return;
+      }
+    }
+
+    this.studyEquipment = JSON.parse(localStorage.getItem('studyEquipment'));
+    this.apicalculator.checkBrainCalculationParameters({
+      typeCalculate: this.studyEquipment.typeCalculate,
+      dwellingTimes: this.brainCalculator.dwellingTimes,
+      temperatures: this.brainCalculator.temperatures,
+      toc: this.brainCalculator.toc,
+      checkOptim: Number(this.studyEquipment.optimized),
+      epsilonTemp: Number(this.brainCalculator.epsilonTemp),
+      epsilonEnth: Number(this.brainCalculator.epsilonEnth),
+      nbOptimIter: Number(this.brainCalculator.nbOptimIter),
+      timeStep: this.brainCalculator.timeStep,
+      precision: this.brainCalculator.precision,
+      scheckStorage: this.brainCalculator.scheckStorage,
+      storagestep: Number(this.brainCalculator.storagestep),
+      hRadioOn: Number(this.brainCalculator.hRadioOn),
+      vRadioOn: Number(this.brainCalculator.vRadioOn),
+      maxIter: Number(this.brainCalculator.maxIter),
+      relaxCoef: Number(this.brainCalculator.relaxCoef),
+      tempPtSurf: Number(this.brainCalculator.tempPtSurf),
+      tempPtIn: Number(this.brainCalculator.tempPtIn),
+      tempPtBot: Number(this.brainCalculator.tempPtBot),
+      tempPtAvg: Number(this.brainCalculator.tempPtAvg),
+      sdisableFields: Number(this.brainCalculator.sdisableFields),
+      sdisableCalculate: Number(this.brainCalculator.sdisableCalculate),
+      sdisableNbOptim: Number(this.brainCalculator.sdisableNbOptim),
+      sdisableTimeStep: Number(this.brainCalculator.sdisableTimeStep),
+      sdisablePrecision: Number(this.brainCalculator.sdisablePrecision),
+      sdisableStorage: Number(this.brainCalculator.sdisableStorage),
+      sdisableTS: Number(this.brainCalculator.sdisableTS),
+      sdisableTR: Number(this.brainCalculator.sdisableTR),
+      sdisableTOC: Number(this.brainCalculator.sdisableTOC),
+    }).subscribe(
+      (res) => {
+        if (res === 1) {
+          this.startBrainOptimumCalculate();
+        } else {
+          this.toastr.error(res.Message, 'Error');
+        }
+      },
+      err => {
+        console.log(err);
+      },
+      () => {
+
+      }
+    );
+  }
+
   startBrainOptimumCalculate() {
     this.studyEquipment = JSON.parse(localStorage.getItem('studyEquipment'));
-    console.log(this.studyEquipment);
+    // console.log(this.studyEquipment);
     this.laddaIsCalculating = true;
     this.api.startBrainCalculate({
       idStudy: this.study.ID_STUDY,
@@ -315,6 +637,109 @@ export class CalculatorComponent implements OnInit, AfterViewInit {
       },
       () => {
         this.laddaIsCalculating = false;
+      }
+    );
+  }
+
+  checkStartCalculationParameters(check) {
+
+    if (Number(this.brainCalculator.sdisableFields) !== 1) {
+      if (isNullOrUndefined(this.brainCalculator.maxIter) || String(this.brainCalculator.maxIter) === ''
+       || isNaN(this.brainCalculator.maxIter)) {
+        this.toastr.error('Please specify Max of iterations', 'Error');
+        return;
+      }
+
+      if (isNullOrUndefined(this.brainCalculator.relaxCoef) || String(this.brainCalculator.relaxCoef) === ''
+       || isNaN(this.brainCalculator.relaxCoef)) {
+        this.toastr.error('Please specify Coef. of relaxation', 'Error');
+        return;
+      }
+
+      if (isNullOrUndefined(this.brainCalculator.precision) || String(this.brainCalculator.precision) === ''
+        || isNaN(this.brainCalculator.precision)) {
+        this.toastr.error('Please specify Precision of numerical modelling', 'Error');
+        return;
+      }
+
+      if (isNullOrUndefined(this.brainCalculator.tempPtSurf) || String(this.brainCalculator.tempPtSurf) === ''
+       || isNaN(this.brainCalculator.tempPtSurf)) {
+        this.toastr.error('Please specify Surface', 'Error');
+        return;
+      }
+
+      if (isNullOrUndefined(this.brainCalculator.tempPtIn) || String(this.brainCalculator.tempPtIn) === ''
+       || isNaN(this.brainCalculator.tempPtIn)) {
+        this.toastr.error('Please specify Internal', 'Error');
+        return;
+      }
+
+      if (isNullOrUndefined(this.brainCalculator.tempPtBot) || String(this.brainCalculator.tempPtBot) === ''
+       || isNaN(this.brainCalculator.tempPtBot)) {
+        this.toastr.error('Please specify Bottom', 'Error');
+        return;
+      }
+
+      if (isNullOrUndefined(this.brainCalculator.tempPtAvg) || String(this.brainCalculator.tempPtAvg) === ''
+       || isNaN(this.brainCalculator.tempPtAvg)) {
+        this.toastr.error('Please specify Average', 'Error');
+        return;
+      }
+
+      if (isNullOrUndefined(this.brainCalculator.precisionlogstep) || String(this.brainCalculator.precisionlogstep) === ''
+      || isNaN(this.brainCalculator.precisionlogstep) || !isInteger(Number(this.brainCalculator.precisionlogstep)) ) {
+       this.toastr.error('Please specify Precision log step', 'Error');
+       return;
+      }
+
+      if (isNullOrUndefined(this.brainCalculator.timeStep) || String(this.brainCalculator.timeStep) === ''
+      || isNaN(this.brainCalculator.timeStep)) {
+        this.toastr.error('Please specify Time Step', 'Error');
+        return;
+      }
+
+      if (isNullOrUndefined(this.brainCalculator.storagestep) || String(this.brainCalculator.storagestep) === ''
+       || isNaN(this.brainCalculator.storagestep)) {
+        this.toastr.error('Please specify Storage Step', 'Error');
+        return;
+      }
+    }
+
+    this.apicalculator.checkStartCalculationParameters({
+      dwellingTimes: this.brainCalculator.dwellingTimes,
+      maxIter: Number(this.brainCalculator.maxIter),
+      relaxCoef: Number(this.brainCalculator.relaxCoef),
+      precision: this.brainCalculator.precision,
+      tempPtSurf: Number(this.brainCalculator.tempPtSurf),
+      tempPtIn: Number(this.brainCalculator.tempPtIn),
+      tempPtBot: Number(this.brainCalculator.tempPtBot),
+      tempPtAvg: Number(this.brainCalculator.tempPtAvg),
+      precisionlogstep: Number(this.brainCalculator.precisionlogstep),
+      storagestep: Number(this.brainCalculator.storagestep),
+      timeStep: this.brainCalculator.timeStep,
+      sdisableFields: Number(this.brainCalculator.sdisableFields),
+    }).subscribe(
+      (res) => {
+        if (res === 1) {
+          if (check === 1) {
+            this.calculWithoutOpti.show();
+            this.brainCalculate.hide();
+            this.startBrainEstimationCalculate();
+          } else if (check === 2) {
+            this.calculWithOpti.show();
+            this.brainCalculate.hide();
+            this.saveCalculOptim();
+            this.loadBrainOptim();
+          }
+        } else {
+          this.toastr.error(res.Message, 'Error');
+        }
+      },
+      err => {
+        console.log(err);
+      },
+      () => {
+
       }
     );
   }

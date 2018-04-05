@@ -388,17 +388,10 @@ export class UserreferencesComponent implements OnInit, AfterViewInit {
       body: profile
     }).subscribe(
       data => {
-        let success = true;
-        if (data !== 1) {
-          success = false;
-        }
-        if (success) {
+        localStorage.setItem('UnitUser', JSON.stringify(data));
           this.toastr.success('Update profile', 'successfully');
           this.router.navigate(['/profile/userreferences']);
           this.refrestUser();
-        } else {
-          swal('Oops..', 'Update profile error!', 'error');
-        }
         this.isSave = false;
       },
       err => {

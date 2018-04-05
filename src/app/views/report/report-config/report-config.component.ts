@@ -11,6 +11,8 @@ import { ToastrService } from 'ngx-toastr';
 import { isNumber } from '@ng-bootstrap/ng-bootstrap/util/util';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs/Observable';
+import { Report } from '../../../api/models/report';
+import {BrowserModule, DomSanitizer} from '@angular/platform-browser';
 
 @Component({
   selector: 'app-report-config',
@@ -18,6 +20,7 @@ import { Observable } from 'rxjs/Observable';
   styleUrls: ['./report-config.component.scss']
 })
 export class ReportConfigComponent implements OnInit, AfterViewInit {
+  @ViewChild('modalGeneration') public modalGeneration: ModalDirective;
   public report: Models.Report;
   public study: Models.Study;
   public isSaveReport = false;
@@ -33,8 +36,48 @@ export class ReportConfigComponent implements OnInit, AfterViewInit {
   public checkUpload = 0;
   public urlLogo = '';
   public urlFirstpage = '';
+  public isLoading = true;
+  public reportParam: Report;
+  public isRepCustomer: number;
+  public isRefContRepProdList: number;
+  public isRefContRepProd3D: number;
+  public isRefContRepPacking: number;
+  public isRefContRepEquipList: number;
+  public isRefContRepPipeLine: number;
+  public isRefContRepAssesConsump: number;
+  public isRefContRepConsPie: number;
+  public isRefContRepSizingValues: number;
+  public isRefContRepSizingGraphe: number;
+  public isRefContRepEnthalpyV: number;
+  public isRefContRepEnthalpyG: number;
+  public isRefContRepIsochroneV: number;
+  public isRefContRepIsochroneG: number;
+  public isRefContRepIsovalueV: number;
+  public isRefContRepIsovalueG: number;
+  public isRefContRep2DG: number;
+  public displayProgesReport;
+  public isProcessProduction = true;
+  public isProcessProduct = true;
+  public isProcessPacking = true;
+  public isProcessEquipment = true;
+  public isProcessPipeline = true;
+  public isProcessConsumptionResult = true;
+  public isProcessConsumptionPie = true;
+  public isProcessHeatBalance = false;
+  public isProcessSizing = false;
+  public isProcessEnthalpie = false;
+  public isProcessProductSection = false;
+  public isProcessTimeBased = false;
+  public isProcessContour = false;
+  public isLoadingProgess = false;
+  public isReportTranlation = false;
+  public progressFileHtml = '';
+  public iframeReport;
+  public ischeckUser = true;
 
-  constructor(private api: ApiService, private toastr: ToastrService, private router: Router, private http: HttpClient) {
+
+  constructor(private api: ApiService, private toastr: ToastrService, private router: Router, private http: HttpClient,
+     private sanitizer: DomSanitizer) {
     this.study = JSON.parse(localStorage.getItem('study'));
     this.user = JSON.parse(localStorage.getItem('user'));
   }
@@ -42,9 +85,12 @@ export class ReportConfigComponent implements OnInit, AfterViewInit {
   ngOnInit() {
     this.optionSelected = 0;
     this.typeGenerate = 0;
+    this.checkUser();
   }
 
   ngAfterViewInit() {
+    this.progressFileHtml = '';
+    this.isLoading = true;
     const params: ApiService.CheckControlViewParams = {
       idStudy: this.study.ID_STUDY,
       idProd: this.study.ID_PROD
@@ -60,11 +106,15 @@ export class ReportConfigComponent implements OnInit, AfterViewInit {
     );
     this.loadReport();
     this.loadMeshAxisPos();
+    if (this.displayProgesReport) {
+      clearInterval(this.displayProgesReport);
+    }
   }
 
   loadReport() {
     this.api.getReport(this.study.ID_STUDY).subscribe(
       resp => {
+        console.log(resp);
         localStorage.setItem('ip', resp.ip);
         resp.ASSES_CONSUMP = Number(resp.ASSES_CONSUMP);
         resp.ASSES_ECO = Number(resp.ASSES_ECO);
@@ -114,6 +164,8 @@ export class ReportConfigComponent implements OnInit, AfterViewInit {
         resp.SIZING_VALUES = Number(resp.SIZING_VALUES);
 
         this.report = resp;
+        localStorage.setItem('reportParam', JSON.stringify(resp));
+        this.reportParam = JSON.parse(localStorage.getItem('reportParam'));
       },
       err => {
         console.log(err);
@@ -129,6 +181,7 @@ export class ReportConfigComponent implements OnInit, AfterViewInit {
       .subscribe(
       resp => {
         this.meshAxisPos = resp;
+        this.isLoading = false;
       },
       err => {
         console.log(err);
@@ -147,6 +200,8 @@ export class ReportConfigComponent implements OnInit, AfterViewInit {
       })
         .subscribe(
         resp => {
+          console.log(this.report);
+          localStorage.setItem('reportParam', JSON.stringify(this.report));
           if (resp === 1) {
             this.toastr.success('Save report of user success', 'successfully');
           } else {
@@ -156,56 +211,236 @@ export class ReportConfigComponent implements OnInit, AfterViewInit {
         },
         err => {
           console.log(err);
+          this.toastr.error(err.error, 'error');
           this.isSaveReport = false;
         },
         () => {
           this.isSaveReport = false;
         }
       );
-    } else {
-      this.toastr.success('Save report', 'successfully');
     }
+    // else {
+      // this.toastr.success('Save report', 'successfully');
+    // }
   }
 
   viewPDF() {
-    this.api.downLoadPDF(this.study.ID_STUDY).subscribe(
+    const reportParam: ApiService.DownLoadPDFParams = {
+      id: this.study.ID_STUDY,
+      reportParam: {
+        DEST_SURNAME: this.report.DEST_SURNAME,
+        DEST_NAME: this.report.DEST_NAME,
+        DEST_FUNCTION: this.report.DEST_FUNCTION,
+        DEST_COORD: this.report.DEST_COORD,
+        PHOTO_PATH: this.report.PHOTO_PATH,
+        CUSTOMER_LOGO: this.report.CUSTOMER_LOGO,
+        REPORT_COMMENT: this.report.REPORT_COMMENT,
+        WRITER_SURNAME: this.report.WRITER_SURNAME,
+        WRITER_NAME: this.report.WRITER_NAME,
+        WRITER_FUNCTION: this.report.WRITER_FUNCTION,
+        WRITER_COORD: this.report.WRITER_COORD,
+        // Input data
+        PROD_LIST: this.report.PROD_LIST,
+        PROD_3D: this.report.PROD_3D,
+        EQUIP_LIST: this.report.EQUIP_LIST,
+        REP_CUSTOMER: this.report.REP_CUSTOMER,
+        PACKING: this.report.PACKING,
+        ASSES_ECO: this.report.ASSES_ECO,
+        PIPELINE: this.report.PIPELINE,
+        // Calculation Output
+        CONS_OVERALL: this.report.CONS_OVERALL,
+        CONS_TOTAL: this.report.CONS_TOTAL,
+        CONS_SPECIFIC: this.report.CONS_SPECIFIC,
+        CONS_HOUR: this.report.CONS_HOUR,
+        CONS_DAY: this.report.CONS_DAY,
+        CONS_WEEK: this.report.CONS_WEEK,
+        CONS_MONTH: this.report.CONS_MONTH,
+        CONS_YEAR: this.report.CONS_YEAR,
+        CONS_EQUIP: this.report.CONS_EQUIP,
+        CONS_PIPE: this.report.CONS_PIPE,
+        CONS_TANK: this.report.CONS_TANK,
+        REP_CONS_PIE: this.report.REP_CONS_PIE,
+        // Sizing
+        isSizingValuesChosen: this.report.isSizingValuesChosen,
+        isSizingValuesMax: this.report.isSizingValuesMax,
+        SIZING_GRAPHE: this.report.SIZING_GRAPHE,
+        // Enthalpies
+        ENTHALPY_V: this.report.ENTHALPY_V,
+        ENTHALPY_G: this.report.ENTHALPY_G,
+        ENTHALPY_SAMPLE: this.report.ENTHALPY_SAMPLE,
+        // product section
+        ISOCHRONE_V: this.report.ISOCHRONE_V,
+        ISOCHRONE_G: this.report.ISOCHRONE_G,
+        ISOCHRONE_SAMPLE: this.report.ISOCHRONE_SAMPLE,
+        // time base
+        ISOVALUE_V: this.report.ISOVALUE_V,
+        ISOVALUE_G: this.report.ISOVALUE_G,
+        ISOVALUE_SAMPLE: this.report.ISOVALUE_SAMPLE,
+        // Contour
+        CONTOUR2D_G: this.report.CONTOUR2D_G,
+      },
+    };
+    this.api.downLoadPDF(reportParam).subscribe(
     data => {
       window.location.href = data.url;
     },
     err => {
       console.log(err);
-      swal('Oops..', 'Generate the report have some error!', 'error');
       this.laddaGenerate = false;
     },
     () => {
+      this.laddaGenerate = false;
     }
   );
   }
 
   viewHTML() {
-    this.api.downLoadHtmlToPDF(this.study.ID_STUDY).subscribe(
+    const reportParam: ApiService.DownLoadHtmlToPDFParams = {
+      id: this.study.ID_STUDY,
+      reportParam: {
+        DEST_SURNAME: this.report.DEST_SURNAME,
+        DEST_NAME: this.report.DEST_NAME,
+        DEST_FUNCTION: this.report.DEST_FUNCTION,
+        DEST_COORD: this.report.DEST_COORD,
+        PHOTO_PATH: this.report.PHOTO_PATH,
+        CUSTOMER_LOGO: this.report.CUSTOMER_LOGO,
+        REPORT_COMMENT: this.report.REPORT_COMMENT,
+        WRITER_SURNAME: this.report.WRITER_SURNAME,
+        WRITER_NAME: this.report.WRITER_NAME,
+        WRITER_FUNCTION: this.report.WRITER_FUNCTION,
+        WRITER_COORD: this.report.WRITER_COORD,
+        // Input data
+        PROD_LIST: this.report.PROD_LIST,
+        PROD_3D: this.report.PROD_3D,
+        EQUIP_LIST: this.report.EQUIP_LIST,
+        REP_CUSTOMER: this.report.REP_CUSTOMER,
+        PACKING: this.report.PACKING,
+        ASSES_ECO: this.report.ASSES_ECO,
+        PIPELINE: this.report.PIPELINE,
+        // Calculation Output
+        CONS_OVERALL: this.report.CONS_OVERALL,
+        CONS_TOTAL: this.report.CONS_TOTAL,
+        CONS_SPECIFIC: this.report.CONS_SPECIFIC,
+        CONS_HOUR: this.report.CONS_HOUR,
+        CONS_DAY: this.report.CONS_DAY,
+        CONS_WEEK: this.report.CONS_WEEK,
+        CONS_MONTH: this.report.CONS_MONTH,
+        CONS_YEAR: this.report.CONS_YEAR,
+        CONS_EQUIP: this.report.CONS_EQUIP,
+        CONS_PIPE: this.report.CONS_PIPE,
+        CONS_TANK: this.report.CONS_TANK,
+        REP_CONS_PIE: this.report.REP_CONS_PIE,
+        // Sizing
+        isSizingValuesChosen: this.report.isSizingValuesChosen,
+        isSizingValuesMax: this.report.isSizingValuesMax,
+        SIZING_GRAPHE: this.report.SIZING_GRAPHE,
+        // Enthalpies
+        ENTHALPY_V: this.report.ENTHALPY_V,
+        ENTHALPY_G: this.report.ENTHALPY_G,
+        ENTHALPY_SAMPLE: this.report.ENTHALPY_SAMPLE,
+        // product section
+        ISOCHRONE_V: this.report.ISOCHRONE_V,
+        ISOCHRONE_G: this.report.ISOCHRONE_G,
+        ISOCHRONE_SAMPLE: this.report.ISOCHRONE_SAMPLE,
+        // time base
+        ISOVALUE_V: this.report.ISOVALUE_V,
+        ISOVALUE_G: this.report.ISOVALUE_G,
+        ISOVALUE_SAMPLE: this.report.ISOVALUE_SAMPLE,
+        // Contour
+        CONTOUR2D_G: this.report.CONTOUR2D_G,
+      },
+    };
+    this.api.downLoadHtmlToPDF(reportParam).subscribe(
       data => {
         window.location.href = data.url;
       },
       err => {
         console.log(err);
-        swal('Oops..', 'Generate the report have some error!', 'error');
-        this.laddaGenerate = false;
       },
       () => {
+        this.laddaGenerate = false;
       }
     );
   }
 
   generatePDF() {
+    console.log(this.reportParam.AXE1_X);
+    this.showContentReportWaiting(this.typeGenerate);
     if (Number(this.typeGenerate) === 1) {
       this.loading = true;
       this.laddaGenerate = true;
       this.viewPDF();
     } else if (Number(this.typeGenerate) === 0)  {
       this.loading = true;
-      this.laddaGenerate = true;
+      // this.laddaGenerate = true;
       this.viewHTML();
+    }
+  }
+
+  showContentReportWaiting(typeGenerate) {
+    console.log(this.report);
+    console.log(this.reportParam);
+    this.isRepCustomer = this.report.REP_CUSTOMER;
+    this.isRefContRepProdList = this.report.PROD_LIST;
+    this.isRefContRepProd3D = this.report.PROD_3D;
+    this.isRefContRepPacking = this.report.PACKING;
+    this.isRefContRepEquipList = this.report.EQUIP_LIST;
+    this.isRefContRepPipeLine = this.report.PIPELINE;
+    this.isRefContRepAssesConsump = this.report.ASSES_CONSUMP;
+    this.isRefContRepConsPie = this.report.REP_CONS_PIE;
+    this.isRefContRepSizingValues = this.report.SIZING_VALUES;
+    this.isRefContRepSizingGraphe = this.report.SIZING_GRAPHE;
+    this.isRefContRepEnthalpyV = this.report.ENTHALPY_V;
+    this.isRefContRepEnthalpyG = this.report.ENTHALPY_G;
+    this.isRefContRepIsochroneV = this.report.ISOCHRONE_V;
+    this.isRefContRepIsochroneG = this.report.ISOCHRONE_G;
+    this.isRefContRepIsovalueV = this.report.ISOVALUE_V;
+    this.isRefContRepIsovalueG = this.report.ISOVALUE_G;
+    this.isRefContRep2DG = this.report.CONTOUR2D_G;
+    this.modalGeneration.show();
+    this.isProcessHeatBalance = false;
+    this.isProcessSizing = false;
+    this.isProcessEnthalpie = false;
+    this.isProcessProductSection = false;
+    this.isProcessTimeBased = false;
+    this.isProcessContour = false;
+    this.isLoadingProgess = true;
+    this.displayProgesReport = setInterval(() => {
+      this.processingReport(typeGenerate);
+    }, 1000);
+  }
+
+  processingReport(typeGenerate) {
+    this.api.processingReport(this.study.ID_STUDY).subscribe(
+      data => {
+        if (data != null) {
+          console.log(data);
+          this.isProcessHeatBalance = true;
+          this.isProcessSizing = true;
+          this.isProcessEnthalpie = true;
+          this.isProcessProductSection = true;
+          this.isProcessTimeBased = true;
+          this.isProcessContour = true;
+          this.isLoadingProgess = false;
+          if (typeGenerate === 1) {
+            this.isReportTranlation = true;
+            this.progressFileHtml = data.progressFilePdf;
+          } else {
+            this.progressFileHtml = data.progressFileHtml;
+          }
+          localStorage.setItem('iframeReport', this.progressFileHtml);
+          clearInterval(this.displayProgesReport);
+          this.modalGeneration.hide();
+          this.router.navigate(['/report/reportview']);
+        }
+      }
+    );
+  }
+
+  closeModalGeneration() {
+    this.modalGeneration.hide();
+    if (this.displayProgesReport) {
+      clearInterval(this.displayProgesReport);
     }
   }
 
@@ -249,6 +484,12 @@ export class ReportConfigComponent implements OnInit, AfterViewInit {
 
       return true;
     });
+  }
+
+  checkUser() {
+    if (Number(this.user.ID_USER) === Number(this.study.ID_USER)) {
+      this.ischeckUser = false;
+    }
   }
 }
 

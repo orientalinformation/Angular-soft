@@ -15,6 +15,8 @@ import { ViewProgressBar } from '../models/view-progress-bar';
 import { StartCalculate } from '../models/start-calculate';
 import { OptimumCalculator } from '../models/optimum-calculator';
 import { ViewStudyCalculator } from '../models/view-study-calculator';
+import { ViewMinMax } from '../models/view-min-max';
+import { BrainCalculator } from '../models/brain-calculator';
 
 
 @Injectable()
@@ -341,6 +343,123 @@ export class CalculatorService extends BaseService {
    */
   getMyStudies(idStudy: number): Observable<ViewStudyCalculator[]> {
     return this.getMyStudiesResponse(idStudy).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * Check Calculation Parameters
+   * @param body - body Check Calculation Parameters
+   */
+  checkCalculationParametersResponse(body: StartCalculate): Observable<HttpResponse<ViewMinMax>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    __body = body;
+    let req = new HttpRequest<any>(
+      "POST",
+      this.rootUrl + `/calculator/calculationparameters`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: ViewMinMax = null;
+        _body = _resp.body as ViewMinMax
+        return _resp.clone({body: _body}) as HttpResponse<ViewMinMax>;
+      })
+    );
+  }
+
+  /**
+   * Check Calculation Parameters
+   * @param body - body Check Calculation Parameters
+   */
+  checkCalculationParameters(body: StartCalculate): Observable<ViewMinMax> {
+    return this.checkCalculationParametersResponse(body).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * Check Brain Calculation Parameters
+   * @param body - body Check Calculation Parameters
+   */
+  checkBrainCalculationParametersResponse(body: BrainCalculator): Observable<HttpResponse<ViewMinMax>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    __body = body;
+    let req = new HttpRequest<any>(
+      "POST",
+      this.rootUrl + `/calculator/braincalculationparameters`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: ViewMinMax = null;
+        _body = _resp.body as ViewMinMax
+        return _resp.clone({body: _body}) as HttpResponse<ViewMinMax>;
+      })
+    );
+  }
+
+  /**
+   * Check Brain Calculation Parameters
+   * @param body - body Check Calculation Parameters
+   */
+  checkBrainCalculationParameters(body: BrainCalculator): Observable<ViewMinMax> {
+    return this.checkBrainCalculationParametersResponse(body).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * Check Start Calculation Parameters
+   * @param body - body  Check Start Calculation Parameters
+   */
+  checkStartCalculationParametersResponse(body: BrainCalculator): Observable<HttpResponse<ViewMinMax>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    __body = body;
+    let req = new HttpRequest<any>(
+      "POST",
+      this.rootUrl + `/calculator/startcalculationparameters`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: ViewMinMax = null;
+        _body = _resp.body as ViewMinMax
+        return _resp.clone({body: _body}) as HttpResponse<ViewMinMax>;
+      })
+    );
+  }
+
+  /**
+   * Check Start Calculation Parameters
+   * @param body - body  Check Start Calculation Parameters
+   */
+  checkStartCalculationParameters(body: BrainCalculator): Observable<ViewMinMax> {
+    return this.checkStartCalculationParametersResponse(body).pipe(
       map(_r => _r.body)
     );
   }}

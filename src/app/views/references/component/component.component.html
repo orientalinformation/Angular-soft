@@ -112,7 +112,7 @@
                 <table class="table table-bordered table-sm mb-0">
                   <thead>
                     <tr>
-                      <th style="vertical-align:middle;text-align:center">{{ 'Temperature'|translate }}(°C)</th>
+                      <th style="vertical-align:middle;text-align:center">{{ 'Temperature'|translate }}({{ temperatureSymbol }})</th>
                       <th style="vertical-align:middle;text-align:center">{{ 'Action'|translate }}</th>
                     </tr>
                   </thead>
@@ -178,7 +178,7 @@
                     </div>
                     <div class="form-group row">
                       <label class="col-md-8 col-form-label" for="text-input">
-                        <button type="button" class="btn btn-primary btn-sm" id="caluclateFreeze" (click)="runSelectCalculateFreeze(selectComponent);"
+                        <button type="button" class="btn btn-primary btn-sm" id="caluclateFreeze" (click)="checkDataComponent(selectComponent, 2);"
                           [ladda]="laddaIsFreeze">
                           <i class="icon-energy"></i>&nbsp; {{ 'Freeze temperature'|translate }}</button>
                       </label>
@@ -187,7 +187,8 @@
                           <input type="text" class="form-control" placeholder="0.00" [(ngModel)]="selectComponent.FREEZE_TEMP">
                           <span class="input-group-addon">
                             <small>
-                              <sup>o</sup>C</small>
+                            {{ temperatureSymbol }}  
+                            </small>
                           </span>
                         </div>
                       </div>
@@ -349,9 +350,9 @@
               </ng-template>
             </div>
           </div>
-          <div *ngIf="selectComponent && !checkHideInfo">
+          <div class="row col-md-12" *ngIf="selectComponent && !checkHideInfo">
             <div class="btn-component text-center" *ngIf="selectComponent && selectComponent.COMP_RELEASE != 6">
-              <button type="button" class="btn btn-primary" id="calulationRun" (click)="runCalculate(selectComponent);"
+              <button type="button" class="btn btn-primary" id="calulationRun" (click)="checkDataComponent(selectComponent, 3);"
                [disabled]="selectComponent.ID_USER != dataComponent.ID_USER" [ladda]="laddaIsCalculating">
                 <i class="icon-energy"></i>&nbsp; {{ 'Calculate'|translate }}</button>
               <!-- <button type="button" class="btn btn-success">
@@ -370,10 +371,10 @@
         <table class="table table-bordered table-sm mb-0" *ngIf="compenths">
           <tr>
             <td align="center"></td>
-            <td align="center">{{ 'Temperature'|translate }} (°C)</td>
-            <td align="center">{{ 'Enthalpy'|translate }} (kj/kg)</td>
-            <td align="center">{{ 'Conductivity'|translate }} (W/(m.°C))</td>
-            <td align="center">{{ 'Density'|translate }} (kg/ m³)</td>
+            <td align="center">{{ 'Temperature'|translate }} ({{ temperatureSymbol }})</td>
+            <td align="center">{{ 'Enthalpy'|translate }} ({{ enthalpySymbol }})</td>
+            <td align="center">{{ 'Conductivity'|translate }} ({{ conductivitySymbol }})</td>
+            <td align="center">{{ 'Density'|translate }} ({{ densitySymbol }})</td>
           </tr>
           <tr *ngFor="let compenth of compenths" class="text-center nowrap">
             <td>
@@ -412,7 +413,7 @@
               </div>
               <div class="card-body">
                 <div class="row col-md-12" style="margin-top: 10px;">
-                  <div class="col-md-6">
+                  <div class="col-md-7">
                     <div class="form-group row">
                       <label class="col-md-3 col-form-label" for="name-component">{{ 'Name'|translate }}</label>
                       <div class="col-md-5">
@@ -431,7 +432,7 @@
                     </div>
                     <div class="form-group row">
                       <label class="col-md-8 col-form-label" for="text-input">
-                        <button type="button" class="btn btn-primary btn-sm" id="calcbutton" (click)="runCalculateFreeze();" [ladda]="laddaIsCalculating">
+                        <button type="button" class="btn btn-primary btn-sm" id="calcbutton" (click)="checkDataComponent(dataComponent, 1);" [ladda]="laddaIsCalculating">
                           <i class="icon-energy"></i>&nbsp; {{ 'Freeze temperature'|translate }}</button>
                       </label>
                       <div class="col-md-4">
@@ -439,13 +440,14 @@
                           <input type="text" class="form-control" placeholder="0.00" [(ngModel)]="dataComponent.FREEZE_TEMP">
                           <span class="input-group-addon">
                             <small>
-                              <sup>o</sup>C</small>
+                              {{ temperatureSymbol }}
+                            </small>
                           </span>
                         </div>
                       </div>
                     </div>
                   </div>
-                  <div class="col-md-6">
+                  <div class="col-md-5">
                     <div class="row form-group">
                       <label class="col-md-4 col-form-label">{{ 'Product family'|translate }}</label>
                       <div class="col-md-8">
@@ -630,20 +632,20 @@
                     <div class="col">
                       <div class="col-md-2" align="center">
                         <label class="custom-control custom-radio">
-                          <input type="radio" class="custom-control-input" name="statusComp" [(ngModel)]="dataComponent.release"
-                            value=1>{{ 'Draft'|translate }}
+                          <input type="radio" class="custom-control-input" name="statusCompNew" [(ngModel)]="dataComponent.release"
+                            value="1">{{ 'Draft'|translate }}
                           <span class="custom-control-indicator"></span>
                         </label>
                       </div>
                       <div class="col-md-2" align="center">
                         <label class="custom-control custom-radio">
-                          <input type="radio" class="custom-control-input" name="statusComp" disabled>{{ 'Test'|translate }}
+                          <input type="radio" class="custom-control-input" value="2" name="statusCompNew" [(ngModel)]="dataComponent.release" disabled>{{ 'Test'|translate }}
                           <span class="custom-control-indicator"></span>
                         </label>
                       </div>
                       <div class="col-md-2" align="center">
                         <label class="custom-control custom-radio">
-                          <input type="radio" class="custom-control-input" name="statusComp" disabled>{{ 'Active'|translate }}
+                          <input type="radio" class="custom-control-input" value="3" name="statusCompNew" [(ngModel)]="dataComponent.release" disabled>{{ 'Active'|translate }}
                           <span class="custom-control-indicator"></span>
                         </label>
                       </div>
@@ -651,13 +653,13 @@
                     <div class="col">
                       <div class="col-md-2" align="center">
                         <label class="custom-control custom-radio">
-                          <input type="radio" class="custom-control-input" name="statusComp" disabled>{{ 'Certified'|translate }}
+                          <input type="radio" class="custom-control-input" value="4" name="statusCompNew" [(ngModel)]="dataComponent.release" disabled>{{ 'Certified'|translate }}
                           <span class="custom-control-indicator"></span>
                         </label>
                       </div>
                       <div class="col-md-2" align="center">
                         <label class="custom-control custom-radio">
-                          <input type="radio" class="custom-control-input" name="statusComp" disabled>{{ 'Obsolete'|translate }}
+                          <input type="radio" class="custom-control-input" value="9" name="statusCompNew" [(ngModel)]="dataComponent.release" disabled>{{ 'Obsolete'|translate }}
                           <span class="custom-control-indicator"></span>
                         </label>
                       </div>
@@ -673,7 +675,7 @@
                   <div class="card-body">
                     <table class="table table-bordered table-sm mb-0">
                       <tr>
-                        <th style="vertical-align:middle;text-align:center">{{ 'Temperature'|translate }}(°C)</th>
+                        <th style="vertical-align:middle;text-align:center">{{ 'Temperature'|translate }}({{ temperatureSymbol }})</th>
                         <th style="vertical-align:middle;text-align:center">{{ 'Action'|translate }}</th>
                       </tr>
                       <!-- <perfect-scrollbar style="max-height: 150px;display: inline;">   -->
@@ -709,7 +711,7 @@
             </div>
             <div class="card-footer text-center">
               <button class="btn btn-secondary" data-dismiss="modal" (click)="modalAddComponent.hide()">{{ 'Cancel'|translate }}</button>
-              <button type="button" class="btn btn-success" (click)="saveDataComponent()">
+              <button type="button" class="btn btn-success" (click)="checkDataComponent(dataComponent, 0)">
                 <i class="fa fa-floppy-o" aria-hidden="true"></i> {{ 'Save'|translate }}</button>
             </div>
           </div>
@@ -799,8 +801,8 @@
             <div class="col-md-4" style="float:right">{{'Temperature:'|translate}}</div>
             <div class="col-md-8">
               <div class="input-group">
-                <input type="text" name="COMPTEMP" class="form-control" [(ngModel)]="dataCompenth.COMPTEMP">
-                <span class="input-group-addon">°C</span>
+                <input type="text" name="COMPTEMP" class="form-control" [(ngModel)]="dataCompenth.COMPTEMP" disabled>
+                <span class="input-group-addon">{{ temperatureSymbol }}</span>
               </div>
             </div>
           </div>
@@ -809,7 +811,7 @@
             <div class="col-md-8">
               <div class="input-group">
                 <input type="text" name="COMPENTH" class="form-control" [(ngModel)]="dataCompenth.COMPENTH">
-                <span class="input-group-addon">kj/kg</span>
+                <span class="input-group-addon">{{ enthalpySymbol }}</span>
               </div>
             </div>
           </div>
@@ -818,7 +820,7 @@
             <div class="col-md-8">
               <div class="input-group">
                 <input type="text" name="COMPCOND" class="form-control" [(ngModel)]="dataCompenth.COMPCOND">
-                <span class="input-group-addon">W/(m.°C)</span>
+                <span class="input-group-addon">{{ conductivitySymbol }}</span>
               </div>
             </div>
           </div>
@@ -827,7 +829,7 @@
             <div class="col-md-8">
               <div class="input-group">
                 <input type="text" name="COMPDENS" class="form-control" [(ngModel)]="dataCompenth.COMPDENS">
-                <span class="input-group-addon">kg/ m³</span>
+                <span class="input-group-addon">{{ densitySymbol }}</span>
               </div>
             </div>
           </div>
@@ -835,7 +837,7 @@
       </div>
       <div class="modal-footer">
         <button class="btn btn-secondary" data-dismiss="modal" (click)="displayCTComponent.hide()">{{ 'Cancel'|translate }}</button>
-        <button class="btn btn-success" (click)="updateCompenth(dataCompenth);" *ngIf="dataCompenth">
+        <button class="btn btn-success" (click)="updateCompenth(dataCompenth)" *ngIf="dataCompenth">
           <i class="fa fa-floppy-o"></i> {{ 'Confirm'|translate }}</button>
       </div>
     </div>

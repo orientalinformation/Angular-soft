@@ -11,7 +11,7 @@ import { isNumber, isInteger } from '@ng-bootstrap/ng-bootstrap/util/util';
 import { ReferencedataService } from '../../../api/services/referencedata.service';
 import { RefEquipment, ViewEquipment, NewEquipment, EquipmentFamily, EquipCharact } from '../../../api/models';
 import { Equipment, EquipGeneration, EquipmentSeries, Ramps, Shelves, Consumptions, FilterEquipment } from '../../../api/models';
-import { SaveAsEquipment, ViewHighChart, ViewCurve, EquipGenZone, ViewTempSetPoint, Study } from '../../../api/models';
+import { SaveAsEquipment, ViewHighChart, ViewCurve, EquipGenZone, ViewTempSetPoint, Study, SVGChart } from '../../../api/models';
 
 import * as Highcharts from 'highcharts';
 import * as HC_draggablePoints from 'highcharts-draggable-points';
@@ -43,12 +43,10 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
   @ViewChild('modalTempSetpoint') public modalTempSetpoint: ModalDirective;
   @ViewChild('modalReferentialEquip') public modalReferentialEquip: ModalDirective;
   @ViewChild('modalEquipmentProfil') public modalEquipmentProfil: ModalDirective;
-  @ViewChild('modalEquipmentProfil2') public modalEquipmentProfil2: ModalDirective;
   @ViewChild('modalAddEquipment') public modalAddEquipment: ModalDirective;
   @ViewChild('modalSaveAsEquipment') public modalSaveAsEquipment: ModalDirective;
   @ViewChild('tempProfileChart') public tempProfileChart: HighchartsChartComponent;
   @ViewChild('curvesChart') public curvesChart: HighchartsChartComponent;
-  // HAIDT
   @ViewChild('modalFilter') public modalFilter: ModalDirective;
 
   public valTop = 1;
@@ -291,6 +289,16 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
   public checkData = false;
   public tempSetPoint: ViewTempSetPoint;
   public study: Study;
+  public selectedPoint = null;
+  public currentpos = -1;
+  public profileType = 0;
+  public svgchart: {
+    idEquip?: number,
+    profilType?: number,
+    profilFace?: number
+  };
+  public isLoadingChart = false;
+  public disabledConfirm = 0;
 
   constructor(private referencedata: ReferencedataService, private toastr: ToastrService, private router: Router) {
     this.activePageEquipment = 'load';
@@ -299,10 +307,8 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
     this.equipGenerationDefault = new EquipGeneration();
     this.newEquipCharact = new EquipCharact();
 
-    // HAIDT
-    // this.selectEquipment = new RefEquipment();
-    localStorage.setItem('equipCurr', '');
-    // end HAIDT
+    localStorage.setItem('equipCurr', ''); // add by haidt
+
   }
 
   ngOnInit() {
@@ -808,38 +814,38 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
 
   onConvectionCharact(element = 0) {
     if (this.equipCharacts.length > 0) {
-      this.xConvection = [];
+      this.yConvection = [];
       this.isSelectChart = 0;
       for (const equipCharact of this.equipCharacts) {
-        this.yConvection.push(Number(equipCharact.X_POSITION));
+        this.xConvection.push(Number(equipCharact.X_POSITION));
+        if (element === 0) {
+          this.yConvection.push(Number(equipCharact.ALPHA_TOP));
+          this.isSelectChart = 0;
+        }
+
         if (element === 1) {
-          this.xConvection.push(Number(equipCharact.ALPHA_TOP));
+          this.yConvection.push(Number(equipCharact.ALPHA_BOTTOM));
           this.isSelectChart = 1;
         }
 
         if (element === 2) {
-          this.xConvection.push(Number(equipCharact.ALPHA_BOTTOM));
+          this.yConvection.push(Number(equipCharact.ALPHA_LEFT));
           this.isSelectChart = 2;
         }
 
         if (element === 3) {
-          this.xConvection.push(Number(equipCharact.ALPHA_LEFT));
+          this.yConvection.push(Number(equipCharact.ALPHA_RIGHT));
           this.isSelectChart = 3;
         }
 
         if (element === 4) {
-          this.xConvection.push(Number(equipCharact.ALPHA_RIGHT));
+          this.yConvection.push(Number(equipCharact.ALPHA_FRONT));
           this.isSelectChart = 4;
         }
 
         if (element === 5) {
-          this.xConvection.push(Number(equipCharact.ALPHA_FRONT));
+          this.yConvection.push(Number(equipCharact.ALPHA_REAR));
           this.isSelectChart = 5;
-        }
-
-        if (element === 6) {
-          this.xConvection.push(Number(equipCharact.ALPHA_REAR));
-          this.isSelectChart = 6;
         }
       }
 
@@ -859,7 +865,7 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
           title: {
             text: '(%)'
           },
-          categories: this.yConvection
+          categories: this.xConvection
         },
         yAxis: {
           title: {
@@ -888,15 +894,18 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
                 //   alert('Name: ' + this.category + ', Value: ' + this.y + ', Series :' + this.series.name);
                 // },
                 drag: function (e) {
-                  alert('Name: ' + this.category + ', Value: ' + Highcharts.numberFormat(this.y, 2) + ', Series :' + this.series.name);
-                  // this.dataHighChart.YAxis = this.y;
+                  // this.getDataHighChartY(this.y);
+                  // alert('Name: ' + this.category + ', Value: ' + Highcharts.numberFormat(this.y, 2) + ', Series :' + this.series.name);
+                  this.dataHighChart = new ViewHighChart();
+                  console.log(this.dataHighChart);
+                  this.dataHighChart.YAxis = this.y;
                 }
               }
             }
           }
         },
         series: [{
-          data: this.xConvection,
+          data: this.yConvection,
           draggableY: true,
           dragMinY: 0
         }]
@@ -906,40 +915,44 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
     }
   }
 
+  getDataHighChartY(data) {
+    console.log(data);
+  }
+
   onTemperatureCharact(element = 0) {
     if (this.equipCharacts.length > 0) {
       this.xTemperature = [];
       this.isSelectChart = 0;
       for (const equipCharact of this.equipCharacts) {
         this.yTemperature.push(Number(equipCharact.X_POSITION));
-        if (element === 1) {
+        if (element === 0) {
           this.xTemperature.push(Number(equipCharact.TEMP_TOP));
+          this.isSelectChart = 0;
+        }
+
+        if (element === 1) {
+          this.xTemperature.push(Number(equipCharact.TEMP_BOTTOM));
           this.isSelectChart = 1;
         }
 
         if (element === 2) {
-          this.xTemperature.push(Number(equipCharact.TEMP_BOTTOM));
+          this.xTemperature.push(Number(equipCharact.TEMP_LEFT));
           this.isSelectChart = 2;
         }
 
         if (element === 3) {
-          this.xTemperature.push(Number(equipCharact.TEMP_LEFT));
+          this.xTemperature.push(Number(equipCharact.TEMP_RIGHT));
           this.isSelectChart = 3;
         }
 
         if (element === 4) {
-          this.xTemperature.push(Number(equipCharact.TEMP_RIGHT));
+          this.xTemperature.push(Number(equipCharact.TEMP_FRONT));
           this.isSelectChart = 4;
         }
 
         if (element === 5) {
-          this.xTemperature.push(Number(equipCharact.TEMP_FRONT));
-          this.isSelectChart = 5;
-        }
-
-        if (element === 6) {
           this.xTemperature.push(Number(equipCharact.TEMP_REAR));
-          this.isSelectChart = 6;
+          this.isSelectChart = 5;
         }
       }
 
@@ -1001,7 +1014,7 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
         }]
       };
 
-      this.modalEquipmentProfil2.show();
+      this.modalEquipmentProfil.show();
     }
   }
 
@@ -1161,17 +1174,33 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
   }
 
   getDataHighChart(idEquip, profilType = 0, profilFace = 0) {
+    this.isLoadingChart = true;
+    this.profileType = profilType;
+    localStorage.setItem('svgchart', JSON.stringify({ idEquip: idEquip, profilType: profilType, profilFace: profilFace }));
     this.referencedata.getDataHighChart({
       profilType: profilType,
       profilFace: profilFace,
-      IDEQUIP: idEquip
+      IDEQUIP: idEquip,
+      minScaleY: null,
+      maxScaleY: null,
+      typeChart: 0,
+      newProfil: '',
     }).subscribe(
       data => {
         this.dataHighChart = data;
+        console.log(this.dataHighChart);
+        if (profilType === 1) {
+          this.onConvectionCharact(profilFace);
+        } else {
+          this.onTemperatureCharact(profilFace);
+        }
+        this.isLoadingChart = false;
       },
       err => {
+        this.isLoadingChart = false;
       },
       () => {
+        this.isLoadingChart = false;
       }
     );
   }
@@ -1516,6 +1545,315 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
 
   deleteConsumptionValue(index) {
     this.consumptionsArray.splice(index, 1);
+  }
+
+  movepoint($event) {
+    // var to manage svg
+    const focusXZone = 50;	// pixels around the selected points
+    const focusYZone = 25;	// pixels around the selected points
+    if (this.selectedPoint !== null) {
+      const x = Number($event.offsetX);
+      const y = Number($event.offsetY);
+      const cx = Number(this.selectedPoint.getAttribute('cx'));
+      const cy = Number(this.selectedPoint.getAttribute('cy'));
+
+      if (this.dataHighChart) {
+        if ((y >= this.dataHighChart.minPixY) && (y <= this.dataHighChart.maxPixY)
+          && (y >= cy - focusYZone) && (y <= cy + focusYZone)
+          && (x >= cx - focusXZone) && (x <= cx + focusXZone)) {
+            this.selectedPoint.setAttribute('cy', y);
+            const value = this.getAxisYValue(y);
+            const circleValue = <HTMLElement>document.getElementById('circle_value');
+            circleValue.setAttribute('value', String(value));
+
+            this.redrawPath();
+
+            this.dataHighChart.valuesTabY[this.currentpos] = value;
+          }
+        }
+    }
+  }
+
+  circleover($event, pos) {
+    if (this.selectedPoint === null) {
+      const idCircle = <HTMLElement>document.getElementById('c' + pos);
+      idCircle.setAttribute('fill', '#00FF00');
+
+      const circlePosition = <HTMLElement>document.getElementById('circle_position');
+      circlePosition.setAttribute('value', pos);
+
+      const circleValue = <HTMLElement>document.getElementById('circle_value');
+      const value = this.getAxisYValue($event.offsetY);
+
+      // if (this.dataHighChart) {
+      //   value = this.dataHighChart.valuesTabY[pos];
+      // }
+      circleValue.setAttribute('value', String(value));
+    }
+  }
+
+  circleout($event, pos) {
+    if (this.selectedPoint === null) {
+      const idCircle = <HTMLElement>document.getElementById('c' + pos);
+      idCircle.setAttribute('fill', '#D5D5FF');
+
+      const circlePosition = <HTMLElement>document.getElementById('circle_position');
+      circlePosition.setAttribute('value', '');
+
+      const circleValue = <HTMLElement>document.getElementById('circle_value');
+      circleValue.setAttribute('value', '');
+    }
+  }
+
+  selectpoint($event, pos) {
+    const currentCircle = <HTMLElement>document.getElementById('c' + pos);
+    const circlePosition = <HTMLElement>document.getElementById('circle_position');
+    const circleValue = <HTMLElement>document.getElementById('circle_value');
+    if (this.selectedPoint === null) {
+      this.selectedPoint = currentCircle;
+      this.currentpos = pos;
+      this.selectedPoint.setAttribute('stroke', '#FF0000');
+      this.selectedPoint.setAttribute('fill', '#00FF00');
+      let value = pos;
+      circlePosition.setAttribute('value', pos);
+
+      if (this.dataHighChart) {
+        value = this.dataHighChart.valuesTabY[pos];
+
+        this.dataHighChart.selectedPoints[pos] = 1;
+      }
+      circleValue.setAttribute('value', value);
+    } else {
+      this.selectedPoint.setAttribute('stroke', '#000000');
+      this.selectedPoint.setAttribute('fill', '#D5D5FF');
+      this.selectedPoint = null;
+      this.currentpos = -1;
+      circlePosition.setAttribute('value', '');
+      circleValue.setAttribute('value', '');
+    }
+  }
+
+  getAxisYValue(pos: number) {
+    let value = 0;
+    if (this.dataHighChart) {
+      if (Number(pos) > Number(this.dataHighChart.originY)) {
+        value = Number(this.dataHighChart.minValueY);
+      } else if (Number(pos) < (Number(this.dataHighChart.originY) - Number(this.dataHighChart.nbpixY))) {
+        value = Number(this.dataHighChart.maxValueY);
+      } else {
+        value = (Number(this.dataHighChart.originY) - Number(pos)) / Number(this.dataHighChart.nbpixY) *
+        (Number(this.dataHighChart.MaxiMum) - Number(this.dataHighChart.MiniMum)) + Number(this.dataHighChart.MiniMum);
+      }
+    }
+    value = Math.round(value * 100) / 100;
+
+    return value;
+  }
+
+  getAxisYValue1(pos: number) {
+    let lfVal = 0.0;
+
+    if (pos > this.dataHighChart.originY) {
+      lfVal = this.dataHighChart.MiniMum;
+    } else if (pos < this.dataHighChart.originY - this.dataHighChart.axisYLength) {
+      lfVal = this.dataHighChart.MaxiMum;
+    } else {
+      lfVal = (this.dataHighChart.originY - pos) / this.dataHighChart.axisYLength *
+        (this.dataHighChart.MaxiMum - this.dataHighChart.MiniMum) + this.dataHighChart.MiniMum;
+    }
+
+    return lfVal;
+  }
+
+  getAxisYPos(value) {
+    let pos = 0;
+    if (this.dataHighChart) {
+      if (value < this.dataHighChart.MiniMum) {
+        value = this.dataHighChart.MiniMum;
+      } else if (value > this.dataHighChart.MaxiMum) {
+        value = this.dataHighChart.MaxiMum;
+      }
+      pos = this.dataHighChart.originY - Math.round((value - this.dataHighChart.MaxiMum) /
+      (this.dataHighChart.MaxiMum - this.dataHighChart.MiniMum) * this.dataHighChart.nbpixY);
+    }
+    return pos;
+  }
+
+  setpoint() {
+    if (this.selectedPoint != null) {
+      const circleValue = <HTMLElement>document.getElementById('circle_value');
+      const circlePosition = <HTMLElement>document.getElementById('circle_position');
+      const value = circleValue.getAttribute('value');
+      if (this.dataHighChart) {
+        if (Number(value) >= this.dataHighChart.MiniMum) {
+          const cy = this.getAxisYPos(value);
+          this.selectedPoint.setAttribute('cy', cy);
+          this.redrawPath();
+
+          this.selectedPoint.setAttribute('stroke', '#000000');
+          this.selectedPoint.setAttribute('fill', '#D5D5FF');
+          this.selectedPoint = null;
+
+          circlePosition.setAttribute('value', '');
+          circleValue.setAttribute('value', '');
+        }
+      }
+    }
+  }
+
+  setpointenter($event) {
+    if ($event.which === 13) {
+      this.setpoint();
+    }
+  }
+
+  redrawPath() {
+    let idx = 0;
+    const linkedpath = <HTMLElement>document.getElementById('profilLine');
+    let circle;
+    let path = '';
+    let cx, cy;
+    if (this.dataHighChart) {
+      for (idx = 0; idx < this.dataHighChart.nbpoints; idx++) {
+        if (this.dataHighChart.selectedPoints[idx] === 1) {
+          circle = <HTMLElement>document.getElementById('c' + idx);
+          cx = circle.getAttribute('cx');
+          cy = circle.getAttribute('cy');
+
+          if (idx === 0) {
+            path = 'M ' + cx + ' ' + cy + ' L';
+          } else {
+            path += ' ' + cx + ' ' + cy;
+          }
+        }
+      }
+      linkedpath.setAttribute('d', path);
+    }
+  }
+
+  refreshScaleChart() {
+    this.svgchart = JSON.parse(localStorage.getItem('svgchart'));
+    this.referencedata.getDataHighChart({
+      profilType: this.svgchart.profilType,
+      profilFace: this.svgchart.profilFace,
+      IDEQUIP: this.svgchart.idEquip,
+      minScaleY: this.dataHighChart.MiniMum,
+      maxScaleY: this.dataHighChart.MaxiMum,
+      typeChart: 1,
+      newProfil: '',
+    }).subscribe(
+      data => {
+        this.dataHighChart = data;
+        console.log(data);
+        this.toastr.success('Update scale chart', 'successfully');
+      },
+      err => {
+        console.log('err');
+      },
+      () => {}
+    );
+  }
+
+  clearSelectedPoints() {
+    const rescale = <HTMLElement>document.getElementById('rescale');
+    rescale.setAttribute('disabled', 'true');
+    const confirm = <HTMLElement>document.getElementById('confirmButton');
+    confirm.setAttribute('disabled', 'true');
+    let idx = 0;
+    let circle;
+    this.selectedPoint = null;
+    if (this.dataHighChart) {
+      this.dataHighChart.selectedPoints[idx] = 1;
+      circle = <HTMLElement>document.getElementById('c' + idx);
+      circle.setAttribute('cy', this.dataHighChart.posTabY[idx]);
+
+      for (idx = 1; idx < this.dataHighChart.nbpoints - 1; idx++) {
+        circle = <HTMLElement>document.getElementById('c' + idx);
+        this.dataHighChart.selectedPoints[idx] = 0;
+        circle.setAttribute('cy', this.dataHighChart.posTabY[idx]);
+      }
+
+      circle = <HTMLElement>document.getElementById('c' + idx);
+      this.dataHighChart.selectedPoints[idx] = 1;
+      circle.setAttribute('cy', this.dataHighChart.posTabY[idx]);
+    }
+
+    const linkedpath = <HTMLElement>document.getElementById('profilLine');
+    linkedpath.setAttribute('d', '');
+  }
+
+  saveEquipProfile() {
+    let idx = 0;
+    let profil_string = '';
+    let value = '';
+    if (this.dataHighChart) {
+      if (this.dataHighChart.nbpoints > 0) {
+        for (idx = 0; idx < this.dataHighChart.nbpoints; idx++) {
+          if (this.dataHighChart.selectedPoints[idx] === 1) {
+            profil_string += this.dataHighChart.valuesTabY[idx];
+          }
+          profil_string += '_';
+        }
+        value = profil_string;
+      }
+    }
+    return value;
+  }
+
+  submitGenerate() {
+    this.svgchart = JSON.parse(localStorage.getItem('svgchart'));
+    const point = this.saveEquipProfile();
+    this.referencedata.getDataHighChart({
+      profilType: this.svgchart.profilType,
+      profilFace: this.svgchart.profilFace,
+      IDEQUIP: this.svgchart.idEquip,
+      minScaleY: this.dataHighChart.MiniMum,
+      maxScaleY: this.dataHighChart.MaxiMum,
+      typeChart: 2,
+      newProfil: point,
+    }).subscribe(
+      data => {
+        this.dataHighChart = data;
+        this.toastr.success('Generate data chart', 'successfully');
+        this.disabledConfirm = 1;
+      },
+      err => {
+
+      },
+      () => {
+
+      }
+    );
+  }
+
+  submitProfil() {
+    this.svgchart = JSON.parse(localStorage.getItem('svgchart'));
+    const point = this.saveEquipProfile();
+    this.referencedata.saveSelectedProfile({
+      profilType: this.svgchart.profilType,
+      profilFace: this.svgchart.profilFace,
+      ID_EQUIP: this.svgchart.idEquip,
+      minScaleY: this.dataHighChart.MiniMum,
+      maxScaleY: this.dataHighChart.MaxiMum,
+      typeChart: 3,
+      newProfil: point,
+      checkTop: this.dataHighChart.checkTop,
+      checkButton: this.dataHighChart.checkButton,
+      checkFront: this.dataHighChart.checkFront,
+      checkLeft: this.dataHighChart.checkLeft,
+      checkRear: this.dataHighChart.checkRear,
+      checkRight: this.dataHighChart.checkRight
+    }).subscribe(
+      response => {
+        if (response === 1) {
+          this.toastr.success('Update chart point', 'successfully');
+        }
+      },
+      err => {
+
+      },
+      () => {}
+    );
   }
 
   // display page

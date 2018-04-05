@@ -14,7 +14,7 @@
             <tr>
               <th style="text-align:center">{{ 'Optimization required' | translate }}</th>
               <th style="text-align:center">{{ 'Temperature margin' | translate }}
-                <br> ( °C )</th>
+                <br> ( {{ temperatureSymbol }} )</th>
               <th style="text-align:center">{{ 'Enthalpy error' | translate }}
                 <br> ( % )</th>
               <th style="text-align:center">{{ 'Number of iterations' | translate }}</th>
@@ -22,18 +22,18 @@
             <tr>
               <td align="center">
                 <label class="custom-control custom-checkbox">
-                  <input type="checkbox" class="custom-control-input" name="cbOptim" id="cbOptim" [checked]="calculate.checkOptim == 1" [(ngModel)]="calculate.checkOptim">
+                  <input type="checkbox" class="custom-control-input" name="cbOptim" id="cbOptim" [checked]="calculate.checkOptim == 1" [(ngModel)]="calculate.checkOptim" [disabled]="calculate.sdisableOptim == 1">
                   <span class="custom-control-indicator"></span>
                 </label>
               </td>
               <td align="center">
-                <input type="text" name="epsilonTemp" id="epsilonTemp" style="width:80px;" [(ngModel)]="calculate.epsilonTemp" [disabled]="calculate.checkOptim != 1">
+                <input type="text" class="form-control form-control-sm" name="epsilonTemp" id="epsilonTemp" style="width:80px;" [(ngModel)]="calculate.epsilonTemp" [disabled]="calculate.sdisableOptim == 1">
               </td>
               <td align="center">
-                <input type="text" name="epsilonEnth" id="epsilonEnth" style="width:80px;" [(ngModel)]="calculate.epsilonEnth" [disabled]="calculate.checkOptim != 1">
+                <input type="text" class="form-control form-control-sm" name="epsilonEnth" id="epsilonEnth" style="width:80px;" [(ngModel)]="calculate.epsilonEnth" [disabled]="calculate.sdisableOptim == 1">
               </td>
               <td align="center">
-                <input type="text" name="nbOptimIter" id="nbOptimIter" style="width:80px;" [(ngModel)]="calculate.nbOptimIter" [disabled]="calculate.sdisableOptim != 1">
+                <input type="text" class="form-control form-control-sm" name="nbOptimIter" id="nbOptimIter" style="width:80px;" [(ngModel)]="calculate.nbOptimIter" [disabled]="calculate.sdisableNbOptim == 1">
               </td>
             </tr>
           </table>
@@ -41,7 +41,7 @@
             <tr>
               <th style="text-align:center" rowspan="2">
                 {{ 'Time Step'|translate}}
-                <br> (s)
+                <br> ({{ timeSymbol }})
               </th>
               <th style="text-align:center" rowspan="2">
                 {{'Precision of numerical modelling'|translate}}
@@ -53,24 +53,23 @@
             </tr>
             <tr>
               <th style="text-align:center">{{'Access to product graph and charts'|translate}}</th>
-              <th style="text-align:center">{{'Step (s)'|translate}}</th>
+              <th style="text-align:center">{{'Step '|translate}} ({{ timeSymbol }})</th>
             </tr>
             <tr>
               <td align="center">
-                <input type="text" name="timestep" id="timestep" style="width:80px;" [(ngModel)]="calculate.timeStep">
+                <input type="text" class="form-control form-control-sm" name="timestep" id="timestep" style="width:80px;" [(ngModel)]="calculate.timeStep" [disabled]="calculate.sdisableTimeStep == 1">
               </td>
               <td align="center">
-                <input type="text" name="Precision" id="Precision" style="width:80px;" [(ngModel)]="calculate.precision">
+                <input type="text" class="form-control form-control-sm" name="Precision" id="Precision" style="width:80px;" [(ngModel)]="calculate.precision" [disabled]="calculate.sdisablePrecision == 1">
               </td>
               <td align="center">
                 <label class="custom-control custom-checkbox">
-                  <input type="checkbox" class="custom-control-input" name="cbCharts" id="cbCharts" [checked]="calculate.scheckStorage == 1"
-                    [disabled]="calculate.sdisableStorage">
+                  <input type="checkbox" class="custom-control-input" name="cbCharts" id="cbCharts" [checked]="calculate.scheckStorage == 1" [disabled]="calculate.sdisableStorage == 1">
                   <span class="custom-control-indicator"></span>
                 </label>
               </td>
               <td align="center">
-                <input type="text" name="storagestep" id="storagestep" style="width:80px;" [(ngModel)]="calculate.storagestep" [disabled]="calculate.sdisableNbOptim">
+                <input type="text" class="form-control form-control-sm" name="storagestep" id="storagestep" style="width:80px;" [(ngModel)]="calculate.storagestep" [disabled]="calculate.sdisableNbOptim">
               </td>
             </tr>
           </table>
@@ -78,7 +77,7 @@
             <button type="button" class="btn btn-secondary btn-lg" id="settbutton" (click)="openSetting()">
               <i class="icon-settings"></i>&nbsp; {{'Setting'|translate}}</button>
             <button type="button" class="btn btn-primary btn-lg" id="calcbutton" 
-            (click)="calcModal.hide();startCalculate();brainOptimum.show();loadProgressBar();" [ladda]="laddaIsCalculating"
+            (click)="checkCalculationParameters();loadProgressBar();" [ladda]="laddaIsCalculating"
             [disabled]="calculate.ID_USER_STUDY != calculate.ID_USER_CURRENT">
               <i class="icon-energy"></i>&nbsp; {{'Calculate'|translate}}</button>
           </div>
@@ -94,25 +93,25 @@
                 <th style="text-align:center" colspan="2">{{'Max of iterations'|translate}}</th>
                 <th style="text-align:center" colspan="2">{{'Coef.of relaxation'|translate}}</th>
                 <th style="text-align:center" colspan="2">{{'Temperature to stop'|translate}}
-                  <br>(°C)</th>
+                  <br>({{ temperatureSymbol }})</th>
               </tr>
               <tr>
                 <td align="center">{{'Horizontal'|translate}}</td>
                 <td>
                   <label class="custom-control custom-radio" style="margin: 0px 0px 0px 0px;">
-                    <input type="radio" class="custom-control-input" name="Hradiobutton" [checked]="calculate.hRadioOn == 1">{{'Yes'|translate}}
+                    <input type="radio" class="custom-control-input" name="Hradiobutton" [checked]="calculate.hRadioOn == 1" [disabled]="calculate.sdisableFields == 1">{{'Yes'|translate}}
                     <span class="custom-control-indicator"></span>
                   </label>
                   <label class="custom-control custom-radio" style="margin: 0px 0px 0px 0px;">
-                    <input type="radio" class="custom-control-input" name="Hradiobutton" [checked]="calculate.hRadioOn != 1">{{'No'|translate}}
+                    <input type="radio" class="custom-control-input" name="Hradiobutton" [checked]="calculate.hRadioOn != 1" [disabled]="calculate.sdisableFields == 1">{{'No'|translate}}
                     <span class="custom-control-indicator"></span>
                   </label>
                 </td>
                 <td rowspan="2" align="center">
-                  <input type="text" name="MaxIter" id="MaxIter" style="width:80px; margin-top:20px;" [(ngModel)]="calculate.maxIter">
+                  <input type="text" class="form-control form-control-sm" name="MaxIter" id="MaxIter" style="width:80px; margin-top:20px;" [(ngModel)]="calculate.maxIter" [disabled]="calculate.sdisableFields == 1">
                 </td>
                 <td rowspan="2" align="center">
-                  <input type="text" name="RelaxCoef" id="RelaxCoef" style="width:80px; margin-top:20px;" [(ngModel)]="calculate.relaxCoef">
+                  <input type="text" class="form-control form-control-sm" name="RelaxCoef" id="RelaxCoef" style="width:80px; margin-top:20px;" [(ngModel)]="calculate.relaxCoef" [disabled]="calculate.sdisableFields == 1">
                 </td>
                 <td style="text-align:center">{{'Surface'|translate}}</td>
                 <td style="text-align:center">{{'Internal'|translate}}</td>
@@ -123,29 +122,29 @@
                 <td align="center">{{'Vertical'|translate}}</td>
                 <td>
                   <label class="custom-control custom-radio" style="margin: 0px 0px 0px 0px;">
-                    <input type="radio" class="custom-control-input" name="Vradiobutton1" [checked]="calculate.vRadioOn == 1">{{'Yes'|translate}}
+                    <input type="radio" class="custom-control-input" name="Vradiobutton1" [checked]="calculate.vRadioOn == 1" [disabled]="calculate.sdisableFields == 1">{{'Yes'|translate}}
                     <span class="custom-control-indicator"></span>
                   </label>
                   <label class="custom-control custom-radio" style="margin: 0px 0px 0px 0px;">
-                    <input type="radio" class="custom-control-input" name="Vradiobutton1" [checked]="calculate.vRadioOn != 1">{{'No'|translate}}
+                    <input type="radio" class="custom-control-input" name="Vradiobutton1" [checked]="calculate.vRadioOn != 1" [disabled]="calculate.sdisableFields == 1">{{'No'|translate}}
                     <span class="custom-control-indicator"></span>
                   </label>
                 </td>
                 <td align="center">
-                  <input type="text" name="TempPtSurf" id="TempPtSurf" style="width:80px;" [(ngModel)]="calculate.tempPtSurf">
+                  <input type="text" class="form-control form-control-sm" name="TempPtSurf" id="TempPtSurf" style="width:80px;" [(ngModel)]="calculate.tempPtSurf" [disabled]="calculate.sdisableFields == 1">
                 </td>
                 <td align="center">
-                  <input type="text" name="TempPtIn" id="TempPtIn" style="width:80px;" [(ngModel)]="calculate.tempPtIn">
+                  <input type="text" class="form-control form-control-sm" name="TempPtIn" id="TempPtIn" style="width:80px;" [(ngModel)]="calculate.tempPtIn" [disabled]="calculate.sdisableFields == 1">
                 </td>
                 <td align="center">
-                  <input type="text" name="TempPtBot" id="TempPtBot" style="width:80px;" [(ngModel)]="calculate.tempPtBot">
+                  <input type="text" class="form-control form-control-sm" name="TempPtBot" id="TempPtBot" style="width:80px;" [(ngModel)]="calculate.tempPtBot" [disabled]="calculate.sdisableFields == 1">
                 </td>
                 <td align="center">
-                  <input type="text" name="TempPtAvg" id="TempPtAvg" style="width:80px;" [(ngModel)]="calculate.tempPtAvg">
+                  <input type="text" class="form-control form-control-sm" name="TempPtAvg" id="TempPtAvg" style="width:80px;" [(ngModel)]="calculate.tempPtAvg" [disabled]="calculate.sdisableFields == 1">
                 </td>
               </tr>
             </table>
-            <strong>{{'Following-up Point (mm)'|translate}}</strong>
+            <strong>{{'Following-up Point '|translate}} ({{ meshesSymbol }})</strong>
             <table class="table table-bordered table-sm" style="width:500px;">
               <tr>
                 <th style="text-align:center">{{'Surface'|translate}}</th>
@@ -154,64 +153,100 @@
               </tr>
               <tr>
                 <td align="center">
-                  1
-                  <select name="select1" id="select1" style="width:100px;" [(ngModel)]="calculate.seValue1">
-                    <option *ngFor="let select of calculate.select1" [selected]="select.selected" [value]="select.label">
-                      {{ select.value }}
-                    </option>
-                  </select>
-                  <br> 2
-                  <select name="select2" id="select2" style="width:100px;" [(ngModel)]="calculate.seValue2">
-                    <option *ngFor="let select of calculate.select2" [selected]="select.selected" [value]="select.label">
-                      {{ select.value }}
-                    </option>
-                  </select>
-                  <br> 3
-                  <select name="select3" id="select3" style="width:100px;" [(ngModel)]="calculate.seValue3">
-                    <option *ngFor="let select of calculate.select3" [selected]="select.selected" [value]="select.label">
-                      {{ select.value }}
-                    </option>
-                  </select>
+                  <div class="row">
+                    <div class="col-md-2">1</div>
+                    <div class="col-md-10">
+                      <select class="form-control form-control-sm" name="select1" id="select1" [(ngModel)]="calculate.seValue1" [disabled]="calculate.sdisableFields == 1">
+                        <option *ngFor="let select of calculate.select1" [selected]="select.selected" [value]="select.label">
+                          {{ select.value }}
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-2">2</div>
+                    <div class="col-md-10">
+                      <select class="form-control form-control-sm" name="select2" id="select2" [(ngModel)]="calculate.seValue2" [disabled]="calculate.sdisableFields == 1">
+                        <option *ngFor="let select of calculate.select2" [selected]="select.selected" [value]="select.label">
+                          {{ select.value }}
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-2">3</div>
+                    <div class="col-md-10">
+                      <select class="form-control form-control-sm" name="select3" id="select3" [(ngModel)]="calculate.seValue3" [disabled]="calculate.sdisableFields == 1">
+                        <option *ngFor="let select of calculate.select3" [selected]="select.selected" [value]="select.label">
+                          {{ select.value }}
+                        </option>
+                      </select>
+                    </div>
+                  </div>
                 </td>
                 <td align="center">
-                  1
-                  <select name="select4" id="select4" style="width:100px;" [(ngModel)]="calculate.seValue4">
-                    <option *ngFor="let select of calculate.select4" [selected]="select.selected" [value]="select.label">
-                      {{ select.value }}
-                    </option>
-                  </select>
-                  <br> 2
-                  <select name="select5" id="select5" style="width:100px;" [(ngModel)]="calculate.seValue5">
-                    <option *ngFor="let select of calculate.select5" [selected]="select.selected" [value]="select.label">
-                      {{ select.value }}
-                    </option>
-                  </select>
-                  <br> 3
-                  <select name="select6" id="select6" style="width:100px;" [(ngModel)]="calculate.seValue6">
-                    <option *ngFor="let select of calculate.select6" [selected]="select.selected" [value]="select.label">
-                      {{ select.value }}
-                    </option>
-                  </select>
+                  <div class="row">
+                    <div class="col-md-2">1</div>
+                    <div class="col-md-10">
+                      <select class="form-control form-control-sm" name="select4" id="select4" [(ngModel)]="calculate.seValue4" [disabled]="calculate.sdisableFields == 1">
+                        <option *ngFor="let select of calculate.select4" [selected]="select.selected" [value]="select.label">
+                          {{ select.value }}
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-2">2</div>
+                    <div class="col-md-10">
+                      <select class="form-control form-control-sm" name="select5" id="select5" [(ngModel)]="calculate.seValue5" [disabled]="calculate.sdisableFields == 1">
+                        <option *ngFor="let select of calculate.select5" [selected]="select.selected" [value]="select.label">
+                          {{ select.value }}
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-2">3</div>
+                    <div class="col-md-10">
+                      <select class="form-control form-control-sm" name="select6" id="select6" [(ngModel)]="calculate.seValue6" [disabled]="calculate.sdisableFields == 1">
+                        <option *ngFor="let select of calculate.select6" [selected]="select.selected" [value]="select.label">
+                          {{ select.value }}
+                        </option>
+                      </select>
+                    </div>
+                  </div>
                 </td>
                 <td align="center">
-                  1
-                  <select name="select7" id="select7" style="width:100px;" [(ngModel)]="calculate.seValue7">
-                    <option *ngFor="let select of calculate.select7" [selected]="select.selected" [value]="select.label">
-                      {{ select.value }}
-                    </option>
-                  </select>
-                  <br> 2
-                  <select name="select8" id="select8" style="width:100px;" [(ngModel)]="calculate.seValue8">
-                    <option *ngFor="let select of calculate.select8" [selected]="select.selected" [value]="select.label">
-                      {{ select.value }}
-                    </option>
-                  </select>
-                  <br> 3
-                  <select name="select9" id="select9" style="width:100px;" [(ngModel)]="calculate.seValue9">
-                    <option *ngFor="let select of calculate.select9" [selected]="select.selected" [value]="select.label">
-                      {{ select.value }}
-                    </option>
-                  </select>
+                  <div class="row">
+                    <div class="col-md-2">1</div>
+                    <div class="col-md-10">
+                      <select class="form-control form-control-sm" name="select7" id="select7" [(ngModel)]="calculate.seValue7" [disabled]="calculate.sdisableFields == 1">
+                        <option *ngFor="let select of calculate.select7" [selected]="select.selected" [value]="select.label">
+                          {{ select.value }}
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-2">2</div>
+                    <div class="col-md-10">
+                      <select class="form-control form-control-sm" name="select8" id="select8" [(ngModel)]="calculate.seValue8" [disabled]="calculate.sdisableFields == 1">
+                        <option *ngFor="let select of calculate.select8" [selected]="select.selected" [value]="select.label">
+                          {{ select.value }}
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-2">3</div>
+                    <div class="col-md-10">
+                      <select class="form-control form-control-sm" name="select9" id="select9" [(ngModel)]="calculate.seValue9" [disabled]="calculate.sdisableFields == 1">
+                        <option *ngFor="let select of calculate.select9" [selected]="select.selected" [value]="select.label">
+                          {{ select.value }}
+                        </option>
+                      </select>
+                    </div>
+                  </div>
                 </td>
               </tr>
             </table>
@@ -236,21 +271,22 @@
       <div class="modal-body" *ngIf="brainCalculator">
         <table class="table table-bordered table-sm">
           <tr>
-            <th style="text-align:center">{{ 'Residence / Dwell time (s)' | translate }}</th>
-            <th style="text-align:center">{{ 'Control temperature (°C)' | translate }}</th>
+            <th style="text-align:center">{{ 'Residence / Dwell time ' | translate }} ({{ timeSymbol }})</th>
+            <th style="text-align:center">{{ 'Control temperature ' | translate }} ({{ temperatureSymbol }}) </th>
             <th style="text-align:center">{{ 'Loading rate (%)' | translate }}</th>
           </tr>
           <tr>
             <td align="center">
-              <input type="text" *ngFor="let ts of brainCalculator.dwellingTimes" name="ts{{ ts.name }}" id="" style="width:80px;" 
-              [(ngModel)]="ts.value" [disabled]="brainCalculator.typeCalculate == 3">
+              <input type="text" *ngFor="let ts of brainCalculator.dwellingTimes" style="width:80px;" name="ts{{ ts.name }}" id="" class="form-control form-control-sm" 
+              [(ngModel)]="ts.value" [disabled]="brainCalculator.typeCalculate == 3 || brainCalculator.sdisableTS == 1">
             </td>
             <td align="center">
-              <input type="text" *ngFor="let tr of brainCalculator.temperatures" name="tr{{ tr.name }}" id="" style="width:80px;" [(ngModel)]="tr.value">
+              <input type="text" *ngFor="let tr of brainCalculator.temperatures" style="width:80px;" name="tr{{ tr.name }}" id="" class="form-control form-control-sm" 
+              [(ngModel)]="tr.value" [disabled]="brainCalculator.sdisableTR == 1">
             </td>
             <td align="center">
-              <input type="text" name="toc" id="toc" style="width:80px;" [(ngModel)]="brainCalculator.toc"
-               [disabled]="brainCalculator.typeCalculate  == 1 || brainCalculator.typeCalculate == 2">
+              <input type="text" class="form-control form-control-sm" style="width:80px;" name="toc" id="toc" [(ngModel)]="brainCalculator.toc"
+               [disabled]="brainCalculator.typeCalculate  == 1 || brainCalculator.typeCalculate == 2 || brainCalculator.sdisableTOC == 1">
             </td>
           </tr>
         </table>
@@ -258,7 +294,7 @@
           <tr>
             <th style="text-align:center">{{ 'Optimization required' | translate }}</th>
             <th style="text-align:center">{{ 'Temperature margin' | translate }}
-              <br> ( °C )</th>
+              <br> ( {{ temperatureSymbol }} )</th>
             <th style="text-align:center">{{ 'Enthalpy error' | translate }}
               <br> ( % )</th>
             <th style="text-align:center">{{ 'Number of iterations' | translate }}</th>
@@ -266,18 +302,22 @@
           <tr>
             <td align="center">
               <label class="custom-control custom-checkbox">
-                <input type="checkbox" class="custom-control-input" name="cbOptim" id="cbOptim" [checked]="brainCalculator.checkOptim == 1" [(ngModel)]="brainCalculator.checkOptim">
+                <input type="checkbox" class="custom-control-input" name="cbOptim" id="cbOptim" [checked]="brainCalculator.checkOptim == 1" 
+                [(ngModel)]="brainCalculator.checkOptim" [disabled]="brainCalculator.sdisableOptim == 1">
                 <span class="custom-control-indicator"></span>
               </label>
             </td>
             <td align="center">
-              <input type="text" name="epsilonTemp" id="epsilonTemp" style="width:80px;" [disabled]="brainCalculator.checkOptim != 1" [(ngModel)]="brainCalculator.epsilonTemp">
+              <input type="text" class="form-control form-control-sm" style="width:80px;" name="epsilonTemp" id="epsilonTemp"
+               [disabled]="brainCalculator.checkOptim != 1 || brainCalculator.sdisableOptim == 1" [(ngModel)]="brainCalculator.epsilonTemp">
             </td>
             <td align="center">
-              <input type="text" name="epsilonEnth" id="epsilonEnth" style="width:80px;" [disabled]="brainCalculator.checkOptim != 1" [(ngModel)]="brainCalculator.epsilonEnth">
+              <input type="text" class="form-control form-control-sm" style="width:80px;" name="epsilonEnth" id="epsilonEnth"
+                [disabled]="brainCalculator.checkOptim != 1 || brainCalculator.sdisableOptim == 1" [(ngModel)]="brainCalculator.epsilonEnth">
             </td>
             <td align="center">
-              <input type="text" name="nbOptimIter" id="nbOptimIter" style="width:80px;" [disabled]="brainCalculator.checkOptim != 1 || brainCalculator.typeCalculate == 3" 
+              <input type="text" class="form-control form-control-sm" style="width:80px;" name="nbOptimIter" id="nbOptimIter"
+               [disabled]="brainCalculator.checkOptim != 1 || brainCalculator.typeCalculate == 3 || brainCalculator.sdisableNbOptim == 1" 
               [(ngModel)]="brainCalculator.nbOptimIter">
             </td>
           </tr>
@@ -286,7 +326,7 @@
           <tr>
             <th style="text-align:center" rowspan="2">
               {{ 'Time Step'|translate}}
-              <br> (s)
+              <br> ({{ timeSymbol }})
             </th>
             <th style="text-align:center" rowspan="2">
               {{'Precision of numerical modelling'|translate}}
@@ -298,14 +338,16 @@
           </tr>
           <tr>
             <th style="text-align:center">{{'Access to product graph and charts'|translate}}</th>
-            <th style="text-align:center">{{'Step (s)'|translate}}</th>
+            <th style="text-align:center">{{'Step '|translate}} ({{ timeSymbol }})</th>
           </tr>
           <tr>
             <td align="center">
-              <input type="text" name="timestep" id="timestep" style="width:80px;" [(ngModel)]="brainCalculator.timeStep">
+              <input type="text" class="form-control form-control-sm" style="width:80px;" name="timestep" id="timestep" [(ngModel)]="brainCalculator.timeStep"
+              [disabled]="brainCalculator.sdisableFields == 1">
             </td>
             <td align="center">
-              <input type="text" name="Precision" id="Precision" style="width:80px;" [(ngModel)]="brainCalculator.precision">
+              <input type="text" class="form-control form-control-sm" style="width:80px;" name="Precision" id="Precision" [(ngModel)]="brainCalculator.precision"
+              [disabled]="brainCalculator.sdisableFields == 1">
             </td>
             <td align="center">
               <label class="custom-control custom-checkbox">
@@ -316,15 +358,15 @@
               </label>
             </td>
             <td align="center">
-              <input type="text" name="storagestep" id="storagestep" style="width:80px;" [(ngModel)]="brainCalculator.storagestep" 
-              [disabled]="brainCalculator.scheckStorage != 1">
+              <input type="text" class="form-control form-control-sm" style="width:80px;" name="storagestep" id="storagestep"  [(ngModel)]="brainCalculator.storagestep" 
+              [disabled]="brainCalculator.scheckStorage != 1 || brainCalculator.sdisableStorage == 1">
             </td>
           </tr>
         </table>
         <div class="text-center">
           <button type="button" class="btn btn-secondary btn-lg" id="settbutton" (click)="openSetting()">
             <i class="icon-settings"></i>&nbsp; {{'Setting'|translate}}</button>
-          <button type="button" class="btn btn-primary btn-lg" id="calcbutton" (click)="startBrainOptimumCalculate()" 
+          <button type="button" class="btn btn-primary btn-lg" id="calcbutton" (click)="checkBrainCalculationParameters()" 
           [ladda]="laddaIsCalculating" [disabled]="brainCalculator.ID_USER_STUDY != brainCalculator.ID_USER_CURRENT">
             <i class="icon-energy"></i>&nbsp; {{'Calculate'|translate}}</button>
         </div>
@@ -340,25 +382,29 @@
               <th style="text-align:center" colspan="2">{{'Max of iterations'|translate}}</th>
               <th style="text-align:center" colspan="2">{{'Coef.of relaxation'|translate}}</th>
               <th style="text-align:center" colspan="2">{{'Temperature to stop'|translate}}
-                <br>(°C)</th>
+                <br>({{ temperatureSymbol }})</th>
             </tr>
             <tr>
               <td align="center">{{'Horizontal'|translate}}</td>
               <td>
                 <label class="custom-control custom-radio" style="margin: 0px 0px 0px 0px;">
-                  <input type="radio" class="custom-control-input" name="Hradiobutton1" [checked]="brainCalculator.hRadioOn == 1">{{'Yes'|translate}}
+                  <input type="radio" class="custom-control-input" name="Hradiobutton1" [checked]="brainCalculator.hRadioOn == 1"
+                  [disabled]="brainCalculator.sdisableFields == 1">{{'Yes'|translate}}
                   <span class="custom-control-indicator"></span>
                 </label>
                 <label class="custom-control custom-radio" style="margin: 0px 0px 0px 0px;">
-                  <input type="radio" class="custom-control-input" name="Hradiobutton1" [checked]="brainCalculator.hRadioOn != 1">{{'No'|translate}}
+                  <input type="radio" class="custom-control-input" name="Hradiobutton1" [checked]="brainCalculator.hRadioOn != 1"
+                  [disabled]="brainCalculator.sdisableFields == 1">{{'No'|translate}}
                   <span class="custom-control-indicator"></span>
                 </label>
               </td>
               <td rowspan="2" align="center">
-                <input type="text" name="MaxIter" id="MaxIter" style="width:80px; margin-top:20px;" [(ngModel)]="brainCalculator.maxIter">
+                <input type="text" class="form-control form-control-sm" style="width:80px;" name="MaxIter" id="MaxIter" style="width:80px; margin-top:20px;"
+                 [(ngModel)]="brainCalculator.maxIter" [disabled]="brainCalculator.sdisableFields == 1">
               </td>
               <td rowspan="2" align="center">
-                <input type="text" name="RelaxCoef" id="RelaxCoef" style="width:80px; margin-top:20px;" [(ngModel)]="brainCalculator.relaxCoef">
+                <input type="text" class="form-control form-control-sm" style="width:80px;" name="RelaxCoef" id="RelaxCoef" style="width:80px; margin-top:20px;"
+                 [(ngModel)]="brainCalculator.relaxCoef" [disabled]="brainCalculator.sdisableFields == 1">
               </td>
               <td style="text-align:center">{{'Surface'|translate}}</td>
               <td style="text-align:center">{{'Internal'|translate}}</td>
@@ -369,25 +415,31 @@
               <td align="center">{{'Vertical'|translate}}</td>
               <td>
                 <label class="custom-control custom-radio" style="margin: 0px 0px 0px 0px;">
-                  <input type="radio" class="custom-control-input" name="Vradiobutton1" [checked]="brainCalculator.vRadioOn == 1">{{'Yes'|translate}}
+                  <input type="radio" class="custom-control-input" name="Vradiobutton1" [checked]="brainCalculator.vRadioOn == 1" 
+                  [disabled]="brainCalculator.sdisableFields == 1">{{'Yes'|translate}}
                   <span class="custom-control-indicator"></span>
                 </label> 
                 <label class="custom-control custom-radio" style="margin: 0px 0px 0px 0px;">
-                  <input type="radio" class="custom-control-input" name="Vradiobutton1" [checked]="brainCalculator.vRadioOn != 1">{{'No'|translate}}
+                  <input type="radio" class="custom-control-input" name="Vradiobutton1" [checked]="brainCalculator.vRadioOn != 1"
+                  [disabled]="brainCalculator.sdisableFields == 1">{{'No'|translate}}
                   <span class="custom-control-indicator"></span>
                 </label>
               </td>
               <td align="center">
-                <input type="text" name="TempPtSurf" id="TempPtSurf" style="width:80px;" [(ngModel)]="brainCalculator.tempPtSurf">
+                <input type="text" class="form-control form-control-sm" style="width:80px;" name="TempPtSurf" id="TempPtSurf" 
+                [disabled]="brainCalculator.sdisableFields == 1" [(ngModel)]="brainCalculator.tempPtSurf">
               </td>
               <td align="center">
-                <input type="text" name="TempPtIn" id="TempPtIn" style="width:80px;" [(ngModel)]="brainCalculator.tempPtIn">
+                <input type="text" class="form-control form-control-sm" style="width:80px;" name="TempPtIn" id="TempPtIn"  
+                [disabled]="brainCalculator.sdisableFields == 1" [(ngModel)]="brainCalculator.tempPtIn">
               </td>
               <td align="center">
-                <input type="text" name="TempPtBot" id="TempPtBot" style="width:80px;" [(ngModel)]="brainCalculator.tempPtBot">
+                <input type="text" class="form-control form-control-sm" style="width:80px;" name="TempPtBot" id="TempPtBot" 
+                [disabled]="brainCalculator.sdisableFields == 1"  [(ngModel)]="brainCalculator.tempPtBot">
               </td>
               <td align="center">
-                <input type="text" name="TempPtAvg" id="TempPtAvg" style="width:80px;" [(ngModel)]="brainCalculator.tempPtAvg">
+                <input type="text" class="form-control form-control-sm" style="width:80px;" name="TempPtAvg" id="TempPtAvg" 
+                [disabled]="brainCalculator.sdisableFields == 1"  [(ngModel)]="brainCalculator.tempPtAvg">
               </td>
             </tr>
           </table>
@@ -400,64 +452,115 @@
             </tr>
             <tr>
               <td align="center">
-                1
-                <select name="select1" id="select1" style="width:100px;" [(ngModel)]="brainCalculator.seValue1">
-                  <option *ngFor="let select of brainCalculator.select1" [selected]="select.selected" [value]="select.label">
-                    {{ select.value }}
-                  </option>
-                </select>
-                <br> 2
-                <select name="select2" id="select2" style="width:100px;" [(ngModel)]="brainCalculator.seValue2">
-                  <option *ngFor="let select of brainCalculator.select2" [selected]="select.selected" [value]="select.label">
-                    {{ select.value }}
-                  </option>
-                </select>
-                <br> 3
-                <select name="select3" id="select3" style="width:100px;" [(ngModel)]="brainCalculator.seValue3">
-                  <option *ngFor="let select of brainCalculator.select3" [selected]="select.selected" [value]="select.label">
-                    {{ select.value }}
-                  </option>
-                </select>
+                <div class="row">
+                  <div class="col-md-2">
+                    1
+                  </div>
+                  <div class="col-md-10">
+                    <select name="select1" class="form-control form-control-sm" id="select1"  [(ngModel)]="brainCalculator.seValue1" 
+                    [disabled]="brainCalculator.sdisableFields == 1">
+                      <option *ngFor="let select of brainCalculator.select1" [selected]="select.selected" [value]="select.label">
+                        {{ select.value }}
+                      </option>
+                    </select>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-2">2</div>
+                  <div class="col-md-10">
+                    <select name="select2" class="form-control form-control-sm" id="select2"   [(ngModel)]="brainCalculator.seValue2"
+                    [disabled]="brainCalculator.sdisableFields == 1">
+                      <option *ngFor="let select of brainCalculator.select2" [selected]="select.selected" [value]="select.label">
+                        {{ select.value }}
+                      </option>
+                    </select>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-2">3</div>
+                  <div class="col-md-10">
+                    <select name="select3" class="form-control form-control-sm" id="select3"   [(ngModel)]="brainCalculator.seValue3"
+                    [disabled]="brainCalculator.sdisableFields == 1">
+                      <option *ngFor="let select of brainCalculator.select3" [selected]="select.selected" [value]="select.label">
+                        {{ select.value }}
+                      </option>
+                    </select>
+                  </div>
+                </div>
               </td>
               <td align="center">
-                1
-                <select name="select4" id="select4" style="width:100px;" [(ngModel)]="brainCalculator.seValue4">
-                  <option *ngFor="let select of brainCalculator.select4" [selected]="select.selected" [value]="select.label">
-                    {{ select.value }}
-                  </option>
-                </select>
-                <br> 2
-                <select name="select5" id="select5" style="width:100px;" [(ngModel)]="brainCalculator.seValue5">
-                  <option *ngFor="let select of brainCalculator.select5" [selected]="select.selected" [value]="select.label">
-                    {{ select.value }}
-                  </option>
-                </select>
-                <br> 3
-                <select name="select6" id="select6" style="width:100px;" [(ngModel)]="brainCalculator.seValue6">
-                  <option *ngFor="let select of brainCalculator.select6" [selected]="select.selected" [value]="select.label">
-                    {{ select.value }}
-                  </option>
-                </select>
+                <div class="row">
+                  <div class="col-md-2">
+                    1
+                  </div>
+                  <div class="col-md-10">
+                    <select name="select4" class="form-control form-control-sm" id="select4"   [(ngModel)]="brainCalculator.seValue4"
+                    [disabled]="brainCalculator.sdisableFields == 1">
+                      <option *ngFor="let select of brainCalculator.select4" [selected]="select.selected" [value]="select.label">
+                        {{ select.value }}
+                      </option>
+                    </select>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-2">2</div>
+                  <div class="col-md-10">
+                    <select name="select5" class="form-control form-control-sm" id="select5"   [(ngModel)]="brainCalculator.seValue5"
+                    [disabled]="brainCalculator.sdisableFields == 1">
+                      <option *ngFor="let select of brainCalculator.select5" [selected]="select.selected" [value]="select.label">
+                        {{ select.value }}
+                      </option>
+                    </select>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-2">3</div>
+                  <div class="col-md-10">
+                    <select name="select6"  class="form-control form-control-sm" id="select6"  [(ngModel)]="brainCalculator.seValue6"
+                    [disabled]="brainCalculator.sdisableFields == 1">
+                      <option *ngFor="let select of brainCalculator.select6" [selected]="select.selected" [value]="select.label">
+                        {{ select.value }}
+                      </option>
+                    </select>
+                  </div>
+                </div>
               </td>
               <td align="center">
-                1
-                <select name="select7" id="select7" style="width:100px;" [(ngModel)]="brainCalculator.seValue7">
-                  <option *ngFor="let select of brainCalculator.select7" [selected]="select.selected" [value]="select.label">
-                    {{ select.value }}
-                  </option>
-                </select>
-                <br> 2
-                <select name="select8" id="select8" style="width:100px;" [(ngModel)]="brainCalculator.seValue8">
-                  <option *ngFor="let select of brainCalculator.select8" [selected]="select.selected" [value]="select.label">
-                    {{ select.value }}
-                  </option>
-                </select>
-                <br> 3
-                <select name="select9" id="select9" style="width:100px;" [(ngModel)]="brainCalculator.seValue9">
-                  <option *ngFor="let select of brainCalculator.select9" [selected]="select.selected" [value]="select.label">
-                    {{ select.value }}
-                  </option>
-                </select>
+                <div class="row">
+                  <div class="col-md-2">
+                    1
+                  </div>
+                  <div class="col-md-10">
+                    <select name="select7" class="form-control form-control-sm" id="select7"  [(ngModel)]="brainCalculator.seValue7"
+                    [disabled]="brainCalculator.sdisableFields == 1">
+                      <option *ngFor="let select of brainCalculator.select7" [selected]="select.selected" [value]="select.label">
+                        {{ select.value }}
+                      </option>
+                    </select>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-2">2</div>
+                  <div class="col-md-10">
+                    <select name="select8" class="form-control form-control-sm" id="select8"  [(ngModel)]="brainCalculator.seValue8"
+                    [disabled]="brainCalculator.sdisableFields == 1">
+                      <option *ngFor="let select of brainCalculator.select8" [selected]="select.selected" [value]="select.label">
+                        {{ select.value }}
+                      </option>
+                    </select>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-2">3</div>
+                  <div class="col-md-10">
+                    <select name="select9" class="form-control form-control-sm" id="select9"   [(ngModel)]="brainCalculator.seValue9"
+                    [disabled]="brainCalculator.sdisableFields == 1">
+                      <option *ngFor="let select of brainCalculator.select9" [selected]="select.selected" [value]="select.label">
+                        {{ select.value }}
+                      </option>
+                    </select>
+                  </div>
+                </div>                
               </td>
             </tr>
           </table>
@@ -514,28 +617,33 @@
                 <th style="text-align:center">{{ 'Coef.of relaxation' | translate }}</th>
                 <th style="text-align:center">{{ 'Precision of numerical modelling(%)' | translate }}</th>
                 <th style="text-align:center" colspan="4">{{ 'Temperature to stop' | translate }}
-                  <br>(°C)</th>
+                  <br>({{ temperatureSymbol }})</th>
               </tr>
               <tr>
                 <td style="vertical-align:middle">{{ 'Horizontal' | translate }}</td>
                 <td>
                   <label class="custom-control custom-radio" style="margin: 0px 0px 0px 0px;">
-                    <input type="radio" class="custom-control-input" name="Hradiobutton" [checked]="brainCalculator.hRadioOn == 1">{{ 'Yes' | translate }}
+                    <input type="radio" class="custom-control-input" name="Hradiobutton" [checked]="brainCalculator.hRadioOn == 1"
+                    [disabled]="brainCalculator.sdisableFields == 1">{{ 'Yes' | translate }}
                     <span class="custom-control-indicator"></span>
                   </label>
                   <label class="custom-control custom-radio" style="margin: 0px 0px 0px 0px;">
-                    <input type="radio" class="custom-control-input" name="Hradiobutton" [checked]="brainCalculator.hRadioOn != 1">{{ 'No' | translate }}
+                    <input type="radio" class="custom-control-input" name="Hradiobutton" [checked]="brainCalculator.hRadioOn != 1"
+                    [disabled]="brainCalculator.sdisableFields == 1">{{ 'No' | translate }}
                     <span class="custom-control-indicator"></span>
                   </label>
                 </td>
                 <td rowspan="2" style="vertical-align:middle">
-                  <input type="text" name="MaxIter" id="maxIter" style="width:80px; margin-top:20px;" [(ngModel)]="brainCalculator.maxIter">
+                  <input type="text" name="MaxIter" id="maxIter" class="form-control form-control-sm" style="width:80px; margin-top:20px;" 
+                  [(ngModel)]="brainCalculator.maxIter" [disabled]="brainCalculator.sdisableFields == 1">
                 </td>
                 <td style="vertical-align:middle" rowspan="2">
-                  <input type="text" name="RelaxCoef" id="relaxCoef" style="width:80px; margin-top:20px;" [(ngModel)]="brainCalculator.relaxCoef">
+                  <input type="text" name="RelaxCoef" id="relaxCoef" class="form-control form-control-sm" style="width:80px; margin-top:20px;" 
+                  [(ngModel)]="brainCalculator.relaxCoef" [disabled]="brainCalculator.sdisableFields == 1">
                 </td>
                 <td style="vertical-align:middle" rowspan="2" align="center">
-                  <input type="text" name="Precision" id="" style="width:80px; margin-top:20px;" [(ngModel)]="brainCalculator.precision">
+                  <input type="text" name="Precision" id="" class="form-control form-control-sm" style="width:80px; margin-top:20px;" 
+                  [(ngModel)]="brainCalculator.precision" [disabled]="brainCalculator.sdisableFields == 1">
                 </td>
                 <td style="vertical-align:middle" align="center">{{ 'Surface' | translate }}</td>
                 <td style="vertical-align:middle" align="center">{{ 'Internal' | translate }}</td>
@@ -546,25 +654,31 @@
                 <td style="vertical-align:middle">{{ 'Vertical' | translate }}</td>
                 <td>
                   <label class="custom-control custom-radio" style="margin: 0px 0px 0px 0px;">
-                    <input type="radio" class="custom-control-input" name="Vradiobutton" [checked]="brainCalculator.vRadioOn == 1">{{ 'Yes' | translate }}
+                    <input type="radio" class="custom-control-input" name="Vradiobutton" [checked]="brainCalculator.vRadioOn == 1"
+                    [disabled]="brainCalculator.sdisableFields == 1">{{ 'Yes' | translate }}
                     <span class="custom-control-indicator"></span>
                   </label>
                   <label class="custom-control custom-radio" style="margin: 0px 0px 0px 0px;">
-                    <input type="radio" class="custom-control-input" name="Vradiobutton" [checked]="brainCalculator.vRadioOn != 1">{{ 'No' | translate }}
+                    <input type="radio" class="custom-control-input" name="Vradiobutton" [checked]="brainCalculator.vRadioOn != 1"
+                    [disabled]="brainCalculator.sdisableFields == 1">{{ 'No' | translate }}
                     <span class="custom-control-indicator"></span>
                   </label>
                 </td>
                 <td style="vertical-align:middle">
-                  <input type="text" name="TempPtSurf" id="" style="width:80px;" [(ngModel)]="brainCalculator.tempPtSurf">
+                  <input type="text" name="TempPtSurf" class="form-control form-control-sm" id="" style="width:80px;" [(ngModel)]="brainCalculator.tempPtSurf"
+                  [disabled]="brainCalculator.sdisableFields == 1">
                 </td>
                 <td style="vertical-align:middle">
-                  <input type="text" name="TempPtIn" id="" style="width:80px;" [(ngModel)]="brainCalculator.tempPtIn">
+                  <input type="text" name="TempPtIn" class="form-control form-control-sm" id="" style="width:80px;" [(ngModel)]="brainCalculator.tempPtIn"
+                  [disabled]="brainCalculator.sdisableFields == 1">
                 </td>
                 <td style="vertical-align:middle">
-                  <input type="text" name="TempPtBot" id="" style="width:80px;" [(ngModel)]="brainCalculator.tempPtBot">
+                  <input type="text" name="TempPtBot" class="form-control form-control-sm" id="" style="width:80px;" [(ngModel)]="brainCalculator.tempPtBot"
+                  [disabled]="brainCalculator.sdisableFields == 1">
                 </td>
                 <td style="vertical-align:middle">
-                  <input type="text" name="TempPtAvg" id="" style="width:80px;" [(ngModel)]="brainCalculator.tempPtAvg">
+                  <input type="text" name="TempPtAvg" class="form-control form-control-sm" id="" style="width:80px;" [(ngModel)]="brainCalculator.tempPtAvg"
+                  [disabled]="brainCalculator.sdisableFields == 1">
                 </td>
               </tr>
             </table>
@@ -574,24 +688,27 @@
                 <table class="table table-bordered table-sm">
                   <tr>
                     <th style="text-align:center">{{ 'Precision log step' | translate }}</th>
-                    <th style="text-align:center">{{ 'Storage step(s)' | translate }}</th>
-                    <th style="text-align:center">{{ 'Time Step(s)' | translate }}</th>
+                    <th style="text-align:center">{{ 'Storage step' | translate }} ({{ timeSymbol }})</th>
+                    <th style="text-align:center">{{ 'Time Step ' | translate }} ({{ timeSymbol }})</th>
                   </tr>
                   <tr>
                     <td align="center">
-                      <input type="text" name="precisionlog" id="" style="width:80px;height:30px;" [(ngModel)]="brainCalculator.precisionlogstep">
+                      <input type="text" name="precisionlog" class="form-control form-control-sm" id="" style="width:80px;height:30px;"
+                       [(ngModel)]="brainCalculator.precisionlogstep" [disabled]="brainCalculator.sdisableFields == 1">
                     </td>
                     <td align="center">
-                      <input type="text" name="storagestep" id="" style="width:80px;height:30px;" [(ngModel)]="brainCalculator.storagestep">
+                      <input type="text" name="storagestep" class="form-control form-control-sm" id="" style="width:80px;height:30px;"
+                       [(ngModel)]="brainCalculator.storagestep" [disabled]="brainCalculator.sdisableFields == 1">
                     </td>
                     <td align="center">
-                      <input type="text" name="timestep" id="" style="width:80px;height:30px;" [(ngModel)]="brainCalculator.timeStep">
+                      <input type="text" name="timestep" class="form-control form-control-sm" id="" style="width:80px;height:30px;"
+                       [(ngModel)]="brainCalculator.timeStep" [disabled]="brainCalculator.sdisableFields == 1">
                     </td>
                   </tr>
                 </table>
               </div>
               <div class="col-md-6">
-                <strong>{{ 'Following-up Point (mm)' | translate }}</strong>
+                <strong>{{ 'Following-up Point ' | translate }} ({{ meshesSymbol }})</strong>
                 <table class="table table-bordered table-sm">
                   <tr>
                     <th style="text-align:center">{{ 'Surface' | translate }}</th>
@@ -600,70 +717,112 @@
                   </tr>
                   <tr>
                     <td align="center">
-                      1
-                      <select name="select1" id="select1" style="width:100px;" [(ngModel)]="brainCalculator.seValue1">
-                        <option *ngFor="let select of brainCalculator.select1" [selected]="select.selected" [value]="select.label">
-                          {{ select.value }}
-                        </option>
-                      </select>
-                      <br> 
-                      2
-                      <select name="select2" id="select2" style="width:100px;" [(ngModel)]="brainCalculator.seValue2">
-                        <option *ngFor="let select of brainCalculator.select2" [selected]="select.selected" [value]="select.label">
-                          {{ select.value }}
-                        </option>
-                      </select>
-                      <br> 
-                      3
-                      <select name="select3" id="select3" style="width:100px;" [(ngModel)]="brainCalculator.seValue3">
-                        <option *ngFor="let select of brainCalculator.select3" [selected]="select.selected" [value]="select.label">
-                          {{ select.value }}
-                        </option>
-                      </select>
+                      <div class="row">
+                        <div class="col-md-2">1 </div>
+                        <div class="col-md-9">
+                          <select name="select1" id="select1" class="form-control form-control-sm" [(ngModel)]="brainCalculator.seValue1"
+                          [disabled]="brainCalculator.sdisableFields == 1">
+                            <option *ngFor="let select of brainCalculator.select1" [selected]="select.selected" [value]="select.label">
+                              {{ select.value }}
+                            </option>
+                          </select>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-2">2</div>
+                        <div class="col-md-9">
+                          <select name="select2" id="select2" class="form-control form-control-sm" [(ngModel)]="brainCalculator.seValue2"
+                          [disabled]="brainCalculator.sdisableFields == 1">
+                            <option *ngFor="let select of brainCalculator.select2" [selected]="select.selected" [value]="select.label"
+                            [disabled]="brainCalculator.sdisableFields == 1">
+                              {{ select.value }}
+                            </option>
+                          </select>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-2">3</div>
+                        <div class="col-md-9">
+                          <select name="select3" id="select3" class="form-control form-control-sm" [(ngModel)]="brainCalculator.seValue3"
+                          [disabled]="brainCalculator.sdisableFields == 1">
+                            <option *ngFor="let select of brainCalculator.select3" [selected]="select.selected" [value]="select.label">
+                              {{ select.value }}
+                            </option>
+                          </select>
+                        </div>
+                      </div>
                     </td>
                     <td align="center">
-                      1
-                      <select name="select4" id="select4" style="width:100px;" [(ngModel)]="brainCalculator.seValue4">
-                        <option *ngFor="let select of brainCalculator.select4" [selected]="select.selected" [value]="select.label">
-                          {{ select.value }}
-                        </option>
-                      </select>
-                      <br> 
-                      2
-                      <select name="select5" id="select5" style="width:100px;" [(ngModel)]="brainCalculator.seValue5">
-                        <option *ngFor="let select of brainCalculator.select5" [selected]="select.selected" [value]="select.label">
-                          {{ select.value }}
-                        </option>
-                      </select>
-                      <br> 
-                      3
-                      <select name="select6" id="select6" style="width:100px;" [(ngModel)]="brainCalculator.seValue6">
-                        <option *ngFor="let select of brainCalculator.select6" [selected]="select.selected" [value]="select.label">
-                          {{ select.value }}
-                        </option>
-                      </select>
+                      <div class="row">
+                        <div class="col-md-2">1</div>
+                        <div class="col-md-9">
+                          <select name="select4" id="select4" class="form-control form-control-sm" [(ngModel)]="brainCalculator.seValue4"
+                          [disabled]="brainCalculator.sdisableFields == 1">
+                            <option *ngFor="let select of brainCalculator.select4" [selected]="select.selected" [value]="select.label">
+                              {{ select.value }}
+                            </option>
+                          </select>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-2">2</div>
+                        <div class="col-md-9">
+                          <select name="select5" id="select5" class="form-control form-control-sm" [(ngModel)]="brainCalculator.seValue5"
+                          [disabled]="brainCalculator.sdisableFields == 1">
+                            <option *ngFor="let select of brainCalculator.select5" [selected]="select.selected" [value]="select.label">
+                              {{ select.value }}
+                            </option>
+                          </select>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-2">
+                          3
+                        </div>
+                        <div class="col-md-9">
+                          <select name="select6" id="select6" class="form-control form-control-sm" [(ngModel)]="brainCalculator.seValue6"
+                          [disabled]="brainCalculator.sdisableFields == 1">
+                            <option *ngFor="let select of brainCalculator.select6" [selected]="select.selected" [value]="select.label">
+                              {{ select.value }}
+                            </option>
+                          </select>
+                        </div>
+                      </div>
                     </td>
                     <td align="center">
-                      1
-                      <select name="select7" id="select7" style="width:100px;" [(ngModel)]="brainCalculator.seValue7">
-                        <option *ngFor="let select of brainCalculator.select7" [selected]="select.selected" [value]="select.label">
-                          {{ select.value }}
-                        </option>
-                      </select>
-                      <br> 
-                      2
-                      <select name="select8" id="select8" style="width:100px;" [(ngModel)]="brainCalculator.seValue8">
-                        <option *ngFor="let select of brainCalculator.select8" [selected]="select.selected" [value]="select.label">
-                          {{ select.value }}
-                        </option>
-                      </select>
-                      <br> 
-                      3
-                      <select name="select9" id="select9" style="width:100px;" [(ngModel)]="brainCalculator.seValue9">
-                        <option *ngFor="let select of brainCalculator.select9" [selected]="select.selected" [value]="select.label">
-                          {{ select.value }}
-                        </option>
-                      </select>
+                      <div class="row">
+                        <div class="col-md-2">1</div>
+                        <div class="col-md-9">
+                          <select name="select7" id="select7" class="form-control form-control-sm" [(ngModel)]="brainCalculator.seValue7"
+                          [disabled]="brainCalculator.sdisableFields == 1">
+                            <option *ngFor="let select of brainCalculator.select7" [selected]="select.selected" [value]="select.label">
+                              {{ select.value }}
+                            </option>
+                          </select>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-2">2</div>
+                        <div class="col-md-9">
+                          <select name="select8" id="select8" class="form-control form-control-sm" [(ngModel)]="brainCalculator.seValue8"
+                          [disabled]="brainCalculator.sdisableFields == 1">
+                            <option *ngFor="let select of brainCalculator.select8" [selected]="select.selected" [value]="select.label">
+                              {{ select.value }}
+                            </option>
+                          </select>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-2">3</div>
+                        <div class="col-md-9">
+                          <select name="select9" id="select9" class="form-control form-control-sm" [(ngModel)]="brainCalculator.seValue9"
+                          [disabled]="brainCalculator.sdisableFields == 1">
+                            <option *ngFor="let select of brainCalculator.select9" [selected]="select.selected" [value]="select.label">
+                              {{ select.value }}
+                            </option>
+                          </select>
+                        </div>
+                      </div>
                     </td>
                   </tr>
                 </table>
@@ -672,9 +831,9 @@
           </div>
           <div align="center">
             <button class="btn btn-secondary btn-lg" (click)="brainCalculate.hide()">{{ 'Cancel' | translate }}</button>
-            <button class="btn btn-primary btn-lg" (click)="calculWithoutOpti.show();brainCalculate.hide();startBrainEstimationCalculate();"
+            <button class="btn btn-primary btn-lg" (click)="checkStartCalculationParameters(1);"
              [disabled]="brainCalculator.ID_USER_STUDY != brainCalculator.ID_USER_CURRENT">{{ 'Calculate without optimization' | translate }}</button>
-            <button class="btn btn-primary btn-lg" (click)="calculWithOpti.show();brainCalculate.hide();saveCalculOptim();loadBrainOptim();"
+            <button class="btn btn-primary btn-lg" (click)="checkStartCalculationParameters(2);"
              [disabled]="brainCalculator.ID_USER_STUDY != brainCalculator.ID_USER_CURRENT">{{ 'Calculate with optimization' | translate }}</button>
             <button class="btn btn-secondary btn-lg" (click)="hideSetting()">
               <i class="icon-settings"></i>&nbsp; {{ 'Setting' | translate }}</button>

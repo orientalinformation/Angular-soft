@@ -6,7 +6,7 @@ import { Router } from '@angular/router';
 import swal from 'sweetalert2';
 import { ToastrService } from 'ngx-toastr';
 import { TextService } from '../../shared/text.service';
-import { ApiService } from '../../api/services';
+import { ApiService, MinmaxService, ProfileService } from '../../api/services';
 
 @Component({
   selector: 'app-signin',
@@ -16,8 +16,9 @@ import { ApiService } from '../../api/services';
 export class SigninComponent implements OnInit {
   user: Login = new Login();
 
-  constructor(private auth: AuthenticationService, private api: ApiService,
-    private router: Router, private toastr: ToastrService, private text: TextService) { }
+  constructor(private auth: AuthenticationService, private api: ApiService, private router: Router,
+    private toastr: ToastrService, private text: TextService, private minmaxService: MinmaxService,
+    private profileService: ProfileService) { }
 
   ngOnInit() {
   }
@@ -31,6 +32,18 @@ export class SigninComponent implements OnInit {
           this.api.getColorDefs().subscribe(
             (resp) => {
               localStorage.setItem('colors', JSON.stringify(resp));
+            }
+          );
+          this.minmaxService.getMinMax().subscribe(
+            (res) => {
+              localStorage.setItem('MinMax', JSON.stringify(res));
+            }
+          );
+          const userLogon = JSON.parse(localStorage.getItem('user'));
+          this.profileService.getUnits(userLogon.ID_USER).subscribe(
+            (res) => {
+              console.log(res);
+              localStorage.setItem('UnitUser', JSON.stringify(res));
             }
           );
           this.router.navigate(['/']);

@@ -7,7 +7,7 @@ import { ObjectivesComponent } from './objectives/objectives.component';
 import { ProductComponent, CompFilterPipe } from './product/product.component';
 import { InitialComponent } from './initial/initial.component';
 import { PackingComponent } from './packing/packing.component';
-import { EquipmentComponent } from './equipment/equipment.component';
+import { EquipmentComponent, FilterPipe } from './equipment/equipment.component';
 import { LineComponent } from './line/line.component';
 import { StudyRequiredGuard } from '../../guards/study-required.guard';
 import { LayoutComponent } from './layout/layout.component';
@@ -41,6 +41,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     ObjectivesComponent, ProductComponent, InitialComponent,
     PackingComponent, EquipmentComponent, LineComponent, LayoutComponent,
     CompFilterPipe,
+    FilterPipe,
     ChainingComponent
   ],
   providers: [

@@ -158,52 +158,87 @@
               <strong >{{'Selection criteria'|translate}}</strong>
             </div>
             <div class="card-body">
-              <div class="row">
-                <div class="col-4"> <p>{{'Type of Refrigeration'|translate}}</p></div>
+              <div class="row form-group">
+                <div class="col-4">{{'Type of Refrigeration'|translate}}</div>
                 <div class="col-8">
-                    <ng-select class="bootstrap" [allowClear]="true" name="energy" ></ng-select>
+                  <select class="form-control" [(ngModel)]="energySelected" (change)="select_energy()">
+                    <option [value]="-1">{{ 'All'|translate }}</option>
+                    <option *ngFor="let energy of energies" [value]="energy.ID_COOLING_FAMILY">
+                      {{ energy.LABEL }}
+                    </option>
+                  </select>
                 </div>
               </div>
               
-              <div class="row">
-                <div class="col-4"> <p>{{'Manufacturer'|translate}}</p></div>
+              <div class="row form-group">
+                <div class="col-4">{{'Manufacturer'|translate}}</div>
                 <div class="col-8">
-                    <ng-select class="bootstrap" [allowClear]="true" name="manufacturer"></ng-select>
+                  <select class="form-control" [(ngModel)]="manufacturerSelected" (change)="select_manufacturer()">
+                    <option value="">{{ 'All'|translate }}</option>
+                    <option *ngFor="let item of manufacturer; let i = index" [value]="item.CONSTRUCTOR">
+                      {{ item.CONSTRUCTOR }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="row form-group">
+                <div class="col-4">{{'Equipment Series'|translate}}</div>
+                <div class="col-8">
+                  <select class="form-control" [(ngModel)]="familySelected" (change)="select_family()">
+                    <option [value]="-1">{{ 'All'|translate }}</option>
+                    <option *ngFor="let family of families; let i = index" [value]="family.ID_FAMILY">
+                      {{ family.LABEL }}
+                    </option>
+                  </select>
                 </div>
               </div>
             
-              <div class="row">
-                <div class="col-4"> <p>{{'Equipment Series'|translate}}</p></div>
+              <div class="row form-group">
+                <div class="col-4">{{'Equipment origin'|translate}}</div>
                 <div class="col-8">
-                    <ng-select class="bootstrap" [allowClear]="true" name="family"></ng-select>
+                  <select class="form-control" [(ngModel)]="originSelected" (change)="select_origin()">
+                    <option [value]="-1">{{ 'All'|translate }}</option>
+                    <option *ngFor="let origin of origins; let i = index" [value]="origin.STD">
+                      {{ origin.LABEL }}
+                    </option>
+                  </select>
                 </div>
               </div>
             
-              <div class="row">
-                <div class="col-4"> <p>{{'Equipment origin'|translate}}</p></div>
+              <div class="row form-group">
+                <div class="col-4">{{'Process type'|translate}}</div>
                 <div class="col-8">
-                    <ng-select class="bootstrap" [allowClear]="true" name="equip-origin" ></ng-select>
+                  <select class="form-control" [(ngModel)]="processSelected" (change)="select_process_type()">
+                    <option [value]="-1">{{ 'All'|translate }}</option>
+                    <option *ngFor="let process of processes; let i = index" [value]="process.BATCH_PROCESS">
+                      {{ process.LABEL }}
+                    </option>
+                  </select>
                 </div>
               </div>
             
-              <div class="row">
-                <div class="col-4"> <p>{{'Process type'|translate}}</p></div>
+              <div class="row form-group">
+                <div class="col-4">{{'Model'|translate}}</div>
                 <div class="col-8">
-                    <ng-select class="bootstrap" [allowClear]="true" name="processType" ></ng-select>
+                  <select class="form-control" [(ngModel)]="seriesSelected" (change)="select_model()">
+                    <option [value]="-1">{{ 'All'|translate }}</option>
+                    <option *ngFor="let seri of series; let i = index" [value]="seri.ID_EQUIPSERIES">
+                      {{ seri.LABEL }}
+                    </option>
+                  </select>
                 </div>
               </div>
             
-              <div class="row">
-                <div class="col-4"> <p>{{'Model'|translate}}</p></div>
+              <div class="row form-group">
+                <div class="col-4" *ngIf="symbol">{{'Size'|translate}} ({{symbol.equipDimensionSymbol}})</div>
                 <div class="col-8">
-                    <ng-select class="bootstrap" [allowClear]="true" name="model" ></ng-select>
-                </div>
-              </div>
-            
-              <div class="row">
-                <div class="col-4"> <p *ngIf="symbol">{{'Size'|translate}} ({{symbol.equipDimensionSymbol}})</p></div>
-                <div class="col-8">
-                    <ng-select class="bootstrap" [allowClear]="true" name="size" ></ng-select>
+                  <select class="form-control" [(ngModel)]="dimensionSelected" (change)="select_size()">
+                    <option value="">{{ 'All'|translate }}</option>
+                    <option *ngFor="let dimension of dimensions; let i = index" value="{{ dimension.EQP_LENGTH }}x{{ dimension.EQP_WIDTH }}">
+                      {{ dimension.DISPLAY_LENGTH }} x {{ dimension.DISPLAY_WIDTH }}
+                    </option>
+                  </select>
                 </div>
               </div>
             </div>
@@ -220,9 +255,9 @@
                 </div>
               </div>
             </div>
-            <perfect-scrollbar style="max-height:300px;">
+            <perfect-scrollbar style="max-height:380px;">
               <div class="list-group" name="add" >
-                <a class="list-group-item list-group-item-action" *ngFor="let equip of equipments"
+                <a class="list-group-item list-group-item-action" *ngFor="let equip of (equipments | filter: filterString)"
                   style="height:30px; padding: 5px 10px;"  name="eid" id="eid" (click)="onSelectAddingEquipment(equip)"
                   [ngClass]="equip == selectedAddingEquipment? 'active' : ''">
                     {{equip.EQUIP_NAME}} - {{equip.EQUIP_VERSION}} 
@@ -295,7 +330,7 @@
         <table class="table  table-bordered table-sm"  >
           <thead>
             <tr *ngIf="symbol">
-              <td align="center" *ngIf="equipment.ORIENTATION == 1;else equipTitle;"><strong>Width of Spaces. ({{symbol.shelvesWidthSymbol}})</strong></td>
+              <td align="center" *ngIf="equipment.ORIENTATION == 0;else equipTitle;"><strong>Width of Spaces. ({{symbol.shelvesWidthSymbol}})</strong></td>
               <ng-template #equipTitle>
               <td align="center"><strong>Side remaining interval ({{symbol.shelvesWidthSymbol}})</strong></td>
               </ng-template>

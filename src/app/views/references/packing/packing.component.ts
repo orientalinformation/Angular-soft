@@ -2,13 +2,15 @@ import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { ViewChild } from '@angular/core';
 import { ModalDirective } from 'ngx-bootstrap/modal/modal.directive';
 import { ReferencedataService } from '../../../api/services/referencedata.service';
-import { PackingElmt, ViewPackingElmt, User } from '../../../api/models';
+import { PackingElmt, ViewPackingElmt, User, Units } from '../../../api/models';
 import { Router } from '@angular/router';
 
 import { ToastrService } from 'ngx-toastr';
 import swal from 'sweetalert2';
 import { Pipe } from '@angular/core';
 import { PipeTransform } from '@angular/core';
+import { isNullOrUndefined } from 'util';
+import { isNumber } from '@ng-bootstrap/ng-bootstrap/util/util';
 
 @Pipe({ name: 'packingElmtFilter' })
 export class PackingElmtFilterPipe implements PipeTransform {
@@ -51,6 +53,8 @@ export class PackingComponent implements OnInit, AfterViewInit {
   };
   public checkHideInfo = false;
   public checkActivePacking = 0;
+  public listUnits: Array<Units>;
+  public conductivitySymbol = '';
 
   constructor(private referencedata: ReferencedataService, private toastr: ToastrService, private router: Router) {
     this.newPackingElmt = new PackingElmt();
@@ -61,6 +65,18 @@ export class PackingComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
     this.isLoading = true;
+    this.listUnits = JSON.parse(localStorage.getItem('UnitUser'));
+
+    if (this.listUnits) {
+
+      for (let i = 0; i < this.listUnits.length; i++) {
+
+
+        if (Number(this.listUnits[i].TYPE_UNIT) === 10) {
+          this.conductivitySymbol = this.listUnits[i].SYMBOL;
+        }
+      }
+    }
   }
 
   ngAfterViewInit() {
@@ -103,37 +119,6 @@ export class PackingComponent implements OnInit, AfterViewInit {
   }
 
   newPacking() {
-    if (!this.newPackingElmt.LABEL || this.newPackingElmt.LABEL === undefined) {
-      swal('Oops..', 'Please specify name!', 'warning');
-      return;
-    }
-    if (typeof this.newPackingElmt.LABEL === 'number') {
-      swal('Oops..', 'Not a valid string in Name !', 'warning');
-      return;
-    }
-    if (!this.newPackingElmt.PACKING_VERSION) {
-      swal('Oops..', 'Please specify version!', 'warning');
-      return;
-    }
-    if (isNaN(this.newPackingElmt.PACKING_VERSION)) {
-      swal('Oops..', 'Not a valid number in Version !', 'warning');
-      return;
-    }
-    if (!this.newPackingElmt.PACKINGCOND) {
-      swal('Oops..', 'Please specify Lambda thermal conductivity!', 'warning');
-      return;
-    }
-    if (isNaN(this.newPackingElmt.PACKINGCOND)) {
-      swal('Oops..', 'Not a valid number in Lambda thermal conductivity !', 'warning');
-      return;
-    }
-    if (!this.newPackingElmt.PACKING_RELEASE) {
-      swal('Oops..', 'Please choose status !', 'warning');
-      return;
-    }
-    if (!this.newPackingElmt.PACKING_COMMENT) {
-      this.newPackingElmt.PACKING_COMMENT = '';
-    }
     this.isAddPacking = true;
     this.referencedata.newPacking(this.newPackingElmt).subscribe(
       response => {
@@ -143,7 +128,7 @@ export class PackingComponent implements OnInit, AfterViewInit {
         }
 
         if (response === 0) {
-          swal('Oops..', 'Name and version already in use!', 'error');
+          this.toastr.error('Name and version already in use', 'Error');
         } else {
           if (success) {
             localStorage.setItem('packingCurr', JSON.stringify(response));
@@ -154,7 +139,7 @@ export class PackingComponent implements OnInit, AfterViewInit {
             this.refrestListPackingElmt();
             this.newPackingElmt = new PackingElmt();
           } else {
-            swal('Oops..', 'Create packing error!', 'error');
+            this.toastr.error('Create packing error', 'Error');
           }
         }
 
@@ -212,47 +197,15 @@ export class PackingComponent implements OnInit, AfterViewInit {
     });
   }
 
-  updatePacking (packing) {
-    if (!packing.LABEL || packing.LABEL === undefined) {
-      swal('Oops..', 'Please specify name!', 'warning');
-      return;
-    }
-    if (typeof packing.LABEL === 'number') {
-      swal('Oops..', 'Not a valid string in Name !', 'warning');
-      return;
-    }
-    if (!packing.PACKING_VERSION) {
-      swal('Oops..', 'Please specify version!', 'warning');
-      return;
-    }
-    if (isNaN(packing.PACKING_VERSION)) {
-      swal('Oops..', 'Not a valid number in Version !', 'warning');
-      return;
-    }
-    if (!packing.PACKINGCOND) {
-      swal('Oops..', 'Please specify Lambda thermal conductivity!', 'warning');
-      return;
-    }
-    if (isNaN(packing.PACKINGCOND)) {
-      swal('Oops..', 'Not a valid number in Lambda thermal conductivity !', 'warning');
-      return;
-    }
-    if (!packing.PACKING_RELEASE) {
-      swal('Oops..', 'Please choose status !', 'warning');
-      return;
-    }
-    if (!packing.PACKING_RELEASE) {
-      packing.PACKING_RELEASE = '';
-    }
-
+  updatePacking () {
     this.isUpdatePacking = true;
     this.referencedata.updatePacking({
       ID_PACKING_ELMT: this.selectPackingElmt.ID_PACKING_ELMT,
-      LABEL: packing.LABEL,
-      PACKING_VERSION: packing.PACKING_VERSION,
-      PACKINGCOND: packing.PACKINGCOND,
-      PACKING_COMMENT: packing.PACKING_COMMENT,
-      PACKING_RELEASE: packing.PACKING_RELEASE
+      LABEL: this.updatePackingElmt.LABEL,
+      PACKING_VERSION: this.updatePackingElmt.PACKING_VERSION,
+      PACKINGCOND: this.updatePackingElmt.PACKINGCOND,
+      PACKING_COMMENT: this.updatePackingElmt.PACKING_COMMENT,
+      PACKING_RELEASE: this.updatePackingElmt.PACKING_RELEASE
     }).subscribe(
       response => {
         let success = true;
@@ -262,17 +215,17 @@ export class PackingComponent implements OnInit, AfterViewInit {
         }
 
         if (response === -1) {
-          swal('Oops..', 'Not found packing!', 'error');
+          this.toastr.error('Not found packaging!', 'Error');
         } else if (response === 0) {
-          swal('Oops..', 'Name and version already in use!', 'error');
+          this.toastr.error('Name and version already in use!', 'Error');
         } else {
           if (success) {
             localStorage.setItem('packingCurr', JSON.stringify(response));
             this.refrestListPackingElmt();
-            this.toastr.success('Update packing', 'successfully');
+            this.toastr.success('Update packaging', 'successfully');
             this.router.navigate(['/references/packing']);
           } else {
-            swal('Oops..', 'Update packing error!', 'error');
+            this.toastr.error('Update packaging error !', 'Error');
           }
         }
         this.isUpdatePacking = false;
@@ -287,21 +240,20 @@ export class PackingComponent implements OnInit, AfterViewInit {
   }
 
   saveAsPacking (oldPacking) {
-    console.log(this.packingSaveAs.newVersion);
     if (!this.packingSaveAs.newName || this.packingSaveAs.newName === undefined) {
-      swal('Oops..', 'Please specify name!', 'warning');
+      this.toastr.error('Please specify name!', 'Error');
       return;
     }
     if (typeof this.packingSaveAs.newName === 'number') {
-      swal('Oops..', 'Not a valid string in Name !', 'warning');
+      this.toastr.error('Not a valid string in Name', 'Error');
       return;
     }
     if (String(this.packingSaveAs.newVersion) === '') {
-      swal('Oops..', 'Please specify version!', 'warning');
+      this.toastr.error('Please specify version', 'Error');
       return;
     }
     if (isNaN(this.packingSaveAs.newVersion)) {
-      swal('Oops..', 'Not a valid number in Version !', 'warning');
+      this.toastr.error('Not a valid number in Version', 'Error');
       return;
     }
     this.isSaveAs = true;
@@ -319,7 +271,7 @@ export class PackingComponent implements OnInit, AfterViewInit {
           }
 
           if (response === 0) {
-            swal('Oops..', 'Name and version already in use!', 'error');
+            this.toastr.error('Name and version already in use', 'Error');
           } else {
             if (success) {
               localStorage.setItem('packingCurr', JSON.stringify(response));
@@ -333,7 +285,7 @@ export class PackingComponent implements OnInit, AfterViewInit {
                 newVersion: 0
               };
             } else {
-              swal('Oops..', 'Save as packing error!', 'error');
+              this.toastr.error('Save as packaging error', 'Error');
             }
           }
           this.isSaveAs = false;
@@ -346,5 +298,60 @@ export class PackingComponent implements OnInit, AfterViewInit {
           this.isSaveAs = false;
         }
       );
+  }
+
+  checkDataPacking(packing, check) {
+
+    if (isNullOrUndefined(packing.LABEL) || String(packing.LABEL) === ''
+    || isNumber(packing.LABEL)) {
+      this.toastr.error('Please specify Name	', 'Error');
+      return;
+    }
+
+    if (isNullOrUndefined(packing.PACKING_VERSION) || String(packing.PACKING_VERSION) === ''
+    || isNaN(packing.PACKING_VERSION)) {
+      this.toastr.error('Please specify Version	', 'Error');
+      return;
+    }
+
+    if (isNullOrUndefined(packing.PACKINGCOND) || String(packing.PACKINGCOND) === ''
+    || isNaN(packing.PACKINGCOND) || !packing.PACKINGCOND) {
+      this.toastr.error('Please specify Lambda thermal conductivity 	', 'Error');
+      return;
+    }
+
+    if (!packing.PACKING_RELEASE) {
+      this.toastr.error('Please choose status', 'Error');
+      return;
+    }
+    if (!packing.PACKING_COMMENT) {
+      packing.PACKING_COMMENT = '';
+    }
+    this.referencedata.checkPacking({
+      ID_PACKING_ELMT: packing.ID_PACKING_ELMT,
+      LABEL: packing.LABEL,
+      PACKING_VERSION: packing.PACKING_VERSION,
+      PACKINGCOND: packing.PACKINGCOND,
+      PACKING_COMMENT: packing.PACKING_COMMENT,
+      PACKING_RELEASE: packing.PACKING_RELEASE
+    }).subscribe(
+      (res) => {
+        if (res === 1) {
+          if (check === 0) {
+            this.newPacking();
+          }
+          if (check === 1) {
+            this.updatePacking();
+          }
+        } else {
+          this.toastr.error(res.Message, 'Error');
+        }
+      },
+      err => {
+        console.log(err);
+      },
+      () => {
+      }
+    );
   }
 }

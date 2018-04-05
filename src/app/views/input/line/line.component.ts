@@ -1,5 +1,5 @@
 import { Component, OnInit, AfterContentChecked, AfterViewInit } from '@angular/core';
-import { Study, ViewProduct, PipeLineElmt } from '../../../api/models';
+import { Study, ViewProduct, PipeLineElmt, User, ViewStudyEquipment } from '../../../api/models';
 import { ApiService } from '../../../api/services';
 import { Router } from '@angular/router';
 import swal from 'sweetalert2';
@@ -16,6 +16,7 @@ export class LineComponent implements OnInit, AfterContentChecked, AfterViewInit
   public study: Study;
   public productShape: number;
   public productView: ViewProduct;
+  public studyEquip: ViewStudyEquipment;
   public lineEmlt: PipeLineElmt;
   public laddaSavingLine = false;
   public dataResultExist;
@@ -67,11 +68,26 @@ export class LineComponent implements OnInit, AfterContentChecked, AfterViewInit
   public statusNonInval: boolean;
   public statusInsulatedLine: boolean;
   public statusInsulatedVal: boolean;
+  public statusInsulation: boolean;
+  public statusDiameter: boolean;
+  public statusHeight: boolean;
+  public statusPressure: boolean;
+  public statusStank: boolean;
+  public statusNonInsuVal: boolean;
+  public statusNonInsuLine: boolean;
+  public statusElbChoose: boolean;
+  public statusTeeChoose: boolean;
+  public statusEven: boolean;
   public isLoading: boolean;
+  public userLogon: User;
   public symbol: any;
+  public checkequip: any;
   constructor(private api: ApiService, private router: Router, private translate: TranslateService,
-    private toastr: ToastrService) { }
+    private toastr: ToastrService) {
+      this.userLogon = JSON.parse(localStorage.getItem('user'));
+    }
   ngOnInit() {
+    this.study = JSON.parse(localStorage.getItem('study'));
     this.insulationTypeSelected = 5;
     this.insulatedLineSelected = 0;
     this.storageTankSelected = 0;
@@ -81,9 +97,11 @@ export class LineComponent implements OnInit, AfterContentChecked, AfterViewInit
     this.noninsulatedvalvesSelect = 0;
     this.diameterSelected = 0;
     this.teeSelect = 0;
+    this.height = 0.00;
+    this.pressuer = 0.00;
+    this.gastemp = 0;
     this.isLoading = true;
     this.loadDisabled();
-    // console.log(this.insulllenght);
   }
   loadDisabled() {
     this.statusInval = true;
@@ -100,7 +118,6 @@ export class LineComponent implements OnInit, AfterContentChecked, AfterViewInit
     this.noninsulatevallenght = 0;
   }
   ngAfterContentChecked() {
-    this.study = JSON.parse(localStorage.getItem('study'));
     if (!this.study.OPTION_CRYOPIPELINE) {
       swal('Oops..', 'This study does not have enabled CryoPipeline calculation option', 'error');
       this.router.navigate(['/input/objectives']);
@@ -112,6 +129,12 @@ export class LineComponent implements OnInit, AfterContentChecked, AfterViewInit
       swal('Oops..', 'Please define product along with elements first', 'error');
       this.router.navigate(['/input/product']);
     }
+    this.checkequip = localStorage.getItem('equip');
+    if (this.checkequip == '') {
+      swal('Oops..', 'Please define equipment along with elements first', 'error');
+      this.router.navigate(['/input/equipment']);
+    }
+
   }
   ngAfterViewInit() {
     this.refeshView();
@@ -127,15 +150,6 @@ export class LineComponent implements OnInit, AfterContentChecked, AfterViewInit
           this.diameterParamShow = this.dataResultExist.diameterParam;
           this.storageTankParam = this.dataResultExist.storageTankParam;
           this.height = this.dataResultExist.height;
-          if (this.insulationTypeSelected == 0) {
-            this.statusInsulatedLine = true;
-            this.statusInsulatedVal = true;
-            this.insulatedLineSelected = 0;
-            this.insulatedvalSelected = 0;
-          } else {
-            this.statusInsulatedLine = false;
-            this.statusInsulatedVal = false;
-          }
           if (this.dataResultExist.pressuer != null) {
             this.pressuer = this.dataResultExist.pressuer;
           } else {
@@ -157,6 +171,10 @@ export class LineComponent implements OnInit, AfterContentChecked, AfterViewInit
           this.teeValue = this.dataResultExist.teeValue;
           this.elbowsValue = this.dataResultExist.elbowsValue;
           this.storageTankValue = this.dataResultExist.storageTankValue;
+          // if (this.insulationTypeSelected == 0) {
+          //   this.noninsulatedlineSelect = this.dataResultExist.non_insulated_lineValue;
+          //   this.noninsulatedvalvesSelect = this.dataResultExist.non_insulated_valValue;
+          // }
           for (let ii = 0; ii < this.idPipeLineEmlt.length; ii++) {
             if (this.idPipeLineEmlt[ii] == this.insulatedvalValue) {
               this.insulatedvalSelected = this.dataResultExist.insulatedlinevalValue;
@@ -204,6 +222,7 @@ export class LineComponent implements OnInit, AfterContentChecked, AfterViewInit
           } else {
             this.elbows = this.dataResultExist.elbows;
           }
+
           for (let i = 0; i < this.insulationParam.length; i++) {
             if (i == 0) {
               this.insulationName = this.translate.instant('Not Insulated');
@@ -221,37 +240,52 @@ export class LineComponent implements OnInit, AfterContentChecked, AfterViewInit
               name: this.insulationName
             });
           }
-          if (this.insulllenght != 0) {
-            this.statusInLenght = false;
+          if ((this.study.ID_USER != this.userLogon.ID_USER)) {
+            this.checkUser();
           } else {
-            this.statusInLenght = true;
-          }
-          if (this.insulvalnumber != 0) {
-            this.statusInval = false;
-          } else {
-            this.statusInval = true;
-          }
-          if (this.teenumber != 0) {
-            this.statusTee = false;
-          } else {
-            this.statusTee = true;
-          }
-          if (this.elbowsnumber != 0) {
-            this.statusElbow = false;
-          } else {
-            this.statusElbow = true;
-          }
-          if (this.noninsulatevallenght != 0) {
-            this.statusNonInval = false;
-          } else {
-            this.statusNonInval = true;
-          }
-          if (this.noninsullenght != 0) {
-            this.statusNonInL = false;
-          } else {
-            this.statusNonInL = true;
+            if (this.insulationTypeSelected == 0) {
+              this.statusInsulatedLine = true;
+              this.statusInsulatedVal = true;
+              this.insulatedLineSelected = 0;
+              this.insulatedvalSelected = 0;
+            } else {
+              this.statusInsulatedLine = false;
+              this.statusInsulatedVal = false;
+            }
+            if (this.insulllenght != 0) {
+              this.statusInLenght = false;
+            } else {
+              this.statusInLenght = true;
+            }
+            if (this.insulvalnumber != 0) {
+              this.statusInval = false;
+            } else {
+              this.statusInval = true;
+            }
+            if (this.teenumber != 0) {
+              this.statusTee = false;
+            } else {
+              this.statusTee = true;
+            }
+            if (this.elbowsnumber != 0) {
+              this.statusElbow = false;
+            } else {
+              this.statusElbow = true;
+            }
+            if (this.noninsulatevallenght != 0) {
+              this.statusNonInval = false;
+            } else {
+              this.statusNonInval = true;
+            }
+            if (this.noninsullenght != 0) {
+              this.statusNonInL = false;
+            } else {
+              this.statusNonInL = true;
+            }
           }
         } else {
+          this.checkUser();
+          this.loadDisabled();
           for (let i = 0; i < this.dataResult.length; i++) {
             if (i == 0) {
               this.insulationName = this.translate.instant('Not Insulated');
@@ -289,6 +323,7 @@ export class LineComponent implements OnInit, AfterContentChecked, AfterViewInit
     this.noninsulatedvalvesSelect = 0;
     this.teeSelect = 0;
     this.elbowsSelected = 0;
+    this.storageTankSelected = 0;
     this.diameterParams = [];
     this.storageTankValue = [];
     this.storageTankParam = [];
@@ -329,6 +364,7 @@ export class LineComponent implements OnInit, AfterContentChecked, AfterViewInit
           this.insulllenght = this.dataResultExist.insulllenght;
           this.statusInLenght = false;
         } else {
+          this.insulatedLineSelected = 0;
           this.insulllenght = this.dataResult[this.insulationTypeSelected][j].insulllenght;
           this.statusInLenght = true;
         }
@@ -339,6 +375,7 @@ export class LineComponent implements OnInit, AfterContentChecked, AfterViewInit
         } else {
           this.insulvalnumber = this.dataResult[this.insulationTypeSelected][j].insulvallenght;
           this.statusInval = true;
+          this.insulatedvalSelected = 0;
         }
         this.non_insulated_valValue = this.dataResult[this.insulationTypeSelected][j].non_insulated_valValue;
         if (this.non_insulated_valValue == this.noninsulatedvalvesSelect) {
@@ -347,6 +384,7 @@ export class LineComponent implements OnInit, AfterContentChecked, AfterViewInit
         } else {
           this.noninsulatevallenght = this.dataResult[this.insulationTypeSelected][j].noninsulatevallenght;
           this.statusNonInval = true;
+          this.noninsulatedvalvesSelect = 0;
         }
         this.non_insulated_lineValue = this.dataResult[this.insulationTypeSelected][j].non_insulated_lineValue;
         if (this.non_insulated_lineValue == this.noninsulatedlineSelect) {
@@ -355,6 +393,7 @@ export class LineComponent implements OnInit, AfterContentChecked, AfterViewInit
         } else {
           this.noninsullenght = this.dataResult[this.insulationTypeSelected][j].noninsullenght;
           this.statusNonInL = true;
+          this.noninsulatedlineSelect = 0;
         }
         this.teeValue = this.dataResult[this.insulationTypeSelected][j].teeValue;
         if (this.teeValue == this.teeSelect) {
@@ -363,6 +402,7 @@ export class LineComponent implements OnInit, AfterContentChecked, AfterViewInit
         } else {
           this.teenumber = this.dataResult[this.insulationTypeSelected][j].teenumber;
           this.statusTee = true;
+          this.teeSelect = 0;
         }
         this.elbowsValue = this.dataResult[this.insulationTypeSelected][j].elbowsValue;
         if (this.elbowsValue == this.elbowsSelected) {
@@ -371,18 +411,18 @@ export class LineComponent implements OnInit, AfterContentChecked, AfterViewInit
         } else {
           this.elbowsnumber = this.dataResult[this.insulationTypeSelected][j].elbowsnumber;
           this.statusElbow = true;
+          this.elbowsSelected = 0;
         }
         this.height = this.dataResult[this.insulationTypeSelected][j].height;
         this.pressuer = this.dataResult[this.insulationTypeSelected][j].pressuer;
         this.gastemp = this.dataResult[this.insulationTypeSelected][j].gastemp;
       } else if (this.diameterSelected == 0) {
-        this.insulatedLine = '';
-        this.insulatedval = '';
-        this.elbows = '';
-        this.insulatedval = '';
-        this.noninsulatedline = '';
-        this.noninsulatedvalves = '';
-        this.tee = '';
+        this.insulatedLineSelected = 0;
+        this.insulatedvalSelected = 0;
+        this.elbowsSelected = 0;
+        this.noninsulatedvalvesSelect = 0;
+        this.noninsulatedlineSelect = 0;
+        this.teeSelect = 0;
         this.loadDisabled();
       }
       this.storageTankValue = this.dataResult[this.insulationTypeSelected][j].storageTankValue;
@@ -471,32 +511,80 @@ export class LineComponent implements OnInit, AfterContentChecked, AfterViewInit
         if (this.insulllenght == 0) {
           this.insulatedLineSelected = 0;
           this.statusInLenght = true;
+
         } else if (this.noninsullenght == 0) {
           this.noninsulatedlineSelect = 0;
           this.statusNonInL = true;
+
         } else if (this.insulvalnumber == 0) {
-          this.insulatedvalSelected = 0
+          this.insulatedvalSelected = 0;
           this.statusInval = true;
+
         } else if (this.noninsulatevallenght == 0) {
-          this.noninsulatedvalvesSelect = 0
+          this.noninsulatedvalvesSelect = 0;
           this.statusNonInL = true;
+
         } else if (this.elbowsnumber == 0) {
           this.elbowsSelected = 0;
           this.statusElbow = true;
+
         } else if (this.teenumber == 0) {
           this.teeSelect = 0;
           this.statusTee = true;
         }
+        if (this.diameterParamShow.length == null) {
+          this.diameterSelected = 0;
+        }
         this.toastr.success('Save line completed!', 'Success');
       },
       (err) => {
-        swal('Error', err.error.message, 'error');
-        console.log(err.error);
         this.laddaSavingLine = false;
+        this.toastr.error(err.error, 'error');
+        console.log(err);
       },
       () => {
         this.laddaSavingLine = false;
       });
-    // swal('Warning', 'This feature is under developmente!', 'warning');
+  }
+
+  checkUser() {
+    if (this.study.ID_USER != this.userLogon.ID_USER) {
+      this.statusInsulation = true;
+      this.statusInval = true;
+      this.statusNonInL = true;
+      this.statusNonInval = true;
+      this.statusTee = true;
+      this.statusElbow = true;
+      this.statusInLenght = true;
+      this.statusInsulatedLine = true;
+      this.statusInsulatedVal = true;
+      this.statusDiameter = true;
+      this.statusHeight = true;
+      this.statusPressure = true;
+      this.statusStank = true;
+      this.statusNonInsuVal = true;
+      this.statusNonInsuLine = true;
+      this.statusElbChoose = true;
+      this.statusTeeChoose = true;
+      this.statusEven = true;
+    } else {
+      this.statusInsulation = false;
+      this.statusNonInL = false;
+      this.statusNonInval = false;
+      this.statusTee = false;
+      this.statusElbow = false;
+      this.statusInLenght = false;
+      this.statusInsulatedLine = false;
+      this.statusInsulatedVal = false;
+      this.statusDiameter = false;
+      this.statusHeight = false;
+      this.statusPressure = false;
+      this.statusStank = false;
+      this.statusNonInsuVal = false;
+      this.statusNonInsuLine = false;
+      this.statusElbChoose = false;
+      this.statusTeeChoose = false;
+      this.statusEven = false;
+    }
   }
 }

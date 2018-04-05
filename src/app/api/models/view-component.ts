@@ -5,7 +5,7 @@ import { ViewTemperature } from './view-temperature';
 /**
  */
 export class ViewComponent {
-    COMP_NATURE?: number;
+    COMP_RELEASE?: number;
     productFamily?: ViewFamily[];
     subFamily?: ViewFamily[];
     SUB_TYPE?: number;
@@ -25,8 +25,8 @@ export class ViewComponent {
     COMP_DATE?: string;
     COMP_GEN_STATUS?: number;
     COMP_IMP_ID_STUDY?: number;
+    COMP_NATURE?: number;
     PRODUCT_TYPE?: number;
-    COMP_RELEASE?: number;
     COMP_VERSION?: number;
     COMP_VERSION_NEW?: number;
     COND_DENS_MODE?: number;
@@ -46,4 +46,5 @@ export class ViewComponent {
     WATER?: number;
     release?: number;
     TYPE_COMP?: number;
+    check?: number;
 }

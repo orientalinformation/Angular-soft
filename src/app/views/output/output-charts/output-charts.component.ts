@@ -3,13 +3,17 @@ import { ApiService } from '../../../api/services/api.service';
 import { TranslateService } from '@ngx-translate/core';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
+import * as Models from '../../../api/models';
 import swal from 'sweetalert2';
+import { ToastrService } from 'ngx-toastr';
 
 import { ViewChild } from '@angular/core';
 import { BaseChartDirective } from 'ng2-charts/ng2-charts';
 import { ModalDirective } from 'ngx-bootstrap/modal/modal.directive';
 import { HttpClient } from '@angular/common/http';
 import { Symbol } from '../../../api/models/symbol';
+import { Study } from '../../../api/models/study';
+import { User } from '../../../api/models/user';
 declare var Plotly: any;
 
 @Component({
@@ -19,7 +23,8 @@ declare var Plotly: any;
 })
 export class OutputChartsComponent implements OnInit, AfterViewInit {
   @ViewChild('valuesModal') public valuesModal: ModalDirective;
-  public study;
+  public study: Study;
+  public user: User;
   public symbol: Symbol;
   public activePage = '';
   public activeBtn = '';
@@ -49,18 +54,25 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
   public rbpoint01;
   public rbpoint02;
   public rbpoint03;
-  public radioChecked;
+  public radioChecked = 0;
   public chart2D;
+  public disableChange = false;
+
+  public imgPoint = {
+    top: 'point_top.png',
+    int: 'point_int.png',
+    bot: 'point_bot.png'
+  };
 
   public imgAxis = {
-    axis1: '',
-    axis2: '',
-    axis3: ''
+    axis1: 'axe1.png',
+    axis2: 'axe2.png',
+    axis3: 'axe3.png'
   };
   public imgPlan = {
-    plan1: '',
-    plan2: '',
-    plan3: ''
+    plan1: 'plan12.png',
+    plan2: 'plan13.png',
+    plan3: 'plan23.png'
   };
 
   public tempForm = {
@@ -72,6 +84,115 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
   public imgProd3D;
   public radioDisable: boolean;
   public selectDisable: boolean;
+  public radioMeshAxis = {
+    obj1: false,
+    obj2: false,
+    obj3: false
+  };
+  public radioMeshPlan = {
+    obj1: false,
+    obj2: false,
+    obj3: false
+  };
+  public selectedMeshPoint = {
+    obj1: {
+      x: true,
+      y: true,
+      z: true
+    },
+    obj2: {
+      x: true,
+      y: true,
+      z: true
+    },
+    obj3: {
+      x: true,
+      y: true,
+      z: true
+    },
+  };
+  public selectedMeshAxis = {
+    obj1: {
+      x: true,
+      y: true,
+      z: true
+    },
+    obj2: {
+      x: true,
+      y: true,
+      z: true
+    },
+    obj3: {
+      x: true,
+      y: true,
+      z: true
+    },
+  };
+  public selectedMeshPlan = {
+    obj1: {
+      x: true,
+      y: true,
+      z: true
+    },
+    obj2: {
+      x: true,
+      y: true,
+      z: true
+    },
+    obj3: {
+      x: true,
+      y: true,
+      z: true
+    },
+  };
+  public selectedPointStorage = {
+    point: {
+      top: {
+        x: 0.0,
+        y: 0.0,
+        z: 0.0
+      },
+      int: {
+        x: 0.0,
+        y: 0.0,
+        z: 0.0
+      },
+      bot: {
+        x: 0.0,
+        y: 0.0,
+        z: 0.0
+      }
+    },
+    axis: {
+      axe1: {
+        x: 0.0,
+        y: 0.0,
+        z: 0.0
+      },
+      axe2: {
+        x: 0.0,
+        y: 0.0,
+        z: 0.0
+      },
+      axe3: {
+        x: 0.0,
+        y: 0.0,
+        z: 0.0
+      }
+    },
+    plan: {
+      x: 0.0,
+      y: 0.0,
+      z: 0.0
+    },
+  };
+  public radio1Disable = true;
+  public radio2Disable = true;
+  public radio3Disable = true;
+
+  public select1Disable = true;
+  public select2Disable = true;
+  public select3Disable = true;
 
   public headExchangeResult;
   public headExchangeCurve;
@@ -161,7 +282,8 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
   public contourValue;
 
 
-  constructor(private api: ApiService, private translate: TranslateService, private router: Router, private http: HttpClient) {
+  constructor(private api: ApiService, private translate: TranslateService, private router: Router, private http: HttpClient,
+    private toastr: ToastrService) {
       this.tempForm.nbSteps = '';
     }
 
@@ -172,6 +294,10 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
   ngOnInit() {
     if (localStorage.getItem('study')) {
       this.study = JSON.parse(localStorage.getItem('study'));
+      this.user = JSON.parse(localStorage.getItem('user'));
+      if (this.study.ID_USER != this.user.ID_USER) {
+        this.disableChange = true;
+      }
       this.radioDisable = true;
       this.selectDisable = true;
       this.rbpoint01 = '';
@@ -230,6 +356,8 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
         this.symbol = data;
         this.activePage = 'location';
         this.loadData();
+        console.log(this.radioMeshAxis);
+        console.log(this.radioMeshPlan);
         this.api.getTempRecordPts(this.study.ID_STUDY).subscribe(
           dataTemp => {
             this.tempRecordPts = dataTemp;
@@ -241,9 +369,43 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
       }
     );
   }
-  savePoint() {
-    swal('Oops', 'Not yet implement !', 'error');
-    return;
+  saveAll() {
+    console.log(this.outputProductChart.ID_STUDY_EQUIPMENTS);
+    const params: Models.LocationAxisParams = {
+      ID_STUDY_EQUIPMENTS: this.outputProductChart.ID_STUDY_EQUIPMENTS,
+      NB_STEPS: this.nbSteps,
+      POINT_TOP_X: this.selectedPointStorage.point.top.x,
+      POINT_TOP_Y: this.selectedPointStorage.point.top.y,
+      POINT_TOP_Z: this.selectedPointStorage.point.top.z,
+      POINT_INT_X: this.selectedPointStorage.point.int.x,
+      POINT_INT_Y: this.selectedPointStorage.point.int.y,
+      POINT_INT_Z: this.selectedPointStorage.point.int.z,
+      POINT_BOT_X: this.selectedPointStorage.point.bot.x,
+      POINT_BOT_Y: this.selectedPointStorage.point.bot.y,
+      POINT_BOT_Z: this.selectedPointStorage.point.bot.z,
+      AXIS_AXE1_X: this.selectedPointStorage.axis.axe1.x,
+      AXIS_AXE1_Y: this.selectedPointStorage.axis.axe1.y,
+      AXIS_AXE1_Z: this.selectedPointStorage.axis.axe1.z,
+      AXIS_AXE2_X: this.selectedPointStorage.axis.axe2.x,
+      AXIS_AXE2_Y: this.selectedPointStorage.axis.axe1.y,
+      AXIS_AXE2_Z: this.selectedPointStorage.axis.axe1.z,
+      AXIS_AXE3_X: this.selectedPointStorage.axis.axe1.x,
+      AXIS_AXE3_Y: this.selectedPointStorage.axis.axe1.y,
+      AXIS_AXE3_Z: this.selectedPointStorage.axis.axe1.z,
+      PLAN_X: this.selectedPointStorage.plan.x,
+      PLAN_Y: this.selectedPointStorage.plan.y,
+      PLAN_Z: this.selectedPointStorage.plan.z
+    };
+    console.log(params);
+    this.api.saveLocationAxis({
+      id: this.study.ID_STUDY,
+      body: params
+    }).subscribe(
+      response => {
+        this.toastr.success(this.translate.instant('Update success'), 'successfully');
+        this.refeshView();
+       }
+    );
   }
   changeEquipment() {
     this.activeBtn = '';
@@ -268,12 +430,29 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
           }
         }
         if (this.shape == 1) {
-          if (this.outputProductChart.ORIENTATION == 1) {
-            this.folderImg = 'SLAB';
-          }
+          this.folderImg = 'SLAB';
           this.axis1Disable = true;
           this.axis2Disable = false;
           this.axis3Disable = true;
+          this.radioMeshAxis.obj1 = true;
+          this.radioMeshAxis.obj3 = true;
+          this.selectedMeshPoint = {
+            obj1: {
+              x: true,
+              y: false,
+              z: true,
+            },
+            obj2: {
+              x: true,
+              y: false,
+              z: true,
+            },
+            obj3: {
+              x: true,
+              y: false,
+              z: true,
+            }
+          };
         } else if (this.shape == 2) {
           if (this.outputProductChart.ORIENTATION == 1) {
             this.folderImg = 'STANDING_PLPD/parallel';
@@ -286,6 +465,57 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
             this.axis2Disable = false;
             this.axis3Disable = true;
           }
+          this.selectedMeshPoint = {
+            obj1: {
+              x: false,
+              y: false,
+              z: false,
+            },
+            obj2: {
+              x: false,
+              y: false,
+              z: false,
+            },
+            obj3: {
+              x: false,
+              y: false,
+              z: false,
+            }
+          };
+          this.selectedMeshAxis = {
+            obj1: {
+              x: true,
+              y: false,
+              z: false,
+            },
+            obj2: {
+              x: false,
+              y: true,
+              z: false,
+            },
+            obj3: {
+              x: false,
+              y: false,
+              z: true,
+            }
+          };
+          this.selectedMeshPlan = {
+            obj1: {
+              x: false,
+              y: true,
+              z: true,
+            },
+            obj2: {
+              x: true,
+              y: false,
+              z: true,
+            },
+            obj3: {
+              x: true,
+              y: true,
+              z: false,
+            }
+          };
         } else if (this.shape == 3) {
           if (this.outputProductChart.ORIENTATION == 1) {
             this.folderImg = 'LAYING_PLPD/parallel';
@@ -293,11 +523,99 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
             this.folderImg = 'LAYING_PLPD/perpendicular';
           }
           this.axis3Disable = true;
+          this.selectedMeshPoint = {
+            obj1: {
+              x: false,
+              y: false,
+              z: false,
+            },
+            obj2: {
+              x: false,
+              y: false,
+              z: false,
+            },
+            obj3: {
+              x: false,
+              y: false,
+              z: false,
+            }
+          };
+          this.selectedMeshAxis = {
+            obj1: {
+              x: true,
+              y: false,
+              z: false,
+            },
+            obj2: {
+              x: false,
+              y: true,
+              z: false,
+            },
+            obj3: {
+              x: false,
+              y: false,
+              z: true,
+            }
+          };
+          this.selectedMeshPlan = {
+            obj1: {
+              x: false,
+              y: true,
+              z: true,
+            },
+            obj2: {
+              x: true,
+              y: false,
+              z: true,
+            },
+            obj3: {
+              x: true,
+              y: true,
+              z: false,
+            }
+          };
         } else if (this.shape == 4) {
           this.folderImg = 'STANDING_CYL';
           this.axis1Disable = false;
           this.axis2Disable = false;
           this.axis3Disable = true;
+          this.radioMeshAxis.obj3 = true;
+          this.radioMeshPlan.obj1 = true;
+          this.radioMeshPlan.obj2 = true;
+          this.selectedMeshPoint = {
+            obj1: {
+              x: false,
+              y: false,
+              z: true,
+            },
+            obj2: {
+              x: false,
+              y: false,
+              z: true,
+            },
+            obj3: {
+              x: false,
+              y: false,
+              z: true,
+            }
+          };
+          this.selectedMeshAxis = {
+            obj1: {
+              x: true,
+              y: false,
+              z: true,
+            },
+            obj2: {
+              x: false,
+              y: true,
+              z: true,
+            },
+            obj3: {
+              x: true,
+              y: true,
+              z: true,
+            }
+          };
         } else if (this.shape == 5) {
           if (this.outputProductChart.ORIENTATION == 1) {
             this.folderImg = 'LAYING_CYL/parallel';
@@ -307,14 +625,107 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
           this.axis1Disable = false;
           this.axis2Disable = false;
           this.axis3Disable = true;
+          this.radioMeshAxis.obj3 = true;
+          this.radioMeshPlan.obj1 = true;
+          this.radioMeshPlan.obj2 = true;
+          this.selectedMeshPoint = {
+            obj1: {
+              x: false,
+              y: false,
+              z: true,
+            },
+            obj2: {
+              x: false,
+              y: false,
+              z: true,
+            },
+            obj3: {
+              x: false,
+              y: false,
+              z: true,
+            }
+          };
+          this.selectedMeshAxis = {
+            obj1: {
+              x: true,
+              y: false,
+              z: true,
+            },
+            obj2: {
+              x: false,
+              y: true,
+              z: true,
+            },
+            obj3: {
+              x: true,
+              y: true,
+              z: true,
+            }
+          };
         } else if (this.shape == 6) {
           this.folderImg = 'SPHERE';
           this.axis1Disable = true;
           this.axis2Disable = false;
           this.axis3Disable = true;
+          this.radioMeshAxis.obj1 = true;
+          this.radioMeshAxis.obj3 = true;
+          this.selectedMeshPoint = {
+            obj1: {
+              x: true,
+              y: false,
+              z: true,
+            },
+            obj2: {
+              x: true,
+              y: false,
+              z: true,
+            },
+            obj3: {
+              x: true,
+              y: false,
+              z: true,
+            }
+          };
         } else if (this.shape == 7) {
           this.folderImg = 'STANDING_CYL_C';
           this.axis3Disable = true;
+          this.radioMeshAxis.obj3 = true;
+          this.radioMeshPlan.obj1 = true;
+          this.radioMeshPlan.obj2 = true;
+          this.selectedMeshPoint = {
+            obj1: {
+              x: false,
+              y: false,
+              z: true,
+            },
+            obj2: {
+              x: false,
+              y: false,
+              z: true,
+            },
+            obj3: {
+              x: false,
+              y: false,
+              z: true,
+            }
+          };
+          this.selectedMeshAxis = {
+            obj1: {
+              x: true,
+              y: false,
+              z: true,
+            },
+            obj2: {
+              x: false,
+              y: true,
+              z: true,
+            },
+            obj3: {
+              x: true,
+              y: true,
+              z: true,
+            }
+          };
         } else if (this.shape == 8) {
           if (this.outputProductChart.ORIENTATION == 1) {
             this.folderImg = 'LAYING_CYL_C/parallel';
@@ -322,6 +733,43 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
             this.folderImg = 'LAYING_CYL_C/perpendicular';
           }
           this.axis3Disable = true;
+          this.radioMeshAxis.obj3 = true;
+          this.radioMeshPlan.obj1 = true;
+          this.radioMeshPlan.obj2 = true;
+          this.selectedMeshPoint = {
+            obj1: {
+              x: false,
+              y: false,
+              z: true,
+            },
+            obj2: {
+              x: false,
+              y: false,
+              z: true,
+            },
+            obj3: {
+              x: false,
+              y: false,
+              z: true,
+            }
+          };
+          this.selectedMeshAxis = {
+            obj1: {
+              x: true,
+              y: false,
+              z: true,
+            },
+            obj2: {
+              x: false,
+              y: true,
+              z: true,
+            },
+            obj3: {
+              x: true,
+              y: true,
+              z: true,
+            }
+          };
         } else if (this.shape == 9) {
           if (this.outputProductChart.ORIENTATION == 1) {
             this.folderImg = 'BREADED/parallel';
@@ -334,6 +782,57 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
             this.axis2Disable = false;
             this.axis3Disable = false;
           }
+          this.selectedMeshPoint = {
+            obj1: {
+              x: false,
+              y: false,
+              z: false,
+            },
+            obj2: {
+              x: false,
+              y: false,
+              z: false,
+            },
+            obj3: {
+              x: false,
+              y: false,
+              z: false,
+            }
+          };
+          this.selectedMeshAxis = {
+            obj1: {
+              x: true,
+              y: false,
+              z: false,
+            },
+            obj2: {
+              x: false,
+              y: true,
+              z: false,
+            },
+            obj3: {
+              x: false,
+              y: false,
+              z: true,
+            }
+          };
+          this.selectedMeshPlan = {
+            obj1: {
+              x: false,
+              y: true,
+              z: true,
+            },
+            obj2: {
+              x: true,
+              y: false,
+              z: true,
+            },
+            obj3: {
+              x: true,
+              y: true,
+              z: false,
+            }
+          };
         }
         console.log(this.axis3Disable);
         if (this.shape == 2 || this.shape == 9) {
@@ -363,6 +862,168 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
         console.log(this.plan3Disable);
       }
     );
+    this.api.getlocationAxisSelected(this.study.ID_STUDY).subscribe(
+      data => {
+        console.log(data);
+        this.locationAxisSelected = data;
+        this.selectedPointStorage.point.top.x = data['top'][0];
+        this.selectedPointStorage.point.top.y = data['top'][1];
+        this.selectedPointStorage.point.top.z = data['top'][2];
+        this.selectedPointStorage.point.int.x = data['int'][0];
+        this.selectedPointStorage.point.int.y = data['int'][1];
+        this.selectedPointStorage.point.int.z = data['int'][2];
+        this.selectedPointStorage.point.bot.x = data['bot'][0];
+        this.selectedPointStorage.point.bot.y = data['bot'][1];
+        this.selectedPointStorage.point.bot.z = data['bot'][2];
+
+        if (this.shape == 1) {
+          this.selectedPointStorage.axis.axe1.x = data['axe1'][0];
+          this.selectedPointStorage.axis.axe1.y = data['axe1'][1];
+          this.selectedPointStorage.axis.axe1.z = data['axe1'][2];
+          this.selectedPointStorage.axis.axe2.x = data['axe2'][0];
+          this.selectedPointStorage.axis.axe2.y = data['axe2'][1];
+          this.selectedPointStorage.axis.axe2.z = data['axe2'][2];
+          this.selectedPointStorage.axis.axe3.x = data['axe3'][0];
+          this.selectedPointStorage.axis.axe3.y = data['axe3'][1];
+          this.selectedPointStorage.axis.axe3.z = data['axe3'][2];
+        } else if (this.shape == 2 || this.shape == 9) {
+          if (this.outputProductChart.ORIENTATION == 1) {
+            this.selectedPointStorage.axis.axe1.x = data['axe3'][0];
+            this.selectedPointStorage.axis.axe1.y = data['axe3'][1];
+            this.selectedPointStorage.axis.axe1.z = data['axe3'][2];
+            this.selectedPointStorage.axis.axe2.x = data['axe2'][0];
+            this.selectedPointStorage.axis.axe2.y = data['axe2'][1];
+            this.selectedPointStorage.axis.axe2.z = data['axe2'][2];
+            this.selectedPointStorage.axis.axe3.x = data['axe1'][0];
+            this.selectedPointStorage.axis.axe3.y = data['axe1'][1];
+            this.selectedPointStorage.axis.axe3.z = data['axe1'][2];
+          } else {
+            this.selectedPointStorage.axis.axe1.x = data['axe1'][0];
+            this.selectedPointStorage.axis.axe1.y = data['axe1'][1];
+            this.selectedPointStorage.axis.axe1.z = data['axe1'][2];
+            this.selectedPointStorage.axis.axe2.x = data['axe2'][0];
+            this.selectedPointStorage.axis.axe2.y = data['axe2'][1];
+            this.selectedPointStorage.axis.axe2.z = data['axe2'][2];
+            this.selectedPointStorage.axis.axe3.x = data['axe3'][0];
+            this.selectedPointStorage.axis.axe3.y = data['axe3'][1];
+            this.selectedPointStorage.axis.axe3.z = data['axe3'][2];
+          }
+        } else if (this.shape == 3) {
+          if (this.outputProductChart.ORIENTATION == 1) {
+            this.selectedPointStorage.axis.axe1.x = data['axe3'][0];
+            this.selectedPointStorage.axis.axe1.y = data['axe3'][1];
+            this.selectedPointStorage.axis.axe1.z = data['axe3'][2];
+            this.selectedPointStorage.axis.axe2.x = data['axe1'][0];
+            this.selectedPointStorage.axis.axe2.y = data['axe1'][1];
+            this.selectedPointStorage.axis.axe2.z = data['axe1'][2];
+            this.selectedPointStorage.axis.axe3.x = data['axe2'][0];
+            this.selectedPointStorage.axis.axe3.y = data['axe2'][1];
+            this.selectedPointStorage.axis.axe3.z = data['axe2'][2];
+          } else {
+            this.selectedPointStorage.axis.axe1.x = data['axe2'][0];
+            this.selectedPointStorage.axis.axe1.y = data['axe2'][1];
+            this.selectedPointStorage.axis.axe1.z = data['axe2'][2];
+            this.selectedPointStorage.axis.axe2.x = data['axe1'][0];
+            this.selectedPointStorage.axis.axe2.y = data['axe1'][1];
+            this.selectedPointStorage.axis.axe2.z = data['axe1'][2];
+            this.selectedPointStorage.axis.axe3.x = data['axe3'][0];
+            this.selectedPointStorage.axis.axe3.y = data['axe3'][1];
+            this.selectedPointStorage.axis.axe3.z = data['axe3'][2];
+          }
+        } else if (this.shape == 4 || this.shape == 5) {
+          this.selectedPointStorage.axis.axe1.x = data['axe1'][0];
+          this.selectedPointStorage.axis.axe1.y = data['axe1'][1];
+          this.selectedPointStorage.axis.axe1.z = data['axe1'][2];
+          this.selectedPointStorage.axis.axe2.x = data['axe2'][0];
+          this.selectedPointStorage.axis.axe2.y = data['axe2'][1];
+          this.selectedPointStorage.axis.axe2.z = data['axe2'][2];
+          this.selectedPointStorage.axis.axe3.x = 0.0;
+          this.selectedPointStorage.axis.axe3.y = 0.0;
+          this.selectedPointStorage.axis.axe3.z = 0.0;
+        } else if (this.shape ==7 || this.shape == 8) {
+          this.selectedPointStorage.axis.axe1.x = data['axe2'][0];
+          this.selectedPointStorage.axis.axe1.y = data['axe2'][1];
+          this.selectedPointStorage.axis.axe1.z = data['axe2'][2];
+          this.selectedPointStorage.axis.axe2.x = data['axe1'][0];
+          this.selectedPointStorage.axis.axe2.y = data['axe1'][1];
+          this.selectedPointStorage.axis.axe2.z = data['axe1'][2];
+          this.selectedPointStorage.axis.axe3.x = 0.0;
+          this.selectedPointStorage.axis.axe3.y = 0.0;
+          this.selectedPointStorage.axis.axe3.z = 0.0;
+        } else if (this.shape == 6) {
+          this.selectedPointStorage.axis.axe1.x = 0.0;
+          this.selectedPointStorage.axis.axe1.y = 0.0;
+          this.selectedPointStorage.axis.axe1.z = 0.0;
+          this.selectedPointStorage.axis.axe2.x = data['axe1'][0];
+          this.selectedPointStorage.axis.axe2.y = data['axe1'][1];
+          this.selectedPointStorage.axis.axe2.z = data['axe1'][2];
+          this.selectedPointStorage.axis.axe3.x = 0.0;
+          this.selectedPointStorage.axis.axe3.y = 0.0;
+          this.selectedPointStorage.axis.axe3.z = 0.0;
+        } else {
+          this.selectedPointStorage.axis.axe1.x = 0.0;
+          this.selectedPointStorage.axis.axe1.y = 0.0;
+          this.selectedPointStorage.axis.axe1.z = 0.0;
+          this.selectedPointStorage.axis.axe2.x = 0.0;
+          this.selectedPointStorage.axis.axe2.y = 0.0;
+          this.selectedPointStorage.axis.axe2.z = 0.0;
+          this.selectedPointStorage.axis.axe3.x = 0.0;
+          this.selectedPointStorage.axis.axe3.y = 0.0;
+          this.selectedPointStorage.axis.axe3.z = 0.0;
+        }
+        this.selectedPointStorage.plan.x = data['plan'][0];
+        this.selectedPointStorage.plan.y = data['plan'][1];
+        this.selectedPointStorage.plan.z = data['plan'][2];
+        console.log(this.selectedPointStorage);
+      }
+    );
+  }
+
+  convertPointForAppletDim(axisDataAxe) {
+    const result = [];
+    if (this.shape == 1) {
+      result[0] = axisDataAxe[0];
+      result[1] = axisDataAxe[1];
+      result[2] = axisDataAxe[2];
+    } else if (this.shape == 2 || this.shape == 9) {
+      if (this.outputProductChart.ORIENTATION == 1) {
+        result[0] = axisDataAxe[2];
+        result[1] = axisDataAxe[1];
+        result[2] = axisDataAxe[0];
+      } else {
+        result[0] = axisDataAxe[0];
+        result[1] = axisDataAxe[1];
+        result[2] = axisDataAxe[2];
+      }
+    } else if (this.shape == 3) {
+      if (this.outputProductChart.ORIENTATION == 1) {
+        result[0] = axisDataAxe[2];
+        result[1] = axisDataAxe[0];
+        result[2] = axisDataAxe[1];
+      } else {
+        result[0] = axisDataAxe[1];
+        result[1] = axisDataAxe[0];
+        result[2] = axisDataAxe[2];
+      }
+    } else if (this.shape == 4 || this.shape == 5) {
+      result[0] = axisDataAxe[0];
+      result[1] = axisDataAxe[1];
+      result[2] = 0.0;
+    } else if (this.shape == 7 || this.shape == 8) {
+      result[0] = axisDataAxe[1];
+      result[1] = axisDataAxe[0];
+      result[2] = 0.0;
+    } else if (this.shape == 6) {
+      result[0] = 0.0;
+      result[1] = axisDataAxe[1];
+      result[2] = 0.0;
+    } else {
+      result[0] = 0.0;
+      result[1] = 0.0;
+      result[2] = 0.0;
+    }
+
+    return result;
   }
 
   selectPoints() {
@@ -371,7 +1032,12 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
     this.mesAxisZ = [];
     this.activeBtn = 'points';
     this.radioDisable = false;
-    this.selectDisable = true;
+    this.radio1Disable = false;
+    this.radio2Disable = false;
+    this.radio3Disable = false;
+    this.select1Disable = true;
+    this.select2Disable = true;
+    this.select3Disable = true;
     this.radioChecked = null;
     this.imgProd3D = 'assets/img/output/' + this.folderImg + '/points.png';
     this.rbpoint01 = this.translate.instant('Surface');
@@ -381,12 +1047,18 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
   }
 
   selectAxis() {
+    console.log(this.outputProductChart.ORIENTATION);
     this.mesAxisX = [];
     this.mesAxisY = [];
     this.mesAxisZ = [];
     this.activeBtn = 'axis';
     this.radioDisable = false;
-    this.selectDisable = true;
+    this.radio1Disable = this.radioMeshAxis.obj1;
+    this.radio2Disable = this.radioMeshAxis.obj2;
+    this.radio3Disable = this.radioMeshAxis.obj3;
+    this.select1Disable = true;
+    this.select2Disable = true;
+    this.select3Disable = true;
     this.radioChecked = null;
     this.imgProd3D = 'assets/img/output/' + this.folderImg + '/axes.png';
     if (this.shape == 1) {
@@ -435,7 +1107,12 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
     this.mesAxisZ = [];
     this.activeBtn = 'plans';
     this.radioDisable = false;
-    this.selectDisable = true;
+    this.radio1Disable = this.radioMeshPlan.obj1;
+    this.radio2Disable = this.radioMeshPlan.obj2;
+    this.radio3Disable = this.radioMeshPlan.obj3;
+    this.select1Disable = true;
+    this.select2Disable = true;
+    this.select3Disable = true;
     this.radioChecked = null;
     this.imgProd3D = 'assets/img/output/' + this.folderImg + '/plans.png';
     if (this.shape == 2 || this.shape == 9) {
@@ -474,68 +1151,67 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
     this.selectDisable = false;
     this.radioChecked = value;
     console.log(this.shape);
-    console.log(value);
-    console.log(recordType);
+    console.log(this.selectedPointStorage);
     this.api.getMeshPoints(this.study.ID_STUDY).subscribe(
       data => {
-        console.log(data);
-        if (recordType === 'points') {
-          this.mesAxisX = data[2];
+        if (this.shape == 1) {
+          this.mesAxisX = data[0];
           this.mesAxisY = data[1];
-          this.mesAxisZ = data[0];
-        }
-        if (recordType === 'axis') {
-          if (value === 0) {
-            this.mesAxisX = [];
-            this.mesAxisY = data[1];
-            this.mesAxisZ = data[0];
-          } else if (value === 1) {
+          this.mesAxisZ = data[2];
+        } else if (this.shape == 2 || this.shape == 9) {
+          if (this.outputProductChart.ORIENTATION == 1) {
             this.mesAxisX = data[2];
-            this.mesAxisY = [];
+            this.mesAxisY = data[1];
             this.mesAxisZ = data[0];
           } else {
-            this.mesAxisX = data[2];
+            this.mesAxisX = data[0];
             this.mesAxisY = data[1];
-            this.mesAxisZ = [];
+            this.mesAxisZ = data[2];
           }
-        }
-        if (recordType === 'plans') {
-          if (value === 0) {
+        } else if (this.shape == 3) {
+          if (this.outputProductChart.ORIENTATION == 1) {
             this.mesAxisX = data[2];
-            this.mesAxisY = [];
-            this.mesAxisZ = [];
-          } else if (value === 1) {
-            this.mesAxisX = [];
-            this.mesAxisY = data[1];
-            this.mesAxisZ = [];
+            this.mesAxisY = data[0];
+            this.mesAxisZ = data[1];
           } else {
-            this.mesAxisX = [];
-            this.mesAxisY = [];
-            this.mesAxisZ = data[0];
+            this.mesAxisX = data[1];
+            this.mesAxisY = data[0];
+            this.mesAxisZ = data[2];
           }
+        } else if (this.shape == 4 || this.shape == 5) {
+          this.mesAxisX = data[0];
+          this.mesAxisY = data[1];
+          this.mesAxisZ = [];
+        } else if (this.shape == 7 || this.shape == 8) {
+          this.mesAxisX = data[1];
+          this.mesAxisY = data[0];
+          this.mesAxisZ = [];
+        } else if (this.shape == 6){
+          this.mesAxisX = [];
+          this.mesAxisY = data[1];
+          this.mesAxisZ = [];
+        } else {
+          this.mesAxisX = [];
+          this.mesAxisY = [];
+          this.mesAxisZ = [];
         }
-      }
-    );
-    this.api.getlocationAxisSelected(this.study.ID_STUDY).subscribe(
-      data => {
         console.log(data);
-        this.locationAxisSelected = data;
         if (recordType === 'points') {
           if (value === 0) {
-            this.mesAxisXSelected = this.locationAxisSelected.top[2];
-            this.mesAxisYSelected = this.locationAxisSelected.top[1];
-            this.mesAxisZSelected = this.locationAxisSelected.top[0];
-            this.imgProd3D = 'assets/img/output/' + this.folderImg + '/point_top.png';
+            this.select1Disable = this.selectedMeshPoint.obj1.x;
+            this.select2Disable = this.selectedMeshPoint.obj1.y;
+            this.select3Disable = this.selectedMeshPoint.obj1.z;
+            this.imgProd3D = 'assets/img/output/' + this.folderImg + '/' + this.imgPoint.top;
           } else if (value === 1) {
-            this.mesAxisXSelected = this.locationAxisSelected.int[2];
-            this.mesAxisYSelected = this.locationAxisSelected.int[1];
-            this.mesAxisZSelected = this.locationAxisSelected.int[0];
-            this.imgProd3D = 'assets/img/output/' + this.folderImg + '/point_int.png';
+            this.select1Disable = this.selectedMeshPoint.obj2.x;
+            this.select2Disable = this.selectedMeshPoint.obj2.y;
+            this.select3Disable = this.selectedMeshPoint.obj2.z;
+            this.imgProd3D = 'assets/img/output/' + this.folderImg + '/' + this.imgPoint.int;
           } else {
-            this.mesAxisXSelected = this.locationAxisSelected.bot[2];
-            this.mesAxisYSelected = this.locationAxisSelected.bot[1];
-            this.mesAxisZSelected = this.locationAxisSelected.bot[0];
-            this.imgProd3D = 'assets/img/output/' + this.folderImg + '/point_bot.png';
+            this.select1Disable = this.selectedMeshPoint.obj3.x;
+            this.select2Disable = this.selectedMeshPoint.obj3.y;
+            this.select3Disable = this.selectedMeshPoint.obj3.z;
+            this.imgProd3D = 'assets/img/output/' + this.folderImg + '/' + this.imgPoint.bot;
           }
         }
         if (recordType === 'axis') {
@@ -545,54 +1221,47 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
               this.imgAxis.axis1 = 'axe3.png';
               this.imgAxis.axis2 = 'axe2.png';
               this.imgAxis.axis3 = 'axe1.png';
-              this.mesAxisXSelected = this.locationAxisSelected.int[2];
-              this.mesAxisYSelected = this.locationAxisSelected.int[1];
-              this.mesAxisZSelected = this.locationAxisSelected.int[0];
             } else {
               this.imgAxis.axis1 = 'axe1.png';
               this.imgAxis.axis2 = 'axe2.png';
               this.imgAxis.axis3 = 'axe3.png';
-              this.mesAxisXSelected = this.locationAxisSelected.int[2];
-              this.mesAxisYSelected = this.locationAxisSelected.int[1];
-              this.mesAxisZSelected = this.locationAxisSelected.int[0];
             }
           } else if (this.shape == 7 || this.shape == 8) {
             this.imgAxis.axis1 = 'axe2.png';
             this.imgAxis.axis2 = 'axe1.png';
             this.imgAxis.axis3 = 'axe3.png';
-            this.mesAxisXSelected = this.locationAxisSelected.int[1];
-            this.mesAxisYSelected = this.locationAxisSelected.int[2];
-            this.mesAxisZSelected = this.locationAxisSelected.int[0];
           } else if (this.shape == 3) {
             if (this.outputProductChart.ORIENTATION == 1) {
               this.imgAxis.axis1 = 'axe3.png';
               this.imgAxis.axis2 = 'axe1.png';
               this.imgAxis.axis3 = 'axe2.png';
-              this.mesAxisXSelected = this.locationAxisSelected.int[0];
-              this.mesAxisYSelected = this.locationAxisSelected.int[0];
-              this.mesAxisZSelected = this.locationAxisSelected.int[2];
             } else {
               this.imgAxis.axis1 = 'axe2.png';
               this.imgAxis.axis2 = 'axe1.png';
               this.imgAxis.axis3 = 'axe3.png';
-              this.mesAxisXSelected = this.locationAxisSelected.int[1];
-              this.mesAxisYSelected = this.locationAxisSelected.int[2];
-              this.mesAxisZSelected = this.locationAxisSelected.int[0];
             }
           } else if (this.shape == 1) {
             this.imgAxis.axis1 = 'axe3.png';
             this.imgAxis.axis2 = 'axe2.png';
             this.imgAxis.axis3 = 'axe1.png';
-            this.mesAxisXSelected = this.locationAxisSelected.int[0];
-            this.mesAxisYSelected = this.locationAxisSelected.int[1];
-            this.mesAxisZSelected = this.locationAxisSelected.int[2];
           }
           if (value === 0) {
-            this.imgProd3D = 'assets/img/output/' + this.folderImg + '/' + this.imgAxis.axis1;
+            this.select1Disable = this.selectedMeshAxis.obj1.x;
+            this.select2Disable = this.selectedMeshAxis.obj1.y;
+            this.select3Disable = this.selectedMeshAxis.obj1.z;
             this.mesAxisX = [];
+            this.imgProd3D = 'assets/img/output/' + this.folderImg + '/' + this.imgAxis.axis1;
           } else if (value === 1) {
+            this.select1Disable = this.selectedMeshAxis.obj2.x;
+            this.select2Disable = this.selectedMeshAxis.obj2.y;
+            this.select3Disable = this.selectedMeshAxis.obj2.z;
+            this.mesAxisY = [];
             this.imgProd3D = 'assets/img/output/' + this.folderImg + '/' + this.imgAxis.axis2;
           } else {
+            this.select1Disable = this.selectedMeshAxis.obj3.x;
+            this.select2Disable = this.selectedMeshAxis.obj3.y;
+            this.select3Disable = this.selectedMeshAxis.obj3.z;
+            this.mesAxisZ = [];
             this.imgProd3D = 'assets/img/output/' + this.folderImg + '/' + this.imgAxis.axis3;
           }
         }
@@ -602,68 +1271,906 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
               this.imgPlan.plan1 = 'plan12.png';
               this.imgPlan.plan2 = 'plan13.png';
               this.imgPlan.plan3 = 'plan23.png';
-              this.mesAxisXSelected = this.locationAxisSelected.int[2];
-              this.mesAxisYSelected = this.locationAxisSelected.int[1];
-              this.mesAxisZSelected = this.locationAxisSelected.int[0];
             } else {
               this.imgPlan.plan1 = 'plan23.png';
               this.imgPlan.plan2 = 'plan13.png';
               this.imgPlan.plan3 = 'plan12.png';
-              this.mesAxisXSelected = this.locationAxisSelected.int[0];
-              this.mesAxisYSelected = this.locationAxisSelected.int[1];
-              this.mesAxisZSelected = this.locationAxisSelected.int[2];
             }
           } else if (this.shape == 5 || this.shape == 7) {
             this.imgPlan.plan1 = 'plan13.png';
             this.imgPlan.plan2 = 'plan23.png';
             this.imgPlan.plan3 = 'plan12.png';
-            this.mesAxisXSelected = this.locationAxisSelected.int[1];
-            this.mesAxisYSelected = this.locationAxisSelected.int[0];
-            this.mesAxisZSelected = this.locationAxisSelected.int[2];
           } else if (this.shape == 8) {
             this.imgPlan.plan1 = 'plan23.png';
             this.imgPlan.plan2 = 'plan13.png';
             this.imgPlan.plan3 = 'plan12.png';
-            this.mesAxisXSelected = this.locationAxisSelected.int[0];
-            this.mesAxisYSelected = this.locationAxisSelected.int[1];
-            this.mesAxisZSelected = this.locationAxisSelected.int[2];
           } else if (this.shape == 3) {
             if (this.outputProductChart.ORIENTATION == 1) {
               this.imgPlan.plan1 = 'plan12.png';
               this.imgPlan.plan2 = 'plan23.png';
               this.imgPlan.plan3 = 'plan13.png';
-              this.mesAxisXSelected = this.locationAxisSelected.int[0];
-              this.mesAxisYSelected = this.locationAxisSelected.int[2];
-              this.mesAxisZSelected = this.locationAxisSelected.int[1];
             } else {
               this.imgPlan.plan1 = 'plan13.png';
               this.imgPlan.plan2 = 'plan23.png';
               this.imgPlan.plan3 = 'plan12.png';
-              this.mesAxisXSelected = this.locationAxisSelected.int[1];
-              this.mesAxisYSelected = this.locationAxisSelected.int[0];
-              this.mesAxisZSelected = this.locationAxisSelected.int[2];
             }
           } else if (this.shape == 4) {
             this.imgPlan.plan1 = 'plan23.png';
             this.imgPlan.plan2 = 'plan13.png';
             this.imgPlan.plan3 = 'plan12.png';
-            this.mesAxisXSelected = this.locationAxisSelected.int[0];
-            this.mesAxisYSelected = this.locationAxisSelected.int[1];
-            this.mesAxisZSelected = this.locationAxisSelected.int[2];
           }
           if (value === 0) {
+            this.select1Disable = this.selectedMeshPlan.obj1.x;
+            this.select2Disable = this.selectedMeshPlan.obj1.y;
+            this.select3Disable = this.selectedMeshPlan.obj1.z;
+            this.mesAxisY = [];
+            this.mesAxisZ = [];
             this.imgProd3D = 'assets/img/output/' + this.folderImg + '/' + this.imgPlan.plan1;
           } else if (value === 1) {
+            this.select1Disable = this.selectedMeshPlan.obj2.x;
+            this.select2Disable = this.selectedMeshPlan.obj2.y;
+            this.select3Disable = this.selectedMeshPlan.obj2.z;
+            this.mesAxisX = [];
+            this.mesAxisZ = [];
             this.imgProd3D = 'assets/img/output/' + this.folderImg + '/' + this.imgPlan.plan2;
           } else {
+            this.select1Disable = this.selectedMeshPlan.obj3.x;
+            this.select2Disable = this.selectedMeshPlan.obj3.y;
+            this.select3Disable = this.selectedMeshPlan.obj3.z;
+            this.mesAxisX = [];
+            this.mesAxisY = [];
             this.imgProd3D = 'assets/img/output/' + this.folderImg + '/' + this.imgPlan.plan3;
           }
         }
-        console.log(this.mesAxisXSelected);
-        console.log(this.mesAxisYSelected);
-        console.log(this.mesAxisZSelected);
       }
     );
+    if (recordType === 'points') {
+      if (value === 0) {
+        if (this.shape == 1) {
+          this.mesAxisXSelected = this.selectedPointStorage.point.top.x;
+          this.mesAxisYSelected = this.selectedPointStorage.point.top.y;
+          this.mesAxisZSelected = this.selectedPointStorage.point.top.z;
+        } else if (this.shape == 2 || this.shape == 9) {
+          if (this.outputProductChart.ORIENTATION == 1) {
+            this.mesAxisXSelected = this.selectedPointStorage.point.top.z;
+            this.mesAxisYSelected = this.selectedPointStorage.point.top.y;
+            this.mesAxisZSelected = this.selectedPointStorage.point.top.x;
+          } else {
+            this.mesAxisXSelected = this.selectedPointStorage.point.top.x;
+            this.mesAxisYSelected = this.selectedPointStorage.point.top.y;
+            this.mesAxisZSelected = this.selectedPointStorage.point.top.z;
+          }
+        } else if (this.shape == 3) {
+          if (this.outputProductChart.ORIENTATION == 1) {
+            this.mesAxisXSelected = this.selectedPointStorage.point.top.z;
+            this.mesAxisYSelected = this.selectedPointStorage.point.top.x;
+            this.mesAxisZSelected = this.selectedPointStorage.point.top.y;
+          } else {
+            this.mesAxisXSelected = this.selectedPointStorage.point.top.y;
+            this.mesAxisYSelected = this.selectedPointStorage.point.top.x;
+            this.mesAxisZSelected = this.selectedPointStorage.point.top.z;
+          }
+        } else if (this.shape == 4 || this.shape == 5) {
+          this.mesAxisXSelected = this.selectedPointStorage.point.top.x;
+          this.mesAxisYSelected = this.selectedPointStorage.point.top.y;
+          this.mesAxisZSelected = this.selectedPointStorage.point.top.z;
+        } else if (this.shape == 7 || this.shape == 8) {
+          this.mesAxisXSelected = this.selectedPointStorage.point.top.y;
+          this.mesAxisYSelected = this.selectedPointStorage.point.top.x;
+          this.mesAxisZSelected = this.selectedPointStorage.point.top.z;
+        } else if (this.shape == 6){
+          this.mesAxisXSelected = this.selectedPointStorage.point.top.y;
+          this.mesAxisYSelected = this.selectedPointStorage.point.top.x;
+          this.mesAxisZSelected = this.selectedPointStorage.point.top.z;
+        } else {
+          this.mesAxisXSelected = this.selectedPointStorage.point.top.y;
+          this.mesAxisYSelected = this.selectedPointStorage.point.top.x;
+          this.mesAxisZSelected = this.selectedPointStorage.point.top.z;
+        }
+      } else if (value === 1) {
+        if (this.shape == 1) {
+          this.mesAxisXSelected = this.selectedPointStorage.point.int.x;
+          this.mesAxisYSelected = this.selectedPointStorage.point.int.y;
+          this.mesAxisZSelected = this.selectedPointStorage.point.int.z;
+        } else if (this.shape == 2 || this.shape == 9) {
+          if (this.outputProductChart.ORIENTATION == 1) {
+            this.mesAxisXSelected = this.selectedPointStorage.point.int.z;
+            this.mesAxisYSelected = this.selectedPointStorage.point.int.y;
+            this.mesAxisZSelected = this.selectedPointStorage.point.int.x;
+          } else {
+            this.mesAxisXSelected = this.selectedPointStorage.point.int.x;
+            this.mesAxisYSelected = this.selectedPointStorage.point.int.y;
+            this.mesAxisZSelected = this.selectedPointStorage.point.int.z;
+          }
+        } else if (this.shape == 3) {
+          if (this.outputProductChart.ORIENTATION == 1) {
+            this.mesAxisXSelected = this.selectedPointStorage.point.int.z;
+            this.mesAxisYSelected = this.selectedPointStorage.point.int.x;
+            this.mesAxisZSelected = this.selectedPointStorage.point.int.y;
+          } else {
+            this.mesAxisXSelected = this.selectedPointStorage.point.int.y;
+            this.mesAxisYSelected = this.selectedPointStorage.point.int.x;
+            this.mesAxisZSelected = this.selectedPointStorage.point.int.z;
+          }
+        } else if (this.shape == 4 || this.shape == 5) {
+          this.mesAxisXSelected = this.selectedPointStorage.point.int.x;
+          this.mesAxisYSelected = this.selectedPointStorage.point.int.y;
+          this.mesAxisZSelected = this.selectedPointStorage.point.int.z;
+        } else if (this.shape == 7 || this.shape == 8) {
+          this.mesAxisXSelected = this.selectedPointStorage.point.int.y;
+          this.mesAxisYSelected = this.selectedPointStorage.point.int.x;
+          this.mesAxisZSelected = this.selectedPointStorage.point.int.z;
+        } else if (this.shape == 6){
+          this.mesAxisXSelected = this.selectedPointStorage.point.int.x;
+          this.mesAxisYSelected = this.selectedPointStorage.point.int.y;
+          this.mesAxisZSelected = this.selectedPointStorage.point.int.z;
+        } else {
+          this.mesAxisXSelected = this.selectedPointStorage.point.int.x;
+          this.mesAxisYSelected = this.selectedPointStorage.point.int.y;
+          this.mesAxisZSelected = this.selectedPointStorage.point.int.z;
+        }
+      } else if (value == 2) {
+        if (this.shape == 1) {
+          this.mesAxisXSelected = this.selectedPointStorage.point.bot.x;
+          this.mesAxisYSelected = this.selectedPointStorage.point.bot.y;
+          this.mesAxisZSelected = this.selectedPointStorage.point.bot.z;
+        } else if (this.shape == 2 || this.shape == 9) {
+          if (this.outputProductChart.ORIENTATION == 1) {
+            this.mesAxisXSelected = this.selectedPointStorage.point.bot.z;
+            this.mesAxisYSelected = this.selectedPointStorage.point.bot.y;
+            this.mesAxisZSelected = this.selectedPointStorage.point.bot.x;
+          } else {
+            this.mesAxisXSelected = this.selectedPointStorage.point.bot.x;
+            this.mesAxisYSelected = this.selectedPointStorage.point.bot.y;
+            this.mesAxisZSelected = this.selectedPointStorage.point.bot.z;
+          }
+        } else if (this.shape == 3) {
+          if (this.outputProductChart.ORIENTATION == 1) {
+            this.mesAxisXSelected = this.selectedPointStorage.point.bot.z;
+            this.mesAxisYSelected = this.selectedPointStorage.point.bot.x;
+            this.mesAxisZSelected = this.selectedPointStorage.point.bot.y;
+          } else {
+            this.mesAxisXSelected = this.selectedPointStorage.point.bot.y;
+            this.mesAxisYSelected = this.selectedPointStorage.point.bot.x;
+            this.mesAxisZSelected = this.selectedPointStorage.point.bot.z;
+          }
+        } else if (this.shape == 4 || this.shape == 5) {
+          this.mesAxisXSelected = this.selectedPointStorage.point.bot.x;
+          this.mesAxisYSelected = this.selectedPointStorage.point.bot.y;
+          this.mesAxisZSelected = this.selectedPointStorage.point.bot.z;
+        } else if (this.shape == 7 || this.shape == 8) {
+          this.mesAxisXSelected = this.selectedPointStorage.point.bot.y;
+          this.mesAxisYSelected = this.selectedPointStorage.point.bot.x;
+          this.mesAxisZSelected = this.selectedPointStorage.point.bot.z;
+        } else if (this.shape == 6){
+          this.mesAxisXSelected = this.selectedPointStorage.point.bot.x;
+          this.mesAxisYSelected = this.selectedPointStorage.point.bot.y;
+          this.mesAxisZSelected = this.selectedPointStorage.point.bot.z;
+        } else {
+          this.mesAxisXSelected = this.selectedPointStorage.point.bot.x;
+          this.mesAxisYSelected = this.selectedPointStorage.point.bot.y;
+          this.mesAxisZSelected = this.selectedPointStorage.point.bot.z;
+        }
+      }
+    }
+    if (recordType === 'axis') {
+      if (value === 0) {
+        if (this.shape == 1) {
+          this.mesAxisXSelected = this.selectedPointStorage.axis.axe1.x;
+          this.mesAxisYSelected = this.selectedPointStorage.axis.axe1.y;
+          this.mesAxisZSelected = this.selectedPointStorage.axis.axe1.z;
+        } else if (this.shape == 2 || this.shape == 9) {
+          if (this.outputProductChart.ORIENTATION == 1) {
+            this.mesAxisXSelected = this.selectedPointStorage.axis.axe1.z;
+            this.mesAxisYSelected = this.selectedPointStorage.axis.axe1.y;
+            this.mesAxisZSelected = this.selectedPointStorage.axis.axe1.x;
+          } else {
+            this.mesAxisXSelected = this.selectedPointStorage.axis.axe1.x;
+            this.mesAxisYSelected = this.selectedPointStorage.axis.axe1.y;
+            this.mesAxisZSelected = this.selectedPointStorage.axis.axe1.z;
+          }
+        } else if (this.shape == 3) {
+          if (this.outputProductChart.ORIENTATION == 1) {
+            this.mesAxisXSelected = this.selectedPointStorage.axis.axe1.z;
+            this.mesAxisYSelected = this.selectedPointStorage.axis.axe1.x;
+            this.mesAxisZSelected = this.selectedPointStorage.axis.axe1.y;
+          } else {
+            this.mesAxisXSelected = this.selectedPointStorage.axis.axe1.y;
+            this.mesAxisYSelected = this.selectedPointStorage.axis.axe1.x;
+            this.mesAxisZSelected = this.selectedPointStorage.axis.axe1.z;
+          }
+        } else if (this.shape == 4 || this.shape == 5) {
+          this.mesAxisXSelected = this.selectedPointStorage.axis.axe1.x;
+          this.mesAxisYSelected = this.selectedPointStorage.axis.axe1.y;
+          this.mesAxisZSelected = this.selectedPointStorage.axis.axe1.z;
+        } else if (this.shape == 7 || this.shape == 8) {
+          this.mesAxisXSelected = this.selectedPointStorage.axis.axe1.y;
+          this.mesAxisYSelected = this.selectedPointStorage.axis.axe1.x;
+          this.mesAxisZSelected = this.selectedPointStorage.axis.axe1.z;
+        } else if (this.shape == 6){
+          this.mesAxisXSelected = this.selectedPointStorage.axis.axe1.x;
+          this.mesAxisYSelected = this.selectedPointStorage.axis.axe1.y;
+          this.mesAxisZSelected = this.selectedPointStorage.axis.axe1.z;
+        } else {
+          this.mesAxisXSelected = this.selectedPointStorage.axis.axe1.x;
+          this.mesAxisYSelected = this.selectedPointStorage.axis.axe1.y;
+          this.mesAxisZSelected = this.selectedPointStorage.axis.axe1.z;
+        }
+      } else if (value === 1) {
+        if (this.shape == 1) {
+          this.mesAxisXSelected = this.selectedPointStorage.axis.axe2.x;
+          this.mesAxisYSelected = this.selectedPointStorage.axis.axe2.y;
+          this.mesAxisZSelected = this.selectedPointStorage.axis.axe2.z;
+        } else if (this.shape == 2 || this.shape == 9) {
+          if (this.outputProductChart.ORIENTATION == 1) {
+            this.mesAxisXSelected = this.selectedPointStorage.axis.axe2.z;
+            this.mesAxisYSelected = this.selectedPointStorage.axis.axe2.y;
+            this.mesAxisZSelected = this.selectedPointStorage.axis.axe2.x;
+          } else {
+            this.mesAxisXSelected = this.selectedPointStorage.axis.axe2.x;
+            this.mesAxisYSelected = this.selectedPointStorage.axis.axe2.y;
+            this.mesAxisZSelected = this.selectedPointStorage.axis.axe2.z;
+          }
+        } else if (this.shape == 3) {
+          if (this.outputProductChart.ORIENTATION == 1) {
+            this.mesAxisXSelected = this.selectedPointStorage.axis.axe2.z;
+            this.mesAxisYSelected = this.selectedPointStorage.axis.axe2.x;
+            this.mesAxisZSelected = this.selectedPointStorage.axis.axe2.y;
+          } else {
+            this.mesAxisXSelected = this.selectedPointStorage.axis.axe2.y;
+            this.mesAxisYSelected = this.selectedPointStorage.axis.axe2.x;
+            this.mesAxisZSelected = this.selectedPointStorage.axis.axe2.z;
+          }
+        } else if (this.shape == 4 || this.shape == 5) {
+          this.mesAxisXSelected = this.selectedPointStorage.axis.axe2.x;
+          this.mesAxisYSelected = this.selectedPointStorage.axis.axe2.y;
+          this.mesAxisZSelected = this.selectedPointStorage.axis.axe2.z;
+        } else if (this.shape == 7 || this.shape == 8) {
+          this.mesAxisXSelected = this.selectedPointStorage.axis.axe2.y;
+          this.mesAxisYSelected = this.selectedPointStorage.axis.axe2.x;
+          this.mesAxisZSelected = this.selectedPointStorage.axis.axe2.z;
+        } else if (this.shape == 6){
+          this.mesAxisXSelected = this.selectedPointStorage.axis.axe2.x;
+          this.mesAxisYSelected = this.selectedPointStorage.axis.axe2.y;
+          this.mesAxisZSelected = this.selectedPointStorage.axis.axe2.z;
+        } else {
+          this.mesAxisXSelected = this.selectedPointStorage.axis.axe2.x;
+          this.mesAxisYSelected = this.selectedPointStorage.axis.axe2.y;
+          this.mesAxisZSelected = this.selectedPointStorage.axis.axe2.z;
+        }
+      } else {
+        if (this.shape == 1) {
+          this.mesAxisXSelected = this.selectedPointStorage.axis.axe3.x;
+          this.mesAxisYSelected = this.selectedPointStorage.axis.axe3.y;
+          this.mesAxisZSelected = this.selectedPointStorage.axis.axe3.z;
+        } else if (this.shape == 2 || this.shape == 9) {
+          if (this.outputProductChart.ORIENTATION == 1) {
+            this.mesAxisXSelected = this.selectedPointStorage.axis.axe3.z;
+            this.mesAxisYSelected = this.selectedPointStorage.axis.axe3.y;
+            this.mesAxisZSelected = this.selectedPointStorage.axis.axe3.x;
+          } else {
+            this.mesAxisXSelected = this.selectedPointStorage.axis.axe3.x;
+            this.mesAxisYSelected = this.selectedPointStorage.axis.axe3.y;
+            this.mesAxisZSelected = this.selectedPointStorage.axis.axe3.z;
+          }
+        } else if (this.shape == 3) {
+          if (this.outputProductChart.ORIENTATION == 1) {
+            this.mesAxisXSelected = this.selectedPointStorage.axis.axe3.z;
+            this.mesAxisYSelected = this.selectedPointStorage.axis.axe3.x;
+            this.mesAxisZSelected = this.selectedPointStorage.axis.axe3.y;
+          } else {
+            this.mesAxisXSelected = this.selectedPointStorage.axis.axe3.y;
+            this.mesAxisYSelected = this.selectedPointStorage.axis.axe3.x;
+            this.mesAxisZSelected = this.selectedPointStorage.axis.axe3.z;
+          }
+        } else if (this.shape == 4 || this.shape == 5) {
+          this.mesAxisXSelected = this.selectedPointStorage.axis.axe3.x;
+          this.mesAxisYSelected = this.selectedPointStorage.axis.axe3.y;
+          this.mesAxisZSelected = this.selectedPointStorage.axis.axe3.z;
+        } else if (this.shape == 7 || this.shape == 8) {
+          this.mesAxisXSelected = this.selectedPointStorage.axis.axe3.y;
+          this.mesAxisYSelected = this.selectedPointStorage.axis.axe3.x;
+          this.mesAxisZSelected = this.selectedPointStorage.axis.axe3.z;
+        } else if (this.shape == 6){
+          this.mesAxisXSelected = this.selectedPointStorage.axis.axe3.x;
+          this.mesAxisYSelected = this.selectedPointStorage.axis.axe3.y;
+          this.mesAxisZSelected = this.selectedPointStorage.axis.axe3.z;
+        } else {
+          this.mesAxisXSelected = this.selectedPointStorage.axis.axe3.x;
+          this.mesAxisYSelected = this.selectedPointStorage.axis.axe3.y;
+          this.mesAxisZSelected = this.selectedPointStorage.axis.axe3.z;
+        }
+      }
+    }
+    if (recordType === 'plans') {
+      if (this.shape == 1) {
+        this.mesAxisXSelected = this.selectedPointStorage.plan.x;
+        this.mesAxisYSelected = this.selectedPointStorage.plan.y;
+        this.mesAxisZSelected = this.selectedPointStorage.plan.z;
+      } else if (this.shape == 2 || this.shape == 9) {
+        if (this.outputProductChart.ORIENTATION == 1) {
+          this.mesAxisXSelected = this.selectedPointStorage.plan.z;
+          this.mesAxisYSelected = this.selectedPointStorage.plan.y;
+          this.mesAxisZSelected = this.selectedPointStorage.plan.x;
+        } else {
+          this.mesAxisXSelected = this.selectedPointStorage.plan.x;
+          this.mesAxisYSelected = this.selectedPointStorage.plan.y;
+          this.mesAxisZSelected = this.selectedPointStorage.plan.z;
+        }
+      } else if (this.shape == 3) {
+        if (this.outputProductChart.ORIENTATION == 1) {
+          this.mesAxisXSelected = this.selectedPointStorage.plan.z;
+          this.mesAxisYSelected = this.selectedPointStorage.plan.x;
+          this.mesAxisZSelected = this.selectedPointStorage.plan.y;
+        } else {
+          this.mesAxisXSelected = this.selectedPointStorage.plan.y;
+          this.mesAxisYSelected = this.selectedPointStorage.plan.x;
+          this.mesAxisZSelected = this.selectedPointStorage.plan.z;
+        }
+      } else if (this.shape == 4 || this.shape == 5) {
+        this.mesAxisXSelected = this.selectedPointStorage.plan.x;
+        this.mesAxisYSelected = this.selectedPointStorage.plan.y;
+        this.mesAxisZSelected = this.selectedPointStorage.plan.z;
+      } else if (this.shape == 7 || this.shape == 8) {
+        this.mesAxisXSelected = this.selectedPointStorage.plan.y;
+        this.mesAxisYSelected = this.selectedPointStorage.plan.x;
+        this.mesAxisZSelected = this.selectedPointStorage.plan.z;
+      } else if (this.shape == 6){
+        this.mesAxisXSelected = this.selectedPointStorage.plan.x;
+        this.mesAxisYSelected = this.selectedPointStorage.plan.y;
+        this.mesAxisZSelected = this.selectedPointStorage.plan.z;
+      } else {
+        this.mesAxisXSelected = this.selectedPointStorage.plan.x;
+        this.mesAxisYSelected = this.selectedPointStorage.plan.y;
+        this.mesAxisZSelected = this.selectedPointStorage.plan.z;
+      }
+    }
+    console.log(this.mesAxisXSelected);
+    console.log(this.mesAxisYSelected);
+    console.log(this.mesAxisZSelected);
+  }
+
+  changeX() {
+    console.log(this.recordType);
+    console.log(this.radioChecked);
+    console.log(this.mesAxisXSelected);
+    if (this.recordType === 'points') {
+      if (this.radioChecked === 0) {
+        if (this.shape == 1) {
+          this.selectedPointStorage.point.top.x = this.mesAxisXSelected;
+        } else if (this.shape == 2 || this.shape == 9) {
+          if (this.outputProductChart.ORIENTATION == 1) {
+            this.selectedPointStorage.point.top.z = this.mesAxisXSelected;
+          } else {
+            this.selectedPointStorage.point.top.x = this.mesAxisXSelected;
+          }
+        } else if (this.shape == 3) {
+          if (this.outputProductChart.ORIENTATION == 1) {
+            this.selectedPointStorage.point.top.z = this.mesAxisXSelected;
+          } else {
+            this.selectedPointStorage.point.top.y = this.mesAxisXSelected;
+          }
+        } else if (this.shape == 4 || this.shape == 5) {
+          this.selectedPointStorage.point.top.x = this.mesAxisXSelected;
+        } else if (this.shape == 7 || this.shape == 8) {
+          this.selectedPointStorage.point.top.y = this.mesAxisXSelected;
+        } else if (this.shape == 6){
+          this.selectedPointStorage.point.top.x = this.mesAxisXSelected;
+        } else {
+          this.selectedPointStorage.point.top.x = this.mesAxisXSelected;
+        }
+      } else if (this.radioChecked === 1) {
+        if (this.shape == 1) {
+          this.selectedPointStorage.point.int.x = this.mesAxisXSelected;
+        } else if (this.shape == 2 || this.shape == 9) {
+          if (this.outputProductChart.ORIENTATION == 1) {
+            this.selectedPointStorage.point.int.z = this.mesAxisXSelected;
+          } else {
+            this.selectedPointStorage.point.int.x = this.mesAxisXSelected;
+          }
+        } else if (this.shape == 3) {
+          if (this.outputProductChart.ORIENTATION == 1) {
+            this.selectedPointStorage.point.int.z = this.mesAxisXSelected;
+          } else {
+            this.selectedPointStorage.point.int.y = this.mesAxisXSelected;
+          }
+        } else if (this.shape == 4 || this.shape == 5) {
+          this.selectedPointStorage.point.int.x = this.mesAxisXSelected;
+        } else if (this.shape == 7 || this.shape == 8) {
+          this.selectedPointStorage.point.int.y = this.mesAxisXSelected;
+        } else if (this.shape == 6){
+          this.selectedPointStorage.point.int.x = this.mesAxisXSelected;
+        } else {
+          this.selectedPointStorage.point.int.x = this.mesAxisXSelected;
+        }
+      } else if (this.radioChecked == 2) {
+        if (this.shape == 1) {
+          this.selectedPointStorage.point.bot.x = this.mesAxisXSelected;
+        } else if (this.shape == 2 || this.shape == 9) {
+          if (this.outputProductChart.ORIENTATION == 1) {
+            this.selectedPointStorage.point.bot.z = this.mesAxisXSelected;
+          } else {
+            this.selectedPointStorage.point.bot.x = this.mesAxisXSelected;
+          }
+        } else if (this.shape == 3) {
+          if (this.outputProductChart.ORIENTATION == 1) {
+            this.selectedPointStorage.point.bot.z = this.mesAxisXSelected;
+          } else {
+            this.selectedPointStorage.point.bot.y = this.mesAxisXSelected;
+          }
+        } else if (this.shape == 4 || this.shape == 5) {
+          this.selectedPointStorage.point.bot.x = this.mesAxisXSelected;
+        } else if (this.shape == 7 || this.shape == 8) {
+          this.selectedPointStorage.point.bot.y = this.mesAxisXSelected;
+        } else if (this.shape == 6){
+          this.selectedPointStorage.point.bot.x = this.mesAxisXSelected;
+        } else {
+          this.selectedPointStorage.point.bot.x = this.mesAxisXSelected;
+        }
+      }
+    }
+    if (this.recordType === 'axis') {
+      if (this.radioChecked === 0) {
+        if (this.shape == 1) {
+          this.selectedPointStorage.axis.axe1.x = this.mesAxisXSelected;
+        } else if (this.shape == 2 || this.shape == 9) {
+          if (this.outputProductChart.ORIENTATION == 1) {
+            this.selectedPointStorage.axis.axe1.z = this.mesAxisXSelected;
+          } else {
+            this.selectedPointStorage.axis.axe1.x = this.mesAxisXSelected;
+          }
+        } else if (this.shape == 3) {
+          if (this.outputProductChart.ORIENTATION == 1) {
+            this.selectedPointStorage.axis.axe1.z = this.mesAxisXSelected;
+          } else {
+            this.selectedPointStorage.axis.axe1.y = this.mesAxisXSelected;
+          }
+        } else if (this.shape == 4 || this.shape == 5) {
+          this.selectedPointStorage.axis.axe1.x = this.mesAxisXSelected;
+        } else if (this.shape == 7 || this.shape == 8) {
+          this.selectedPointStorage.axis.axe1.x = this.mesAxisXSelected;
+        } else if (this.shape == 6) {
+          this.selectedPointStorage.axis.axe1.y = this.mesAxisXSelected;
+        } else {
+          this.selectedPointStorage.axis.axe1.x = this.mesAxisXSelected;
+        }
+      } else if (this.radioChecked === 1) {
+        if (this.shape == 1) {
+          this.selectedPointStorage.axis.axe2.x = this.mesAxisXSelected;
+        } else if (this.shape == 2 || this.shape == 9) {
+          if (this.outputProductChart.ORIENTATION == 1) {
+            this.selectedPointStorage.axis.axe2.z = this.mesAxisXSelected;
+          } else {
+            this.selectedPointStorage.axis.axe2.x = this.mesAxisXSelected;
+          }
+        } else if (this.shape == 3) {
+          if (this.outputProductChart.ORIENTATION == 1) {
+            this.selectedPointStorage.axis.axe2.z = this.mesAxisXSelected;
+          } else {
+            this.selectedPointStorage.axis.axe2.y = this.mesAxisXSelected;
+          }
+        } else if (this.shape == 4 || this.shape == 5) {
+          this.selectedPointStorage.axis.axe2.x = this.mesAxisXSelected;
+        } else if (this.shape == 7 || this.shape == 8) {
+          this.selectedPointStorage.axis.axe2.y = this.mesAxisXSelected;
+        } else if (this.shape == 6){
+          this.selectedPointStorage.axis.axe2.x = this.mesAxisXSelected;
+        } else {
+          this.selectedPointStorage.axis.axe2.x = this.mesAxisXSelected;
+        }
+      } else if (this.radioChecked == 2) {
+        if (this.shape == 1) {
+          this.selectedPointStorage.axis.axe3.x = this.mesAxisXSelected;
+        } else if (this.shape == 2 || this.shape == 9) {
+          if (this.outputProductChart.ORIENTATION == 1) {
+            this.selectedPointStorage.axis.axe3.z = this.mesAxisXSelected;
+          } else {
+            this.selectedPointStorage.axis.axe3.x = this.mesAxisXSelected;
+          }
+        } else if (this.shape == 3) {
+          if (this.outputProductChart.ORIENTATION == 1) {
+            this.selectedPointStorage.axis.axe3.z = this.mesAxisXSelected;
+          } else {
+            this.selectedPointStorage.axis.axe3.y = this.mesAxisXSelected;
+          }
+        } else if (this.shape == 4 || this.shape == 5) {
+          this.selectedPointStorage.axis.axe3.x = this.mesAxisXSelected;
+        } else if (this.shape == 7 || this.shape == 8) {
+          this.selectedPointStorage.axis.axe3.y = this.mesAxisXSelected;
+        } else if (this.shape == 6){
+          this.selectedPointStorage.axis.axe3.x = this.mesAxisXSelected;
+        } else {
+          this.selectedPointStorage.axis.axe3.x = this.mesAxisXSelected;
+        }
+      }
+    }
+    if (this.recordType === 'plans') {
+      if (this.shape == 1) {
+        this.selectedPointStorage.plan.x = this.mesAxisXSelected;
+      } else if (this.shape == 2 || this.shape == 9) {
+        if (this.outputProductChart.ORIENTATION == 1) {
+          this.selectedPointStorage.plan.z = this.mesAxisXSelected;
+        } else {
+          this.selectedPointStorage.plan.x = this.mesAxisXSelected;
+        }
+      } else if (this.shape == 3) {
+        if (this.outputProductChart.ORIENTATION == 1) {
+          this.selectedPointStorage.plan.z = this.mesAxisXSelected;
+        } else {
+          this.selectedPointStorage.plan.y = this.mesAxisXSelected;
+        }
+      } else if (this.shape == 4 || this.shape == 5) {
+        this.selectedPointStorage.plan.x = this.mesAxisXSelected;
+      } else if (this.shape == 7 || this.shape == 8) {
+        this.selectedPointStorage.plan.y = this.mesAxisXSelected;
+      } else if (this.shape == 6){
+        this.selectedPointStorage.plan.x = this.mesAxisXSelected;
+      } else {
+        this.selectedPointStorage.plan.x = this.mesAxisXSelected;
+      }
+    }
+    console.log(this.selectedPointStorage);
+  }
+
+  changeY() {
+    console.log(this.recordType);
+    console.log(this.radioChecked);
+    if (this.recordType === 'points') {
+      if (this.radioChecked === 0) {
+        if (this.shape == 1) {
+          this.selectedPointStorage.point.top.y = this.mesAxisYSelected;
+        } else if (this.shape == 2 || this.shape == 9) {
+          if (this.outputProductChart.ORIENTATION == 1) {
+            this.selectedPointStorage.point.top.y = this.mesAxisYSelected;
+          } else {
+            this.selectedPointStorage.point.top.y = this.mesAxisYSelected;
+          }
+        } else if (this.shape == 3) {
+          if (this.outputProductChart.ORIENTATION == 1) {
+            this.selectedPointStorage.point.top.x = this.mesAxisYSelected;
+          } else {
+            this.selectedPointStorage.point.top.x = this.mesAxisYSelected;
+          }
+        } else if (this.shape == 4 || this.shape == 5) {
+          this.selectedPointStorage.point.top.y = this.mesAxisYSelected;
+        } else if (this.shape == 7 || this.shape == 8) {
+          this.selectedPointStorage.point.top.x = this.mesAxisYSelected;
+        } else if (this.shape == 6) {
+          this.selectedPointStorage.point.top.y = this.mesAxisYSelected;
+        } else {
+          this.selectedPointStorage.point.top.y = this.mesAxisYSelected;
+        }
+      } else if (this.radioChecked === 1) {
+        if (this.shape == 1) {
+          this.selectedPointStorage.point.int.y = this.mesAxisYSelected;
+        } else if (this.shape == 2 || this.shape == 9) {
+          if (this.outputProductChart.ORIENTATION == 1) {
+            this.selectedPointStorage.point.int.y = this.mesAxisYSelected;
+          } else {
+            this.selectedPointStorage.point.int.y = this.mesAxisYSelected;
+          }
+        } else if (this.shape == 3) {
+          if (this.outputProductChart.ORIENTATION == 1) {
+            this.selectedPointStorage.point.int.x = this.mesAxisYSelected;
+          } else {
+            this.selectedPointStorage.point.int.x = this.mesAxisYSelected;
+          }
+        } else if (this.shape == 4 || this.shape == 5) {
+          this.selectedPointStorage.point.int.y = this.mesAxisYSelected;
+        } else if (this.shape == 7 || this.shape == 8) {
+          this.selectedPointStorage.point.int.x = this.mesAxisYSelected;
+        } else if (this.shape == 6) {
+          this.selectedPointStorage.point.int.y = this.mesAxisYSelected;
+        } else {
+          this.selectedPointStorage.point.int.y = this.mesAxisYSelected;
+        }
+      } else if (this.radioChecked == 2) {
+        if (this.shape == 1) {
+          this.selectedPointStorage.point.bot.y = this.mesAxisYSelected;
+        } else if (this.shape == 2 || this.shape == 9) {
+          if (this.outputProductChart.ORIENTATION == 1) {
+            this.selectedPointStorage.point.bot.y = this.mesAxisYSelected;
+          } else {
+            this.selectedPointStorage.point.bot.y = this.mesAxisYSelected;
+          }
+        } else if (this.shape == 3) {
+          if (this.outputProductChart.ORIENTATION == 1) {
+            this.selectedPointStorage.point.bot.x = this.mesAxisYSelected;
+          } else {
+            this.selectedPointStorage.point.bot.x = this.mesAxisYSelected;
+          }
+        } else if (this.shape == 4 || this.shape == 5) {
+          this.selectedPointStorage.point.bot.y = this.mesAxisYSelected;
+        } else if (this.shape == 7 || this.shape == 8) {
+          this.selectedPointStorage.point.bot.x = this.mesAxisYSelected;
+        } else if (this.shape == 6) {
+          this.selectedPointStorage.point.bot.y = this.mesAxisYSelected;
+        } else {
+          this.selectedPointStorage.point.bot.y = this.mesAxisYSelected;
+        }
+      }
+    }
+    if (this.recordType === 'axis') {
+      if (this.radioChecked === 0) {
+        if (this.shape == 1) {
+          this.selectedPointStorage.axis.axe1.y = this.mesAxisYSelected;
+        } else if (this.shape == 2 || this.shape == 9) {
+          if (this.outputProductChart.ORIENTATION == 1) {
+            this.selectedPointStorage.axis.axe1.y = this.mesAxisYSelected;
+          } else {
+            this.selectedPointStorage.axis.axe1.y = this.mesAxisYSelected;
+          }
+        } else if (this.shape == 3) {
+          if (this.outputProductChart.ORIENTATION == 1) {
+            this.selectedPointStorage.axis.axe1.x = this.mesAxisYSelected;
+          } else {
+            this.selectedPointStorage.axis.axe1.x = this.mesAxisYSelected;
+          }
+        } else if (this.shape == 4 || this.shape == 5) {
+          this.selectedPointStorage.axis.axe1.y = this.mesAxisYSelected;
+        } else if (this.shape == 7 || this.shape == 8) {
+          this.selectedPointStorage.axis.axe1.x = this.mesAxisYSelected;
+        } else if (this.shape == 6) {
+          this.selectedPointStorage.axis.axe1.y = this.mesAxisYSelected;
+        } else {
+          this.selectedPointStorage.axis.axe1.y = this.mesAxisYSelected;
+        }
+      } else if (this.radioChecked === 1) {
+        if (this.shape == 1) {
+          this.selectedPointStorage.axis.axe2.y = this.mesAxisYSelected;
+        } else if (this.shape == 2 || this.shape == 9) {
+          if (this.outputProductChart.ORIENTATION == 1) {
+            this.selectedPointStorage.axis.axe2.y = this.mesAxisYSelected;
+          } else {
+            this.selectedPointStorage.axis.axe2.y = this.mesAxisYSelected;
+          }
+        } else if (this.shape == 3) {
+          if (this.outputProductChart.ORIENTATION == 1) {
+            this.selectedPointStorage.axis.axe2.x = this.mesAxisYSelected;
+          } else {
+            this.selectedPointStorage.axis.axe2.x = this.mesAxisYSelected;
+          }
+        } else if (this.shape == 4 || this.shape == 5) {
+          this.selectedPointStorage.axis.axe2.y = this.mesAxisYSelected;
+        } else if (this.shape == 7 || this.shape == 8) {
+          this.selectedPointStorage.axis.axe2.x = this.mesAxisYSelected;
+        } else if (this.shape == 6) {
+          this.selectedPointStorage.axis.axe2.y = this.mesAxisYSelected;
+        } else {
+          this.selectedPointStorage.axis.axe2.y = this.mesAxisYSelected;
+        }
+      } else if (this.radioChecked == 2) {
+        if (this.shape == 1) {
+          this.selectedPointStorage.axis.axe3.y = this.mesAxisYSelected;
+        } else if (this.shape == 2 || this.shape == 9) {
+          if (this.outputProductChart.ORIENTATION == 1) {
+            this.selectedPointStorage.axis.axe3.y = this.mesAxisYSelected;
+          } else {
+            this.selectedPointStorage.axis.axe3.y = this.mesAxisYSelected;
+          }
+        } else if (this.shape == 3) {
+          if (this.outputProductChart.ORIENTATION == 1) {
+            this.selectedPointStorage.axis.axe3.x = this.mesAxisYSelected;
+          } else {
+            this.selectedPointStorage.axis.axe3.x = this.mesAxisYSelected;
+          }
+        } else if (this.shape == 4 || this.shape == 5) {
+          this.selectedPointStorage.axis.axe3.y = this.mesAxisYSelected;
+        } else if (this.shape == 7 || this.shape == 8) {
+          this.selectedPointStorage.axis.axe3.x = this.mesAxisYSelected;
+        } else if (this.shape == 6){
+          this.selectedPointStorage.axis.axe3.y = this.mesAxisYSelected;
+        } else {
+          this.selectedPointStorage.axis.axe3.y = this.mesAxisYSelected;
+        }
+      }
+    }
+    if (this.recordType === 'plans') {
+      if (this.shape == 1) {
+        this.selectedPointStorage.plan.y = this.mesAxisYSelected;
+      } else if (this.shape == 2 || this.shape == 9) {
+        if (this.outputProductChart.ORIENTATION == 1) {
+          this.selectedPointStorage.plan.y = this.mesAxisYSelected;
+        } else {
+          this.selectedPointStorage.plan.y = this.mesAxisYSelected;
+        }
+      } else if (this.shape == 3) {
+        if (this.outputProductChart.ORIENTATION == 1) {
+          this.selectedPointStorage.plan.x = this.mesAxisYSelected;
+        } else {
+          this.selectedPointStorage.plan.x = this.mesAxisYSelected;
+        }
+      } else if (this.shape == 4 || this.shape == 5) {
+        this.selectedPointStorage.plan.y = this.mesAxisYSelected;
+      } else if (this.shape == 7 || this.shape == 8) {
+        this.selectedPointStorage.plan.x = this.mesAxisYSelected;
+      } else if (this.shape == 6){
+        this.selectedPointStorage.plan.y = this.mesAxisYSelected;
+      } else {
+        this.selectedPointStorage.plan.y = this.mesAxisYSelected;
+      }
+    }
+  }
+
+  changeZ() {
+    console.log(this.recordType);
+    console.log(this.radioChecked);
+    if (this.recordType === 'points') {
+      if (this.radioChecked === 0) {
+        if (this.shape == 1) {
+          this.selectedPointStorage.point.top.z = this.mesAxisZSelected;
+        } else if (this.shape == 2 || this.shape == 9) {
+          if (this.outputProductChart.ORIENTATION == 1) {
+            this.selectedPointStorage.point.top.x = this.mesAxisZSelected;
+          } else {
+            this.selectedPointStorage.point.top.z = this.mesAxisZSelected;
+          }
+        } else if (this.shape == 3) {
+          if (this.outputProductChart.ORIENTATION == 1) {
+            this.selectedPointStorage.point.top.y = this.mesAxisZSelected;
+          } else {
+            this.selectedPointStorage.point.top.z = this.mesAxisZSelected;
+          }
+        } else if (this.shape == 4 || this.shape == 5) {
+          this.selectedPointStorage.point.top.z = this.mesAxisZSelected;
+        } else if (this.shape == 7 || this.shape == 8) {
+          this.selectedPointStorage.point.top.z = this.mesAxisZSelected;
+        } else if (this.shape == 6) {
+          this.selectedPointStorage.point.top.z = this.mesAxisZSelected;
+        } else {
+          this.selectedPointStorage.point.top.z = this.mesAxisZSelected;
+        }
+      } else if (this.radioChecked === 1) {
+        if (this.shape == 1) {
+          this.selectedPointStorage.point.int.z = this.mesAxisZSelected;
+        } else if (this.shape == 2 || this.shape == 9) {
+          if (this.outputProductChart.ORIENTATION == 1) {
+            this.selectedPointStorage.point.int.x = this.mesAxisZSelected;
+          } else {
+            this.selectedPointStorage.point.int.z = this.mesAxisZSelected;
+          }
+        } else if (this.shape == 3) {
+          if (this.outputProductChart.ORIENTATION == 1) {
+            this.selectedPointStorage.point.int.y = this.mesAxisZSelected;
+          } else {
+            this.selectedPointStorage.point.int.z = this.mesAxisZSelected;
+          }
+        } else if (this.shape == 4 || this.shape == 5) {
+          this.selectedPointStorage.point.int.z = this.mesAxisZSelected;
+        } else if (this.shape == 7 || this.shape == 8) {
+          this.selectedPointStorage.point.int.z = this.mesAxisZSelected;
+        } else if (this.shape == 6){
+          this.selectedPointStorage.point.int.z = this.mesAxisZSelected;
+        } else {
+          this.selectedPointStorage.point.int.z = this.mesAxisZSelected;
+        }
+      } else if (this.radioChecked == 2) {
+        if (this.shape == 1) {
+          this.selectedPointStorage.point.bot.z = this.mesAxisZSelected;
+        } else if (this.shape == 2 || this.shape == 9) {
+          if (this.outputProductChart.ORIENTATION == 1) {
+            this.selectedPointStorage.point.bot.x = this.mesAxisZSelected;
+          } else {
+            this.selectedPointStorage.point.bot.z = this.mesAxisZSelected;
+          }
+        } else if (this.shape == 3) {
+          if (this.outputProductChart.ORIENTATION == 1) {
+            this.selectedPointStorage.point.bot.y = this.mesAxisZSelected;
+          } else {
+            this.selectedPointStorage.point.bot.z = this.mesAxisZSelected;
+          }
+        } else if (this.shape == 4 || this.shape == 5) {
+          this.selectedPointStorage.point.bot.z = this.mesAxisZSelected;
+        } else if (this.shape == 7 || this.shape == 8) {
+          this.selectedPointStorage.point.bot.z = this.mesAxisZSelected;
+        } else if (this.shape == 6){
+          this.selectedPointStorage.point.bot.z = this.mesAxisZSelected;
+        } else {
+          this.selectedPointStorage.point.bot.z = this.mesAxisZSelected;
+        }
+      }
+    }
+    if (this.recordType === 'axis') {
+      if (this.radioChecked === 0) {
+        if (this.shape == 1) {
+          this.selectedPointStorage.axis.axe1.z = this.mesAxisZSelected;
+        } else if (this.shape == 2 || this.shape == 9) {
+          if (this.outputProductChart.ORIENTATION == 1) {
+            this.selectedPointStorage.axis.axe1.x = this.mesAxisZSelected;
+          } else {
+            this.selectedPointStorage.axis.axe1.z = this.mesAxisZSelected;
+          }
+        } else if (this.shape == 3) {
+          if (this.outputProductChart.ORIENTATION == 1) {
+            this.selectedPointStorage.axis.axe1.y = this.mesAxisZSelected;
+          } else {
+            this.selectedPointStorage.axis.axe1.z = this.mesAxisZSelected;
+          }
+        } else if (this.shape == 4 || this.shape == 5) {
+          this.selectedPointStorage.axis.axe1.z = this.mesAxisZSelected;
+        } else if (this.shape == 7 || this.shape == 8) {
+          this.selectedPointStorage.axis.axe1.z = this.mesAxisZSelected;
+        } else if (this.shape == 6) {
+          this.selectedPointStorage.axis.axe1.z = this.mesAxisZSelected;
+        } else {
+          this.selectedPointStorage.axis.axe1.z = this.mesAxisZSelected;
+        }
+      } else if (this.radioChecked === 1) {
+        if (this.shape == 1) {
+          this.selectedPointStorage.axis.axe2.z = this.mesAxisZSelected;
+        } else if (this.shape == 2 || this.shape == 9) {
+          if (this.outputProductChart.ORIENTATION == 1) {
+            this.selectedPointStorage.axis.axe2.x = this.mesAxisZSelected;
+          } else {
+            this.selectedPointStorage.axis.axe2.z = this.mesAxisZSelected;
+          }
+        } else if (this.shape == 3) {
+          if (this.outputProductChart.ORIENTATION == 1) {
+            this.selectedPointStorage.axis.axe2.y = this.mesAxisZSelected;
+          } else {
+            this.selectedPointStorage.axis.axe2.z = this.mesAxisZSelected;
+          }
+        } else if (this.shape == 4 || this.shape == 5) {
+          this.selectedPointStorage.axis.axe2.z = this.mesAxisZSelected;
+        } else if (this.shape == 7 || this.shape == 8) {
+          this.selectedPointStorage.axis.axe2.z = this.mesAxisZSelected;
+        } else if (this.shape == 6){
+          this.selectedPointStorage.axis.axe2.z = this.mesAxisZSelected;
+        } else {
+          this.selectedPointStorage.axis.axe2.z = this.mesAxisZSelected;
+        }
+      } else if (this.radioChecked == 2) {
+        if (this.shape == 1) {
+          this.selectedPointStorage.axis.axe3.z = this.mesAxisZSelected;
+        } else if (this.shape == 2 || this.shape == 9) {
+          if (this.outputProductChart.ORIENTATION == 1) {
+            this.selectedPointStorage.axis.axe3.x = this.mesAxisZSelected;
+          } else {
+            this.selectedPointStorage.axis.axe3.z = this.mesAxisZSelected;
+          }
+        } else if (this.shape == 3) {
+          if (this.outputProductChart.ORIENTATION == 1) {
+            this.selectedPointStorage.axis.axe3.y = this.mesAxisZSelected;
+          } else {
+            this.selectedPointStorage.axis.axe3.z = this.mesAxisZSelected;
+          }
+        } else if (this.shape == 4 || this.shape == 5) {
+          this.selectedPointStorage.axis.axe3.z = this.mesAxisZSelected;
+        } else if (this.shape == 7 || this.shape == 8) {
+          this.selectedPointStorage.axis.axe3.z = this.mesAxisZSelected;
+        } else if (this.shape == 6){
+          this.selectedPointStorage.axis.axe3.z = this.mesAxisZSelected;
+        } else {
+          this.selectedPointStorage.axis.axe3.z = this.mesAxisZSelected;
+        }
+      }
+    }
+    if (this.recordType === 'plans') {
+      if (this.shape == 1) {
+        this.selectedPointStorage.plan.z = this.mesAxisZSelected;
+      } else if (this.shape == 2 || this.shape == 9) {
+        if (this.outputProductChart.ORIENTATION == 1) {
+          this.selectedPointStorage.plan.x = this.mesAxisZSelected;
+        } else {
+          this.selectedPointStorage.plan.z = this.mesAxisZSelected;
+        }
+      } else if (this.shape == 3) {
+        if (this.outputProductChart.ORIENTATION == 1) {
+          this.selectedPointStorage.plan.y = this.mesAxisZSelected;
+        } else {
+          this.selectedPointStorage.plan.z = this.mesAxisZSelected;
+        }
+      } else if (this.shape == 4 || this.shape == 5) {
+        this.selectedPointStorage.plan.z = this.mesAxisZSelected;
+      } else if (this.shape == 7 || this.shape == 8) {
+        this.selectedPointStorage.plan.z = this.mesAxisZSelected;
+      } else if (this.shape == 6){
+        this.selectedPointStorage.plan.z = this.mesAxisZSelected;
+      } else {
+        this.selectedPointStorage.plan.z = this.mesAxisZSelected;
+      }
+    }
+    console.log(this.mesAxisZSelected);
   }
 
   loadLocation() {
@@ -975,9 +2482,8 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
       swal('Oops', this.translate.instant('Not a valid number in Curve Number !'), 'error');
       return;
     }
-    const showLoader = <HTMLElement>document.getElementById('showLoaderProductSection');
+    this.loadProductSectionData = false;
     console.log(this.NB_STEPS);
-    showLoader.style.display = 'block';
     const params = {
       ID_STUDY: this.study.ID_STUDY,
       ID_STUDY_EQUIPMENTS: this.outputProductChart['ID_STUDY_EQUIPMENTS'],
@@ -987,7 +2493,6 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
     this.api.saveTempRecordPts(params).subscribe(
       data => {
         console.log(data);
-        showLoader.style.display = 'none';
         this.productSectionResult = data.resultLabel;
         this.productSectionValue = data.result.resultValue;
         this.productSectionRecAxis = data.result.recAxis;
@@ -1000,12 +2505,12 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
           this.productSectionAxisTemp = data.axeTemp[0] + ',' + data.axeTemp[1] + ',*';
         }
         this.productSectionDataChart = data.dataChart;
-        // this.loadChartProductSection(this.productSectionDataChart, this.productSectionResult);
+        this.loadProductSectionData = true;
       },
       (err) => {
         swal('Error', err.error.message, 'error');
         console.log(err);
-        showLoader.style.display = 'none';
+        this.loadProductSectionData = true;
       },
       () => {
       }
@@ -1356,65 +2861,5 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
     } else {
       return true;
     }
-  }
-
-  contourChart(dataContour) {
-    const size = this.temperatureStep;
-    const data = [{
-      x: JSON.parse(JSON.stringify(dataContour.X)),
-      y: JSON.parse(JSON.stringify(dataContour.Y)),
-      z: JSON.parse(JSON.stringify(dataContour.Z)),
-      type: 'contour',
-      colorscale: [
-        [0, 'rgb(0,25,255)'],
-        [.125, 'rgb(0, 107, 255)'],
-        [.25, 'rgb(0,152,255)'],
-        [.375, 'rgb(37, 232, 109)'],
-        [.5, 'rgb(44,255,150)'],
-        [.625, 'rgb(151,255,0)'],
-        [.75, 'rgb(255,234,0)'],
-        [.875, 'rgb(255,111,0)'],
-        [1, 'rgb(255,0,0)']
-      ],
-      colorbar: {
-        thickness: 50,
-        thicknessmode: 'pixels',
-        len: 1,
-        lenmode: 'fraction',
-        outlinewidth: 0,
-        borderwidth: 1
-        },
-      contours: {
-        start: this.temperatureMin,
-        end: this.temperatureMax,
-        size: size,
-        coloring: 'heatmap'
-      }
-    }
-  ];
-
-  const layout = {
-    title: '',
-    autosize: true,
-    height: 400,
-    showlegend: false,
-    margin: {
-      t: 10, r: 0, b: 43, l: 40
-    },
-    xaxis: {
-      title: this.translate.instant('Dimension') + ' ' + this.axisX + ' (' + this.symbol.prodchartDimensionSymbol + ')',
-      titlefont: {
-        color: '#f00'
-      }
-    },
-    yaxis: {
-      title: this.translate.instant('Dimension') + ' '   + this.axisY + ' (' + this.symbol.prodchartDimensionSymbol + ')',
-      titlefont: {
-        color: '#f00'
-      }
-    }
-  };
-
-  Plotly.newPlot('contourChart', data, layout, {displayModeBar: false});
   }
 }

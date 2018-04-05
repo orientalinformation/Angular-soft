@@ -13,6 +13,22 @@ import { isNumber } from '@ng-bootstrap/ng-bootstrap/util/util';
 import { Symbol } from '../../../api/models/symbol';
 import { ChainingComponent } from '../chaining/chaining.component';
 import { AuthenticationService } from '../../../authentication/authentication.service';
+import { Pipe } from '@angular/core';
+import { PipeTransform } from '@angular/core';
+
+@Pipe({ name: 'filter' })
+export class FilterPipe implements PipeTransform {
+  public transform(values: Models.Equipment[], filter: string): any[] {
+    if (!values || !values.length) {
+      return [];
+    }
+    if (!filter) {
+      return values;
+    }
+
+    return values.filter(v => v.EQUIP_NAME.toLowerCase().indexOf(filter.toLowerCase()) >= 0);
+  }
+}
 
 @Component({
   selector: 'app-equipment',
@@ -53,7 +69,21 @@ export class EquipmentComponent implements OnInit, AfterContentInit {
   };
   public symbol: Symbol;
   public equipment;
+  public energies;
+  public manufacturer;
+  public families;
+  public origins;
+  public processes;
+  public series;
+  public dimensions;
   public loadInterval = false;
+  public energySelected = -1;
+  public manufacturerSelected = '';
+  public familySelected = -1;
+  public originSelected = -1;
+  public processSelected = -1;
+  public seriesSelected = -1;
+  public dimensionSelected = '';
 
   ngOnInit() {
     this.study = null;
@@ -83,7 +113,12 @@ export class EquipmentComponent implements OnInit, AfterContentInit {
   }
 
   recalculateEquipment() {
-    swal('Warning', 'This feature is not yet implement', 'warning');
+    this.api.reCalculate(this.study.ID_STUDY).subscribe(
+      res => {
+        this.toastr.success('Recalculate success', 'successfully');
+        this.refreshView();
+      }
+    );
   }
 
   refreshView() {
@@ -96,6 +131,11 @@ export class EquipmentComponent implements OnInit, AfterContentInit {
             this.laddaDeletingStudyEquip = new Array<boolean>(equips.length);
             this.laddaDeletingStudyEquip.fill(false);
             this.equipmentsView = equips;
+            if (equips.length > 0) {
+              localStorage.setItem('equip', JSON.stringify(equips));
+            } else {
+              localStorage.setItem('equip', '');
+            }
             console.log(this.equipmentsView);
           },
           (err) => {
@@ -144,6 +184,13 @@ export class EquipmentComponent implements OnInit, AfterContentInit {
   }
 
   onShowAddEquip() {
+    this.energySelected = -1;
+    this.manufacturerSelected = '';
+    this.familySelected = -1;
+    this.originSelected = -1;
+    this.processSelected = -1;
+    this.seriesSelected = -1;
+    this.dimensionSelected = '';
     if (!this.equipments || this.equipments.length == 0) {
       this.laddaListingEquipments = true;
       this.api.getEquipments({}).subscribe(
@@ -160,9 +207,351 @@ export class EquipmentComponent implements OnInit, AfterContentInit {
           this.laddaListingEquipments = false;
         }
       );
+      this.api.loadEnergies().subscribe(
+        data => {
+          this.energies = data;
+        }
+      );
+      this.api.loadConstructors(this.energySelected).subscribe(
+        data => {
+          this.manufacturer = data;
+        }
+      );
+      this.api.loadFamilies({
+        energy: this.energySelected,
+        manufacturer: this.manufacturerSelected
+      }).subscribe(
+        data => {
+          this.families = data;
+        }
+      );
+      this.api.loadOrigines({
+        energy: this.energySelected,
+        manufacturer: this.manufacturerSelected,
+        family: this.familySelected
+      }).subscribe(
+        data => {
+          this.origins = data;
+        }
+      );
+      this.api.loadProcesses({
+        energy: this.energySelected,
+        manufacturer: this.manufacturerSelected,
+        family: this.familySelected,
+        origin: this.originSelected
+      }).subscribe(
+        data => {
+          this.processes = data;
+        }
+      );
+      this.api.loadSeries({
+        energy: this.energySelected,
+        manufacturer: this.manufacturerSelected,
+        family: this.familySelected,
+        origin: this.originSelected,
+        process: this.processSelected
+      }).subscribe(
+        data => {
+          this.series = data;
+        }
+      );
+      this.api.loadDimensions({
+        energy: this.energySelected,
+        manufacturer: this.manufacturerSelected,
+        family: this.familySelected,
+        origin: this.originSelected,
+        process: this.processSelected,
+        series: this.seriesSelected
+      }).subscribe(
+        data => {
+          this.dimensions = data;
+        }
+      );
     } else {
       this.addEquipModal.show();
     }
+  }
+
+  select_energy() {
+    this.manufacturerSelected = '';
+    this.familySelected = -1;
+    this.originSelected = -1;
+    this.processSelected = -1;
+    this.seriesSelected = -1;
+    this.dimensionSelected = '';
+    this.api.loadConstructors(this.energySelected).subscribe(
+      data => {
+        this.manufacturer = data;
+      }
+    );
+    this.api.loadFamilies({
+      energy: this.energySelected,
+      manufacturer: this.manufacturerSelected
+    }).subscribe(
+      data => {
+        this.families = data;
+      }
+    );
+    this.api.loadOrigines({
+      energy: this.energySelected,
+      manufacturer: this.manufacturerSelected,
+      family: this.familySelected
+    }).subscribe(
+      data => {
+        this.origins = data;
+      }
+    );
+    this.api.loadProcesses({
+      energy: this.energySelected,
+      manufacturer: this.manufacturerSelected,
+      family: this.familySelected,
+      origin: this.originSelected
+    }).subscribe(
+      data => {
+        this.processes = data;
+      }
+    );
+    this.api.loadSeries({
+      energy: this.energySelected,
+      manufacturer: this.manufacturerSelected,
+      family: this.familySelected,
+      origin: this.originSelected,
+      process: this.processSelected
+    }).subscribe(
+      data => {
+        this.series = data;
+      }
+    );
+    this.api.loadDimensions({
+      energy: this.energySelected,
+      manufacturer: this.manufacturerSelected,
+      family: this.familySelected,
+      origin: this.originSelected,
+      process: this.processSelected,
+      series: this.seriesSelected
+    }).subscribe(
+      data => {
+        this.dimensions = data;
+      }
+    );
+    this.loadEquipment();
+  }
+
+  select_manufacturer() {
+    this.familySelected = -1;
+    this.originSelected = -1;
+    this.processSelected = -1;
+    this.seriesSelected = -1;
+    this.dimensionSelected = '';
+    this.api.loadFamilies({
+      energy: this.energySelected,
+      manufacturer: this.manufacturerSelected
+    }).subscribe(
+      data => {
+        console.log(data);
+        this.families = data;
+      }
+    );
+    this.api.loadOrigines({
+      energy: this.energySelected,
+      manufacturer: this.manufacturerSelected,
+      family: this.familySelected
+    }).subscribe(
+      data => {
+        this.origins = data;
+      }
+    );
+    this.api.loadProcesses({
+      energy: this.energySelected,
+      manufacturer: this.manufacturerSelected,
+      family: this.familySelected,
+      origin: this.originSelected
+    }).subscribe(
+      data => {
+        this.processes = data;
+      }
+    );
+    this.api.loadSeries({
+      energy: this.energySelected,
+      manufacturer: this.manufacturerSelected,
+      family: this.familySelected,
+      origin: this.originSelected,
+      process: this.processSelected
+    }).subscribe(
+      data => {
+        this.series = data;
+      }
+    );
+    this.api.loadDimensions({
+      energy: this.energySelected,
+      manufacturer: this.manufacturerSelected,
+      family: this.familySelected,
+      origin: this.originSelected,
+      process: this.processSelected,
+      series: this.seriesSelected
+    }).subscribe(
+      data => {
+        this.dimensions = data;
+      }
+    );
+    this.loadEquipment();
+  }
+
+  select_family() {
+    this.originSelected = -1;
+    this.processSelected = -1;
+    this.seriesSelected = -1;
+    this.dimensionSelected = '';
+    this.api.loadOrigines({
+      energy: this.energySelected,
+      manufacturer: this.manufacturerSelected,
+      family: this.familySelected
+    }).subscribe(
+      data => {
+        this.origins = data;
+      }
+    );
+    this.api.loadProcesses({
+      energy: this.energySelected,
+      manufacturer: this.manufacturerSelected,
+      family: this.familySelected,
+      origin: this.originSelected
+    }).subscribe(
+      data => {
+        this.processes = data;
+      }
+    );
+    this.api.loadSeries({
+      energy: this.energySelected,
+      manufacturer: this.manufacturerSelected,
+      family: this.familySelected,
+      origin: this.originSelected,
+      process: this.processSelected
+    }).subscribe(
+      data => {
+        this.series = data;
+      }
+    );
+    this.api.loadDimensions({
+      energy: this.energySelected,
+      manufacturer: this.manufacturerSelected,
+      family: this.familySelected,
+      origin: this.originSelected,
+      process: this.processSelected,
+      series: this.seriesSelected
+    }).subscribe(
+      data => {
+        this.dimensions = data;
+      }
+    );
+    this.loadEquipment();
+  }
+
+  select_origin() {
+    this.processSelected = -1;
+    this.seriesSelected = -1;
+    this.dimensionSelected = '';
+    this.api.loadProcesses({
+      energy: this.energySelected,
+      manufacturer: this.manufacturerSelected,
+      family: this.familySelected,
+      origin: this.originSelected
+    }).subscribe(
+      data => {
+        this.processes = data;
+      }
+    );
+    this.api.loadSeries({
+      energy: this.energySelected,
+      manufacturer: this.manufacturerSelected,
+      family: this.familySelected,
+      origin: this.originSelected,
+      process: this.processSelected
+    }).subscribe(
+      data => {
+        this.series = data;
+      }
+    );
+    this.api.loadDimensions({
+      energy: this.energySelected,
+      manufacturer: this.manufacturerSelected,
+      family: this.familySelected,
+      origin: this.originSelected,
+      process: this.processSelected,
+      series: this.seriesSelected
+    }).subscribe(
+      data => {
+        this.dimensions = data;
+      }
+    );
+    this.loadEquipment();
+  }
+
+  select_process_type() {
+    this.seriesSelected = -1;
+    this.dimensionSelected = '';
+    this.api.loadSeries({
+      energy: this.energySelected,
+      manufacturer: this.manufacturerSelected,
+      family: this.familySelected,
+      origin: this.originSelected,
+      process: this.processSelected
+    }).subscribe(
+      data => {
+        this.series = data;
+      }
+    );
+    this.api.loadDimensions({
+      energy: this.energySelected,
+      manufacturer: this.manufacturerSelected,
+      family: this.familySelected,
+      origin: this.originSelected,
+      process: this.processSelected,
+      series: this.seriesSelected
+    }).subscribe(
+      data => {
+        this.dimensions = data;
+      }
+    );
+    this.loadEquipment();
+  }
+
+  select_model() {
+    this.dimensionSelected = '';
+    this.api.loadDimensions({
+      energy: this.energySelected,
+      manufacturer: this.manufacturerSelected,
+      family: this.familySelected,
+      origin: this.originSelected,
+      process: this.processSelected,
+      series: this.seriesSelected
+    }).subscribe(
+      data => {
+        this.dimensions = data;
+      }
+    );
+    this.loadEquipment();
+  }
+
+  select_size() {
+    this.loadEquipment();
+  }
+
+  loadEquipment() {
+    this.api.getEquipments({
+      idStudy: this.study.ID_STUDY,
+      energy: this.energySelected,
+      manufacturer: this.manufacturerSelected,
+      family: this.familySelected,
+      origin: this.originSelected,
+      process: this.processSelected,
+      series: this.seriesSelected,
+      size: this.dimensionSelected
+    }).subscribe(
+      (resp: Models.Equipment[]) => {
+        this.equipments = resp;
+      }
+    );
   }
 
   onSelectAddingEquipment(equip: Models.Equipment) {

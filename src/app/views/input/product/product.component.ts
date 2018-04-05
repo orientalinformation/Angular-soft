@@ -16,6 +16,7 @@ import { Pipe } from '@angular/core';
 import { PipeTransform } from '@angular/core';
 import * as Models from '../../../api/models';
 import { Symbol } from '../../../api/models/symbol';
+import { ViewFamily } from '../../../api/models/view-family';
 
 @Pipe({ name: 'compFilter' })
 export class CompFilterPipe implements PipeTransform {
@@ -101,6 +102,12 @@ export class ProductComponent implements OnInit, AfterViewInit {
 
   public filterString = '';
   public symbol: Symbol;
+  public compFamily: ViewFamily;
+  public subFamily: ViewFamily;
+  public waterPercentList;
+  public compFamilySelected = 0;
+  public subFamilySelected = 0;
+  public waterPercentListSelected = 0;
 
   columns =
     [
@@ -148,13 +155,13 @@ export class ProductComponent implements OnInit, AfterViewInit {
         this.availShapes = shapes;
         this.previewImgSrc = this.shapeImgShim(shapes[0].SHAPEPICT);
         localStorage.setItem('shapes', JSON.stringify(this.availShapes));
+        this.api.getSymbol(this.study.ID_STUDY).subscribe(
+          data => {
+            console.log(data);
+            this.symbol = data;
+          }
+        );
         this.refreshViewModel();
-      }
-    );
-    this.api.getSymbol(this.study.ID_STUDY).subscribe(
-      data => {
-        console.log(data);
-        this.symbol = data;
       }
     );
   }
@@ -235,6 +242,9 @@ export class ProductComponent implements OnInit, AfterViewInit {
         this.elements = response.elements;
         this.product = response.product;
         this.prodDim2 = response.specificDimension;
+        this.compFamily = response.compFamily;
+        this.subFamily = response.subFamily;
+        this.waterPercentList = response.waterPercentList;
         if (this.elements.length > 0) {
           this.productShape = this.elements[0].ID_SHAPE;
           localStorage.setItem('productShape', this.productShape.toString());
@@ -293,8 +303,11 @@ export class ProductComponent implements OnInit, AfterViewInit {
 
   onEditProductModalShow(eventType: string, event) {
     if (!this.components || this.components.active.length === 0) {
-      this.api.findComponents({}).subscribe(
+      this.api.findComponents({
+        idStudy: this.study.ID_STUDY
+      }).subscribe(
         data => {
+          console.log(data);
           this.components = data;
           this.laddaAddComponent = false;
         }
@@ -376,6 +389,52 @@ export class ProductComponent implements OnInit, AfterViewInit {
       },
       () => {
         this.laddaUpdateElement = false;
+      }
+    );
+  }
+
+  compFamilyFilter() {
+    this.api.getSubfamily(this.compFamilySelected).subscribe(
+      data => {
+        this.subFamily = data;
+      }
+    );
+    this.api.findComponents({
+      idStudy: this.study.ID_STUDY,
+      compfamily: this.compFamilySelected,
+    }).subscribe(
+      data => {
+        console.log(data);
+        this.components = data;
+      }
+    );
+    this.waterPercentListSelected = 0;
+  }
+
+  subFamilyFilter() {
+    this.api.findComponents({
+      idStudy: this.study.ID_STUDY,
+      compfamily: this.compFamilySelected,
+      subfamily: this.subFamilySelected
+    }).subscribe(
+      data => {
+        console.log(data);
+        this.components = data;
+      }
+    );
+    this.waterPercentListSelected = 0;
+  }
+
+  waterPercentFilter() {
+    this.api.findComponents({
+      idStudy: this.study.ID_STUDY,
+      compfamily: this.compFamilySelected,
+      subfamily: this.subFamilySelected,
+      waterpercent: this.waterPercentListSelected
+    }).subscribe(
+      data => {
+        console.log(data);
+        this.components = data;
       }
     );
   }

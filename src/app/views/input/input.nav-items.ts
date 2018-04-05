@@ -15,7 +15,7 @@ export const InputNavItems = [
         icon: '',
     },
     {
-        name: 'Packing',
+        name: 'Packaging',
         url: '/input/packing',
         icon: '',
     },

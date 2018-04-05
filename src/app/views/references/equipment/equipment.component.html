@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container" *ngIf="!isLoading">
   <div class="card product-container">
     <div class="text-center">
         <div class="btn-group" role="group">
@@ -9,7 +9,7 @@
     </div>
     <div class="card-body">
       <!--Start load equipment -->
-      <div style="margin-top:10px;" id="page-load-equipment" *ngIf="!isLoading"> 
+      <div style="margin-top:10px;" id="page-load-equipment"> 
         <div class="row">
           <div class="col-md-5">
             <div class="card" *ngIf="listEquipment">
@@ -27,7 +27,8 @@
                         <a *ngFor="let equip of (listEquipment.mine | equipFilter: filterString)" [ngClass]="checkActiveEquip == equip.ID_EQUIP || equip == selectEquipment? 'active' : ''" class="list-group-item list-group-item-action" (click)="onSelectEquipment(equip)">
                             <div class="d-flex w-100 justify-content-between">
                                 {{ equip.EQUIP_NAME }} - (v{{ equip.EQUIP_VERSION }})
-                                <i *ngIf="equip.EQUIP_RELEASE == 4" class="fa fa-check text-success"></i>
+                                <i *ngIf="equip.EQUIP_RELEASE == 3" class="fa fa-check text-success"></i>
+                                <i *ngIf="equip.EQUIP_RELEASE == 4" class="fa fa-certificate text-success"></i>
                                 <i *ngIf="equip.EQUIP_RELEASE == 5" class="fa fa-trash text-secondary"></i>
                                 <i *ngIf="equip.EQUIP_RELEASE == 9" class="fa fa-exclamation-circle text-danger"></i>
                             </div>
@@ -36,7 +37,8 @@
                         <a *ngFor="let equip of (listEquipment.others | equipFilter: filterString)" [ngClass]="checkActiveEquip == equip.ID_EQUIP || equip == selectEquipment? 'active' : ''" class="list-group-item list-group-item-action" (click)="onSelectEquipment(equip)">
                             <div class="d-flex w-100 justify-content-between">
                                 {{ equip.EQUIP_NAME }} - (v{{ equip.EQUIP_VERSION }})
-                                <i *ngIf="equip.EQUIP_RELEASE == 4" class="fa fa-check text-success"></i>
+                                <i *ngIf="equip.EQUIP_RELEASE == 3" class="fa fa-check text-success"></i>
+                                <i *ngIf="equip.EQUIP_RELEASE == 4" class="fa fa-certificate text-success"></i>
                                 <i *ngIf="equip.EQUIP_RELEASE == 5" class="fa fa-trash text-secondary"></i>
                                 <i *ngIf="equip.EQUIP_RELEASE == 9" class="fa fa-exclamation-circle text-danger"></i>
                             </div>
@@ -430,12 +432,12 @@
             <thead>
                 <tr>
                     <td align="center">{{ 'Position'|translate }}<br> (%)</td>
-                    <td align="center"><a href="javascript:;" (click)="getDataHighChart(selectEquipment.ID_EQUIP, 1, 0);onConvectionCharact(1);" ngbTooltip="Click here to edit the full profile">{{ 'Alpha top'|translate }}<br> (Kw/(m².°C))</a></td>
-                    <td align="center"><a href="javascript:;" (click)="getDataHighChart(selectEquipment.ID_EQUIP, 1, 1);onConvectionCharact(2);" ngbTooltip="Click here to edit the full profile">{{ 'Alpha bottom'|translate }}<br> (Kw/(m².°C))</a></td>
-                    <td align="center"><a href="javascript:;" (click)="getDataHighChart(selectEquipment.ID_EQUIP, 1, 2);onConvectionCharact(3);" ngbTooltip="Click here to edit the full profile">{{ 'Alpha left'|translate }}<br>(Kw/(m².°C))</a></td>
-                    <td align="center"><a href="javascript:;" (click)="getDataHighChart(selectEquipment.ID_EQUIP, 1, 3);onConvectionCharact(4);" ngbTooltip="Click here to edit the full profile">{{ 'Alpha right'|translate }}<br> (Kw/(m².°C))</a></td>
-                    <td align="center"><a href="javascript:;" (click)="getDataHighChart(selectEquipment.ID_EQUIP, 1, 4);onConvectionCharact(5);" ngbTooltip="Click here to edit the full profile">{{ 'Alpha front'|translate }}<br> (Kw/(m².°C))</a></td>
-                    <td align="center"><a href="javascript:;" (click)="getDataHighChart(selectEquipment.ID_EQUIP, 1, 5);onConvectionCharact(6);" ngbTooltip="Click here to edit the full profile">{{ 'Alpha rear'|translate }}<br> (Kw/(m².°C))</a></td>
+                    <td align="center"><a href="javascript:;" (click)="getDataHighChart(selectEquipment.ID_EQUIP, 1, 0);" ngbTooltip="Click here to edit the full profile">{{ 'Alpha top'|translate }}<br> (Kw/(m².°C))</a></td>
+                    <td align="center"><a href="javascript:;" (click)="getDataHighChart(selectEquipment.ID_EQUIP, 1, 1);" ngbTooltip="Click here to edit the full profile">{{ 'Alpha bottom'|translate }}<br> (Kw/(m².°C))</a></td>
+                    <td align="center"><a href="javascript:;" (click)="getDataHighChart(selectEquipment.ID_EQUIP, 1, 2);" ngbTooltip="Click here to edit the full profile">{{ 'Alpha left'|translate }}<br>(Kw/(m².°C))</a></td>
+                    <td align="center"><a href="javascript:;" (click)="getDataHighChart(selectEquipment.ID_EQUIP, 1, 3);" ngbTooltip="Click here to edit the full profile">{{ 'Alpha right'|translate }}<br> (Kw/(m².°C))</a></td>
+                    <td align="center"><a href="javascript:;" (click)="getDataHighChart(selectEquipment.ID_EQUIP, 1, 4);" ngbTooltip="Click here to edit the full profile">{{ 'Alpha front'|translate }}<br> (Kw/(m².°C))</a></td>
+                    <td align="center"><a href="javascript:;" (click)="getDataHighChart(selectEquipment.ID_EQUIP, 1, 5);" ngbTooltip="Click here to edit the full profile">{{ 'Alpha rear'|translate }}<br> (Kw/(m².°C))</a></td>
                     <td align="center">{{ 'Delete'|translate }}</td>
                 </tr>
             </thead>
@@ -474,12 +476,12 @@
             <thead>
                 <tr>
                     <td align="center">{{ 'Position'|translate }}<br> (%)</td>
-                    <td align="center"><a href="javascript:;" (click)="getDataHighChart(selectEquipment.ID_EQUIP, 0, 0);onTemperatureCharact(1);" ngbTooltip="Click here to edit the full profile">{{ 'Top temperature'|translate }}<br> (°C)</a></td>
-                    <td align="center"><a href="javascript:;" (click)="getDataHighChart(selectEquipment.ID_EQUIP, 0, 1);onTemperatureCharact(2);" ngbTooltip="Click here to edit the full profile">{{ 'Temperature bottom'|translate }}<br>(°C)</a></td>
-                    <td align="center"><a href="javascript:;" (click)="getDataHighChart(selectEquipment.ID_EQUIP, 0, 2);onTemperatureCharact(3);" ngbTooltip="Click here to edit the full profile">{{ 'Temperature left'|translate }}<br>(°C)</a></td>
-                    <td align="center"><a href="javascript:;" (click)="getDataHighChart(selectEquipment.ID_EQUIP, 0, 3);onTemperatureCharact(4);" ngbTooltip="Click here to edit the full profile">{{ 'Temperature right'|translate }}<br>(°C)</a></td>
-                    <td align="center"><a href="javascript:;" (click)="getDataHighChart(selectEquipment.ID_EQUIP, 0, 4);onTemperatureCharact(5);" ngbTooltip="Click here to edit the full profile">{{ 'Temperature front'|translate }}<br> (°C)</a></td>
-                    <td align="center"><a href="javascript:;" (click)="getDataHighChart(selectEquipment.ID_EQUIP, 0, 5);onTemperatureCharact(6);" ngbTooltip="Click here to edit the full profile">{{ 'Temperature rear'|translate }}<br>(°C)</a></td>
+                    <td align="center"><a href="javascript:;" (click)="getDataHighChart(selectEquipment.ID_EQUIP, 0, 0);" ngbTooltip="Click here to edit the full profile">{{ 'Top temperature'|translate }}<br> (°C)</a></td>
+                    <td align="center"><a href="javascript:;" (click)="getDataHighChart(selectEquipment.ID_EQUIP, 0, 1);" ngbTooltip="Click here to edit the full profile">{{ 'Temperature bottom'|translate }}<br>(°C)</a></td>
+                    <td align="center"><a href="javascript:;" (click)="getDataHighChart(selectEquipment.ID_EQUIP, 0, 2);" ngbTooltip="Click here to edit the full profile">{{ 'Temperature left'|translate }}<br>(°C)</a></td>
+                    <td align="center"><a href="javascript:;" (click)="getDataHighChart(selectEquipment.ID_EQUIP, 0, 3);" ngbTooltip="Click here to edit the full profile">{{ 'Temperature right'|translate }}<br>(°C)</a></td>
+                    <td align="center"><a href="javascript:;" (click)="getDataHighChart(selectEquipment.ID_EQUIP, 0, 4);" ngbTooltip="Click here to edit the full profile">{{ 'Temperature front'|translate }}<br> (°C)</a></td>
+                    <td align="center"><a href="javascript:;" (click)="getDataHighChart(selectEquipment.ID_EQUIP, 0, 5);" ngbTooltip="Click here to edit the full profile">{{ 'Temperature rear'|translate }}<br>(°C)</a></td>
                     <td align="center">{{ 'Delete'|translate }}</td>
                 </tr>
             </thead>
@@ -786,7 +788,7 @@
           <button class="btn btn-secondary" data-dismiss="modal" (click)="modalAddEquipment.hide()">{{ 'Cancel'|translate }}</button>
           <button class="btn btn-warning" (click)="onSelectFilter()"><i class="fa fa-filter"></i> Filter</button>
           <button class="btn btn-primary" [disabled]="!selectEquipGener" (click)="saveNewEquipment(1)" [ladda]="laddaIsCalculating"><i class="icon-energy"></i>{{ 'Calculate'|translate }}</button>
-          <button class="btn btn-success" (click)="saveNewEquipment(0)" [disabled]="!selectEquipGener" [ladda]="laddaIsCalculating"><i class="fa fa-floppy-o"></i> {{ 'Save'|translate }}</button>
+          <button class="btn btn-success" (click)="saveNewEquipment(0)" [disabled]="!selectEquipGener"><i class="fa fa-floppy-o"></i> {{ 'Save'|translate }}</button>
       </div>
     </div>
   </div>
@@ -964,7 +966,7 @@
 
 <!-- Start Convection chart style="max-width:70%;"-->
 <div bsModal class="modal fade" #modalEquipmentProfil="bs-modal" role="dialog" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-primary" role="document">
+    <div class="modal-dialog modal-lg modal-primary" role="document" style="max-width:60%;" *ngIf="!isLoadingChart">
         <div class="modal-content">
         <div class="modal-header">
             <strong>{{ 'Equipment Profil - Modify'|translate }}</strong>
@@ -1001,48 +1003,98 @@
                             <div class="form-group row" >
                                 <label class="col-md-6 col-form-label" for="text-input">{{ 'Selected point'|translate }}	</label>
                                 <div class="col-md-6">
-                                    <input type="text" id="point_y" name="text-input" class="form-control" [(ngModel)]="dataHighChart.YAxis" disabled>
+                                    <input type="text" id="circle_position" name="text-input" class="form-control" [value]="" disabled>
                                 </div>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group row" >
-                                <div class="col-md-5"></div>
+                                <div class="col-md-5"></div>   
                                 <div class="col-md-7">
-                                    <input type="text" id="point_x" name="text-input" class="form-control" [(ngModel)]="dataHighChart.XAxis" disabled>
+                                    <input type="text" id="circle_value" name="text-input" class="form-control" (change)="setpoint();" [value]="" (keypress)="setpointenter($event);" disabled>
                                 </div>
                             </div>
                         </div>
+                        <input type="hidden" id="newprofil" name="newprofil" value="">
                     </div>
                 </div>
                 <div class="card-footer">
                     <div class="row text-center" style="display: flex; align-items: center; justify-content: center;">
-                        <button type="button" class="btn btn-success btn-sm" style="margin-right: 10px;"> {{ 'Apply'|translate }}</button>
-                        <button type="button" class="btn btn-primary btn-sm" style="margin-right: 10px;" >{{ 'Initialize'|translate }}</button>
-                        <button type="button" class="btn btn-warning btn-sm" style="margin-right: 10px;">{{ 'Generate'|translate }}</button>
+                        <button type="button" id="rescale" class="btn btn-success btn-sm" style="margin-right: 10px;" (click)="refreshScaleChart();"> {{ 'Apply'|translate }}</button>
+                        <button type="button" class="btn btn-primary btn-sm" style="margin-right: 10px;" (click)="clearSelectedPoints();" >{{ 'Initialize'|translate }}</button>
+                        <button type="button" class="btn btn-warning btn-sm" style="margin-right: 10px;" (click)="submitGenerate();">{{ 'Generate'|translate }}</button>
                     </div>
                 </div>
             </div>
-            <div class="card">
+            <div class="card" *ngIf="dataHighChart">
                 <div class="card-header">
                     <strong>{{ 'Profile'|translate }}</strong>
                 </div>
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-12">
-                            <highcharts-chart #tempProfileChart [Highcharts]="Highcharts" [options]="chartOptions"></highcharts-chart>
+                            <!-- <highcharts-chart #tempProfileChart [Highcharts]="Highcharts" [options]="chartOptions"></highcharts-chart> -->
+                            <svg id="dropzone" [attr.width]="dataHighChart.imageWidth" [attr.height]="dataHighChart.imageHeight" (mousemove)="movepoint($event);">
+                                <!-- Background -->
+                                <rect x="0" y="0" [attr.width]="dataHighChart.imageWidth" [attr.height]="dataHighChart.imageHeight" fill="#CAE1F7" stroke="#CAE1F7" />
+                            
+                                <!-- Interactive zone -->
+                                <rect [attr.x]="dataHighChart.imageMargeWidth" [attr.y]="dataHighChart.imageMargeHeight" 
+                                      [attr.width]="(dataHighChart.imageWidth) - (2*dataHighChart.imageMargeWidth)" 
+                                      [attr.height]="(dataHighChart.imageHeight) - (2*dataHighChart.imageMargeHeight)" 
+                                        fill="#FFFFFF" stroke="#FFFFFF" />
+                            
+                                <!-- Axis X -->
+                                <line x1="75" y1="300" x2="895" y2="300" stroke="#000000" stroke-width="2" />
+                                <line x1="885" y1="295" x2="895" y2="300" stroke="#000000" stroke-width="2" />
+                                <line x1="885" y1="305" x2="895" y2="300" stroke="#000000" stroke-width="2" />
+                                <text x="905" y="300" text-anchor="start" style="font-size:9pt">%</text>
+                                <text x="475" y="340" text-anchor="middle" style="font-size:9pt">{{ 'Position within the equipment'|translate }}</text>
+                                <!-- for -->
+                                <text *ngFor="let x of dataHighChart.X" [attr.x]="x.textX" y="320" text-anchor="middle" style="font-size:9pt">{{ x.position }}</text>
+                                <line *ngFor="let x of dataHighChart.X" [attr.x1]="x.textX" y1="300" [attr.x2]="x.textX" y2="310" stroke="#000000" stroke-width="2" />
+                            
+                                <!-- Axis Y -->
+                                <line x1="75" y1="300" x2="75" y2="30" stroke="#000000" stroke-width="2" />
+                                <line x1="75" y1="300" x2="75" y2="30" stroke="#000000" stroke-width="2" />
+                                <line x1="70" y1="40" x2="75" y2="30" stroke="#000000" stroke-width="2" />
+                                <line x1="80" y1="40" x2="75" y2="30" stroke="#000000" stroke-width="2" />
+
+                                <text *ngIf="profileType == 1; else kwm" x="75" y="25" text-anchor="middle" style="font-size:9pt">Kw/(m&#178;.&#176;C)</text>
+                                <ng-template #kwm>
+                                    <text x="75" y="25" text-anchor="middle" style="font-size:9pt">°C</text>
+                                </ng-template>
+
+                                <text *ngIf="profileType == 1; else convection" x="75" y="10" text-anchor="middle" style="font-size:9pt">{{ 'Convection'|translate }}</text>
+                                <ng-template #convection>
+                                    <text x="75" y="10" text-anchor="middle" style="font-size:9pt">{{ 'Temperature'|translate }}</text>
+                                </ng-template>
+
+                                <line *ngFor="let y of dataHighChart.Y" [attr.x1]="y.x1" [attr.y1]="y.y1" [attr.x2]="y.x2" [attr.y2]="y.y2" stroke="#000000" stroke-width="2" />
+                                <text *ngFor="let y of dataHighChart.Y" [attr.x]="y.textX" [attr.y]="y.textY" text-anchor="end" style="font-size:9pt">{{ y.position }}</text>
+
+                                <!-- link all points -->
+                                <path id="profilLine" [attr.d]="dataHighChart.path" fill="none" stroke="#0000FF" stroke-width="2" />
+
+                                <!-- Points -->
+                                <circle *ngFor="let point of dataHighChart.ListOfPoints; let i = index" id="c{{i}}" [attr.cx]="point.X_POSITION" 
+                                [attr.cy]="point.Y_POINT" r="3" fill="#D5D5FF" stroke="#000000" stroke-width="1"
+                                (mouseover)="circleover($event, i);" (mouseout)="circleout($event, i);" (mousedown)="selectpoint($event, i);" 
+                                />
+                            
+                            </svg>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="card">
+            <div class="card" *ngIf="dataHighChart">
                 <div class="card-header">
                     <strong>{{ 'Select all face to save with the same profil:'|translate }}</strong>
                 </div>
                 <div class="card-body">
                     <div class="row">
                         <table class="table table-bordered table-sm mb-0">
-                            <tr>
+                            <tr *ngIf="profileType && profileType == 1; else temperatureV">
                                 <td style="vertical-align:middle;text-align:center">{{ 'Alpha top'|translate }}</td>
                                 <td style="vertical-align:middle;text-align:center">{{ 'Alpha bottom'|translate }}</td>
                                 <td style="vertical-align:middle;text-align:center">{{ 'Alpha left'|translate }}</td>
@@ -1050,12 +1102,22 @@
                                 <td style="vertical-align:middle;text-align:center">{{ 'Alpha front'|translate }}</td>
                                 <td style="vertical-align:middle;text-align:center">{{ 'Alpha rear'|translate }} </td>
                             </tr>
+                            <ng-template #temperatureV>
+                                <tr>
+                                    <td style="vertical-align:middle;text-align:center">{{ 'Top temperature'|translate }}</td>
+                                    <td style="vertical-align:middle;text-align:center">{{ 'Temperature bottom'|translate }}</td>
+                                    <td style="vertical-align:middle;text-align:center">{{ 'Temperature left'|translate }}</td>
+                                    <td style="vertical-align:middle;text-align:center">{{ 'Temperature right'|translate }}</td>
+                                    <td style="vertical-align:middle;text-align:center">{{ 'Temperature front'|translate }}</td>
+                                    <td style="vertical-align:middle;text-align:center">{{ 'Temperature rear'|translate }} </td>
+                                </tr>
+                            </ng-template>
                             <tr>
                                 <td align="center">
                                     <div style="margin-top:0.5em">
                                         <!-- <input type="checkbox" class="form-control"> -->
                                         <label class="custom-control custom-checkbox">
-                                            <input type="checkbox" class="custom-control-input" [checked]="isSelectChart == 1" [disabled]="isSelectChart == 1">
+                                            <input type="checkbox" class="custom-control-input" value="0" [(ngModel)]="dataHighChart.checkTop" [disabled]="isSelectChart == 0">
                                             <span class="custom-control-indicator"></span>
                                         </label>
                                     </div>
@@ -1063,7 +1125,7 @@
                                 <td align="center">
                                     <div style="margin-top:0.5em">
                                         <label class="custom-control custom-checkbox">
-                                            <input type="checkbox" class="custom-control-input" [checked]="isSelectChart == 2" [disabled]="isSelectChart == 2">
+                                            <input type="checkbox" class="custom-control-input" value="1" [(ngModel)]="dataHighChart.checkButton" [disabled]="isSelectChart == 1">
                                             <span class="custom-control-indicator"></span>
                                         </label>
                                     </div>
@@ -1071,7 +1133,7 @@
                                 <td align="center">
                                     <div style="margin-top:0.5em">
                                         <label class="custom-control custom-checkbox">
-                                            <input type="checkbox" class="custom-control-input" [checked]="isSelectChart == 3" [disabled]="isSelectChart == 3">
+                                            <input type="checkbox" class="custom-control-input" value="2" [(ngModel)]="dataHighChart.checkLeft" [disabled]="isSelectChart == 2">
                                             <span class="custom-control-indicator"></span>
                                         </label>
                                     </div>
@@ -1079,7 +1141,7 @@
                                 <td align="center">
                                     <div style="margin-top:0.5em">
                                         <label class="custom-control custom-checkbox">
-                                            <input type="checkbox" class="custom-control-input" [checked]="isSelectChart == 4" [disabled]="isSelectChart == 4">
+                                            <input type="checkbox" class="custom-control-input" value="3" [(ngModel)]="dataHighChart.checkRight" [disabled]="isSelectChart == 3">
                                             <span class="custom-control-indicator"></span>
                                         </label>
                                     </div>
@@ -1087,7 +1149,7 @@
                                 <td align="center">
                                     <div style="margin-top:0.5em">
                                         <label class="custom-control custom-checkbox">
-                                            <input type="checkbox" class="custom-control-input" [checked]="isSelectChart == 5" [disabled]="isSelectChart == 5">
+                                            <input type="checkbox" class="custom-control-input" value="4" [(ngModel)]="dataHighChart.checkFront" [disabled]="isSelectChart == 4">
                                             <span class="custom-control-indicator"></span>
                                         </label>
                                     </div>
@@ -1095,7 +1157,7 @@
                                 <td align="center">
                                     <div style="margin-top:0.5em">
                                         <label class="custom-control custom-checkbox">
-                                            <input type="checkbox" class="custom-control-input" [checked]="isSelectChart == 6" [disabled]="isSelectChart == 6">
+                                            <input type="checkbox" class="custom-control-input" value="5" [(ngModel)]="dataHighChart.checkRear" [disabled]="isSelectChart == 5">
                                             <span class="custom-control-indicator"></span>
                                         </label>
                                     </div>
@@ -1108,164 +1170,12 @@
         </div>
         <div class="modal-footer">
             <button class="btn btn-secondary" data-dismiss="modal" (click)="modalEquipmentProfil.hide()">{{ 'Cancel'|translate }}</button>
-            <button class="btn btn-success" >{{ 'Confirm'|translate }}</button>
+            <button class="btn btn-success" id="confirmButton" (click)="submitProfil();" [disabled]="disabledConfirm == 0">{{ 'Confirm'|translate }}</button>
         </div>
         </div>
     </div>
 </div>
 <!-- End Convection chart -->
-
-<!-- Start temperature chart -->
-<div bsModal class="modal fade" #modalEquipmentProfil2="bs-modal" role="dialog" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-primary" role="document">
-        <div class="modal-content">
-        <div class="modal-header">
-            <strong>{{ 'Equipment Profil - Modify'|translate }}</strong>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="modalEquipmentProfil2.hide()">
-                <span aria-hidden="true">×</span>
-            </button>
-        </div>
-        <div class="modal-body">
-            <div class="card">
-                <div class="card-header">
-                    <strong>{{ 'Vertical scale'|translate }}</strong>
-                </div>
-                <div class="card-body">
-                    <div class="row" *ngIf="dataHighChart">
-                        <div class="col-md-6">
-                            <div class="form-group row" >
-                                <label class="col-md-6 col-form-label" for="text-input">{{ 'Minimum value'|translate }}</label>
-                                <div class="col-md-6">
-                                    <input type="text" id="text-input" name="text-input" class="form-control" [(ngModel)]="dataHighChart.MiniMum">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group row" >
-                                <label class="col-md-5 col-form-label" for="text-input">{{ 'Maximum value'|translate }}</label>
-                                <div class="col-md-7">
-                                    <input type="text" id="text-input" name="text-input" class="form-control" [(ngModel)]="dataHighChart.MaxiMum">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group row" >
-                                <label class="col-md-6 col-form-label" for="text-input">{{ 'Selected point'|translate }}	</label>
-                                <div class="col-md-6">
-                                    <input type="text" id="text-input" name="text-input" class="form-control" disabled>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group row" >
-                                <div class="col-md-5"></div>
-                                <div class="col-md-7">
-                                    <input type="text" id="text-input" name="text-input" class="form-control" disabled>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="card-footer">
-                    <div class="row text-center" style="display: flex; align-items: center; justify-content: center;">
-                        <button type="button" class="btn btn-success btn-sm" style="margin-right: 10px;"> {{ 'Apply'|translate }}</button>
-                        <button type="button" class="btn btn-primary btn-sm" style="margin-right: 10px;" >{{ 'Initialize'|translate }}</button>
-                        <button type="button" class="btn btn-warning btn-sm" style="margin-right: 10px;">{{ 'Generate'|translate }}</button>
-                    </div>
-                </div>
-            </div>
-            <div class="card">
-                <div class="card-header">
-                    <strong>{{ 'Profile'|translate }}</strong>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <highcharts-chart #tempProfileChart [Highcharts]="Highcharts" [options]="chartOptions"></highcharts-chart>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="card">
-                <div class="card-header">
-                    <strong>{{ 'Select all face to save with the same profil:'|translate }}</strong>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <table class="table table-bordered table-sm mb-0">
-                            <tr>
-                                <td style="vertical-align:middle;text-align:center">{{ 'Top temperature'|translate }}</td>
-                                <td style="vertical-align:middle;text-align:center">{{ 'Temperature bottom'|translate }}</td>
-                                <td style="vertical-align:middle;text-align:center">{{ 'Temperature left'|translate }}</td>
-                                <td style="vertical-align:middle;text-align:center">{{ 'Temperature right'|translate }}</td>
-                                <td style="vertical-align:middle;text-align:center">{{ 'Temperature front'|translate }}</td>
-                                <td style="vertical-align:middle;text-align:center">{{ 'Temperature rear'|translate }}</td>
-                            </tr>
-                            <tr>
-                                <td align="center">
-                                    <div style="margin-top:0.5em">
-                                        <label class="custom-control custom-checkbox">
-                                            <input type="checkbox" class="custom-control-input" [checked]="isSelectChart == 1" [disabled]="isSelectChart == 1">
-                                            <span class="custom-control-indicator"></span>
-                                        </label>
-                                    </div>
-                                </td>
-                                <td align="center">
-                                    <div style="margin-top:0.5em">
-                                        <label class="custom-control custom-checkbox">
-                                            <input type="checkbox" class="custom-control-input" [checked]="isSelectChart == 2" [disabled]="isSelectChart == 2">
-                                            <span class="custom-control-indicator"></span>
-                                        </label>
-                                    </div>
-                                </td>
-                                <td align="center">
-                                    <div style="margin-top:0.5em">
-                                        <label class="custom-control custom-checkbox">
-                                            <input type="checkbox" class="custom-control-input" [checked]="isSelectChart == 3" [disabled]="isSelectChart == 3">
-                                            <span class="custom-control-indicator"></span>
-                                        </label>
-                                    </div>
-                                </td>
-                                <td align="center">
-                                    <div style="margin-top:0.5em">
-                                        <label class="custom-control custom-checkbox">
-                                            <input type="checkbox" class="custom-control-input" [checked]="isSelectChart == 4" [disabled]="isSelectChart == 4">
-                                            <span class="custom-control-indicator"></span>
-                                        </label>
-                                    </div>
-                                </td>
-                                <td align="center">
-                                    <div style="margin-top:0.5em">
-                                        <label class="custom-control custom-checkbox">
-                                            <input type="checkbox" class="custom-control-input" [checked]="isSelectChart == 5" [disabled]="isSelectChart == 5">
-                                            <span class="custom-control-indicator"></span>
-                                        </label>
-                                    </div>
-                                </td>
-                                <td align="center">
-                                    <div style="margin-top:0.5em">
-                                        <label class="custom-control custom-checkbox">
-                                            <input type="checkbox" class="custom-control-input" [checked]="isSelectChart == 6" [disabled]="isSelectChart == 6">
-                                            <span class="custom-control-indicator"></span>
-                                        </label>
-                                    </div>
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="modal-footer">
-            <button class="btn btn-secondary" data-dismiss="modal" (click)="modalEquipmentProfil2.hide()">{{ 'Cancel'|translate }}</button>
-            <button class="btn btn-success" >{{ 'Confirm'|translate }}</button>
-        </div>
-        </div>
-    </div>
-</div>
-<!-- End temperature chart -->
 
 <!-- Start filter -->
 <div bsModal class="modal fade" #modalFilter="bs-modal" role="dialog" aria-hidden="true">
@@ -1747,3 +1657,5 @@
   </div>
 <!-- End filter -->
 <app-spinner *ngIf="isLoading"></app-spinner>
+
+<app-spinner *ngIf="isLoadingChart"></app-spinner>

@@ -12,7 +12,7 @@
               <div class="input-group">
                 <input type="text" id="dim1" name="dim1" class="form-control" [(ngModel)]="meshparamdef.MESH_1_SIZE">
                 <span class="input-group-addon">
-                  <small>(mm)</small>
+                  <small>({{ meshesSymbol }})</small>
                 </span>
               </div>
             </div>
@@ -23,7 +23,7 @@
               <div class="input-group">
                 <input type="text" id="dim2" name="dim2" class="form-control" [(ngModel)]="meshparamdef.MESH_2_SIZE">
                 <span class="input-group-addon">
-                  <small>(mm)</small>
+                  <small>({{ meshesSymbol }})</small>
                 </span>
               </div>
             </div>
@@ -34,7 +34,7 @@
               <div class="input-group">
                 <input type="text" id="dim3" name="dim3" class="form-control" [(ngModel)]="meshparamdef.MESH_3_SIZE">
                 <span class="input-group-addon">
-                  <small>(mm)</small>
+                  <small>({{ meshesSymbol }})</small>
                 </span>
               </div>
             </div>

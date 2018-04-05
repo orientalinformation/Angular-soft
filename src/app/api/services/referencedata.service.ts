@@ -9,7 +9,9 @@ import { Observable } from 'rxjs/Observable';
 import { map } from 'rxjs/operators/map';
 import { filter } from 'rxjs/operators/filter';
 
+import { ViewMinMax } from '../models/view-min-max';
 import { ViewComponent } from '../models/view-component';
+import { PackingElmt } from '../models/packing-elmt';
 import { VComponent } from '../models/vcomponent';
 import { ViewFamily } from '../models/view-family';
 import { ViewTemperature } from '../models/view-temperature';
@@ -18,7 +20,6 @@ import { MyComponent } from '../models/my-component';
 import { Compenth } from '../models/compenth';
 import { FilterEquipment } from '../models/filter-equipment';
 import { ViewPackingElmt } from '../models/view-packing-elmt';
-import { PackingElmt } from '../models/packing-elmt';
 import { ViewPipeLineElmt } from '../models/view-pipe-line-elmt';
 import { PipeLineElmt } from '../models/pipe-line-elmt';
 import { ViewEquipment } from '../models/view-equipment';
@@ -33,6 +34,7 @@ import { Shelves } from '../models/shelves';
 import { Consumptions } from '../models/consumptions';
 import { EquipCharact } from '../models/equip-charact';
 import { ViewHighChart } from '../models/view-high-chart';
+import { DataHightChart } from '../models/data-hight-chart';
 import { ViewCurve } from '../models/view-curve';
 import { ViewTempSetPoint } from '../models/view-temp-set-point';
 import { ResultBuildForNewTR } from '../models/result-build-for-new-tr';
@@ -47,6 +49,123 @@ export class ReferencedataService extends BaseService {
     super(config, http);
   }
 
+  /**
+   * Check Data Component Parameters
+   * @param body - body  Check Start Calculation Parameters
+   */
+  checkSaveDataComponentResponse(body: ViewComponent): Observable<HttpResponse<ViewMinMax>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    __body = body;
+    let req = new HttpRequest<any>(
+      "POST",
+      this.rootUrl + `/referencedata/savedatacomponent`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: ViewMinMax = null;
+        _body = _resp.body as ViewMinMax
+        return _resp.clone({body: _body}) as HttpResponse<ViewMinMax>;
+      })
+    );
+  }
+
+  /**
+   * Check Data Component Parameters
+   * @param body - body  Check Start Calculation Parameters
+   */
+  checkSaveDataComponent(body: ViewComponent): Observable<ViewMinMax> {
+    return this.checkSaveDataComponentResponse(body).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * Check unit min max temperatures
+   * @param temperatures - temperatures check
+   */
+  checkTemperatureResponse(temperatures: number): Observable<HttpResponse<ViewMinMax>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    if (temperatures != null) __params = __params.set("temperatures", temperatures.toString());
+    let req = new HttpRequest<any>(
+      "POST",
+      this.rootUrl + `/referencedata/checktemperature`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: ViewMinMax = null;
+        _body = _resp.body as ViewMinMax
+        return _resp.clone({body: _body}) as HttpResponse<ViewMinMax>;
+      })
+    );
+  }
+
+  /**
+   * Check unit min max temperatures
+   * @param temperatures - temperatures check
+   */
+  checkTemperature(temperatures: number): Observable<ViewMinMax> {
+    return this.checkTemperatureResponse(temperatures).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * Check unit min max Packing
+   * @param body - body check packing
+   */
+  checkPackingResponse(body: PackingElmt): Observable<HttpResponse<ViewMinMax>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    __body = body;
+    let req = new HttpRequest<any>(
+      "POST",
+      this.rootUrl + `/referencedata/checkpacking`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: ViewMinMax = null;
+        _body = _resp.body as ViewMinMax
+        return _resp.clone({body: _body}) as HttpResponse<ViewMinMax>;
+      })
+    );
+  }
+
+  /**
+   * Check unit min max Packing
+   * @param body - body check packing
+   */
+  checkPacking(body: PackingElmt): Observable<ViewMinMax> {
+    return this.checkPackingResponse(body).pipe(
+      map(_r => _r.body)
+    );
+  }
   /**
    * Get a list of family component
    * @param compfamily - undefined
@@ -1436,16 +1555,24 @@ export class ReferencedataService extends BaseService {
   }
   /**
    * Get data highchart
+   * @param typeChart - undefined
    * @param profilType - undefined
    * @param profilFace - undefined
+   * @param newProfil - undefined
+   * @param minScaleY - undefined
+   * @param maxScaleY - undefined
    * @param ID_EQUIP - undefined
    */
   getDataHighChartResponse(params: ReferencedataService.GetDataHighChartParams): Observable<HttpResponse<ViewHighChart>> {
     let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
+    if (params.typeChart != null) __params = __params.set("typeChart", params.typeChart.toString());
     if (params.profilType != null) __params = __params.set("profilType", params.profilType.toString());
     if (params.profilFace != null) __params = __params.set("profilFace", params.profilFace.toString());
+    if (params.newProfil != null) __params = __params.set("newProfil", params.newProfil.toString());
+    if (params.minScaleY != null) __params = __params.set("minScaleY", params.minScaleY.toString());
+    if (params.maxScaleY != null) __params = __params.set("maxScaleY", params.maxScaleY.toString());
     if (params.IDEQUIP != null) __params = __params.set("ID_EQUIP", params.IDEQUIP.toString());
     let req = new HttpRequest<any>(
       "GET",
@@ -1470,12 +1597,55 @@ export class ReferencedataService extends BaseService {
 
   /**
    * Get data highchart
+   * @param typeChart - undefined
    * @param profilType - undefined
    * @param profilFace - undefined
+   * @param newProfil - undefined
+   * @param minScaleY - undefined
+   * @param maxScaleY - undefined
    * @param ID_EQUIP - undefined
    */
   getDataHighChart(params: ReferencedataService.GetDataHighChartParams): Observable<ViewHighChart> {
     return this.getDataHighChartResponse(params).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * save Selected Profile
+   * @param body - body save DataHightChart
+   */
+  saveSelectedProfileResponse(body: DataHightChart): Observable<HttpResponse<number>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    __body = body;
+    let req = new HttpRequest<any>(
+      "POST",
+      this.rootUrl + `/referencedata/highchart`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'text'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: number = null;
+        _body = parseFloat(_resp.body as string)
+        return _resp.clone({body: _body}) as HttpResponse<number>;
+      })
+    );
+  }
+
+  /**
+   * save Selected Profile
+   * @param body - body save DataHightChart
+   */
+  saveSelectedProfile(body: DataHightChart): Observable<number> {
+    return this.saveSelectedProfileResponse(body).pipe(
       map(_r => _r.body)
     );
   }
@@ -1786,8 +1956,12 @@ export class ReferencedataService extends BaseService {
 
 export module ReferencedataService {
   export interface GetDataHighChartParams {
+    typeChart: number;
     profilType: number;
     profilFace: number;
+    newProfil: string;
+    minScaleY: number;
+    maxScaleY: number;
     IDEQUIP: number;
   }
 }

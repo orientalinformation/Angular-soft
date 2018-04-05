@@ -36,7 +36,7 @@
                   {{'Number of samples'|translate}}
                 </label>
                 <div class="col-md-2">
-                  <input type="text" class="form-control" value="{{nbSteps}}">
+                  <input type="text" class="form-control" [(ngModel)]="nbSteps" [disabled]="disableChange">
                 </div>
               </div>
             </div>
@@ -63,19 +63,19 @@
             <div class="row form-group" style="margin-top:30px;height:30px">
               <div class="col-md-4 text-center">
                 <label class="custom-control custom-radio" style="margin:0">
-                  <input type="radio" name="rbpoint" [value]= "0" (change)="onrbChange(recordType, 0)" class="custom-control-input" [disabled]="radioDisable" [ngModel]="radioChecked">{{rbpoint01}}
+                  <input type="radio" name="rbpoint" [value]= "0" (change)="onrbChange(recordType, 0)" class="custom-control-input" [disabled]="radio1Disable" [ngModel]="radioChecked">{{rbpoint01}}
                   <span class="custom-control-indicator"></span>
                 </label>
               </div>
               <div class="col-md-4 text-center">
                 <label class="custom-control custom-radio" style="margin:0">
-                  <input type="radio" name="rbpoint" [value]= "1" (change)="onrbChange(recordType, 1)" class="custom-control-input" [disabled]="radioDisable" [ngModel]="radioChecked">{{rbpoint02}}
+                  <input type="radio" name="rbpoint" [value]= "1" (change)="onrbChange(recordType, 1)" class="custom-control-input" [disabled]="radio2Disable" [ngModel]="radioChecked">{{rbpoint02}}
                   <span class="custom-control-indicator"></span>
                 </label>
               </div>
               <div class="col-md-4 text-center">
                 <label class="custom-control custom-radio" style="margin:0">
-                  <input type="radio" name="rbpoint" [value]= "2" (change)="onrbChange(recordType, 2)" class="custom-control-input" [disabled]="radioDisable" [ngModel]="radioChecked">{{rbpoint03}}
+                  <input type="radio" name="rbpoint" [value]= "2" (change)="onrbChange(recordType, 2)" class="custom-control-input" [disabled]="radio3Disable" [ngModel]="radioChecked">{{rbpoint03}}
                   <span class="custom-control-indicator"></span>
                 </label>
               </div>
@@ -86,7 +86,7 @@
                   <div class="row">
                       <label class="col-md-3 col-form-label text-success">X</label>
                       <div class="col-md-9">
-                        <select class="form-control" [(ngModel)]="mesAxisXSelected" [disabled]="selectDisable">
+                        <select class="form-control" (change)="changeX()" [(ngModel)]="mesAxisXSelected" [disabled]="select1Disable">
                           <option *ngFor="let axis of mesAxisX" [value]="axis">{{ axis }}</option>
                         </select>
                       </div>
@@ -96,7 +96,7 @@
                   <div class="row">
                       <label class="col-md-3 col-form-label text-primary">Y</label>
                       <div class="col-md-9">
-                        <select class="form-control" [(ngModel)]="mesAxisYSelected" [disabled]="selectDisable">
+                        <select class="form-control" (change)="changeY()" [(ngModel)]="mesAxisYSelected" [disabled]="select2Disable">
                           <option *ngFor="let axis of mesAxisY" [value]="axis">{{ axis }}</option>
                         </select>
                       </div>
@@ -108,7 +108,7 @@
                   <div class="row">
                       <label class="col-md-3 col-form-label text-success">X</label>
                       <div class="col-md-9">
-                        <select class="form-control" [(ngModel)]="mesAxisXSelected" [disabled]="selectDisable">
+                        <select class="form-control" (change)="changeY()" [(ngModel)]="mesAxisYSelected" [disabled]="select2Disable">
                           <option *ngFor="let axis of mesAxisY" [value]="axis">{{ axis }}</option>
                         </select>
                       </div>
@@ -118,7 +118,7 @@
                   <div class="row">
                       <label class="col-md-3 col-form-label text-primary">Y</label>
                       <div class="col-md-9">
-                        <select class="form-control" [(ngModel)]="mesAxisYSelected" [disabled]="selectDisable">
+                        <select class="form-control"  (change)="changeX()" [(ngModel)]="mesAxisXSelected" [disabled]="select1Disable">
                           <option *ngFor="let axis of mesAxisX" [value]="axis">{{ axis }}</option>
                         </select>
                       </div>
@@ -129,7 +129,7 @@
                   <div class="row">
                       <label class="col-md-3 col-form-label text-warning">Z</label>
                       <div class="col-md-9">
-                        <select class="form-control"  [(ngModel)]="mesAxisZSelected" [disabled]="selectDisable">
+                        <select class="form-control"  (change)="changeZ()" [(ngModel)]="mesAxisZSelected" [disabled]="select3Disable">
                           <option *ngFor="let axis of mesAxisZ" [value]="axis">{{ axis }}</option>
                         </select>
                       </div>
@@ -138,7 +138,7 @@
             </div>
             <div class="row form-group" style="margin-top:30px">
               <div class="col-md-12 text-center">
-                <button class="btn btn-success" (click)="savePoint()">Save</button>
+                <button class="btn btn-success" (click)="saveAll()" [disabled]="disableChange">Save</button>
               </div>
             </div>
             <div class="text-center" style="padding-top:15px">
@@ -239,10 +239,10 @@
                   <h5 class="text-danger" style="font-weight:600;margin-top:5px">{{'Curve number'|translate}}</h5>
                 </div>
                 <div class="col-md-2 text-center" *ngIf="nbSteps">
-                  <input type="text" value="{{nbSteps}}" [(ngModel)]="NB_STEPS" class="form-control">
+                  <input type="text" value="{{nbSteps}}" [(ngModel)]="NB_STEPS" class="form-control" [disabled]="disableChange">
                 </div>
                 <div class="col-md-2 text-center">
-                  <button class="btn btn-primary" (click)="saveNbStep()">{{'Refesh'|translate}}</button>
+                  <button class="btn btn-primary" (click)="saveNbStep()" [disabled]="disableChange">{{'Refesh'|translate}}</button>
                 </div>
               </div>
               <h6 class="text-danger text-center" *ngIf="symbol">{{'Table on the axis'|translate}} {{selectedAxe}} ({{productSectionAxisTemp}}) ({{symbol.prodchartDimensionSymbol}})</h6>

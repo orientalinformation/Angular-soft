@@ -85,7 +85,7 @@
           </div>
         </div>
         <div class="card">
-          <div class="card-header">{{'Temperature to stop (°C)'|translate}}</div>
+          <div class="card-header">{{'Temperature to stop'|translate}} ({{ temperatureSymbol }})</div>
           <div class="card-body">
             <div class="row">
               <div class="col-md-6">
@@ -148,96 +148,96 @@
     </div>
     <!-- /.card-body -->
     <div class="card-header">
-      <strong>{{'Alpha (Kw/(m².°C))'|translate}}</strong>
+      <strong>{{'Alpha '|translate}}({{ convectionCoeffSymbol }})</strong>
     </div>
     <div class="card-body">
-      <div class="row align-items-start">
+      <div class="row align-items-start text-center">
         <div class="col">
-          <label class="col-md-6 col-form-label" for="text-input">{{'Top'|translate}}</label>
+          <label class="col-md-12 col-form-label" for="text-input">{{'Top'|translate}}</label>
         </div>
         <div class="col">
-          <label class="col-md-6 col-form-label" for="text-input">{{'Button'|translate}}</label>
+          <label class="col-md-12 col-form-label" for="text-input">{{'Button'|translate}}</label>
         </div>
         <div class="col">
-          <label class="col-md-6 col-form-label" for="text-input">{{'Left'|translate}}</label>
+          <label class="col-md-12 col-form-label" for="text-input">{{'Left'|translate}}</label>
         </div>
         <div class="col">
-          <label class="col-md-6 col-form-label" for="text-input">{{'Right'|translate}}</label>
+          <label class="col-md-12 col-form-label" for="text-input">{{'Right'|translate}}</label>
         </div>
         <div class="col">
-          <label class="col-md-6 col-form-label" for="text-input">{{'Front'|translate}}</label>
+          <label class="col-md-12 col-form-label" for="text-input">{{'Front'|translate}}</label>
         </div>
         <div class="col">
-          <label class="col-md-6 col-form-label" for="text-input">{{'Rear'|translate}}</label>
+          <label class="col-md-12 col-form-label" for="text-input">{{'Rear'|translate}}</label>
         </div>
       </div>
-      <div class="row align-items-center">
+      <div class="row align-items-center ">
         <div class="col">
-          <div class="col-md-6">
+          <div class="col-md-12 ">
             <div class="input-group">
-              <label class="custom-control custom-checkbox cal-check">
+              <label class="custom-control custom-checkbox cal-check" style="margin-left: 3em;">
                 <input type="checkbox" class="custom-control-input" id="isStudyAlphaTopFixedDef" name="isStudyAlphaTopFixedDef" [checked]="calculationparametersdef.STUDY_ALPHA_TOP_FIXED_DEF == 1"
-                  [(ngModel)]="calculationparametersdef.STUDY_ALPHA_TOP_FIXED_DEF">
+                  [(ngModel)]="calculationparametersdef.STUDY_ALPHA_TOP_FIXED_DEF" (click)="resetTopValue();">
                 <span class="custom-control-indicator"></span>
               </label>
             </div>
           </div>
         </div>
         <div class="col">
-          <div class="col-md-6">
+          <div class="col-md-12">
             <div class="input-group">
-                <label class="custom-control custom-checkbox cal-check">
+                <label class="custom-control custom-checkbox cal-check" style="margin-left: 3em;">
                   <input type="checkbox" class="custom-control-input" id="isStudyAlphaBottomFixedDef" name="isStudyAlphaBottomFixedDef" 
                   [checked]="calculationparametersdef.STUDY_ALPHA_BOTTOM_FIXED_DEF == 1"
-                  [(ngModel)]="calculationparametersdef.STUDY_ALPHA_BOTTOM_FIXED_DEF">
+                  [(ngModel)]="calculationparametersdef.STUDY_ALPHA_BOTTOM_FIXED_DEF" (click)="resetBotvalue();">
                   <span class="custom-control-indicator"></span>
                 </label>
             </div>
           </div>
         </div>
         <div class="col">
-          <div class="col-md-6">
+          <div class="col-md-12">
             <div class="input-group">
-              <label class="custom-control custom-checkbox cal-check">
+              <label class="custom-control custom-checkbox cal-check" style="margin-left: 3em;">
                 <input type="checkbox" class="custom-control-input" id="isStudyAlphaLeftFixedDef" name="isStudyAlphaLeftFixedDef" 
                 [checked]="calculationparametersdef.STUDY_ALPHA_LEFT_FIXED_DEF == 1"
-                [(ngModel)]="calculationparametersdef.STUDY_ALPHA_LEFT_FIXED_DEF">
+                [(ngModel)]="calculationparametersdef.STUDY_ALPHA_LEFT_FIXED_DEF" (click)="resetLeftValue();">
                 <span class="custom-control-indicator"></span>
               </label>
             </div>
           </div>
         </div>
         <div class="col">
-          <div class="col-md-6">
+          <div class="col-md-12">
             <div class="input-group">
-              <label class="custom-control custom-checkbox cal-check">
+              <label class="custom-control custom-checkbox cal-check" style="margin-left: 3em;">
                 <input type="checkbox" class="custom-control-input" id="isStudyAlphaRightFixedDef" name="isStudyAlphaRightFixedDef" 
                 [checked]="calculationparametersdef.STUDY_ALPHA_RIGHT_FIXED_DEF == 1"
-                [(ngModel)]="calculationparametersdef.STUDY_ALPHA_RIGHT_FIXED_DEF">
+                [(ngModel)]="calculationparametersdef.STUDY_ALPHA_RIGHT_FIXED_DEF" (click)="resetRightValue();">
                 <span class="custom-control-indicator"></span>
               </label>
             </div>
           </div>
         </div>
         <div class="col">
-          <div class="col-md-6">
+          <div class="col-md-12">
             <div class="input-group">
-              <label class="custom-control custom-checkbox cal-check">
+              <label class="custom-control custom-checkbox cal-check" style="margin-left: 3em;">
                 <input type="checkbox" class="custom-control-input" id="isStudyAlphaFrontFixedDef" name="isStudyAlphaFrontFixedDef" 
                 [checked]="calculationparametersdef.STUDY_ALPHA_FRONT_FIXED_DEF == 1"
-                [(ngModel)]="calculationparametersdef.STUDY_ALPHA_FRONT_FIXED_DEF">
+                [(ngModel)]="calculationparametersdef.STUDY_ALPHA_FRONT_FIXED_DEF" (click)="resetFrontValue();">
                 <span class="custom-control-indicator"></span>
               </label>
             </div>
           </div>
         </div>
         <div class="col">
-          <div class="col-md-6">
+          <div class="col-md-12">
             <div class="input-group">
-              <label class="custom-control custom-checkbox cal-check">
+              <label class="custom-control custom-checkbox cal-check" style="margin-left: 3em;">
                 <input type="checkbox" class="custom-control-input" id="isStudyAlphaRearFixedDef" name="isStudyAlphaRearFixedDef"
                 [checked]="calculationparametersdef.STUDY_ALPHA_REAR_FIXED_DEF == 1"
-                [(ngModel)]="calculationparametersdef.STUDY_ALPHA_REAR_FIXED_DEF">
+                [(ngModel)]="calculationparametersdef.STUDY_ALPHA_REAR_FIXED_DEF" (click)="resetRearValue();">
                 <span class="custom-control-indicator"></span>
               </label>
             </div>
@@ -246,7 +246,7 @@
       </div>
       <div class="row align-items-center">
         <div class="col">
-          <div class="col-md-6">
+          <div class="col-md-12">
             <div class="input-group">
               <input type="text" id="studyAlphaTopDef" name="studyAlphaTopDef" class="form-control" [(ngModel)]="calculationparametersdef.STUDY_ALPHA_TOP_DEF"
                 [disabled]="calculationparametersdef.STUDY_ALPHA_TOP_FIXED_DEF != 1">
@@ -254,7 +254,7 @@
           </div>
         </div>
         <div class="col">
-          <div class="col-md-6">
+          <div class="col-md-12">
             <div class="input-group">
               <input type="text" id="studyAlphaBottomDef" name="studyAlphaBottomDef" class="form-control" [(ngModel)]="calculationparametersdef.STUDY_ALPHA_BOTTOM_DEF"
                 [disabled]="calculationparametersdef.STUDY_ALPHA_BOTTOM_FIXED_DEF != 1">
@@ -262,7 +262,7 @@
           </div>
         </div>
         <div class="col">
-          <div class="col-md-6">
+          <div class="col-md-12">
             <div class="input-group">
               <input type="text" id="studyAlphaLeftDef" name="studyAlphaLeftDef" class="form-control" [(ngModel)]="calculationparametersdef.STUDY_ALPHA_LEFT_DEF"
                 [disabled]="calculationparametersdef.STUDY_ALPHA_LEFT_FIXED_DEF != 1">
@@ -270,7 +270,7 @@
           </div>
         </div>
         <div class="col">
-          <div class="col-md-6">
+          <div class="col-md-12">
             <div class="input-group">
               <input type="text" id="studyAlphaRightDef" name="studyAlphaRightDef" class="form-control" [(ngModel)]="calculationparametersdef.STUDY_ALPHA_RIGHT_DEF"
                 [disabled]="calculationparametersdef.STUDY_ALPHA_RIGHT_FIXED_DEF != 1">
@@ -278,7 +278,7 @@
           </div>
         </div>
         <div class="col">
-          <div class="col-md-6">
+          <div class="col-md-12">
             <div class="input-group">
               <input type="text" id="studyAlphaFrontDef" name="studyAlphaFrontDef" class="form-control" [(ngModel)]="calculationparametersdef.STUDY_ALPHA_FRONT_DEF"
                 [disabled]="calculationparametersdef.STUDY_ALPHA_FRONT_FIXED_DEF != 1">
@@ -286,7 +286,7 @@
           </div>
         </div>
         <div class="col">
-          <div class="col-md-6">
+          <div class="col-md-12">
             <div class="input-group">
               <input type="text" id="studyAlphaRearDef" name="studyAlphaRearDef" class="form-control" [(ngModel)]="calculationparametersdef.STUDY_ALPHA_REAR_DEF"
                 [disabled]="calculationparametersdef.STUDY_ALPHA_REAR_FIXED_DEF != 1">
@@ -307,12 +307,12 @@
           <label class="col-md-7 col-form-label" for="text-input">{{'Precision log step'|translate}}</label>
         </div>
         <div class="col">
-          <label class="col-md-7 col-form-label" for="text-input">{{'Time step (s)'|translate}}</label>
+          <label class="col-md-7 col-form-label" for="text-input">{{'Time step '|translate}} ({{ timeSymbol }})</label>
         </div>
       </div>
       <div class="row align-items-center">
         <div class="col">
-          <div class="col-md-5">
+          <div class="col-md-7">
             <div class="input-group">
               <span class="input-group-addon">
                 <small></small>
@@ -322,7 +322,7 @@
           </div>
         </div>
         <div class="col">
-          <div class="col-md-5">
+          <div class="col-md-7">
             <div class="input-group">
               <span class="input-group-addon">
                 <small></small>
@@ -332,7 +332,7 @@
           </div>
         </div>
         <div class="col">
-          <div class="col-md-5">
+          <div class="col-md-7">
             <div class="input-group">
               <span class="input-group-addon">
                 <small></small>

@@ -5,7 +5,7 @@ export const ReferencesNavItems = [
         icon: '',
     },
     {
-        name: 'Packing',
+        name: 'Packaging',
         url: '/references/packing',
         icon: '',
     },

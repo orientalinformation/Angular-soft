@@ -15,6 +15,9 @@ import { ModalDirective } from 'ngx-bootstrap/modal/modal.directive';
 import * as Models from '../../../api/models';
 
 import swal from 'sweetalert2';
+import { Users } from '../../../api/models/users';
+import { ViewFamily } from '../../../api/models/view-family';
+import { ViewComponents } from '../../../api/models/view-components';
 
 @Pipe({ name: 'filter' })
 export class FilterPipe implements PipeTransform {
@@ -52,6 +55,14 @@ export class OpenStudyComponent implements OnInit, AfterViewInit {
   public laddaOpeningStudy = false;
   public laddaDeletingStudy = false;
   public laddaSaveStudyAs = false;
+  public users: Users;
+  public compFamily: ViewFamily;
+  public subFamily: ViewFamily;
+  public components: ViewComponents;
+  public userSelected = 0;
+  public compFamilySelected = 0;
+  public subFamilySelected = 0;
+  public componentSelected = 0;
 
   constructor(private api: ApiService, private router: Router) {}
   ngOnInit() {
@@ -100,7 +111,7 @@ export class OpenStudyComponent implements OnInit, AfterViewInit {
   refrestListStudies() {
     localStorage.removeItem('study');
     this.selectedStudy = null;
-    this.api.findStudies()
+    this.api.findStudies({})
       .subscribe(
       data => {
         // console.log('get studies response:');
@@ -113,7 +124,27 @@ export class OpenStudyComponent implements OnInit, AfterViewInit {
       () => {
         // console.log('find sttudies completed');
       }
-      );
+    );
+    this.api.getActiveUsers().subscribe(
+      data => {
+        this.users = data;
+      }
+    );
+    this.api.getAllCompFamily().subscribe(
+      data => {
+        this.compFamily = data;
+      }
+    );
+    this.api.getSubfamily(this.compFamilySelected).subscribe(
+      data => {
+        this.subFamily = data;
+      }
+    );
+    this.api.findComponents({}).subscribe(
+      data => {
+        this.components = data;
+      }
+    );
   }
 
   ngAfterViewInit() {
@@ -183,6 +214,97 @@ export class OpenStudyComponent implements OnInit, AfterViewInit {
       },
       () => {
         this.laddaSaveStudyAs = false;
+      }
+    );
+  }
+
+  selectUser() {
+    this.api.findStudies({
+        idUser: this.userSelected
+      })
+      .subscribe(
+      data => {
+        this.studies = data;
+      },
+      err => {
+        console.log(err);
+      },
+      () => {
+      }
+    );
+  }
+
+  selectFamily() {
+    this.api.getSubfamily(this.compFamilySelected).subscribe(
+      data => {
+        this.subFamily = data;
+      }
+    );
+    this.api.findComponents({
+      idStudy: 0,
+      compfamily: this.compFamilySelected,
+    }).subscribe(
+      data => {
+        console.log(data);
+        this.components = data;
+      }
+    );
+    this.api.findStudies({
+        idUser: this.userSelected,
+        compfamily: this.compFamilySelected
+    }).subscribe(
+      data => {
+        this.studies = data;
+      },
+      err => {
+        console.log(err);
+      },
+      () => {
+      }
+    );
+  }
+
+  selectSubFamily() {
+    this.api.findComponents({
+      idStudy: 0,
+      compfamily: this.compFamilySelected,
+      subfamily: this.subFamilySelected
+    }).subscribe(
+      data => {
+        console.log(data);
+        this.components = data;
+      }
+    );
+    this.api.findStudies({
+      idUser: this.userSelected,
+      compfamily: this.compFamilySelected,
+      subfamily: this.subFamilySelected
+    }).subscribe(
+      data => {
+        this.studies = data;
+      },
+      err => {
+        console.log(err);
+      },
+      () => {
+      }
+    );
+  }
+
+  selectComponent() {
+    this.api.findStudies({
+      idUser: this.userSelected,
+      compfamily: this.compFamilySelected,
+      subfamily: this.subFamilySelected,
+      component: this.componentSelected
+    }).subscribe(
+      data => {
+        this.studies = data;
+      },
+      err => {
+        console.log(err);
+      },
+      () => {
       }
     );
   }

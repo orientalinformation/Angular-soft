@@ -13,10 +13,10 @@
             </div>
           </div>
         </div>
-        <perfect-scrollbar style="max-height: 500px;">
+        <perfect-scrollbar style="max-height: 650px;">
           <div class="list-group" *ngIf="studies">
             <!-- mine -->
-            <h6 class="dropdown-header">MINE</h6>
+            <h6 class="dropdown-header" *ngIf="studies.mine">MINE</h6>
             <a *ngFor="let study of (studies.mine | filter: filterString)" class="list-group-item list-group-item-action" [ngClass]="study == selectedStudy? 'active' : ''" (click)="onSelect(study)">
               <div class="d-flex w-100 justify-content-between">
                 {{study.STUDY_NAME}}
@@ -26,7 +26,7 @@
               </div>
             </a>
             <!-- others -->
-            <h6 class="dropdown-header">OTHER</h6>
+            <h6 class="dropdown-header" *ngIf="studies.mine && studies.others">OTHER</h6>
             <a *ngFor="let study of (studies.others | filter: filterString)" class="list-group-item list-group-item-action" [ngClass]="study == selectedStudy? 'active' : ''"
               (click)="onSelect(study)">
               <div class="d-flex w-100 justify-content-between">
@@ -49,21 +49,41 @@
         </div>
         <div class="card-body">
           <div class="row">
-            <div class="col-md-6">
-              Who
-              <ng-select class="bootstrap" [options]="filterUsers" [allowClear]="true"></ng-select>
+            <div class="col-md-12 form-group">
+              {{'Who'|translate}}
+              <select class="form-control" [(ngModel)]="userSelected" (change)="selectUser()">
+                <option [value]="0">{{ 'Select a user'|translate }}</option>
+                <option *ngFor="let user of users" [value]="user.ID_USER">
+                  {{ user.USERNAM }}
+                </option>
+              </select>
             </div>
-            <div class="col-md-6">
-              Component family
-              <ng-select class="bootstrap" [options]="filterUsers" [allowClear]="true"></ng-select>
+            <div class="col-md-6 form-group">
+              {{'Component family'|translate}}
+              <select class="form-control" [(ngModel)]="compFamilySelected" (change)="selectFamily()">
+                <option [value]="0">{{ 'Select a family'|translate }}</option>
+                <option *ngFor="let family of compFamily" [value]="family.ID_TRANSLATION">
+                  {{ family.LABEL }}
+                </option>
+              </select>
             </div>
-            <div class="col-md-6">
-              Sub family
-              <ng-select class="bootstrap" [options]="filterUsers" [allowClear]="true"></ng-select>
+            <div class="col-md-6 form-group">
+              {{'Sub family'|translate}}
+              <select class="form-control" [(ngModel)]="subFamilySelected" (change)="selectSubFamily()">
+                <option [value]="0">{{ 'Select a sub family'|translate }}</option>
+                <option *ngFor="let family of subFamily" [value]="family.ID_TRANSLATION">
+                  {{ family.LABEL }}
+                </option>
+              </select>
             </div>
-            <div class="col-md-6">
-              Component list
-              <ng-select class="bootstrap" [options]="filterUsers" [allowClear]="true"></ng-select>
+            <div class="col-md-12">
+              {{'Component list'|translate}}
+              <select class="form-control" *ngIf="components" [(ngModel)]="componentSelected" (change)="selectComponent()">
+                <option [value]="0">{{ 'Select a component'|translate }}</option>
+                <option *ngFor="let component of components.active" [value]="component.ID_COMP">
+                  {{ component.displayName }}
+                </option>
+              </select>
             </div>
           </div>
         </div>

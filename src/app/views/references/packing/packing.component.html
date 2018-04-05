@@ -66,7 +66,7 @@
                         <div class="col-md-5">
                             <div class="input-group">
                                 <input type="text" [(ngModel)]="updatePackingElmt.PACKINGCOND" id="ref-packing-cond" class="form-control" placeholder="0.00">
-                                <span class="input-group-addon"><small> W/(m.°C)</small></span>
+                                <span class="input-group-addon"><small> {{ conductivitySymbol }}</small></span>
                             </div>
                         </div>
                     </div>
@@ -79,31 +79,41 @@
                     <div class="row" style="margin-top: 30px;">
                         <div class="col-md-2" align="center" >
                             <label class="custom-control custom-radio" >
-                                <input type="radio" class="custom-control-input" name="status-packing" [(ngModel)]="updatePackingElmt.PACKING_RELEASE" value="1" [checked]="selectPackingElmt.PACKING_RELEASE == 1" [disabled]="selectPackingElmt.PACKING_RELEASE == 4 || selectPackingElmt.PACKING_RELEASE == 5 || selectPackingElmt.PACKING_RELEASE == 3 || selectPackingElmt.PACKING_RELEASE == 9">{{ 'Draft'|translate }}
+                                <input type="radio" class="custom-control-input" name="status-packing" 
+                                [(ngModel)]="updatePackingElmt.PACKING_RELEASE" value="1" [checked]="selectPackingElmt.PACKING_RELEASE == 1" 
+                                [disabled]="selectPackingElmt.PACKING_RELEASE == 4 || selectPackingElmt.PACKING_RELEASE == 5 || selectPackingElmt.PACKING_RELEASE == 3 || selectPackingElmt.PACKING_RELEASE == 9">{{ 'Draft'|translate }}
                                 <span class="custom-control-indicator"></span>
                             </label>
                         </div>
                         <div class="col-md-2" align="center" >
                             <label class="custom-control custom-radio" >
-                                <input type="radio" value="2" class="custom-control-input" name="status-packing" [(ngModel)]="updatePackingElmt.PACKING_RELEASE" value="2" [checked]="selectPackingElmt.PACKING_RELEASE == 2" [disabled]="selectPackingElmt.PACKING_RELEASE == 4 || selectPackingElmt.PACKING_RELEASE == 5 || selectPackingElmt.PACKING_RELEASE == 3 || selectPackingElmt.PACKING_RELEASE == 9">{{ 'Test'|translate }}
+                                <input type="radio" value="2" class="custom-control-input" name="status-packing" 
+                                [(ngModel)]="updatePackingElmt.PACKING_RELEASE" value="2" [checked]="selectPackingElmt.PACKING_RELEASE == 2" 
+                                [disabled]="selectPackingElmt.PACKING_RELEASE == 4 || selectPackingElmt.PACKING_RELEASE == 5 || selectPackingElmt.PACKING_RELEASE == 3 || selectPackingElmt.PACKING_RELEASE == 9">{{ 'Test'|translate }}
                                 <span class="custom-control-indicator"></span>
                             </label>
                         </div>
                         <div class="col-md-2" align="center" >
                             <label class="custom-control custom-radio" >
-                                <input type="radio" value="3" class="custom-control-input" name="status-packing" [(ngModel)]="updatePackingElmt.PACKING_RELEASE" value="3" [checked]="selectPackingElmt.PACKING_RELEASE == 3" [disabled]="selectPackingElmt.PACKING_RELEASE == 4 || selectPackingElmt.PACKING_RELEASE == 5 || selectPackingElmt.PACKING_RELEASE == 9">{{ 'Active'|translate }}
+                                <input type="radio" value="3" class="custom-control-input" name="status-packing" 
+                                [(ngModel)]="updatePackingElmt.PACKING_RELEASE" value="3" [checked]="selectPackingElmt.PACKING_RELEASE == 3" 
+                                [disabled]="selectPackingElmt.PACKING_RELEASE == 4 || selectPackingElmt.PACKING_RELEASE == 5 || selectPackingElmt.PACKING_RELEASE == 9">{{ 'Active'|translate }}
                                 <span class="custom-control-indicator"></span>
                             </label>
                         </div>
                         <div class="col-md-2" align="center" >
                             <label class="custom-control custom-radio" >
-                                <input type="radio" value="4" class="custom-control-input" name="status-packing" [(ngModel)]="updatePackingElmt.PACKING_RELEASE" value="4" [checked]="selectPackingElmt.PACKING_RELEASE == 4" [disabled]="selectPackingElmt.PACKING_RELEASE == 5 || selectPackingElmt.PACKING_RELEASE == 9">{{ 'Certified'|translate }}
+                                <input type="radio" value="4" class="custom-control-input" name="status-packing" 
+                                [(ngModel)]="updatePackingElmt.PACKING_RELEASE" value="4" [checked]="selectPackingElmt.PACKING_RELEASE == 4" 
+                                [disabled]="selectPackingElmt.PACKING_RELEASE == 5 || selectPackingElmt.PACKING_RELEASE == 9">{{ 'Certified'|translate }}
                                 <span class="custom-control-indicator"></span>
                             </label>
                         </div>
                         <div class="col-md-2" align="center" >
                             <label class="custom-control custom-radio" >
-                                <input type="radio" value="9" class="custom-control-input" name="status-packing" [(ngModel)]="updatePackingElmt.PACKING_RELEASE" value="9" [checked]="selectPackingElmt.PACKING_RELEASE == 9" [disabled]="selectPackingElmt.PACKING_RELEASE == 4 || selectPackingElmt.PACKING_RELEASE == 5 || selectPackingElmt.PACKING_RELEASE == 9">{{ 'Obsolete'|translate }}
+                                <input type="radio" value="9" class="custom-control-input" name="status-packing" 
+                                [(ngModel)]="updatePackingElmt.PACKING_RELEASE" value="9" [checked]="selectPackingElmt.PACKING_RELEASE == 9" 
+                                [disabled]="selectPackingElmt.PACKING_RELEASE == 4 || selectPackingElmt.PACKING_RELEASE == 5 || selectPackingElmt.PACKING_RELEASE == 9">{{ 'Obsolete'|translate }}
                                 <span class="custom-control-indicator"></span>
                             </label>
                         </div>
@@ -112,13 +122,17 @@
                 <ng-template #hideInfo>
                     <div class="card-body">
                         <div class="text-muted text-center" style="min-height: 200px;padding-top:90px;">
-                            Please select a packing from the list before process.
+                            Please select a packaging from the list before process.
                         </div>
                     </div>
                 </ng-template>
                 <div class="card-footer text-center" *ngIf="selectPackingElmt && !checkHideInfo">
-                    <button type="button" class="btn btn-success" (click)="updatePacking(updatePackingElmt)" [ladda]="isUpdatePacking" [disabled]="selectPackingElmt.ID_USER != userLogon.ID_USER || selectPackingElmt.PACKING_RELEASE == 5 || selectPackingElmt.PACKING_RELEASE == 9"><i class="fa fa-floppy-o"></i> {{ 'Save'|translate }}</button>
-                    <button type="button" class="btn btn-danger" (click)="deletePacking(selectPackingElmt)" [ladda]="isDeletePacking" [disabled]="selectPackingElmt.ID_USER != userLogon.ID_USER || selectPackingElmt.PACKING_RELEASE == 5 || selectPackingElmt.PACKING_RELEASE == 9"><i class="fa fa-trash-o"></i> {{ 'Delete'|translate }}</button>
+                    <button type="button" class="btn btn-success" (click)="checkDataPacking(updatePackingElmt, 1)" 
+                    [ladda]="isUpdatePacking" [disabled]="selectPackingElmt.ID_USER != userLogon.ID_USER || selectPackingElmt.PACKING_RELEASE == 5 || selectPackingElmt.PACKING_RELEASE == 9">
+                    <i class="fa fa-floppy-o"></i> {{ 'Save'|translate }}</button>
+                    <button type="button" class="btn btn-danger" (click)="deletePacking(selectPackingElmt)" 
+                    [ladda]="isDeletePacking" [disabled]="selectPackingElmt.ID_USER != userLogon.ID_USER || selectPackingElmt.PACKING_RELEASE == 5 || selectPackingElmt.PACKING_RELEASE == 9">
+                    <i class="fa fa-trash-o"></i> {{ 'Delete'|translate }}</button>
                     <button type="button" class="btn btn-secondary" (click)="modalSaveAs.show()"><i class="fa fa-copy"></i> {{ 'Save as'|translate }}</button>
                 </div>
               </div>
@@ -133,7 +147,7 @@
     <div class="modal-dialog modal-lg modal-primary" role="document">
         <div class="modal-content">
             <div class="modal-header ">
-                <strong>{{ 'PACKING'|translate }}</strong>
+                <strong>{{ 'PACKAGING'|translate }}</strong>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="modalAddPackingElmt.hide()">
                     <span aria-hidden="true">×</span>
                 </button>
@@ -157,7 +171,7 @@
                         <div class="col-md-4">
                             <div class="input-group">
                                 <input type="text" [(ngModel)]="newPackingElmt.PACKINGCOND" id="ref-packing-cond-add" class="form-control" placeholder="0.00">
-                                <span class="input-group-addon"><small> W/(m.°C)</small></span>
+                                <span class="input-group-addon"><small> {{ conductivitySymbol }}</small></span>
                             </div>
                         </div>
                     </div>
@@ -208,7 +222,7 @@
             </div>
             <div class="modal-footer">
                 <button class="btn btn-secondary" data-dismiss="modal" (click)="modalAddPackingElmt.hide()">{{ 'Cancel'|translate }}</button>
-                <button class="btn btn-success" (click)="newPacking()" [ladda]="isAddPacking"><i class="fa fa-floppy-o"></i> {{ 'Save'|translate }}</button>
+                <button class="btn btn-success" (click)="checkDataPacking(newPackingElmt, 0)" [ladda]="isAddPacking"><i class="fa fa-floppy-o"></i> {{ 'Save'|translate }}</button>
             </div>
         </div>
     </div>

@@ -3,7 +3,7 @@
 /**
  */
 export class Component {
-    FAT_TYPE?: number;
+    FREEZE_TEMP?: number;
     AIR?: number;
     CLASS_TYPE?: number;
     COMP_COMMENT?: string;
@@ -15,8 +15,8 @@ export class Component {
     COMP_VERSION?: number;
     COND_DENS_MODE?: number;
     DENSITY?: number;
+    FAT_TYPE?: number;
     BLS_CODE?: string;
-    FREEZE_TEMP?: number;
     GLUCID?: number;
     ID_COMP?: number;
     ID_USER?: number;
@@ -28,4 +28,5 @@ export class Component {
     SPECIFIC_HEAT?: number;
     SUB_FAMILY?: number;
     WATER?: number;
+    displayName?: string;
 }

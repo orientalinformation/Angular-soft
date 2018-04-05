@@ -3,7 +3,7 @@ import { ViewChild } from '@angular/core';
 import { ModalDirective } from 'ngx-bootstrap/modal/modal.directive';
 import { ReferencedataService } from '../../../api/services/referencedata.service';
 import { ApiService } from '../../../api/services';
-import { Translation, ViewComponent, VComponent, ViewTemperature, MyComponent, Compenth } from '../../../api/models';
+import { Translation, ViewComponent, VComponent, ViewTemperature, MyComponent, Compenth, Study, Units } from '../../../api/models';
 import { Router } from '@angular/router';
 import swal from 'sweetalert2';
 import { isNumber, isInteger } from '@ng-bootstrap/ng-bootstrap/util/util';
@@ -11,6 +11,7 @@ import { Pipe } from '@angular/core';
 import { PipeTransform } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
 import { Math } from 'three';
+import { isNullOrUndefined } from 'util';
 
 @Pipe({ name: 'ComponentFilter' })
 export class ComponentFilterPipe implements PipeTransform {
@@ -61,6 +62,16 @@ export class ComponentComponent implements OnInit {
   };
   public checkHideInfo = false;
   public checkActiveComp = 0;
+  public temperatureSymbol = '';
+  public timeSymbol = '';
+  public meshesSymbol = '';
+  public enthalpySymbol = '';
+  public conductivitySymbol = '';
+  public densitySymbol = '';
+  public study: Study;
+  public listUnits: Array<Units>;
+
+
 
   constructor(private api: ApiService, private apiReference: ReferencedataService,
     private router: Router, private toastr: ToastrService) {
@@ -73,6 +84,40 @@ export class ComponentComponent implements OnInit {
     this.getDataComponent(0);
     this.getMyComponent();
     // this.generatedData = JSON.parse(localStorage.getItem('generatedData'));
+    if (localStorage.getItem('study')) {
+      this.study = JSON.parse(localStorage.getItem('study'));
+    }
+    this.listUnits = JSON.parse(localStorage.getItem('UnitUser'));
+
+    if (this.listUnits) {
+
+      for (let i = 0; i < this.listUnits.length; i++) {
+
+        if (Number(this.listUnits[i].TYPE_UNIT) === 8) {
+          this.temperatureSymbol = this.listUnits[i].SYMBOL;
+        }
+
+        if (Number(this.listUnits[i].TYPE_UNIT) === 5) {
+          this.timeSymbol = this.listUnits[i].SYMBOL;
+        }
+
+        if (Number(this.listUnits[i].TYPE_UNIT) === 20) {
+          this.meshesSymbol = this.listUnits[i].SYMBOL;
+        }
+
+        if (Number(this.listUnits[i].TYPE_UNIT) === 9) {
+          this.enthalpySymbol = this.listUnits[i].SYMBOL;
+        }
+
+        if (Number(this.listUnits[i].TYPE_UNIT) === 10) {
+          this.conductivitySymbol = this.listUnits[i].SYMBOL;
+        }
+
+        if (Number(this.listUnits[i].TYPE_UNIT) === 7) {
+          this.densitySymbol = this.listUnits[i].SYMBOL;
+        }
+      }
+    }
   }
 
   openNewComponent() {
@@ -97,34 +142,28 @@ export class ComponentComponent implements OnInit {
   }
 
   getDataComponent(compfamily) {
-    this.isLoading = true;
     this.apiReference.getDataComponent(compfamily).subscribe(
       data => {
+        // console.log(data.release);
         this.dataComponent = data;
-        this.isLoading = false;
       },
       err => {
-        this.isLoading = false;
+        console.log(err);
       },
       () => {
-        this.isLoading = false;
       }
     );
   }
 
   changCompFamily(compfamily) {
-    this.isLoading = true;
     this.apiReference.getDataSubFamily(compfamily).subscribe(
       data => {
         this.dataComponent.subFamily = data;
-        // this.dataComponent = data;
-        this.isLoading = false;
       },
       err => {
-        this.isLoading = false;
+        console.log(err);
       },
       () => {
-        this.isLoading = false;
       }
     );
   }
@@ -158,17 +197,14 @@ export class ComponentComponent implements OnInit {
   }
 
   onGetTemperature(comp) {
-    this.isLoading = true;
     this.apiReference.getTemperaturesByIdComp(comp.ID_COMP).subscribe(
       data => {
         this.fieldArray = data;
-        this.isLoading = false;
       },
       err => {
-        this.isLoading = false;
+        console.log(err);
       },
       () => {
-        this.isLoading = false;
       }
     );
   }
@@ -209,13 +245,9 @@ export class ComponentComponent implements OnInit {
   }
 
   addFieldValue() {
-    if (!this.newAttribute.temperature) {
-      swal('Oops..', 'Enter a value in Temperature !', 'error');
-      return;
-    }
-
-    if (!isNumber(this.newAttribute.temperature)) {
-      swal('Oops..', 'Not a valid number in Temperature !', 'error');
+    if (isNullOrUndefined(this.newAttribute.temperature) || String(this.newAttribute.temperature) === ''
+    || isNaN(this.newAttribute.temperature)) {
+      this.toastr.error('Please specify Temperature', 'Error');
       return;
     }
 
@@ -227,14 +259,143 @@ export class ComponentComponent implements OnInit {
       }
     }
 
-    this.fieldArray.push(this.newAttribute);
-    this.newAttribute = {};
+    this.apiReference.checkTemperature(this.newAttribute.temperature).subscribe(
+      res => {
+        if (res === 1) {
+          this.fieldArray.push(this.newAttribute);
+          this.newAttribute = {};
+        } else {
+          this.toastr.error(res.Message, 'Error');
+        }
+      },
+      err => {
+        console.log(err);
+      }
+    );
   }
 
   deleteFieldValue(index) {
     this.fieldArray.splice(index, 1);
   }
 
+  checkDataComponent(comp, check) {
+    if (check === 2 || check === 3) {
+      comp.COMP_NAME = comp.LABEL;
+    }
+
+    if (isNullOrUndefined(comp.COMP_NAME) || String(comp.COMP_NAME) === ''
+    || isNumber(comp.COMP_NAME)) {
+      this.toastr.error('Please specify Component name', 'Error');
+      return;
+    }
+
+    if (isNullOrUndefined(comp.COMP_VERSION) || String(comp.COMP_VERSION) === ''
+    || isNaN(comp.COMP_VERSION)) {
+      this.toastr.error('Please specify Version', 'Error');
+      return;
+    }
+
+    if (Number(comp.PRODUCT_TYPE) === 0) {
+      this.toastr.error('Please select the component`s family', 'Error');
+      return;
+    }
+
+    if (isNullOrUndefined(comp.FREEZE_TEMP) || String(comp.FREEZE_TEMP) === ''
+    || isNaN(comp.FREEZE_TEMP)) {
+      this.toastr.error('Please specify Freeze temperature', 'Error');
+      return;
+    }
+
+    if (isNullOrUndefined(comp.WATER) || String(comp.WATER) === ''
+    || isNaN(comp.WATER)) {
+      this.toastr.error('Please specify Water', 'Error');
+      return;
+    }
+
+    if (isNullOrUndefined(comp.PROTID) || String(comp.PROTID) === ''
+    || isNaN(comp.PROTID)) {
+      this.toastr.error('Please specify Protein & dry material	', 'Error');
+      return;
+    }
+
+    if (isNullOrUndefined(comp.LIPID) || String(comp.LIPID) === ''
+    || isNaN(comp.LIPID)) {
+      this.toastr.error('Please specify Lipid	', 'Error');
+      return;
+    }
+
+    if (isNullOrUndefined(comp.GLUCID) || String(comp.GLUCID) === ''
+    || isNaN(comp.GLUCID)) {
+      this.toastr.error('Please specify Glucid	', 'Error');
+      return;
+    }
+
+    if (isNullOrUndefined(comp.SALT) || String(comp.SALT) === ''
+    || isNaN(comp.SALT)) {
+      this.toastr.error('Please specify Salt	', 'Error');
+      return;
+    }
+
+    if (isNullOrUndefined(comp.AIR) || String(comp.SALT) === ''
+    || isNaN(comp.AIR)) {
+      this.toastr.error('Please specify Air (volume)	', 'Error');
+      return;
+    }
+
+    if (isNullOrUndefined(comp.NON_FROZEN_WATER) || String(comp.NON_FROZEN_WATER) === ''
+    || isNaN(comp.NON_FROZEN_WATER)) {
+      this.toastr.error('Please specify Unfreezable water	', 'Error');
+      return;
+    }
+
+    if (check === 3) {
+      if (this.fieldArray.length <= 0) {
+        this.toastr.error('Please enter some temperature	', 'Error');
+        return;
+      }
+    }
+
+    this.apiReference.checkSaveDataComponent({
+      COMP_NAME: comp.COMP_NAME,
+      COMP_VERSION: comp.COMP_VERSION,
+      FREEZE_TEMP: comp.FREEZE_TEMP,
+      WATER: comp.WATER,
+      PROTID: comp.PROTID,
+      LIPID: comp.LIPID,
+      GLUCID: comp.GLUCID,
+      SALT: comp.SALT,
+      AIR: comp.AIR,
+      NON_FROZEN_WATER: comp.NON_FROZEN_WATER,
+      check: check
+    }).subscribe(
+      (res) => {
+        if (res === 1) {
+          if (check === 0) {
+            this.saveDataComponent();
+          }
+
+          if (check === 1) {
+            this.runCalculateFreeze();
+          }
+
+          if (check === 2) {
+            this.runSelectCalculateFreeze(this.selectComponent);
+          }
+          if (check === 3) {
+            this.runCalculate(this.selectComponent);
+          }
+
+        } else {
+          this.toastr.error(res.Message, 'Error');
+        }
+      },
+      err => {
+        console.log(err);
+      },
+      () => {
+      }
+    );
+  }
   saveDataComponent() {
     this.apiReference.saveDataComponent({
       PRODUCT_TYPE: this.dataComponent.PRODUCT_TYPE,
@@ -285,6 +446,7 @@ export class ComponentComponent implements OnInit {
           this.modalAddComponent.hide();
           this.refrestComponent();
           this.checkHideInfo = false;
+          this.getDataComponent(0);
         } else {
           this.toastr.error('Create component', 'Error');
         }
@@ -364,35 +526,30 @@ export class ComponentComponent implements OnInit {
   }
 
   getGeneratedData(comp) {
-    // this.isLoading = true;
     this.apiReference.getCompenthsByIdComp(comp.ID_COMP).subscribe(
       data => {
+        console.log(data);
         this.compenths = data;
-        // this.isLoading = false;
       },
       err => {
-        this.isLoading = false;
+        console.log(err);
       },
       () => {
-        this.isLoading = false;
       }
     );
   }
 
   getElementCompenth(compenth) {
-    // this.isLoading = true;
     this.apiReference.getCompenthById(compenth.ID_COMPENTH).subscribe(
       data => {
         data.ID_COMP = Number(data.ID_COMP);
         this.dataCompenth = data;
         this.displayCTComponent.show();
-        this.isLoading = false;
       },
       err => {
-        this.isLoading = false;
+        console.log(err);
       },
       () => {
-        this.isLoading = false;
       }
     );
   }
@@ -406,13 +563,29 @@ export class ComponentComponent implements OnInit {
   }
 
   updateCompenth(compenth) {
+    if (isNullOrUndefined(this.dataCompenth.COMPENTH) || String(this.dataCompenth.COMPENTH) === ''
+    || isNaN(this.dataCompenth.COMPENTH)) {
+      this.toastr.error('Please specify Enthalpy	', 'Error');
+      return;
+    }
+    if (isNullOrUndefined(this.dataCompenth.COMPCOND) || String(this.dataCompenth.COMPCOND) === ''
+    || isNaN(this.dataCompenth.COMPCOND)) {
+      this.toastr.error('Please specify Conductivity	', 'Error');
+      return;
+    }
+    if (isNullOrUndefined(this.dataCompenth.COMPDENS) || String(this.dataCompenth.COMPDENS) === ''
+    || isNaN(this.dataCompenth.COMPDENS)) {
+      this.toastr.error('Please specify Density	', 'Error');
+      return;
+    }
+
     this.apiReference.updateCompenth({
       ID_COMPENTH: this.dataCompenth.ID_COMPENTH,
       ID_COMP: Number(this.dataCompenth.ID_COMP),
       COMPTEMP: this.dataCompenth.COMPTEMP,
+      COMPENTH: this.dataCompenth.COMPENTH,
       COMPCOND: this.dataCompenth.COMPCOND,
       COMPDENS: this.dataCompenth.COMPDENS,
-      COMPENTH: this.dataCompenth.COMPENTH
     }).subscribe(
       response => {
         if (response === 1) {
@@ -494,23 +667,6 @@ export class ComponentComponent implements OnInit {
   }
 
   runCalculateFreeze() {
-    if (!this.dataComponent.COMP_NAME || this.dataComponent.COMP_NAME === undefined || this.dataComponent.COMP_NAME === '') {
-      swal('Oops..', 'Please specify name!', 'warning');
-      return;
-    }
-    if (typeof this.dataComponent.COMP_NAME === 'number') {
-      swal('Oops..', 'Not a valid string in Name !', 'warning');
-      return;
-    }
-    if (String(this.dataComponent.COMP_VERSION) === '') {
-      swal('Oops..', 'Please specify version!', 'warning');
-      return;
-    }
-    if (isNaN(this.dataComponent.COMP_VERSION)) {
-      swal('Oops..', 'Not a valid number in Version !', 'warning');
-      return;
-    }
-
     this.laddaIsFreeze = true;
     this.apiReference.calculateFreeze({
       PRODUCT_TYPE: this.dataComponent.PRODUCT_TYPE,
@@ -534,10 +690,10 @@ export class ComponentComponent implements OnInit {
       Temperatures: this.fieldArray,
     }).subscribe(
       response => {
-
-        console.log(response);
         this.laddaIsFreeze = false;
         let success = true;
+
+        console.log(response);
 
         if (response.CheckCalculate === -2) {
           success = false;
@@ -571,6 +727,7 @@ export class ComponentComponent implements OnInit {
           this.checkHideInfo = false;
           this.refrestComponent();
           this.modalAddComponent.hide();
+          this.getDataComponent(0);
         }
       },
       err => {

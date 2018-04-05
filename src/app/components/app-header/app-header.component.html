@@ -44,7 +44,7 @@
           <i class="fa fa-lock"></i> Logout</a>
       </div>
     </li>
-    <li class="nav-item dropdown d-md-down-none" dropdown placement="bottom right">
+    <li class="nav-item dropdown d-md-down-none" *ngIf="user.USERPRIO == 1 ||  user.USERPRIO == 0" dropdown placement="bottom right">
       <a id="admin-menu" class="btn btn-outline-primary mr-1" [routerLink]="['/admin']">
         <span>{{'ADMINISTRATION'|translate}}</span>
         <i class="fa fa-cog fa-lg"></i>

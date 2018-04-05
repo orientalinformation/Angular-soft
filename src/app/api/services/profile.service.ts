@@ -445,7 +445,7 @@ export class ProfileService extends BaseService {
    * @param id - undefined
    * @param body - body update unit users
    */
-  updateUnitsResponse(params: ProfileService.UpdateUnitsParams): Observable<HttpResponse<number>> {
+  updateUnitsResponse(params: ProfileService.UpdateUnitsParams): Observable<HttpResponse<Units>> {
     let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
@@ -458,16 +458,16 @@ export class ProfileService extends BaseService {
       {
         headers: __headers,
         params: __params,
-        responseType: 'text'
+        responseType: 'json'
       });
 
     return this.http.request<any>(req).pipe(
       filter(_r => _r instanceof HttpResponse),
       map(_r => {
         let _resp = _r as HttpResponse<any>;
-        let _body: number = null;
-        _body = parseFloat(_resp.body as string)
-        return _resp.clone({body: _body}) as HttpResponse<number>;
+        let _body: Units = null;
+        _body = _resp.body as Units
+        return _resp.clone({body: _body}) as HttpResponse<Units>;
       })
     );
   }
@@ -477,7 +477,7 @@ export class ProfileService extends BaseService {
    * @param id - undefined
    * @param body - body update unit users
    */
-  updateUnits(params: ProfileService.UpdateUnitsParams): Observable<number> {
+  updateUnits(params: ProfileService.UpdateUnitsParams): Observable<Units> {
     return this.updateUnitsResponse(params).pipe(
       map(_r => _r.body)
     );

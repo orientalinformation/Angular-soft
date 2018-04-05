@@ -176,7 +176,7 @@
 
 <!-- Edit Element Initial Temp Modal -->
 <div class="modal fade" role="dialog" aria-hidden="true" bsModal #editElmtInitTempModal="bs-modal">
-  <div class="modal-dialog" *ngIf="elmtEditForm.elmt" [ngClass]="!elmtEditForm.isoThermal?'modal-lg':''">
+  <div class="modal-dialog modal-primary" *ngIf="elmtEditForm.elmt" [ngClass]="!elmtEditForm.isoThermal?'modal-lg':''">
     <div class="modal-content">
       <div class="modal-header">
         <strong>{{'PRODUCT COMPONENT'|translate}}</strong>
@@ -228,7 +228,7 @@
 
 <!-- Edit Product Iso Initial Temp Modal -->
 <div class="modal fade" role="dialog" aria-hidden="true" bsModal #isoTempEditModal="bs-modal" *ngIf="productShape != 0 && productView.elements && productView.elements.length>0">
-  <div class="modal-dialog">
+  <div class="modal-dialog modal-primary">
     <div class="modal-content">
       <div class="modal-header">
         <strong>{{'PRODUCT TEMPERATURE INIT'|translate}}</strong>
@@ -269,7 +269,7 @@
 
 <!-- Edit Mesh Generate Parameters Modal -->
 <div class="modal fade" role="dialog" aria-hidden="true" bsModal #meshParametersModal="bs-modal" *ngIf="meshParamsForm">
-  <div class="modal-dialog">
+  <div class="modal-dialog modal-primary">
     <div class="modal-content">
       <div class="modal-header">
         <strong>{{'MESH GENERATION'|translate}}</strong>

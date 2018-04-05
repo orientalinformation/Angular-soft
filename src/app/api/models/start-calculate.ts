@@ -3,7 +3,7 @@
 /**
  */
 export class StartCalculate {
-    vRadioOn?: number;
+    tempPtIn?: number;
     idStudy?: number;
     checkOptim?: number;
     epsilonTemp?: number;
@@ -18,10 +18,10 @@ export class StartCalculate {
     hRadioOff?: number;
     maxIter?: number;
     relaxCoef?: number;
-    idStudyEquipment?: number;
+    vRadioOn?: number;
     vRadioOff?: number;
     tempPtSurf?: number;
-    tempPtIn?: number;
+    idStudyEquipment?: number;
     tempPtBot?: number;
     tempPtAvg?: number;
     seValue1?: number;
@@ -33,4 +33,10 @@ export class StartCalculate {
     seValue7?: number;
     seValue8?: number;
     seValue9?: number;
+    sdisableFields?: number;
+    sdisableCalculate?: number;
+    sdisableNbOptim?: number;
+    sdisableTimeStep?: number;
+    sdisablePrecision?: number;
+    sdisableStorage?: number;
 }

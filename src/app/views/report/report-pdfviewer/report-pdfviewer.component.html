@@ -1,16 +1,8 @@
 <div class="container">
     <div class="card card-body">
-    <div>
-      <label> Choose PDF File to show </label>
-      <input (change)="onFileSelected()" type="file" id="file">
-      <input [(ngModel)]="page" type="text" id="page">
+      <ng-container *ngIf="progressFileHtml != ''">
+          <iframe class="embed-responsive-item" width="100%" height="800" frameborder="0" [src]="iframeReport" allowfullscreen></iframe>
+        </ng-container>
     </div>
-    <pdf-viewer [src]="pdfSrc"
-      [render-text]="true"
-      [page]="page"
-      [show-all]="true"
-      style="display: block;">
-    </pdf-viewer>
-  </div>
 </div>
 

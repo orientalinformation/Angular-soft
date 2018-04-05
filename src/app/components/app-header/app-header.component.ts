@@ -21,7 +21,11 @@ export class AppHeaderComponent implements AfterViewInit, OnInit {
   public study: Study = null;
   public user: User = null;
 
-  constructor(private router: Router, private modalService: BsModalService) { }
+  constructor(private router: Router, private modalService: BsModalService) {
+    this.user = JSON.parse(localStorage.getItem('user'));
+
+    this.user.USERPRIO = Number(this.user.USERPRIO);
+  }
 
   ngOnInit() {
     if (localStorage.getItem('study') && this.showStudy !== 'false') {
