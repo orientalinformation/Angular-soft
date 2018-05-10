@@ -109,8 +109,8 @@
                       <th>{{ 'Price'|translate }}</th>
                       <td>
                         <div class="input-group">
-                          <input type="text" [(ngModel)]="updatePipeLine.ELMT_PRICE" class="form-control form-control-sm" placeholder="0.00">
-                          <span class="input-group-addon"><small>€</small></span>
+                          <input type="text" [(ngModel)]="updatePipeLine.ELMT_PRICE" class="form-control form-control-sm" placeholder="0.00" maxlength="5">
+                          <span class="input-group-addon"><small [innerHTML]="monetarySymbol"></small></span>
                         </div>
                       </td>              
                     </tr>
@@ -118,22 +118,31 @@
                       <th>{{ 'Size'|translate }}</th>
                       <td>
                         <div class="input-group">
-                          <input type="text" [(ngModel)]="updatePipeLine.ELT_SIZE" class="form-control form-control-sm" placeholder="0.00">
-                          <span class="input-group-addon"><small>m</small></span>
+                          <input type="text" [(ngModel)]="updatePipeLine.ELT_SIZE" class="form-control form-control-sm" placeholder="0.00" maxlength="5">
+                          <span class="input-group-addon">
+                            <small *ngIf="updatePipeLine.ELT_TYPE == 2; else hideLineDimensionLoad">{{ tankCapacitySymbol }}</small>
+                            <ng-template #hideLineDimensionLoad>
+                                <small>{{ lineDimensionSymbol }}</small>
+                            </ng-template>
+                          </span>
                         </div>
                       </td>              
                     </tr>
                     <tr *ngIf="updatePipeLine.ELT_TYPE == 1 || updatePipeLine.ELT_TYPE == 2; else hideTrOpen">
-                      <th *ngIf="updatePipeLine.ELT_TYPE == 1">{{ 'Losses in get cold'|translate }}</th>
-                      <th *ngIf="updatePipeLine.ELT_TYPE == 2">{{ 'Rate of evaporation'|translate }}</th>
+                      <th *ngIf="updatePipeLine.ELT_TYPE == 2; else lossesInLoad">{{ 'Rate of evaporation'|translate }}</th>
+                      <ng-template #lossesInLoad>
+                        <th>{{ 'Losses in get cold'|translate }}</th>
+                      </ng-template>
+
                       <td>
                         <div class="input-group">
-                          <input type="text" [(ngModel)]="updatePipeLine.ELT_LOSSES_1" class="form-control form-control-sm" placeholder="0.00" [disabled]="updatePipeLine.ELT_TYPE == 4 || updatePipeLine.ELT_TYPE == 3 || updatePipeLine.ELT_TYPE == 5 
-                          || (updatePipeLine.ELT_TYPE == 2 && updatePipeLine.ID_COOLING_FAMILY == 3)">
+                          <input type="text" [(ngModel)]="updatePipeLine.ELT_LOSSES_1" class="form-control form-control-sm" placeholder="0.00" 
+                          [disabled]="updatePipeLine.ELT_TYPE == 4 || updatePipeLine.ELT_TYPE == 3 || updatePipeLine.ELT_TYPE == 5 
+                          || (updatePipeLine.ELT_TYPE == 2 && updatePipeLine.ID_COOLING_FAMILY == 3)" maxlength="5">
                           <span class="input-group-addon">
-                            <small *ngIf="updatePipeLine.ELT_TYPE == 2 && updatePipeLine.ID_COOLING_FAMILY == 2;else symbolLMOpen">l/h</small>
+                            <small *ngIf="updatePipeLine.ELT_TYPE == 2 && updatePipeLine.ID_COOLING_FAMILY == 2;else symbolLMOpen">{{ lineDepSymbol2 }}</small>
                             <ng-template #symbolLMOpen>
-                              <small>l/m</small>
+                              <small>{{ lineDepSymbol }}</small>
                             </ng-template>
                           </span>
                         </div>
@@ -143,9 +152,11 @@
                       <th *ngIf="updatePipeLine.ELT_TYPE == 1">{{ 'Permanent losses'|translate }}</th>
                       <td *ngIf="updatePipeLine.ELT_TYPE == 1">
                         <div class="input-group">
-                          <input type="text" [(ngModel)]="updatePipeLine.ELT_LOSSES_2" class="form-control form-control-sm" placeholder="0.00" [disabled]="updatePipeLine.ELT_TYPE == 2 || updatePipeLine.ELT_TYPE == 3 
+                          <input type="text" [(ngModel)]="updatePipeLine.ELT_LOSSES_2" class="form-control form-control-sm" placeholder="0.00" maxlength="5"
+                          [disabled]="updatePipeLine.ELT_TYPE == 2 || updatePipeLine.ELT_TYPE == 3 
                           || updatePipeLine.ELT_TYPE == 4 || updatePipeLine.ELT_TYPE == 5">
-                          <span class="input-group-addon"><small>l/(m.h)</small></span>
+
+                          <span class="input-group-addon"><small>{{ lossesSymbol }}</small></span>
                         </div>
                       </td>              
                     </tr>
@@ -157,36 +168,35 @@
                     <div class="col-md-1"></div>
                     <div class="col-md-2" align="center" >
                         <label class="custom-control custom-radio" >
-                            <input type="radio" [(ngModel)]="updatePipeLine.LINE_RELEASE" value="1" class="custom-control-input" name="status-pipe"  [checked]="selectLine.LINE_RELEASE == 1"  
+                            <input type="radio" [(ngModel)]="updatePipeLine.LINE_RELEASE" [value]="1" class="custom-control-input" name="status-pipe"  
                             [disabled]="selectLine.LINE_RELEASE == 4 || selectLine.LINE_RELEASE == 5 || selectLine.LINE_RELEASE == 3 || selectLine.LINE_RELEASE == 9">{{ 'Draft'|translate }}
                             <span class="custom-control-indicator"></span>
                         </label>
                     </div>
                     <div class="col-md-2" align="center" >
                         <label class="custom-control custom-radio" >
-                            <input type="radio" [(ngModel)]="updatePipeLine.LINE_RELEASE" value="2" class="custom-control-input" name="status-pipe"  [checked]="selectLine.LINE_RELEASE == 2"
+                            <input type="radio" [(ngModel)]="updatePipeLine.LINE_RELEASE" [value]="2" class="custom-control-input" name="status-pipe"
                             [disabled]="selectLine.LINE_RELEASE == 4 || selectLine.LINE_RELEASE == 5 || selectLine.LINE_RELEASE == 3 || selectLine.LINE_RELEASE == 9">{{ 'Test'|translate }}
                             <span class="custom-control-indicator"></span>
                         </label>
                     </div>
                     <div class="col-md-2" align="center" >
                         <label class="custom-control custom-radio" >
-                            <input type="radio" [(ngModel)]="updatePipeLine.LINE_RELEASE" value="3" class="custom-control-input" name="status-pipe"  [checked]="selectLine.LINE_RELEASE == 3"
+                            <input type="radio" [(ngModel)]="updatePipeLine.LINE_RELEASE" [value]="3" class="custom-control-input" name="status-pipe"
                             [disabled]="selectLine.LINE_RELEASE == 4 || selectLine.LINE_RELEASE == 5 || selectLine.LINE_RELEASE == 9">{{ 'Active'|translate }}
                             <span class="custom-control-indicator"></span>
                         </label>
                     </div>
                     <div class="col-md-2" align="center" >
                         <label class="custom-control custom-radio" >
-                            <input type="radio" [(ngModel)]="updatePipeLine.LINE_RELEASE" value="4" class="custom-control-input" name="status-pipe"  [checked]="selectLine.LINE_RELEASE == 4"
+                            <input type="radio" [(ngModel)]="updatePipeLine.LINE_RELEASE" [value]="4" class="custom-control-input" name="status-pipe" 
                             [disabled]="selectLine.LINE_RELEASE == 5 || selectLine.LINE_RELEASE == 9">{{ 'Certified'|translate }}
                             <span class="custom-control-indicator"></span>
                         </label>
                     </div>
                     <div class="col-md-2" align="center" >
                         <label class="custom-control custom-radio" >
-                            <input type="radio" [(ngModel)]="updatePipeLine.LINE_RELEASE" value="9" class="custom-control-input" name="status-pipe"  [checked]="selectLine.LINE_RELEASE == 9"
-                            [disabled]="selectLine.LINE_RELEASE == 4 || selectLine.LINE_RELEASE == 5 || selectLine.LINE_RELEASE == 9">{{ 'Obsolete'|translate }}
+                            <input type="radio" [(ngModel)]="updatePipeLine.LINE_RELEASE" [value]="9" class="custom-control-input" name="status-pipe"                            [disabled]="selectLine.LINE_RELEASE == 4 || selectLine.LINE_RELEASE == 5 || selectLine.LINE_RELEASE == 9">{{ 'Obsolete'|translate }}
                             <span class="custom-control-indicator"></span>
                         </label>
                     </div>
@@ -200,7 +210,7 @@
                   </div>
                 </ng-template>
                 <div class="card-footer text-center" *ngIf="selectLine && !checkHideInfo">
-                    <button type="button" class="btn btn-success" (click)="updatePipeLineElmt(updatePipeLine)" [ladda]="isUpdatePipeLine" [disabled]="selectLine.ID_USER != userLogon.ID_USER || selectLine.LINE_RELEASE == 5 || selectLine.LINE_RELEASE == 9"><i class="fa fa-floppy-o" aria-hidden="true"></i> {{ 'Save'|translate }}</button>
+                    <button type="button" class="btn btn-success" (click)="checkPipeline(updatePipeLine, 1)" [ladda]="isUpdatePipeLine" [disabled]="selectLine.ID_USER != userLogon.ID_USER || selectLine.LINE_RELEASE == 5 || selectLine.LINE_RELEASE == 9"><i class="fa fa-floppy-o" aria-hidden="true"></i> {{ 'Save'|translate }}</button>
                     <button type="button" class="btn btn-danger" (click)="deletePipeLine(selectLine)" [ladda]="isDeletePipeLine" [disabled]="selectLine.ID_USER != userLogon.ID_USER || selectLine.LINE_RELEASE == 5 || selectLine.LINE_RELEASE == 9"><i class="fa fa-trash-o"></i> {{ 'Delete'|translate }}</button>
                     <button class="btn btn-secondary" type="button" (click)="modalSaveAs.show()"><i class="fa fa-copy"></i> {{ 'Save As'|translate }}</button>
                 </div>
@@ -211,7 +221,7 @@
       </div>
     </div>
 </div>
-<!-- Modal -->
+<!-- Modal add pipeline-->
 <div bsModal class="modal fade" #modalAddPipeLine="bs-modal" role="dialog" aria-hidden="true">
   <div class="modal-dialog modal-lg modal-primary" role="document">
     <div class="modal-content">
@@ -265,10 +275,10 @@
                 <th>{{ 'Insulation'|translate }}</th>
                 <td>
                   <select [(ngModel)]="newPipeLine.INSULATION_TYPE" class="form-control form-control-sm" [disabled]="newPipeLine.ELT_TYPE == 2">
-                    <option value="1">Polyrethane</option>
-                    <option value="2">Super Insulation</option>
-                    <option value="3" [hidden]="newPipeLine.ID_COOLING_FAMILY != 3">Armaflex</option>
-                    <option value="0">Not insulated</option>
+                    <option value="1">{{ 'Polyrethane'|translate }}</option>
+                    <option value="2">{{ 'Super Insulation'|translate }}</option>
+                    <option value="3" [hidden]="newPipeLine.ID_COOLING_FAMILY != 3">{{ 'Armaflex'|translate }}</option>
+                    <option value="0">{{'Not insulated'|translate}}</option>
                   </select>
                 </td>              
               </tr>
@@ -276,32 +286,38 @@
                 <th>{{ 'Price'|translate }}</th>
                 <td>
                   <div class="input-group">
-                    <input [(ngModel)]="newPipeLine.ELMT_PRICE" type="text" class="form-control form-control-sm" placeholder="0.00">
-                    <span class="input-group-addon"><small>€</small></span>
+                    <input [(ngModel)]="newPipeLine.ELMT_PRICE" type="text" class="form-control form-control-sm" placeholder="0.00" maxlength="5">
+                    <span class="input-group-addon"><small [innerHTML]="monetarySymbol"></small></span>
                   </div>
                 </td>
                 <th>{{ 'Size'|translate }}</th>
                 <td>
                   <div class="input-group">
-                    <input type="text" [(ngModel)]="newPipeLine.ELT_SIZE" class="form-control form-control-sm" placeholder="0.00">
+                    <input type="text" [(ngModel)]="newPipeLine.ELT_SIZE" class="form-control form-control-sm" placeholder="0.00" maxlength="5">
                     <span class="input-group-addon">
-                      <small *ngIf="newPipeLine.ELT_TYPE != 2">m</small>
-                      <small *ngIf="newPipeLine.ELT_TYPE == 2">l</small>
+                      <small *ngIf="newPipeLine.ELT_TYPE == 2; else hideLineDimension">{{ tankCapacitySymbol }}</small>
+                      <ng-template #hideLineDimension>
+                          <small>{{ lineDimensionSymbol }}</small>
+                      </ng-template>
                     </span>
                   </div>
                 </td>              
               </tr>
               <tr *ngIf="newPipeLine.ELT_TYPE == 1 || newPipeLine.ELT_TYPE == 2; else hideTr">
-                <th *ngIf="newPipeLine.ELT_TYPE == 1">{{ 'Losses in get cold'|translate }}</th>
-                <th *ngIf="newPipeLine.ELT_TYPE == 2">{{ 'Rate of evaporation'|translate }}</th>
+                <th *ngIf="newPipeLine.ELT_TYPE == 2; else lossesIn">{{ 'Rate of evaporation'|translate }}</th>
+                <ng-template #lossesIn>
+                  <th>{{ 'Losses in get cold'|translate }}</th>
+                </ng-template>
                 <td>
                   <div class="input-group">
-                    <input type="text" [(ngModel)]="newPipeLine.ELT_LOSSES_1" class="form-control form-control-sm" placeholder="0.00"
-                     [disabled]="newPipeLine.ELT_TYPE == 4 || newPipeLine.ELT_TYPE == 3 || newPipeLine.ELT_TYPE == 5 || (newPipeLine.ELT_TYPE == 2 && newPipeLine.ID_COOLING_FAMILY == 3)">
+                    <input type="text" [(ngModel)]="newPipeLine.ELT_LOSSES_1" class="form-control form-control-sm" placeholder="0.00" maxlength="5"
+                     [disabled]="newPipeLine.ELT_TYPE == 4 || newPipeLine.ELT_TYPE == 3 || newPipeLine.ELT_TYPE == 5 
+                     || (newPipeLine.ELT_TYPE == 2 && newPipeLine.ID_COOLING_FAMILY == 3)">
                     <span class="input-group-addon">
-                      <small *ngIf="newPipeLine.ELT_TYPE == 2 && newPipeLine.ID_COOLING_FAMILY == 2;else symbolLM">l/h</small>
+                      <small *ngIf="newPipeLine.ELT_TYPE == 2 && newPipeLine.ID_COOLING_FAMILY == 2;else symbolLM">{{ lineDepSymbol2 }}</small>
+
                       <ng-template #symbolLM>
-                        <small>l/m</small>
+                        <small>{{ lineDepSymbol }}</small>
                       </ng-template>
                     </span>
                   </div>
@@ -309,9 +325,9 @@
                 <th *ngIf="newPipeLine.ELT_TYPE == 1">{{ 'Permanent losses'|translate }}</th>
                 <td *ngIf="newPipeLine.ELT_TYPE == 1">
                   <div class="input-group">
-                    <input type="text" [(ngModel)]="newPipeLine.ELT_LOSSES_2" class="form-control form-control-sm" placeholder="0.00"
+                    <input type="text" [(ngModel)]="newPipeLine.ELT_LOSSES_2" class="form-control form-control-sm" placeholder="0.00" maxlength="5"
                     [disabled]="newPipeLine.ELT_TYPE == 2 || newPipeLine.ELT_TYPE == 3 || newPipeLine.ELT_TYPE == 4 || newPipeLine.ELT_TYPE == 5">
-                    <span class="input-group-addon"><small>l/(m.h)</small></span>
+                    <span class="input-group-addon"><small>{{ lossesSymbol }}</small></span>
                   </div>
                 </td>
               </tr>
@@ -324,31 +340,31 @@
             <div class="col-md-1"></div>
             <div class="col-md-2" align="center" >
               <label class="custom-control custom-radio" >
-                <input type="radio" [(ngModel)]="newPipeLine.LINE_RELEASE" value="1" class="custom-control-input" name="status-packing-add"s>{{ 'Draft'|translate }}
+                <input type="radio" [(ngModel)]="newPipeLine.LINE_RELEASE" [value]="1" class="custom-control-input" name="status-packing-add"s>{{ 'Draft'|translate }}
                 <span class="custom-control-indicator"></span>
               </label>
             </div>
             <div class="col-md-2" align="center" >
                 <label class="custom-control custom-radio" >
-                    <input type="radio" [(ngModel)]="newPipeLine.LINE_RELEASE" value="2" class="custom-control-input check" name="status-packing-add">{{ 'Test'|translate }}
+                    <input type="radio" [(ngModel)]="newPipeLine.LINE_RELEASE" [value]="2" class="custom-control-input check" name="status-packing-add">{{ 'Test'|translate }}
                     <span class="custom-control-indicator"></span>
                 </label>
             </div>
             <div class="col-md-2" align="center" >
                 <label class="custom-control custom-radio" >
-                    <input type="radio" [(ngModel)]="newPipeLine.LINE_RELEASE" value="3" class="custom-control-input" name="status-packing-add">{{ 'Active'|translate }}
+                    <input type="radio" [(ngModel)]="newPipeLine.LINE_RELEASE" [value]="3" class="custom-control-input" name="status-packing-add">{{ 'Active'|translate }}
                     <span class="custom-control-indicator"></span>
                 </label>
             </div>
             <div class="col-md-2" align="center" >
                 <label class="custom-control custom-radio" >
-                    <input type="radio" [(ngModel)]="newPipeLine.LINE_RELEASE" value="4" class="custom-control-input" name="status-packing-add" disabled>{{ 'Certified'|translate }}
+                    <input type="radio" [(ngModel)]="newPipeLine.LINE_RELEASE" [value]="4" class="custom-control-input" name="status-packing-add" disabled>{{ 'Certified'|translate }}
                     <span class="custom-control-indicator"></span>
                 </label>
             </div>
             <div class="col-md-2" align="center" >
                 <label class="custom-control custom-radio" >
-                    <input type="radio" [(ngModel)]="newPipeLine.LINE_RELEASE" value="9" class="custom-control-input" name="status-packing-add" disabled>{{ 'Obsolete'|translate }}
+                    <input type="radio" [(ngModel)]="newPipeLine.LINE_RELEASE" [value]="9" class="custom-control-input" name="status-packing-add" disabled>{{ 'Obsolete'|translate }}
                     <span class="custom-control-indicator"></span>
                 </label>
             </div>
@@ -357,11 +373,13 @@
       </div>
       <div class="modal-footer">
           <button class="btn btn-secondary" data-dismiss="modal" (click)="modalAddPipeLine.hide()">{{ 'Cancel'|translate }}</button>
-          <button class="btn btn-success" (click)="savePipeLine()" [ladda]="isAddLine"><i class="fa fa-floppy-o"></i> {{ 'Save'|translate }}</button>
+          <button class="btn btn-success" (click)="checkPipeline(newPipeLine, 0)" [ladda]="isAddLine"><i class="fa fa-floppy-o"></i> {{ 'Save'|translate }}</button>
       </div>
     </div>
   </div>
 </div>
+<!-- End model add pipe -->
+<!-- Model save as pipeline -->
 <div bsModal class="modal fade" #modalSaveAs="bs-modal" role="dialog" aria-hidden="true">
   <div class="modal-dialog modal-primary" role="document">
       <div class="modal-content">
@@ -389,4 +407,5 @@
       </div>
   </div>
 </div>
+<!-- End model save as pipeline -->
 <app-spinner *ngIf="isLoading"></app-spinner>

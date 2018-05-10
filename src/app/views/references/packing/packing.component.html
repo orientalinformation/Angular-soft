@@ -1,5 +1,4 @@
 <div class="container" *ngIf="!isLoading">
-
     <div class="card product-container">
       <div class="card-body">
         <div style="margin-top:10px;" id="page-load-packing">
@@ -142,7 +141,7 @@
       </div>
     </div>
 </div>
-<!-- Modals -->
+<!-- Modals add packing-->
 <div bsModal class="modal fade" #modalAddPackingElmt="bs-modal" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-primary" role="document">
         <div class="modal-content">
@@ -227,6 +226,8 @@
         </div>
     </div>
 </div>
+<!-- End model add packing -->
+<!-- Start model save as packing -->
 <div bsModal class="modal fade" #modalSaveAs="bs-modal" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-primary" role="document">
         <div class="modal-content">
@@ -257,5 +258,5 @@
         </div>
     </div>
 </div>
-
+<!-- End model save as packing -->
 <app-spinner *ngIf="isLoading"></app-spinner>

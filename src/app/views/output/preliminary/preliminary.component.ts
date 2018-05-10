@@ -3,6 +3,7 @@ import { OnChanges } from '@angular/core';
 
 import { ViewChild } from '@angular/core';
 import { CalculatorComponent } from '../../calculation/calculator/calculator.component';
+import * as Models from '../../../api/models';
 import { User } from '../../../api/models/user';
 import { ApiService } from '../../../api/services';
 import { ModalDirective } from 'ngx-bootstrap/modal/modal.directive';
@@ -11,6 +12,9 @@ import { TranslateService } from '@ngx-translate/core';
 import { BaseChartDirective } from 'ng2-charts/ng2-charts';
 import { CheckControl } from '../../../api/models/check-control';
 import swal from 'sweetalert2';
+import { ToastrService } from 'ngx-toastr';
+import { EquipSizing } from '../../../api/models/equip-sizing';
+import { Study } from '../../../api/models/study';
 
 @Component({
   selector: 'app-preliminary',
@@ -21,9 +25,10 @@ export class PreliminaryComponent implements OnInit, AfterViewInit {
   @ViewChild('consumptionPieModal') public consumptionPieModal: ModalDirective;
   @ViewChild('modalSaveAs') public modalSaveAs: ModalDirective;
   @ViewChild('equipSizingModal') public equipSizingModal: ModalDirective;
+  @ViewChild('editModal') public editModal: ModalDirective;
 
-  public study;
-  public user;
+  public study: Study;
+  public user: User;
   public ecoEnable;
   public symbol;
   public resultAna;
@@ -76,10 +81,30 @@ export class PreliminaryComponent implements OnInit, AfterViewInit {
   public equipSizingMaxSurf: number;
   public equipSizingMessage = '';
 
+  public equipSizing: EquipSizing;
+  public laddaEquipSizing = false;
+  public equipment;
+  public editLayoutForm: {
+    stdEquipId?: number,
+    widthInterval?: number,
+    lengthInterval?: number,
+    orientation?: number
+  };
+  public unitData: Models.UnitDataEquipment;
+  public unitDataRes = {
+    price: 0,
+    intervalL: 0,
+    intervalW: 0
+  };
+  public eid = 0;
+  public minmaxEquipment: Models.ViewMinMaxEquipment;
+  public laddaUpdateLayout = false;
+  public dhpMaxChecked = false;
+
   @ViewChild('calculator') calculator: CalculatorComponent;
   @ViewChild(BaseChartDirective) myChart: BaseChartDirective;
 
-  constructor(private api: ApiService, private translate: TranslateService) { }
+  constructor(private api: ApiService, private translate: TranslateService, private toastr: ToastrService) { }
 
   ngOnInit() {
     if (localStorage.getItem('study')) {
@@ -115,6 +140,7 @@ export class PreliminaryComponent implements OnInit, AfterViewInit {
     this.activePage = 'economic';
   }
   openHeadBalacePage() {
+    this.dhpMaxChecked = false;
     const showLoaderChange = <HTMLElement>document.getElementById('showLoaderChange');
     showLoaderChange.style.display = 'block';
     const headBalancePage = <HTMLElement>document.getElementById('headBalacePage');
@@ -129,6 +155,7 @@ export class PreliminaryComponent implements OnInit, AfterViewInit {
     );
   }
   openHeadBalaceMaxPage() {
+    this.dhpMaxChecked = true;
     const showLoaderChange = <HTMLElement>document.getElementById('showLoaderChange');
     showLoaderChange.style.display = 'block';
     const headBalancePage = <HTMLElement>document.getElementById('headBalacePage');
@@ -159,7 +186,8 @@ export class PreliminaryComponent implements OnInit, AfterViewInit {
   }
   ngAfterViewInit() {
     this.study = JSON.parse(localStorage.getItem('study'));
-    this.refeshView();
+    this.user = JSON.parse(localStorage.getItem('user'));
+    this.refreshView();
     const params: ApiService.CheckControlViewParams = {
       idStudy: this.study.ID_STUDY,
       idProd: this.study.ID_PROD
@@ -243,22 +271,32 @@ export class PreliminaryComponent implements OnInit, AfterViewInit {
   closePie() {
     this.consumptionPieModal.hide();
   }
-  refeshView() {
+  refreshView() {
     this.api.getSymbol(this.study.ID_STUDY).subscribe(
       data => {
         this.symbol = data;
-      }
-    );
-
-    this.api.getProInfoStudy(this.study.ID_STUDY).subscribe(
-      data => {
-        this.resultAna = data;
-      }
-    );
-
-    this.api.getProductById(this.study.ID_PROD).subscribe(
-      data => {
-        // console.log(data);
+        this.api.getstudyEquipmentProductChart(this.study.ID_STUDY).subscribe(
+          dataEquip => {
+            console.log(dataEquip);
+            if (dataEquip != '') {
+              localStorage.setItem('outputChart', JSON.stringify(dataEquip));
+              console.log(JSON.parse(localStorage.getItem('outputChart')));
+            } else {
+              localStorage.removeItem('outputChart');
+            }
+          }
+        );
+        this.api.getProInfoStudy(this.study.ID_STUDY).subscribe(
+          res => {
+            this.resultAna = res;
+          }
+        );
+        this.api.getUnitData(this.study.ID_STUDY).subscribe(
+          resp => {
+            console.log(resp);
+            this.unitData = resp;
+          }
+        );
       }
     );
 
@@ -299,6 +337,7 @@ export class PreliminaryComponent implements OnInit, AfterViewInit {
     this.api.getEquipSizing(id).subscribe(
       data => {
         console.log(data);
+        this.equipSizing = data;
         this.equipSizingName = data.equipName;
         this.equipSizingDisable = data.disabled;
         this.equipSizingWidth = data.initWidth;
@@ -310,17 +349,171 @@ export class PreliminaryComponent implements OnInit, AfterViewInit {
   }
   saveEquipSizing() {
     if (!this.equipSizingWidth) {
-      this.equipSizingMessage = 'Enter a value in Width !';
+      this.toastr.error(this.translate.instant('Enter a value in Width !'), 'Error');
+      return;
     } else if (!this.isNumberic(this.equipSizingWidth)) {
-      this.equipSizingMessage = 'Not a valid number in Width !';
+      this.toastr.error(this.translate.instant('Not a valid number in Width !'), 'Error');
+      return;
+    } else if (!this.isInRangeOutput(this.equipSizingWidth, this.equipSizing.minWidth, this.equipSizing.maxWidth)) {
+      this.toastr.error(this.translate.instant('Value out of range in Length') + '(' + this.equipSizing.minWidth +
+      ' : ' + this.equipSizing.maxWidth + ') !', 'Error');
+      return;
     }
+
+    if (!this.equipSizingLength) {
+      this.toastr.error(this.translate.instant('Enter a value in Length !'), 'Error');
+      return;
+    } else if (!this.isNumberic(this.equipSizingLength)) {
+      this.toastr.error(this.translate.instant('Not a valid number in Length !'), 'Error');
+      return;
+    } else if (!this.isInRangeOutput(this.equipSizingLength, this.equipSizing.minLength, this.equipSizing.maxLength)) {
+      this.toastr.error(this.translate.instant('Value out of range in Length') + '(' + this.equipSizing.minLength +
+      ' : ' + this.equipSizing.maxLength + ') !', 'Error');
+      return;
+    }
+
+    if (!this.equipSizingSurface) {
+      this.toastr.error(this.translate.instant('Enter a value in Surface !'), 'Error');
+      return;
+    } else if (!this.isNumberic(this.equipSizingSurface)) {
+      this.toastr.error(this.translate.instant('Not a valid number in Surface !'), 'Error');
+      return;
+    } else if (!this.isInRangeOutput(this.equipSizingSurface, this.equipSizing.minSurf, this.equipSizing.maxSurf)) {
+      this.toastr.error(this.translate.instant('Value out of range in Surface') + '(' + this.equipSizing.minSurf +
+      ' : ' + this.equipSizing.maxSurf + ') !', 'Error');
+      return;
+    }
+
+    this.laddaEquipSizing = true;
+    const params: Models.EquipSizingParam = {
+      width: this.equipSizingWidth,
+      length: this.equipSizingLength
+    };
+    this.api.saveEquipSizing({
+      id: this.equipSizing.idStudyEquipment,
+      body: params
+    }).subscribe(
+      response => {
+        this.toastr.success(this.translate.instant('Update success'), 'successfully');
+        this.refreshView();
+        this.laddaEquipSizing = false;
+        this.equipSizingModal.hide();
+       }
+    );
+  }
+  equipEditLayout(stdEquipId, index: number) {
+    this.api.getStudyEquipmentById(stdEquipId).subscribe(
+      equip => {
+        console.log(equip);
+        this.equipment = equip;
+        this.eid = index;
+        this.editLayoutForm = {
+          stdEquipId: equip.ID_STUDY_EQUIPMENTS,
+          orientation: equip.ORIENTATION
+        };
+        this.editLayoutForm.lengthInterval = equip.layoutGen.LENGTH_INTERVAL;
+        if (equip.layoutGen.LENGTH_INTERVAL < 0) {
+          this.editLayoutForm.lengthInterval = this.unitData.IntervalLength;
+        }
+        this.editLayoutForm.widthInterval = equip.layoutGen.WIDTH_INTERVAL;
+        if (equip.layoutGen.WIDTH_INTERVAL < 0) {
+          this.editLayoutForm.widthInterval = this.unitData.IntervalWidth;
+        }
+        this.api.getMinMaxEquipment(this.study.ID_STUDY).subscribe(
+          mm => {
+            this.minmaxEquipment = mm;
+          }
+        );
+        this.api.getStudyEquipmentLayoutById(equip.ID_STUDY_EQUIPMENTS).subscribe(
+          data => {
+            this.editModal.show();
+            setTimeout(function() {
+              console.log(data);
+              const img = <HTMLImageElement>document.getElementById('stdEqpLayoutImg');
+              img.src = data;
+            }, 500);
+          },
+          err => {
+            // @TODO: show error message box
+            console.log(err);
+          }
+        );
+      }
+    );
+  }
+  updateStdEquipLayout() {
+    if (!this.editLayoutForm.lengthInterval) {
+      this.toastr.error(this.translate.instant('Enter a value in specify Lenght !'), 'Error');
+      return;
+    } else if (!this.isNumberic(this.editLayoutForm.lengthInterval)) {
+      this.toastr.error(this.translate.instant('Not a valid number in specify Lenght !'), 'Error');
+      return;
+    } else if (!this.isInRangeOutput(this.editLayoutForm.lengthInterval, this.minmaxEquipment.mmLInterval.LIMIT_MIN,
+      this.minmaxEquipment.mmLInterval.LIMIT_MAX)) {
+        this.toastr.error(this.translate.instant('Value out of range in specify Lenght') +
+        ' (' + this.minmaxEquipment.mmLInterval.LIMIT_MIN + ' : ' + this.minmaxEquipment.mmLInterval.LIMIT_MAX + ') !', 'Error');
+        return;
+    }
+    if (!this.editLayoutForm.widthInterval) {
+      this.toastr.error(this.translate.instant('Enter a value in specify Width !'), 'Error');
+      return;
+    } else if (!this.isNumberic(this.editLayoutForm.widthInterval)) {
+      this.toastr.error(this.translate.instant('Not a valid number in specify Width !'), 'Error');
+      return;
+    } else if (!this.isInRangeOutput(this.editLayoutForm.widthInterval, this.minmaxEquipment.mmWInterval.LIMIT_MIN,
+      this.minmaxEquipment.mmWInterval.LIMIT_MAX)) {
+        this.toastr.error(this.translate.instant('Value out of range in specify Width') +
+        ' (' + this.minmaxEquipment.mmWInterval.LIMIT_MIN + ' : ' + this.minmaxEquipment.mmWInterval.LIMIT_MAX + ') !', 'Error');
+        return;
+    }
+    this.laddaUpdateLayout = true;
+    this.api.updateStudyEquipmentLayout({
+      id: this.editLayoutForm.stdEquipId,
+      body: {
+        lengthInterval: this.editLayoutForm.lengthInterval,
+        widthInterval: this.editLayoutForm.widthInterval,
+        orientation: this.editLayoutForm.orientation,
+        studyClean: false
+      }
+    }).subscribe(
+      (resp) => {
+        this.api.getStudyEquipmentLayoutById(this.editLayoutForm.stdEquipId).subscribe(
+          data => {
+            const img = <HTMLImageElement>document.getElementById('stdEqpLayoutImg');
+            img.src = data;
+          }
+        );
+        this.api.getStudyEquipmentById(this.editLayoutForm.stdEquipId).subscribe(
+          equip => {
+            this.equipment = equip;
+            this.laddaUpdateLayout = false;
+            console.log(this.equipment);
+          }
+        );
+      },
+      (err) => {
+        console.log(err);
+        this.editModal.hide();
+      },
+      () => {
+        // this.editModal.hide();
+        // this.refreshView();
+      }
+    );
+  }
+  closeEditModal() {
+    this.editModal.hide();
+    this.refreshView();
   }
   onTocPopup(id) {
     swal('Oops', 'Not yet implement !', 'error');
     return;
   }
   onFinishCalculate() {
-    this.refeshView();
+    this.refreshView();
+    if (this.dhpMaxChecked) {
+      this.openHeadBalaceMaxPage();
+    }
   }
   isNumberic(number) {
     return Number.isInteger(Math.floor(number));

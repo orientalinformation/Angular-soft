@@ -30,12 +30,12 @@ export class LineComponent implements OnInit, AfterContentChecked, AfterViewInit
   public noninsulatedlineSelect: number;
   public noninsulatedvalvesSelect: number;
   public teeSelect: number;
-  public insulatedvalValue: number;
-  public insulatedLineValue: number;
-  public non_insulated_valValue: number;
-  public non_insulated_lineValue: number;
-  public teeValue: number;
-  public elbowsValue: number;
+  public insulatedvalValue: Array<any> = [];
+  public insulatedLineValue: Array<any> = [];
+  public non_insulated_valValue: Array<any> = [];
+  public non_insulated_lineValue: Array<any> = [];
+  public teeValue: Array<any> = [];
+  public elbowsValue: Array<any> = [];
   public diameterParamShow: Array<any> = [];
   public diameterParams: Array<any> = [];
   public storageTankParam: Array<any> = [];
@@ -52,13 +52,13 @@ export class LineComponent implements OnInit, AfterContentChecked, AfterViewInit
   public gastemp: number;
   public noninsullenght: number;
   public noninsulatevallenght: number;
-  public insulatedLine: string;
-  public elbows: string;
-  public insulatedval: string;
-  public insulationType: string;
-  public noninsulatedline: string;
-  public noninsulatedvalves: string;
-  public tee: string;
+  public insulatedLine: Array<any> = [];
+  public elbows: Array<any> = [];
+  public insulatedval: Array<any> = [];
+  public insulationType: Array<any> = [];
+  public noninsulatedline: Array<any> = [];
+  public noninsulatedvalves: Array<any> = [];
+  public tee: Array<any> = [];
   public insulationName;
   public statusInLenght: boolean;
   public statusInval: boolean;
@@ -82,6 +82,7 @@ export class LineComponent implements OnInit, AfterContentChecked, AfterViewInit
   public userLogon: User;
   public symbol: any;
   public checkequip: any;
+  public angular: any;
   constructor(private api: ApiService, private router: Router, private translate: TranslateService,
     private toastr: ToastrService) {
       this.userLogon = JSON.parse(localStorage.getItem('user'));
@@ -171,23 +172,35 @@ export class LineComponent implements OnInit, AfterContentChecked, AfterViewInit
           this.teeValue = this.dataResultExist.teeValue;
           this.elbowsValue = this.dataResultExist.elbowsValue;
           this.storageTankValue = this.dataResultExist.storageTankValue;
-          // if (this.insulationTypeSelected == 0) {
-          //   this.noninsulatedlineSelect = this.dataResultExist.non_insulated_lineValue;
-          //   this.noninsulatedvalvesSelect = this.dataResultExist.non_insulated_valValue;
-          // }
-          for (let ii = 0; ii < this.idPipeLineEmlt.length; ii++) {
-            if (this.idPipeLineEmlt[ii] == this.insulatedvalValue) {
-              this.insulatedvalSelected = this.dataResultExist.insulatedlinevalValue;
-            } else if (this.idPipeLineEmlt[ii] == this.insulatedLineValue) {
-              this.insulatedLineSelected = this.dataResultExist.insulationLineValue;
-            } else if (this.idPipeLineEmlt[ii] == this.non_insulated_valValue) {
-              this.noninsulatedvalvesSelect = this.dataResultExist.non_insulated_valValue;
-            } else if (this.idPipeLineEmlt[ii] == this.non_insulated_lineValue) {
-              this.noninsulatedlineSelect = this.dataResultExist.non_insulated_lineValue;
-            } else if (this.idPipeLineEmlt[ii] == this.teeValue) {
-              this.teeSelect = this.dataResultExist.teeValue;
-            } else if (this.idPipeLineEmlt[ii] == this.elbowsValue) {
-              this.elbowsSelected = this.dataResultExist.elbowsValue;
+          if (this.insulationTypeSelected == 0) {
+              if (this.insulatedvalValue != this.dataResultExist.insulval) {
+                  this.insulvalnumber = 0;
+              }
+              if (this.teeValue != this.dataResultExist.teeval) {
+                  this.dataResultExist.teeval = 0;
+                  this.teenumber = 0;
+              }
+              if (this.elbowsValue != this.dataResultExist.elbowval) {
+                  this.dataResultExist.elbowval = 0;
+                  this.elbowsnumber = 0;
+              }
+              if (this.storageTankValue != this.dataResultExist.storageTank) {
+                this.storageTankSelected = this.dataResultExist.storageTank = 0;
+              }
+          }
+            for (let ii = 0; ii < this.idPipeLineEmlt.length; ii++) {
+              if (this.idPipeLineEmlt[ii] == this.dataResultExist.insulval) {
+                this.insulatedvalSelected = this.dataResultExist.insulval;
+              } else if (this.idPipeLineEmlt[ii] == this.dataResultExist.insul) {
+              this.insulatedLineSelected = this.dataResultExist.insul;
+            } else if (this.idPipeLineEmlt[ii] == this.dataResultExist.noninsulval) {
+              this.noninsulatedvalvesSelect = this.dataResultExist.noninsulval;
+            } else if (this.idPipeLineEmlt[ii] == this.dataResultExist.noninsul) {
+              this.noninsulatedlineSelect  = this.dataResultExist.noninsul;
+            } else if (this.idPipeLineEmlt[ii] == this.dataResultExist.teeval) {
+              this.teeSelect = this.dataResultExist.teeval;
+            } else if (this.idPipeLineEmlt[ii] == this.dataResultExist.elbowval) {
+              this.elbowsSelected = this.dataResultExist.elbowval;
             } else if (this.idPipeLineEmlt[ii] == this.dataResultExist.storageTank) {
               this.storageTankSelected = this.dataResultExist.storageTank;
             }
@@ -231,7 +244,7 @@ export class LineComponent implements OnInit, AfterContentChecked, AfterViewInit
             } else if (i == 2) {
               this.insulationName = this.translate.instant('Super Insulation');
             } else if (i == 3) {
-              if (this.dataResultExist.insulatedlineval != null) {
+              if (this.dataResultExist.insulationType == 3 && this.dataResultExist.idcooling == 3) {
                 this.insulationName = this.translate.instant('Armaflex');
               }
             }
@@ -294,7 +307,7 @@ export class LineComponent implements OnInit, AfterContentChecked, AfterViewInit
             } else if (i == 2) {
               this.insulationName = this.translate.instant('Super Insulation');
             } else if (i == 3) {
-              if (this.dataResultExist.insulatedlineval == null) {
+              if (this.dataResult[i][i].insulationType == 3 && this.dataResult[i][i].idcooling == 3) {
                 this.insulationName = this.translate.instant('Armaflex');
               }
             }
@@ -324,6 +337,7 @@ export class LineComponent implements OnInit, AfterContentChecked, AfterViewInit
     this.teeSelect = 0;
     this.elbowsSelected = 0;
     this.storageTankSelected = 0;
+    this.loadDisabled();
     this.diameterParams = [];
     this.storageTankValue = [];
     this.storageTankParam = [];
@@ -343,92 +357,90 @@ export class LineComponent implements OnInit, AfterContentChecked, AfterViewInit
     }
     this.diameterParamShow = this.diameterParams;
     console.log(this.diameterParamShow);
-    this.loadDiameter();
-    this.loadDisabled();
   }
   loadDiameter() {
     this.storageTankValue = [];
     for (let j = 0; j < this.diameterParamShow.length; j++) {
       if (this.diameterSelected == this.dataResult[this.insulationTypeSelected][j].diameter) {
-        this.insulatedLine = this.dataResult[this.insulationTypeSelected][j].insulatedline;
-        this.elbows = this.dataResult[this.insulationTypeSelected][j].elbows;
-        this.insulatedval = this.dataResult[this.insulationTypeSelected][j].insulatedlineval;
         this.insulationType = this.dataResult[this.insulationTypeSelected][j].insulationType;
-        this.noninsulatedline = this.dataResult[this.insulationTypeSelected][j].non_insulated_line;
-        this.noninsulatedvalves = this.dataResult[this.insulationTypeSelected][j].non_insulated_valves;
-        this.tee = this.dataResult[this.insulationTypeSelected][j].tee;
-        this.storageTankValue = this.dataResult[this.insulationTypeSelected][j].storageTankValue;
-        this.storageTankParam = this.dataResult[this.insulationTypeSelected][j].storageTankParam;
-        this.insulatedLineValue = this.dataResult[this.insulationTypeSelected][j].insulationlineValue;
-        if (this.insulatedLineValue == this.insulatedLineSelected) {
-          this.insulllenght = this.dataResultExist.insulllenght;
-          this.statusInLenght = false;
-        } else {
+
+        if (this.dataResult[this.insulationTypeSelected][j].insulatedline != []) {
+          this.insulatedLine = this.dataResult[this.insulationTypeSelected][j].insulatedline;
+          this.insulatedLineValue = this.dataResult[this.insulationTypeSelected][j].insulationlineValue;
           this.insulatedLineSelected = 0;
-          this.insulllenght = this.dataResult[this.insulationTypeSelected][j].insulllenght;
-          this.statusInLenght = true;
-        }
-        this.insulatedvalValue = this.dataResult[this.insulationTypeSelected][j].insulatedlinevalValue;
-        if (this.insulatedvalValue == this.insulatedvalSelected) {
-          this.insulvalnumber = this.dataResultExist.insulvallenght;
-          this.statusInval = false;
         } else {
-          this.insulvalnumber = this.dataResult[this.insulationTypeSelected][j].insulvallenght;
-          this.statusInval = true;
-          this.insulatedvalSelected = 0;
+          this.insulatedLine = [];
         }
-        this.non_insulated_valValue = this.dataResult[this.insulationTypeSelected][j].non_insulated_valValue;
-        if (this.non_insulated_valValue == this.noninsulatedvalvesSelect) {
-          this.noninsulatevallenght = this.dataResultExist.noninsulatevallenght;
-          this.statusNonInval = false;
+        if (this.dataResult[this.insulationTypeSelected][j].insulatedlineval != []) {
+            this.insulatedval = this.dataResult[this.insulationTypeSelected][j].insulatedlineval;
+            this.insulatedvalValue = this.dataResult[this.insulationTypeSelected][j].insulatedlinevalValue;
+            this.insulatedvalSelected = 0;
         } else {
-          this.noninsulatevallenght = this.dataResult[this.insulationTypeSelected][j].noninsulatevallenght;
-          this.statusNonInval = true;
+          this.insulatedval = [];
+        }
+        if (this.dataResult[this.insulationTypeSelected][j].elbows != []) {
+            this.elbows = this.dataResult[this.insulationTypeSelected][j].elbows;
+            this.elbowsValue = this.dataResult[this.insulationTypeSelected][j].elbowsValue;
+            this.elbowsSelected = 0;
+        } else {
+          this.elbows = [];
+        }
+        if (this.dataResult[this.insulationTypeSelected][j].non_insulated_line != []) {
+            this.noninsulatedline = this.dataResult[this.insulationTypeSelected][j].non_insulated_line;
+            this.non_insulated_lineValue = this.dataResult[this.insulationTypeSelected][j].non_insulated_lineValue;
+            this.noninsulatedlineSelect = 0;
+        } else {
+          this.noninsulatedline = [];
+        }
+        if (this.dataResult[this.insulationTypeSelected][j].non_insulated_valves != []) {
+          this.noninsulatedvalves = this.dataResult[this.insulationTypeSelected][j].non_insulated_valves;
+          this.non_insulated_valValue = this.dataResult[this.insulationTypeSelected][j].non_insulated_valValue;
           this.noninsulatedvalvesSelect = 0;
-        }
-        this.non_insulated_lineValue = this.dataResult[this.insulationTypeSelected][j].non_insulated_lineValue;
-        if (this.non_insulated_lineValue == this.noninsulatedlineSelect) {
-          this.noninsullenght = this.dataResultExist.noninsullenght;
-          this.statusNonInL = false;
         } else {
-          this.noninsullenght = this.dataResult[this.insulationTypeSelected][j].noninsullenght;
-          this.statusNonInL = true;
-          this.noninsulatedlineSelect = 0;
+          this.noninsulatedvalves = [];
         }
-        this.teeValue = this.dataResult[this.insulationTypeSelected][j].teeValue;
-        if (this.teeValue == this.teeSelect) {
-          this.teenumber = this.dataResultExist.teenumber;
-          this.statusTee = false;
-        } else {
-          this.teenumber = this.dataResult[this.insulationTypeSelected][j].teenumber;
-          this.statusTee = true;
+        if (this.dataResult[this.insulationTypeSelected][j].tee != []) {
+          this.tee = this.dataResult[this.insulationTypeSelected][j].tee;
+          this.teeValue = this.dataResult[this.insulationTypeSelected][j].teeValue;
           this.teeSelect = 0;
-        }
-        this.elbowsValue = this.dataResult[this.insulationTypeSelected][j].elbowsValue;
-        if (this.elbowsValue == this.elbowsSelected) {
-          this.elbowsnumber = this.dataResultExist.elbowsnumber;
-          this.statusElbow = false;
         } else {
-          this.elbowsnumber = this.dataResult[this.insulationTypeSelected][j].elbowsnumber;
-          this.statusElbow = true;
-          this.elbowsSelected = 0;
+          this.tee = [];
         }
-        this.height = this.dataResult[this.insulationTypeSelected][j].height;
-        this.pressuer = this.dataResult[this.insulationTypeSelected][j].pressuer;
-        this.gastemp = this.dataResult[this.insulationTypeSelected][j].gastemp;
-      } else if (this.diameterSelected == 0) {
-        this.insulatedLineSelected = 0;
-        this.insulatedvalSelected = 0;
-        this.elbowsSelected = 0;
-        this.noninsulatedvalvesSelect = 0;
-        this.noninsulatedlineSelect = 0;
-        this.teeSelect = 0;
-        this.loadDisabled();
+
+        if (this.diameterSelected == this.dataResultExist.diameter && this.insulationType == this.dataResultExist.insulationType) {
+          this.refeshView();
+        } else {
+          this.loadDisabled();
+          this.insulatedLineSelected = 0;
+          this.elbowsSelected = 0;
+          this.noninsulatedvalvesSelect = 0;
+          this.noninsulatedlineSelect = 0;
+          this.teeSelect = 0;
+          this.height = this.dataResult[this.insulationTypeSelected][j].height;
+          this.pressuer = this.dataResult[this.insulationTypeSelected][j].pressuer;
+          this.gastemp = this.dataResult[this.insulationTypeSelected][j].gastemp;
+        }
+
+      }
+      if (this.diameterSelected == 0) {
+          this.insulatedLineSelected = 0;
+          this.insulatedvalSelected = 0;
+          this.elbowsSelected = 0;
+          this.noninsulatedvalvesSelect = 0;
+          this.noninsulatedlineSelect = 0;
+          this.teeSelect = 0;
+          this.loadDisabled();
       }
       this.storageTankValue = this.dataResult[this.insulationTypeSelected][j].storageTankValue;
       this.storageTankParam = this.dataResult[this.insulationTypeSelected][j].storageTankParam;
     }
-    this.pressuer = this.dataResultExist.pressuer;
+    if (this.dataResultExist != '') {
+      this.height = this.dataResultExist.height;
+      this.pressuer = this.dataResultExist.pressuer;
+    } else {
+      this.height = 0;
+      this.pressuer = 0;
+    }
   }
 
   changeInsulatedLine() {
@@ -450,6 +462,7 @@ export class LineComponent implements OnInit, AfterContentChecked, AfterViewInit
   }
 
   changeTee() {
+    console.log(this.dataResultExist.teeval + '---' + this.teeSelect);
     if (this.teeSelect != 0) {
       this.statusTee = false;
     } else {
@@ -511,30 +524,33 @@ export class LineComponent implements OnInit, AfterContentChecked, AfterViewInit
         if (this.insulllenght == 0) {
           this.insulatedLineSelected = 0;
           this.statusInLenght = true;
-
-        } else if (this.noninsullenght == 0) {
+        }
+        if (this.noninsullenght == 0) {
           this.noninsulatedlineSelect = 0;
           this.statusNonInL = true;
-
-        } else if (this.insulvalnumber == 0) {
+        }
+        if (this.insulvalnumber == 0) {
           this.insulatedvalSelected = 0;
           this.statusInval = true;
 
-        } else if (this.noninsulatevallenght == 0) {
+        }
+        if (this.noninsulatevallenght == 0) {
           this.noninsulatedvalvesSelect = 0;
-          this.statusNonInL = true;
-
-        } else if (this.elbowsnumber == 0) {
+          this.statusNonInval = true;
+        }
+        if (this.elbowsnumber == 0) {
           this.elbowsSelected = 0;
           this.statusElbow = true;
-
-        } else if (this.teenumber == 0) {
+        }
+        if (this.teenumber == 0) {
           this.teeSelect = 0;
           this.statusTee = true;
         }
         if (this.diameterParamShow.length == null) {
           this.diameterSelected = 0;
         }
+        this.insulationParamShow = [];
+        this.refeshView();
         this.toastr.success('Save line completed!', 'Success');
       },
       (err) => {

@@ -9,8 +9,10 @@ import { PipeTransform } from '@angular/core';
 
 import { ReferencedataService } from '../../../api/services/referencedata.service';
 import { ApiService } from '../../../api/services';
-import { PipeLineElmt, ViewPipeLineElmt, Translation } from '../../../api/models';
+import { PipeLineElmt, ViewPipeLineElmt, Translation, Units } from '../../../api/models';
 import { User } from '../../../api/models/user';
+import { isNullOrUndefined } from 'util';
+import { isNumber } from '@ng-bootstrap/ng-bootstrap/util/util';
 
 @Pipe({ name: 'pipeLineFilter' })
 export class PipeLineFilterPipe implements PipeTransform {
@@ -54,6 +56,14 @@ export class PipelineComponent implements OnInit, AfterViewInit {
   };
   public checkHideInfo = false;
   public checkActiveLine = 0;
+  public listUnits: Array<Units>;
+  public monetarySymbol = '';
+  public monetaryUser: Units;
+  public tankCapacitySymbol = '';
+  public lineDimensionSymbol = '';
+  public lineDepSymbol = '';
+  public lineDepSymbol2 = '';
+  public lossesSymbol = '';
 
   constructor(private referencedata: ReferencedataService, private toastr: ToastrService,
     private router: Router, private api: ApiService) {
@@ -65,16 +75,57 @@ export class PipelineComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
-    this.isLoading = true;
-    this.newPipeLine.ELT_TYPE = 1;
-    this.newPipeLine.ID_COOLING_FAMILY = 2;
-    this.newPipeLine.INSULATION_TYPE = 1;
-  }
-
-  ngAfterViewInit() {
     this.refrestListLineElmt();
     this.getListLineType();
     this.getListEnergies();
+
+    this.isLoading = true;
+    this.newPipeLine.ELT_TYPE = 2;
+    this.newPipeLine.ID_COOLING_FAMILY = 2;
+    this.newPipeLine.INSULATION_TYPE = 2;
+    this.newPipeLine.LINE_RELEASE = 1;
+
+    this.listUnits = JSON.parse(localStorage.getItem('UnitUser'));
+    this.monetaryUser = JSON.parse(localStorage.getItem('MoneratyUser'));
+
+    if (this.monetaryUser) {
+      this.monetarySymbol = this.monetaryUser.SYMBOL;
+    }
+
+    if (this.listUnits) {
+
+      for (let i = 0; i < this.listUnits.length; i++) {
+
+        if (this.newPipeLine.ID_COOLING_FAMILY === 3) {
+          if (Number(this.listUnits[i].TYPE_UNIT) === 25) {
+            this.tankCapacitySymbol = this.listUnits[i].SYMBOL;
+          }
+        } else {
+          if (Number(this.listUnits[i].TYPE_UNIT) === 18) {
+            this.tankCapacitySymbol = this.listUnits[i].SYMBOL;
+          }
+        }
+
+        if (Number(this.listUnits[i].TYPE_UNIT) === 17) {
+          this.lineDimensionSymbol = this.listUnits[i].SYMBOL;
+        }
+
+        if (Number(this.listUnits[i].TYPE_UNIT) === 11) {
+          this.lineDepSymbol = this.listUnits[i].SYMBOL;
+        }
+
+        if (Number(this.listUnits[i].TYPE_UNIT) === 26) {
+          this.lineDepSymbol2 = this.listUnits[i].SYMBOL;
+        }
+
+        if (Number(this.listUnits[i].TYPE_UNIT) === 12) {
+          this.lossesSymbol = this.listUnits[i].SYMBOL;
+        }
+      }
+    }
+  }
+
+  ngAfterViewInit() {
   }
 
   refrestListLineElmt() {
@@ -83,15 +134,15 @@ export class PipelineComponent implements OnInit, AfterViewInit {
       .subscribe(
       data => {
         for (let i = 0; i < data.mine.length ; i++) {
-          data.mine[i].ELMT_PRICE = Number(data.mine[i].ELMT_PRICE);
-          data.mine[i].ELT_LOSSES_1 = Number(data.mine[i].ELT_LOSSES_1);
-          data.mine[i].ELT_LOSSES_2 = Number(data.mine[i].ELT_LOSSES_2);
+          // data.mine[i].ELMT_PRICE = Number(data.mine[i].ELMT_PRICE);
+          // data.mine[i].ELT_LOSSES_1 = Number(data.mine[i].ELT_LOSSES_1);
+          // data.mine[i].ELT_LOSSES_2 = Number(data.mine[i].ELT_LOSSES_2);
           data.mine[i].ID_COOLING_FAMILY = Number(data.mine[i].ID_COOLING_FAMILY);
         }
         for (let i = 0; i < data.others.length ; i++) {
-          data.others[i].ELMT_PRICE = Number(data.others[i].ELMT_PRICE);
-          data.others[i].ELT_LOSSES_1 = Number(data.others[i].ELT_LOSSES_1);
-          data.others[i].ELT_LOSSES_2 = Number(data.others[i].ELT_LOSSES_2);
+          // data.others[i].ELMT_PRICE = Number(data.others[i].ELMT_PRICE);
+          // data.others[i].ELT_LOSSES_1 = Number(data.others[i].ELT_LOSSES_1);
+          // data.others[i].ELT_LOSSES_2 = Number(data.others[i].ELT_LOSSES_2);
           data.others[i].ID_COOLING_FAMILY = Number(data.others[i].ID_COOLING_FAMILY);
         }
         this.listPipeLines = data;
@@ -103,9 +154,11 @@ export class PipelineComponent implements OnInit, AfterViewInit {
       () => {
           if (localStorage.getItem('pipelineCurr') !== '') {
             const lineCurr = JSON.parse(localStorage.getItem('pipelineCurr'));
-            this.checkActiveLine = Number(lineCurr.ID_PIPELINE_ELMT);
-            this.updatePipeLine = lineCurr;
-            this.selectLine = lineCurr;
+            if (lineCurr) {
+              this.checkActiveLine = Number(lineCurr.ID_PIPELINE_ELMT);
+              this.updatePipeLine = lineCurr;
+              this.selectLine = lineCurr;
+            }
           }
       }
     );
@@ -156,60 +209,153 @@ export class PipelineComponent implements OnInit, AfterViewInit {
     this.updatePipeLine.ELT_SIZE = line.ELT_SIZE;
     this.updatePipeLine.ELT_LOSSES_1 = line.ELT_LOSSES_1;
     this.updatePipeLine.ELT_LOSSES_2 = line.ELT_LOSSES_2;
-    this.updatePipeLine.LINE_RELEASE = line.LINE_RELEASE;
+    this.updatePipeLine.LINE_RELEASE = Number(line.LINE_RELEASE);
     this.checkHideInfo = false;
+
+    // console.log(this.updatePipeLine);
+    // console.log(this.selectLine);
+  }
+
+  checkPipeline(pipeLine, check) {
+    if (isNullOrUndefined(pipeLine.LABEL) || String(pipeLine.LABEL) === ''
+    || isNumber(pipeLine.LABEL)) {
+      this.toastr.error('Please specify Name	', 'Error');
+      return;
+    }
+
+    if (isNullOrUndefined(pipeLine.LINE_VERSION) || String(pipeLine.LINE_VERSION) === ''
+    || isNaN(pipeLine.LINE_VERSION)) {
+      this.toastr.error('Please specify Version	', 'Error');
+      return;
+    }
+
+    if (isNullOrUndefined(pipeLine.ELMT_PRICE) || String(pipeLine.ELMT_PRICE) === ''
+    || isNaN(pipeLine.ELMT_PRICE) || pipeLine.ELMT_PRICE < 0) {
+      this.toastr.error('Please specify Price', 'Error');
+      return;
+    }
+
+    if (isNullOrUndefined(pipeLine.ELT_SIZE) || String(pipeLine.ELT_SIZE) === ''
+    || isNaN(pipeLine.ELT_SIZE) || pipeLine.ELT_SIZE < 0) {
+      this.toastr.error('Please specify Size', 'Error');
+      return;
+    }
+
+    if (!pipeLine.LINE_RELEASE) {
+      this.toastr.error('Please choose Status', 'Error');
+      return;
+    }
+
+    if (pipeLine.ELT_LOSSES_1 === undefined || !pipeLine.ELT_LOSSES_1) {
+      pipeLine.ELT_LOSSES_1 = 0;
+    }
+
+    if (pipeLine.ELT_LOSSES_2 === undefined || !pipeLine.ELT_LOSSES_2) {
+      pipeLine.ELT_LOSSES_2 = 0;
+    }
+
+    if (pipeLine.MANUFACTURER === undefined || !pipeLine.MANUFACTURER) {
+      pipeLine.MANUFACTURER = '';
+    }
+
+    if (!pipeLine.LINE_COMMENT) {
+      pipeLine.LINE_COMMENT = '';
+    }
+
+    if (Number(pipeLine.ELT_TYPE) === 1 || Number(pipeLine.ELT_TYPE) === 2) {
+
+      if (Number(pipeLine.ELT_TYPE) === 2) {
+
+        if (isNaN(pipeLine.ELT_LOSSES_1)) {
+          this.toastr.error('Please specify Rate of evaporation', 'Error');
+          return;
+        }
+      } else {
+
+        if (Number(pipeLine.ELT_TYPE) === 3 || Number(pipeLine.ELT_TYPE) === 4 || Number(pipeLine.ELT_TYPE) === 5
+        || (Number(pipeLine.ELT_TYPE) === 2 && Number(pipeLine.ID_COOLING_FAMILY) === 3)) {
+        } else {
+
+          if (isNaN(pipeLine.ELT_LOSSES_1) || pipeLine.ELT_LOSSES_1 < 0) {
+            this.toastr.error('Please specify Losses in get cold', 'Error');
+            return;
+          }
+        }
+
+        if (Number(pipeLine.ELT_TYPE) === 1) {
+
+          if (Number(pipeLine.ELT_TYPE) !== 2 && Number(pipeLine.ELT_TYPE) !== 3 && Number(pipeLine.ELT_TYPE) !== 4
+          && Number(pipeLine.ELT_TYPE) !== 5) {
+            if (isNaN(pipeLine.ELT_LOSSES_2) || pipeLine.ELT_LOSSES_2 < 0) {
+              this.toastr.error('Please specify Permanent losses', 'Error');
+              return;
+            }
+          }
+        }
+      }
+    }
+    // if (isNullOrUndefined(pipeLine.ELT_LOSSES_1) || String(pipeLine.ELT_LOSSES_1) === ''
+    // || isNaN(pipeLine.ELT_LOSSES_1) || pipeLine.ELT_LOSSES_1 < 0) {
+    //   this.toastr.error('Please specify Losses 1', 'Error');
+    //   return;
+    // }
+    // if (isNullOrUndefined(pipeLine.ELT_LOSSES_2) || String(pipeLine.ELT_LOSSES_2) === ''
+    // || isNaN(pipeLine.ELT_LOSSES_2) || pipeLine.ELT_LOSSES_2 < 0) {
+    //   this.toastr.error('Please specify Losses 2', 'Error');
+    //   return;
+    // }
+    this.referencedata.checkPipeline({
+      LABEL: pipeLine.LABEL,
+      LINE_VERSION: pipeLine.LINE_VERSION,
+      LINE_COMMENT: pipeLine.LINE_COMMENT,
+      MANUFACTURER: pipeLine.MANUFACTURER,
+      ELT_TYPE: pipeLine.ELT_TYPE,
+      ID_COOLING_FAMILY: pipeLine.ID_COOLING_FAMILY,
+      INSULATION_TYPE: pipeLine.INSULATION_TYPE,
+      ELMT_PRICE: pipeLine.ELMT_PRICE,
+      ELT_SIZE: pipeLine.ELT_SIZE,
+      ELT_LOSSES_1: pipeLine.ELT_LOSSES_1,
+      ELT_LOSSES_2: pipeLine.ELT_LOSSES_2,
+      LINE_RELEASE: pipeLine.LINE_RELEASE
+    }).subscribe(
+      (res) => {
+        if (res === 1) {
+          if (check === 0) {
+            this.savePipeLine();
+          }
+
+          if (check === 1) {
+            this.updatePipeLineElmt();
+          }
+        } else {
+          this.toastr.error(res.Message, 'Error');
+        }
+      },
+      err => {
+        console.log(err);
+      },
+      () => {
+      }
+    );
   }
 
   savePipeLine() {
-
-    if (!this.newPipeLine.LABEL || this.newPipeLine.LABEL === undefined) {
-      swal('Oops..', 'Please specify name!', 'warning');
-      return;
-    }
-    if (typeof this.newPipeLine.LABEL === 'number') {
-      swal('Oops..', 'Not a valid string in Name !', 'warning');
-      return;
-    }
-    if (!this.newPipeLine.LINE_VERSION) {
-      swal('Oops..', 'Please specify version!', 'warning');
-      return;
-    }
-    if (isNaN(this.newPipeLine.LINE_VERSION)) {
-      swal('Oops..', 'Not a valid number in Version !', 'warning');
-      return;
-    }
-    if (!this.newPipeLine.ELMT_PRICE || this.newPipeLine.ELMT_PRICE === undefined) {
-      swal('Oops..', 'Not a valid number in Price !', 'warning');
-      return;
-    }
-    if (isNaN(this.newPipeLine.ELMT_PRICE)) {
-      swal('Oops..', 'Not a valid number in Price !', 'warning');
-      return;
-    }
-    if (!this.newPipeLine.ELT_SIZE || this.newPipeLine.ELT_SIZE === undefined) {
-      swal('Oops..', 'Not a valid number in Size !', 'warning');
-      return;
-    }
-    if (isNaN(this.newPipeLine.ELT_SIZE)) {
-      swal('Oops..', 'Not a valid number in Size !', 'warning');
-      return;
-    }
-    if (!this.newPipeLine.LINE_RELEASE) {
-      swal('Oops..', 'Please choose status !', 'warning');
-      return;
-    }
     if (this.newPipeLine.ELT_LOSSES_1 === undefined || !this.newPipeLine.ELT_LOSSES_1) {
       this.newPipeLine.ELT_LOSSES_1 = 0;
     }
+
     if (this.newPipeLine.ELT_LOSSES_2 === undefined || !this.newPipeLine.ELT_LOSSES_2) {
       this.newPipeLine.ELT_LOSSES_2 = 0;
     }
+
     if (this.newPipeLine.MANUFACTURER === undefined || !this.newPipeLine.MANUFACTURER) {
       this.newPipeLine.MANUFACTURER = '';
     }
+
     if (!this.newPipeLine.LINE_COMMENT) {
       this.newPipeLine.LINE_COMMENT = '';
     }
+
     this.isAddLine = true;
     this.referencedata.newPipeLine(this.newPipeLine).subscribe(
       response => {
@@ -220,7 +366,7 @@ export class PipelineComponent implements OnInit, AfterViewInit {
         }
 
         if (response === 0) {
-          swal('Oops..', 'Name and version already in use!', 'error');
+          this.toastr.error('Name and version already in use', 'Error');
         } else {
           if (success) {
             localStorage.setItem('pipelineCurr', JSON.stringify(response));
@@ -231,9 +377,9 @@ export class PipelineComponent implements OnInit, AfterViewInit {
             this.ngOnInit();
             this.checkHideInfo = false;
             this.newPipeLine = new PipeLineElmt();
-  
+
           } else {
-              swal('Oops..', 'Create pipeline error!', 'error');
+            this.toastr.error('Create pipeline error!', 'Error');
           }
         }
         this.isAddLine = false;
@@ -273,7 +419,7 @@ export class PipelineComponent implements OnInit, AfterViewInit {
             this.updatePipeLine = new PipeLineElmt();
             this.checkHideInfo = true;
           } else {
-            swal('Oops..', 'Delete pipe line error!', 'error');
+            this.toastr.error('Delete pipe line error!', 'Error');
           }
           this.isDeletePipeLine = false;
         },
@@ -291,71 +437,39 @@ export class PipelineComponent implements OnInit, AfterViewInit {
     });
   }
 
-  updatePipeLineElmt(pipeLine) {
+  updatePipeLineElmt() {
 
-    if (!pipeLine.LABEL || pipeLine.LABEL === undefined) {
-      swal('Oops..', 'Please specify name!', 'warning');
-      return;
+    if (this.updatePipeLine.ELT_LOSSES_1 === undefined || !this.updatePipeLine.ELT_LOSSES_1) {
+      this.updatePipeLine.ELT_LOSSES_1 = 0;
     }
-    if (typeof pipeLine.LABEL === 'number') {
-      swal('Oops..', 'Not a valid string in Name !', 'warning');
-      return;
+
+    if (this.updatePipeLine.ELT_LOSSES_2 === undefined || !this.updatePipeLine.ELT_LOSSES_2) {
+      this.updatePipeLine.ELT_LOSSES_2 = 0;
     }
-    if (!pipeLine.LINE_VERSION) {
-      swal('Oops..', 'Please specify version!', 'warning');
-      return;
+
+    if (this.updatePipeLine.MANUFACTURER === undefined || !this.updatePipeLine.MANUFACTURER) {
+      this.updatePipeLine.MANUFACTURER = '';
     }
-    if (isNaN(pipeLine.LINE_VERSION)) {
-      swal('Oops..', 'Not a valid number in Version !', 'warning');
-      return;
+
+    if (!this.updatePipeLine.LINE_COMMENT) {
+      this.updatePipeLine.LINE_COMMENT = '';
     }
-    if (!pipeLine.ELMT_PRICE || pipeLine.ELMT_PRICE === undefined) {
-      swal('Oops..', 'Not a valid number in Price !', 'warning');
-      return;
-    }
-    if (isNaN(pipeLine.ELMT_PRICE)) {
-      swal('Oops..', 'Not a valid number in Price !', 'warning');
-      return;
-    }
-    if (!pipeLine.ELT_SIZE || pipeLine.ELT_SIZE === undefined) {
-      swal('Oops..', 'Not a valid number in Size !', 'warning');
-      return;
-    }
-    if (isNaN(pipeLine.ELT_SIZE)) {
-      swal('Oops..', 'Not a valid number in Size !', 'warning');
-      return;
-    }
-    if (!pipeLine.LINE_RELEASE) {
-      swal('Oops..', 'Please choose status !', 'warning');
-      return;
-    }
-    if (pipeLine.ELT_LOSSES_1 === undefined || !pipeLine.ELT_LOSSES_1) {
-      this.newPipeLine.ELT_LOSSES_1 = 0;
-    }
-    if (pipeLine.ELT_LOSSES_2 === undefined || !pipeLine.ELT_LOSSES_2) {
-      this.newPipeLine.ELT_LOSSES_2 = 0;
-    }
-    if (pipeLine.MANUFACTURER === undefined || !pipeLine.MANUFACTURER) {
-      pipeLine.MANUFACTURER = '';
-    }
-    if (!pipeLine.LINE_COMMENT) {
-      pipeLine.LINE_COMMENT = '';
-    }
+
     this.isUpdatePipeLine = true;
     this.referencedata.updatePipeLine({
       ID_PIPELINE_ELMT: this.selectLine.ID_PIPELINE_ELMT,
-      LABEL: pipeLine.LABEL,
-      LINE_VERSION: pipeLine.LINE_VERSION,
-      LINE_COMMENT: pipeLine.LINE_COMMENT,
-      MANUFACTURER: pipeLine.MANUFACTURER,
-      ELT_TYPE: pipeLine.ELT_TYPE,
-      ID_COOLING_FAMILY: pipeLine.ID_COOLING_FAMILY,
-      INSULATION_TYPE: pipeLine.INSULATION_TYPE,
-      ELMT_PRICE: pipeLine.ELMT_PRICE,
-      ELT_SIZE: pipeLine.ELT_SIZE,
-      ELT_LOSSES_1: pipeLine.ELT_LOSSES_1,
-      ELT_LOSSES_2: pipeLine.ELT_LOSSES_2,
-      LINE_RELEASE: pipeLine.LINE_RELEASE
+      LABEL: this.updatePipeLine.LABEL,
+      LINE_VERSION: this.updatePipeLine.LINE_VERSION,
+      LINE_COMMENT: this.updatePipeLine.LINE_COMMENT,
+      MANUFACTURER: this.updatePipeLine.MANUFACTURER,
+      ELT_TYPE: this.updatePipeLine.ELT_TYPE,
+      ID_COOLING_FAMILY: this.updatePipeLine.ID_COOLING_FAMILY,
+      INSULATION_TYPE: this.updatePipeLine.INSULATION_TYPE,
+      ELMT_PRICE: this.updatePipeLine.ELMT_PRICE,
+      ELT_SIZE: this.updatePipeLine.ELT_SIZE,
+      ELT_LOSSES_1: this.updatePipeLine.ELT_LOSSES_1,
+      ELT_LOSSES_2: this.updatePipeLine.ELT_LOSSES_2,
+      LINE_RELEASE: this.updatePipeLine.LINE_RELEASE
     }).subscribe(
       response => {
         let success = true;
@@ -364,7 +478,7 @@ export class PipelineComponent implements OnInit, AfterViewInit {
         }
 
         if (response === 0) {
-          swal('Oops..', 'Name and version already in use!', 'error');
+          this.toastr.error('Name and version already in use!', 'Error');
         } else {
           if (success) {
             localStorage.setItem('pipelineCurr', JSON.stringify(response));
@@ -373,7 +487,7 @@ export class PipelineComponent implements OnInit, AfterViewInit {
             this.router.navigate(['/references/pipeline']);
             this.refrestListLineElmt();
           } else {
-              swal('Oops..', 'Update pipeline error!', 'error');
+            this.toastr.error('Update pipeline error!', 'Error');
           }
         }
         this.isUpdatePipeLine = false;
@@ -390,13 +504,15 @@ export class PipelineComponent implements OnInit, AfterViewInit {
 
   saveAsPipeLine(oldPipeLine) {
     if (!this.pipeLineSaveAs.newName || this.pipeLineSaveAs.newName === undefined) {
-      swal('Oops..', 'Please specify name!', 'warning');
+      this.toastr.error('Please specify name!', 'Error');
       return;
     }
+
     if (typeof this.pipeLineSaveAs.newName === 'number') {
-      swal('Oops..', 'Not a valid string in Name !', 'warning');
+      this.toastr.error('Not a valid string in Name !', 'Error');
       return;
     }
+
     this.isSaveAs = true;
     this.referencedata.saveAsPipeLine({
       ID_PIPELINE_ELMT: oldPipeLine.ID_PIPELINE_ELMT,
@@ -410,7 +526,7 @@ export class PipelineComponent implements OnInit, AfterViewInit {
         }
 
         if (response === 0) {
-          swal('Oops..', 'Name and version already in use!', 'error');
+          this.toastr.error('Name and version already in use!', 'Error');
         } else {
           if (success) {
             localStorage.setItem('pipelineCurr', JSON.stringify(response));
@@ -422,7 +538,7 @@ export class PipelineComponent implements OnInit, AfterViewInit {
               newName: ''
             };
           } else {
-              swal('Oops..', 'Save as pipe line error!', 'error');
+            this.toastr.error('Save as pipe line error!', 'Error');
           }
         }
         this.isSaveAs = false;
@@ -434,6 +550,6 @@ export class PipelineComponent implements OnInit, AfterViewInit {
       () => {
         this.isSaveAs = false;
       }
-      );
+    );
   }
 }

@@ -9,15 +9,17 @@ import { Pipe } from '@angular/core';
 import { PipeTransform } from '@angular/core';
 import { isNumber, isInteger } from '@ng-bootstrap/ng-bootstrap/util/util';
 import { ReferencedataService } from '../../../api/services/referencedata.service';
-import { RefEquipment, ViewEquipment, NewEquipment, EquipmentFamily, EquipCharact } from '../../../api/models';
+import { RefEquipment, ViewEquipment, NewEquipment, EquipmentFamily, EquipCharact, Units } from '../../../api/models';
 import { Equipment, EquipGeneration, EquipmentSeries, Ramps, Shelves, Consumptions, FilterEquipment } from '../../../api/models';
 import { SaveAsEquipment, ViewHighChart, ViewCurve, EquipGenZone, ViewTempSetPoint, Study, SVGChart } from '../../../api/models';
+import { ViewCapability } from '../../../api/models';
 
 import * as Highcharts from 'highcharts';
 import * as HC_draggablePoints from 'highcharts-draggable-points';
 HC_draggablePoints(Highcharts);
 
 import { HighchartsChartComponent } from '../../../components/highcharts-chart/highcharts-chart.component';
+import { isNullOrUndefined } from 'util';
 
 @Pipe({ name: 'equipFilter' })
 export class EquipmentFilterPipe implements PipeTransform {
@@ -60,7 +62,6 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
   public checkHideInfo = false;
   public checkActiveEquip = 0;
   public disableFilter = false;
-  // end HAIDTname, id, studyname
   public activePageEquipment = '';
   public listEquipment: ViewEquipment;
   public listEquipGenerateAll: Array<RefEquipment>;
@@ -299,6 +300,19 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
   };
   public isLoadingChart = false;
   public disabledConfirm = 0;
+  public capability: ViewCapability;
+  // add by haidt
+  public equipDimensionSymbol = '';
+  public listUnits: Array<Units>;
+  public temperatureSymbol = '';
+  public rampsPositionSymbol = '';
+  public shelvesWidthSymbol = '';
+  public timeSymbol = '';
+  public laddaIsSaveNew = false;
+  public convectionCoeffSymbol = '';
+  public lengthSymbol = '';
+  public conductivitySymbol = '';
+
 
   constructor(private referencedata: ReferencedataService, private toastr: ToastrService, private router: Router) {
     this.activePageEquipment = 'load';
@@ -315,6 +329,38 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
     this.getListEquipmentFamily();
     this.study = JSON.parse(localStorage.getItem('study'));
     this.isLoading = true;
+    this.listUnits = JSON.parse(localStorage.getItem('UnitUser'));
+
+    if (this.listUnits) {
+
+      for (let i = 0; i < this.listUnits.length; i++) {
+
+        if (Number(this.listUnits[i].TYPE_UNIT) === 21) {
+          this.equipDimensionSymbol = this.listUnits[i].SYMBOL;
+        }
+        if (Number(this.listUnits[i].TYPE_UNIT) === 8) {
+          this.temperatureSymbol = this.listUnits[i].SYMBOL;
+        }
+        if (Number(this.listUnits[i].TYPE_UNIT) === 23) {
+          this.rampsPositionSymbol = this.listUnits[i].SYMBOL;
+        }
+        if (Number(this.listUnits[i].TYPE_UNIT) === 22) {
+          this.shelvesWidthSymbol = this.listUnits[i].SYMBOL;
+        }
+        if (Number(this.listUnits[i].TYPE_UNIT) === 5) {
+          this.timeSymbol = this.listUnits[i].SYMBOL;
+        }
+        if (Number(this.listUnits[i].TYPE_UNIT) === 14) {
+          this.convectionCoeffSymbol = this.listUnits[i].SYMBOL;
+        }
+        if (Number(this.listUnits[i].TYPE_UNIT) === 3) {
+          this.lengthSymbol = this.listUnits[i].SYMBOL;
+        }
+        if (Number(this.listUnits[i].TYPE_UNIT) === 10) {
+          this.conductivitySymbol = this.listUnits[i].SYMBOL;
+        }
+      }
+    }
   }
 
   ngAfterViewInit() {
@@ -350,7 +396,6 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
           const equipCurr = JSON.parse(localStorage.getItem('equipCurr'));
           this.checkActiveEquip = Number(equipCurr.ID_EQUIP);
           this.selectEquipment = equipCurr;
-          console.log(this.selectEquipment);
         }
       }
     );
@@ -404,6 +449,12 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
     this.statusEquip = 0;
     this.selectEquipGener = new RefEquipment();
     this.equipGenerate = 0;
+    this.equipTranslation = 0;
+    this.equipRotate = 0;
+    this.equipMerge1 = 0;
+    this.equipMerge2 = 0;
+    this.newEquipment = new NewEquipment();
+
   }
 
   chooseTranslate() {
@@ -411,20 +462,37 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
     this.getEquipmentRotateTranslation();
     this.selectEquipTranslate = new RefEquipment();
     this.selectEquipTranslate.equipGeneration = new EquipGeneration();
+    this.equipGenerate = 0;
     this.equipTranslation = 0;
+    this.equipRotate = 0;
+    this.equipMerge1 = 0;
+    this.equipMerge2 = 0;
+    this.newEquipment = new NewEquipment();
+
   }
 
   chooseRotate() {
     this.statusEquip = 2;
     this.getEquipmentRotateTranslation();
+    this.equipGenerate = 0;
+    this.equipTranslation = 0;
     this.equipRotate = 0;
+    this.equipMerge1 = 0;
+    this.equipMerge2 = 0;
+    this.newEquipment = new NewEquipment();
+
   }
 
   chooseMerge() {
     this.statusEquip = 3;
     this.getEquipmentMerge();
+    this.equipGenerate = 0;
+    this.equipTranslation = 0;
+    this.equipRotate = 0;
     this.equipMerge1 = 0;
     this.equipMerge2 = 0;
+    this.newEquipment = new NewEquipment();
+
   }
 
   getEquipmentRotateTranslation() {
@@ -454,40 +522,7 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
   }
 
   saveNewEquipment(typeCalculate = 0) {
-    if (!this.newEquipment.nameEquipment || this.newEquipment.nameEquipment === undefined) {
-      swal('Oops..', 'Please specify name!', 'warning');
-      return;
-    }
-    if (isNumber(this.newEquipment.nameEquipment)) {
-      swal('Oops..', 'Not a valid string in Name !', 'warning');
-      return;
-    }
-    if (!this.newEquipment.versionEquipment) {
-      swal('Oops..', 'Please specify version!', 'warning');
-      return;
-    }
-    if (isNaN(this.newEquipment.versionEquipment)) {
-      swal('Oops..', 'Not a valid number in Version !', 'warning');
-      return;
-    }
-    if (Number(this.statusEquip) === 0) {
-      if (Number(this.equipGenerate) === 0) {
-        swal('Oops..', 'Please choose equipment!', 'warning');
-        return;
-      }
-      if (!this.selectEquipGener.capabilitiesCalc) {
-        if (!this.newEquipment.tempSetPoint || String(this.newEquipment.tempSetPoint) === '') {
-          swal('Oops..', 'Please specify regulation temperature!', 'warning');
-          return;
-        }
-      }
-      if (!this.selectEquipGener.capabilitiesCalc) {
-        if (this.newEquipment.dwellingTime || String(this.newEquipment.dwellingTime) === '') {
-          swal('Oops..', 'Please specify dwelling time!', 'warning');
-          return;
-        }
-      }
-    }
+
     this.newEquipment.typeEquipment = this.statusEquip;
     this.newEquipment.typeCalculate = typeCalculate;
 
@@ -512,37 +547,24 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
     } else {
       this.newEquipment.equipGenZone = null;
     }
-    this.laddaIsCalculating = true;
+    if (typeCalculate === 1) {
+      this.laddaIsCalculating = true;
+    } else if (typeCalculate === 0) {
+      this.laddaIsSaveNew = true;
+    }
 
     this.referencedata.newEquipment(this.newEquipment).subscribe(
       response => {
-        console.log(response);
         let success = true;
-
-        if (response === -1) {
-          success = false;
-          this.laddaIsCalculating = false;
-          this.toastr.error('Create equipment', 'Please, Enter a value in Equipments !');
-          return;
-        } else if (response === -3) {
-          success = false;
-          this.laddaIsCalculating = false;
-          this.toastr.error('Create equipment', 'Please, Enter a value in Version !');
-          return;
-        } else if (response === -2) {
-          success = false;
-          this.laddaIsCalculating = false;
-          this.toastr.error('Create equipment', 'Select an equipment.!');
-          return;
-        } else if (response === -4) {
+        if (response === -4) {
           this.laddaIsCalculating = false;
           success = false;
-          this.toastr.error('Create equipment', 'Name and version already in use!');
+          this.toastr.error('Name and version already in use!', 'Error');
           return;
         } else if (response === -5) {
           this.laddaIsCalculating = false;
           success = false;
-          this.toastr.error('Calculate equipment', 'Run calculate error');
+          this.toastr.error('Run calculate error', 'Error');
           return;
         } else if (success) {
           localStorage.setItem('equipCurr', JSON.stringify(response));
@@ -574,19 +596,19 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
 
   newSaveAsEquipment(equipment) {
     if (!this.saveAsEquipment.nameEquipment || this.saveAsEquipment.nameEquipment === undefined) {
-      swal('Oops..', 'Please specify name!', 'warning');
+      this.toastr.error('Please specify name!', 'Error');
       return;
     }
     if (isNumber(this.saveAsEquipment.nameEquipment)) {
-      swal('Oops..', 'Not a valid string in Name !', 'warning');
+      this.toastr.error('Not a valid string in Name !', 'Error');
       return;
     }
     if (!this.saveAsEquipment.versionEquipment) {
-      swal('Oops..', 'Please specify version!', 'warning');
+      this.toastr.error('Please specify version!', 'Error');
       return;
     }
     if (isNaN(this.saveAsEquipment.versionEquipment)) {
-      swal('Oops..', 'Not a valid number in Version !', 'warning');
+      this.toastr.error('Not a valid number in Version !', 'Error');
       return;
     }
     this.referencedata.saveAsEquipment({
@@ -785,23 +807,32 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
   }
 
   addOnePoint(idEquip) {
+    if (isNullOrUndefined(this.newEquipCharact.X_POSITION) || String(this.newEquipCharact.X_POSITION) === ''
+    || isNaN(this.newEquipCharact.X_POSITION)) {
+      this.toastr.error('Please specify Position', 'Error');
+      return;
+    }
+    if (Number(this.newEquipCharact.X_POSITION) < 0 || Number(this.newEquipCharact.X_POSITION) > 100 ) {
+      this.toastr.error('Value out of range in Position (0 : 100)', 'Error');
+      return;
+    }
+
     this.referencedata.addEquipCharact({
       ID_EQUIP: idEquip,
       X_POSITION: this.newEquipCharact.X_POSITION
     }).subscribe(
       data => {
         if (data === -1) {
-          swal('Oops..', 'Point ready exist!', 'error');
+          this.toastr.error('Point ready exist!', 'Error');
           return;
         }
 
         if (data === -2) {
-          swal('Oops..', 'Can not add more than the max of the point', 'error');
+          this.toastr.error('Can not add more than the max of the point', 'Error');
           return;
         }
-
         this.equipCharacts.push(data);
-        this.toastr.success('Add one point', 'successfully');
+        this.toastr.success('Add one point', 'Successfully');
       },
       err => {
 
@@ -913,10 +944,6 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
 
       this.modalEquipmentProfil.show();
     }
-  }
-
-  getDataHighChartY(data) {
-    console.log(data);
   }
 
   onTemperatureCharact(element = 0) {
@@ -1076,7 +1103,7 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
         },
         yAxis: {
           title: {
-            text: 'Temperature (°C)'
+            text: 'Temperature (' + this.temperatureSymbol + ')'
           },
           plotLines: [{
             value: 0,
@@ -1137,7 +1164,7 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
         },
         yAxis: {
           title: {
-            text: '(Kw/(m².°C)'
+            text: '(' + this.convectionCoeffSymbol + ')'
           },
           plotLines: [{
             value: 0,
@@ -1261,6 +1288,34 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
     );
   }
 
+  checkBuildForNewTR(idEquip) {
+    if (isNullOrUndefined(this.tempSetPoint.tr_new) || String(this.tempSetPoint.tr_new) === ''
+      || isNaN(this.tempSetPoint.tr_new)) {
+        this.toastr.error('Please specify New temperature	', 'Error');
+        return;
+    }
+
+    this.referencedata.checkBuildForNewTR({
+      ID_EQUIP: idEquip,
+      tr_current: this.tempSetPoint.tr_current,
+      tr_new: this.tempSetPoint.tr_new,
+      ID_STUDY: (this.study !== null) ? this.study.ID_STUDY : 0,
+    }).subscribe(
+      (res) => {
+        if (res === 1) {
+          this.buildForNewTR(idEquip);
+        } else {
+          this.toastr.error(res.Message, 'Error');
+        }
+      },
+      err => {
+        console.log(err);
+      },
+      () => {
+      }
+    );
+  }
+
   deleteEquipCharact(idEquipCharact) {
     this.referencedata.deleteEquipCharact(idEquipCharact).subscribe(
       response => {
@@ -1332,6 +1387,54 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
   }
 
   updateEquipCharact(idEquipCharact) {
+    if (isNullOrUndefined(this.equipCharact.ALPHA_TOP) || String(this.equipCharact.ALPHA_TOP) === ''
+    || isNaN(this.equipCharact.ALPHA_TOP)) {
+      this.equipCharact.ALPHA_TOP = 0;
+    }
+    if (isNullOrUndefined(this.equipCharact.ALPHA_BOTTOM) || String(this.equipCharact.ALPHA_BOTTOM) === ''
+    || isNaN(this.equipCharact.ALPHA_BOTTOM)) {
+      this.equipCharact.ALPHA_BOTTOM = 0;
+    }
+    if (isNullOrUndefined(this.equipCharact.ALPHA_LEFT) || String(this.equipCharact.ALPHA_LEFT) === ''
+    || isNaN(this.equipCharact.ALPHA_LEFT)) {
+      this.equipCharact.ALPHA_LEFT = 0;
+    }
+    if (isNullOrUndefined(this.equipCharact.ALPHA_RIGHT) || String(this.equipCharact.ALPHA_RIGHT) === ''
+    || isNaN(this.equipCharact.ALPHA_RIGHT)) {
+      this.equipCharact.ALPHA_RIGHT = 0;
+    }
+    if (isNullOrUndefined(this.equipCharact.ALPHA_FRONT) || String(this.equipCharact.ALPHA_FRONT) === ''
+    || isNaN(this.equipCharact.ALPHA_FRONT)) {
+      this.equipCharact.ALPHA_FRONT = 0;
+    }
+    if (isNullOrUndefined(this.equipCharact.ALPHA_REAR) || String(this.equipCharact.ALPHA_REAR) === ''
+    || isNaN(this.equipCharact.ALPHA_REAR)) {
+      this.equipCharact.ALPHA_REAR = 0;
+    }
+    if (isNullOrUndefined(this.equipCharact.TEMP_TOP) || String(this.equipCharact.TEMP_TOP) === ''
+    || isNaN(this.equipCharact.TEMP_TOP)) {
+      this.equipCharact.TEMP_TOP = 0;
+    }
+    if (isNullOrUndefined(this.equipCharact.TEMP_BOTTOM) || String(this.equipCharact.TEMP_BOTTOM) === ''
+    || isNaN(this.equipCharact.TEMP_BOTTOM)) {
+      this.equipCharact.TEMP_BOTTOM = 0;
+    }
+    if (isNullOrUndefined(this.equipCharact.TEMP_LEFT) || String(this.equipCharact.TEMP_LEFT) === ''
+    || isNaN(this.equipCharact.TEMP_LEFT)) {
+      this.equipCharact.TEMP_LEFT = 0;
+    }
+    if (isNullOrUndefined(this.equipCharact.TEMP_RIGHT) || String(this.equipCharact.TEMP_RIGHT) === ''
+    || isNaN(this.equipCharact.TEMP_RIGHT)) {
+      this.equipCharact.TEMP_RIGHT = 0;
+    }
+    if (isNullOrUndefined(this.equipCharact.TEMP_FRONT) || String(this.equipCharact.TEMP_FRONT) === ''
+    || isNaN(this.equipCharact.TEMP_FRONT)) {
+      this.equipCharact.TEMP_FRONT = 0;
+    }
+    if (isNullOrUndefined(this.equipCharact.TEMP_REAR) || String(this.equipCharact.TEMP_REAR) === ''
+    || isNaN(this.equipCharact.TEMP_REAR)) {
+      this.equipCharact.TEMP_REAR = 0;
+    }
     this.referencedata.updateEquipCharact({
       ID_EQUIPCHARAC: idEquipCharact,
       ALPHA_TOP: this.equipCharact.ALPHA_TOP,
@@ -1343,7 +1446,7 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
       TEMP_TOP: this.equipCharact.TEMP_TOP,
       TEMP_BOTTOM: this.equipCharact.TEMP_BOTTOM,
       TEMP_LEFT: this.equipCharact.TEMP_LEFT,
-      TEMP_RIGHT: this.equipCharact.ALPHA_RIGHT,
+      TEMP_RIGHT: this.equipCharact.TEMP_RIGHT,
       TEMP_FRONT: this.equipCharact.TEMP_FRONT,
       TEMP_REAR: this.equipCharact.TEMP_REAR
     }).subscribe(
@@ -1372,6 +1475,7 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
   }
 
   onSelectEquipment(equip) {
+    console.log(equip);
     localStorage.setItem('equipCurr', '');
     this.checkActiveEquip = 0;
     this.checkHideInfo = false;
@@ -1383,6 +1487,7 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
     this.getListShelves(equip.ID_EQUIP);
     this.getListConsumptions(equip.ID_EQUIP);
     this.getEquipCharacts(equip.ID_EQUIP);
+    this.getCapability(equip.ID_EQUIP);
   }
 
   getListEquipmentFamily() {
@@ -1396,6 +1501,18 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
       () => {
 
       }
+    );
+  }
+
+  getCapability(idEquip) {
+    this.referencedata.getCapabitity(idEquip).subscribe(
+      data => {
+        this.capability = data;
+      },
+      err => {
+        console.log(err);
+      },
+      () => {}
     );
   }
 
@@ -1429,17 +1546,17 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
 
   addRampValue() {
     if (!this.newRamp.POSITION) {
-      swal('Oops..', 'Enter a value in Position ramp !', 'error');
+      this.toastr.error('Enter a value in Position ramp', 'Error');
       return;
     }
 
     if (!isNumber(this.newRamp.POSITION)) {
-      swal('Oops..', 'Not a valid number in Position ramp !', 'error');
+      this.toastr.error('Not a valid number in Position ramp', 'Error');
       return;
     }
 
     if (this.rampsArray.length >= 2) {
-      swal('Oops..', 'Can not add more than the max of the equipment', 'error');
+      this.toastr.error('Can not add more than the max of the equipment', 'Error');
       return;
     }
 
@@ -1467,22 +1584,22 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
 
   addShelveValue() {
     if (!this.newShelve.SPACE) {
-      swal('Oops..', 'Enter a value in Space !', 'error');
+      this.toastr.error('Enter a value in Space', 'Error');
       return;
     }
 
     if (!this.newShelve.NB) {
-      swal('Oops..', 'Enter a value in Number !', 'error');
+      this.toastr.error('Enter a value in Number', 'Error');
       return;
     }
 
     if (!isNumber(this.newShelve.SPACE)) {
-      swal('Oops..', 'Not a valid number in Space !', 'error');
+      this.toastr.error('Not a valid number in Space', 'Error');
       return;
     }
 
     if (!isNumber(this.newShelve.NB)) {
-      swal('Oops..', 'Not a valid number in Number !', 'error');
+      this.toastr.error('Not a valid number in Number', 'Error');
       return;
     }
 
@@ -1510,32 +1627,32 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
 
   addConsumptionValue() {
     if (!this.newConsumption.TEMPERATURE) {
-      swal('Oops..', 'Enter a value in Temperature !', 'error');
+      this.toastr.error('Enter a value in Temperature', 'Error');
       return;
     }
 
     if (!this.newConsumption.CONSUMPTION_PERM) {
-      swal('Oops..', 'Enter a value in Consumption of maintains in cold !', 'error');
+      this.toastr.error('Enter a value in Consumption of maintains in cold', 'Error');
       return;
     }
 
     if (!this.newConsumption.CONSUMPTION_GETCOLD) {
-      swal('Oops..', 'Enter a value in Consumption of stake in cold !', 'error');
+      this.toastr.error('Enter a value in Consumption of stake in cold', 'Error');
       return;
     }
 
     if (!isNumber(this.newConsumption.TEMPERATURE)) {
-      swal('Oops..', 'Not a valid number in Temperature !', 'error');
+      this.toastr.error('Not a valid number in Temperature', 'Error');
       return;
     }
 
     if (!isNumber(this.newConsumption.CONSUMPTION_PERM)) {
-      swal('Oops..', 'Not a valid number in Consumption of maintains in cold !', 'error');
+      this.toastr.error('Not a valid number in Consumption of maintains in cold', 'Error');
       return;
     }
 
     if (!isNumber(this.newConsumption.CONSUMPTION_GETCOLD)) {
-      swal('Oops..', 'Not a valid number in Consumption of stake in cold !', 'error');
+      this.toastr.error('Not a valid number in Consumption of stake in cold', 'Error');
       return;
     }
 
@@ -1548,7 +1665,6 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
   }
 
   movepoint($event) {
-    // var to manage svg
     const focusXZone = 50;	// pixels around the selected points
     const focusYZone = 25;	// pixels around the selected points
     if (this.selectedPoint !== null) {
@@ -1890,63 +2006,15 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
 
   // HAIDT
   onSelectFilter() {
-    if (!this.newEquipment.nameEquipment || this.newEquipment.nameEquipment === undefined) {
-      swal('Oops..', 'Please specify name!', 'warning');
-      return;
-    }
-    if (isNumber(this.newEquipment.nameEquipment)) {
-      swal('Oops..', 'Not a valid string in Name !', 'warning');
-      return;
-    }
-    if (!this.newEquipment.versionEquipment) {
-      swal('Oops..', 'Please specify version!', 'warning');
-      return;
-    }
-    if (isNaN(this.newEquipment.versionEquipment)) {
-      swal('Oops..', 'Not a valid number in Version !', 'warning');
-      return;
-    }
     if (Number(this.statusEquip) === 0) {
-      if (Number(this.equipGenerate) === 0) {
-        swal('Oops..', 'Please choose equipment!', 'warning');
-        return;
-      }
-      if (!this.selectEquipGener.capabilitiesCalc) {
-        if (!this.newEquipment.tempSetPoint || String(this.newEquipment.tempSetPoint) === '') {
-          swal('Oops..', 'Please specify regulation temperature!', 'warning');
-          return;
-        }
-      }
-      if (!this.selectEquipGener.capabilitiesCalc) {
-        if (this.newEquipment.dwellingTime || String(this.newEquipment.dwellingTime) === '') {
-          swal('Oops..', 'Please specify dwelling time!', 'warning');
-          return;
-        }
-      }
       this.getEquipmentFilter(this.equipGenerate);
     }
 
     if (Number(this.statusEquip) === 1) {
-      if (Number(this.equipTranslation) === 0) {
-        swal('Oops..', 'Please choose equipment!', 'warning');
-        return;
-      }
-      if (!this.newEquipment.newPos || String(this.newEquipment.newPos) === '') {
-        swal('Oops..', 'Please specify new position	!', 'warning');
-        return;
-      }
-      if (!this.newEquipment.dwellingTime || String(this.newEquipment.dwellingTime) === '') {
-        swal('Oops..', 'Please specify dwelling time!', 'warning');
-        return;
-      }
       this.getEquipmentFilter(this.equipTranslation);
     }
 
     if (Number(this.statusEquip) === 2) {
-      if (Number(this.equipRotate) === 0) {
-        swal('Oops..', 'Please choose equipment!', 'warning');
-        return;
-      }
       this.getEquipmentFilter(this.equipRotate);
     }
   }
@@ -1970,6 +2038,283 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
   }
 
   confirmFilter() {
+    const listEquipGenZone = this.filterEquipment.EquipGenZone;
+    const equipZone = this.filterEquipment.EquipZone;
+
+    for (let i = 0; i < equipZone.length; i++) {
+
+      if (isNullOrUndefined(equipZone[i].EQUIP_ZONE_LENGTH) || String(equipZone[i].EQUIP_ZONE_LENGTH) === ''
+      || isNaN(equipZone[i].EQUIP_ZONE_LENGTH)) {
+        this.toastr.error('Please specify Length / Entry - Zone ' + (i + 1), 'Error');
+        return;
+      }
+      if (isNullOrUndefined(equipZone[i].EQUIP_ZONE_NAME) || String(equipZone[i].EQUIP_ZONE_NAME) === '') {
+        this.toastr.error('Please specify Zone name - Zone ' + (i + 1), 'Error');
+        return;
+      }
+    }
+    for (let i = 0; i < listEquipGenZone.length; i++) {
+      // *_CHANGE = 1
+      // row Coefficient
+      if (Number(listEquipGenZone[i].TOP_ADIABAT) === 0 && Number(listEquipGenZone[i].TOP_CHANGE) === 1) {
+        if (isNullOrUndefined(listEquipGenZone[i].TOP_PRM1) || String(listEquipGenZone[i].TOP_PRM1) === ''
+        || isNaN(listEquipGenZone[i].TOP_PRM1)) {
+          this.toastr.error('Please specify in Coefficient - Zone ' + (i + 1), 'Error');
+          return;
+        }
+      }
+      if (Number(listEquipGenZone[i].BOTTOM_ADIABAT) === 0 && Number(listEquipGenZone[i].BOTTOM_CHANGE) === 1) {
+        if (isNullOrUndefined(listEquipGenZone[i].BOTTOM_PRM1) || String(listEquipGenZone[i].BOTTOM_PRM1) === ''
+        || isNaN(listEquipGenZone[i].BOTTOM_PRM1)) {
+          this.toastr.error('Please specify in Coefficient - Zone ' + (i + 1), 'Error');
+          return;
+        }
+      }
+      if (Number(listEquipGenZone[i].LEFT_ADIABAT) === 0 && Number(listEquipGenZone[i].LEFT_CHANGE) === 1) {
+        if (isNullOrUndefined(listEquipGenZone[i].LEFT_PRM1) || String(listEquipGenZone[i].LEFT_PRM1) === ''
+        || isNaN(listEquipGenZone[i].LEFT_PRM1)) {
+          this.toastr.error('Please specify in Coefficient - Zone ' + (i + 1), 'Error');
+          return;
+        }
+      }
+      if (Number(listEquipGenZone[i].RIGHT_ADIABAT) === 0 && Number(listEquipGenZone[i].RIGHT_CHANGE) === 1) {
+        if (isNullOrUndefined(listEquipGenZone[i].RIGHT_PRM1) || String(listEquipGenZone[i].RIGHT_PRM1) === ''
+        || isNaN(listEquipGenZone[i].RIGHT_PRM1)) {
+          this.toastr.error('Please specify in Coefficient - Zone ' + (i + 1), 'Error');
+          return;
+        }
+      }
+      if (Number(listEquipGenZone[i].FRONT_ADIABAT) === 0 && Number(listEquipGenZone[i].FRONT_CHANGE) === 1) {
+        if (isNullOrUndefined(listEquipGenZone[i].FRONT_PRM1) || String(listEquipGenZone[i].FRONT_PRM1) === ''
+        || isNaN(listEquipGenZone[i].FRONT_PRM1)) {
+          this.toastr.error('Please specify in Coefficient - Zone ' + (i + 1), 'Error');
+          return;
+        }
+      }
+      if (Number(listEquipGenZone[i].REAR_ADIABAT) === 0 && Number(listEquipGenZone[i].REAR_CHANGE) === 1) {
+        if (isNullOrUndefined(listEquipGenZone[i].REAR_PRM1) || String(listEquipGenZone[i].REAR_PRM1) === ''
+        || isNaN(listEquipGenZone[i].REAR_PRM1)) {
+          this.toastr.error('Please specify in Coefficient - Zone ' + (i + 1), 'Error');
+          return;
+        }
+      }
+      // row AlphaI/Alpha in the mylar zone
+      if (Number(listEquipGenZone[i].TOP_ADIABAT) === 0 && Number(listEquipGenZone[i].TOP_CHANGE) === 2) {
+        if (isNullOrUndefined(listEquipGenZone[i].TOP_PRM1) || String(listEquipGenZone[i].TOP_PRM1) === ''
+        || isNaN(listEquipGenZone[i].TOP_PRM1)) {
+          this.toastr.error('Please specify in AlphaI/Alpha in the mylar - Zone ' + (i + 1), 'Error');
+          return;
+        }
+      }
+      if (Number(listEquipGenZone[i].BOTTOM_ADIABAT) === 0 && Number(listEquipGenZone[i].BOTTOM_CHANGE) === 2) {
+        if (isNullOrUndefined(listEquipGenZone[i].BOTTOM_PRM1) || String(listEquipGenZone[i].BOTTOM_PRM1) === ''
+        || isNaN(listEquipGenZone[i].BOTTOM_PRM1)) {
+          this.toastr.error('Please specify in AlphaI/Alpha in the mylar - Zone ' + (i + 1), 'Error');
+          return;
+        }
+      }
+      if (Number(listEquipGenZone[i].LEFT_ADIABAT) === 0 && Number(listEquipGenZone[i].LEFT_CHANGE) === 2) {
+        if (isNullOrUndefined(listEquipGenZone[i].LEFT_PRM1) || String(listEquipGenZone[i].LEFT_PRM1) === ''
+        || isNaN(listEquipGenZone[i].LEFT_PRM1)) {
+          this.toastr.error('Please specify in AlphaI/Alpha in the mylar - Zone ' + (i + 1), 'Error');
+          return;
+        }
+      }
+      if (Number(listEquipGenZone[i].RIGHT_ADIABAT) === 0 && Number(listEquipGenZone[i].RIGHT_CHANGE) === 2) {
+        if (isNullOrUndefined(listEquipGenZone[i].RIGHT_PRM1) || String(listEquipGenZone[i].RIGHT_PRM1) === ''
+        || isNaN(listEquipGenZone[i].RIGHT_PRM1)) {
+          this.toastr.error('Please specify in AlphaI/Alpha in the mylar - Zone ' + (i + 1), 'Error');
+          return;
+        }
+      }
+      if (Number(listEquipGenZone[i].FRONT_ADIABAT) === 0 && Number(listEquipGenZone[i].FRONT_CHANGE) === 2) {
+        if (isNullOrUndefined(listEquipGenZone[i].FRONT_PRM1) || String(listEquipGenZone[i].FRONT_PRM1) === ''
+        || isNaN(listEquipGenZone[i].FRONT_PRM1)) {
+          this.toastr.error('Please specify in AlphaI/Alpha in the mylar - Zone ' + (i + 1), 'Error');
+          return;
+        }
+      }
+      if (Number(listEquipGenZone[i].REAR_ADIABAT) === 0 && Number(listEquipGenZone[i].REAR_CHANGE) === 2) {
+        if (isNullOrUndefined(listEquipGenZone[i].REAR_PRM1) || String(listEquipGenZone[i].REAR_PRM1) === ''
+        || isNaN(listEquipGenZone[i].REAR_PRM1)) {
+          this.toastr.error('Please specify in AlphaI/Alpha in the mylar - Zone ' + (i + 1), 'Error');
+          return;
+        }
+      }
+      // row Alpha spraying zone
+      if (Number(listEquipGenZone[i].TOP_ADIABAT) === 0 && Number(listEquipGenZone[i].TOP_CHANGE) === 2) {
+        if (isNullOrUndefined(listEquipGenZone[i].TOP_PRM2) || String(listEquipGenZone[i].TOP_PRM2) === ''
+        || isNaN(listEquipGenZone[i].TOP_PRM2)) {
+          this.toastr.error('Please specify in Alpha spraying - Zone ' + (i + 1), 'Error');
+          return;
+        }
+      }
+      if (Number(listEquipGenZone[i].BOTTOM_ADIABAT) === 0 && Number(listEquipGenZone[i].BOTTOM_CHANGE) === 2) {
+        if (isNullOrUndefined(listEquipGenZone[i].BOTTOM_PRM2) || String(listEquipGenZone[i].BOTTOM_PRM2) === ''
+        || isNaN(listEquipGenZone[i].BOTTOM_PRM2)) {
+          this.toastr.error('Please specify in Alpha spraying - Zone ' + (i + 1), 'Error');
+          return;
+        }
+      }
+      if (Number(listEquipGenZone[i].LEFT_ADIABAT) === 0 && Number(listEquipGenZone[i].LEFT_CHANGE) === 2) {
+        if (isNullOrUndefined(listEquipGenZone[i].LEFT_PRM2) || String(listEquipGenZone[i].LEFT_PRM2) === ''
+        || isNaN(listEquipGenZone[i].LEFT_PRM2)) {
+          this.toastr.error('Please specify in Alpha spraying - Zone ' + (i + 1), 'Error');
+          return;
+        }
+      }
+      if (Number(listEquipGenZone[i].RIGHT_ADIABAT) === 0 && Number(listEquipGenZone[i].RIGHT_CHANGE) === 2) {
+        if (isNullOrUndefined(listEquipGenZone[i].RIGHT_PRM2) || String(listEquipGenZone[i].RIGHT_PRM2) === ''
+        || isNaN(listEquipGenZone[i].RIGHT_PRM2)) {
+          this.toastr.error('Please specify in Alpha spraying - Zone ' + (i + 1), 'Error');
+          return;
+        }
+      }
+      if (Number(listEquipGenZone[i].FRONT_ADIABAT) === 0 && Number(listEquipGenZone[i].FRONT_CHANGE) === 2) {
+        if (isNullOrUndefined(listEquipGenZone[i].FRONT_PRM2) || String(listEquipGenZone[i].FRONT_PRM2) === ''
+        || isNaN(listEquipGenZone[i].FRONT_PRM2)) {
+          this.toastr.error('Please specify in Alpha spraying - Zone ' + (i + 1), 'Error');
+          return;
+        }
+      }
+      if (Number(listEquipGenZone[i].REAR_ADIABAT) === 0 && Number(listEquipGenZone[i].REAR_CHANGE) === 2) {
+        if (isNullOrUndefined(listEquipGenZone[i].REAR_PRM2) || String(listEquipGenZone[i].REAR_PRM2) === ''
+        || isNaN(listEquipGenZone[i].REAR_PRM2)) {
+          this.toastr.error('Please specify in Alpha spraying - Zone ' + (i + 1), 'Error');
+          return;
+        }
+      }
+      // Alpha stabilization zone
+      if (Number(listEquipGenZone[i].TOP_ADIABAT) === 0 && Number(listEquipGenZone[i].TOP_CHANGE) === 2) {
+        if (isNullOrUndefined(listEquipGenZone[i].TOP_PRM3) || String(listEquipGenZone[i].TOP_PRM3) === ''
+        || isNaN(listEquipGenZone[i].TOP_PRM3)) {
+          this.toastr.error('Please specify in Alpha stabilization - Zone ' + (i + 1), 'Error');
+          return;
+        }
+      }
+      if (Number(listEquipGenZone[i].BOTTOM_ADIABAT) === 0 && Number(listEquipGenZone[i].BOTTOM_CHANGE) === 2) {
+        if (isNullOrUndefined(listEquipGenZone[i].BOTTOM_PRM3) || String(listEquipGenZone[i].BOTTOM_PRM3) === ''
+        || isNaN(listEquipGenZone[i].BOTTOM_PRM3)) {
+          this.toastr.error('Please specify in Alpha stabilization - Zone ' + (i + 1), 'Error');
+          return;
+        }
+      }
+      if (Number(listEquipGenZone[i].LEFT_ADIABAT) === 0 && Number(listEquipGenZone[i].LEFT_CHANGE) === 2) {
+        if (isNullOrUndefined(listEquipGenZone[i].LEFT_PRM3) || String(listEquipGenZone[i].LEFT_PRM3) === ''
+        || isNaN(listEquipGenZone[i].LEFT_PRM3)) {
+          this.toastr.error('Please specify in Alpha stabilization - Zone ' + (i + 1), 'Error');
+          return;
+        }
+      }
+      if (Number(listEquipGenZone[i].RIGHT_ADIABAT) === 0 && Number(listEquipGenZone[i].RIGHT_CHANGE) === 2) {
+        if (isNullOrUndefined(listEquipGenZone[i].RIGHT_PRM3) || String(listEquipGenZone[i].RIGHT_PRM3) === ''
+        || isNaN(listEquipGenZone[i].RIGHT_PRM3)) {
+          this.toastr.error('Please specify in Alpha stabilization - Zone ' + (i + 1), 'Error');
+          return;
+        }
+      }
+      if (Number(listEquipGenZone[i].FRONT_ADIABAT) === 0 && Number(listEquipGenZone[i].FRONT_CHANGE) === 2) {
+        if (isNullOrUndefined(listEquipGenZone[i].FRONT_PRM3) || String(listEquipGenZone[i].FRONT_PRM3) === ''
+        || isNaN(listEquipGenZone[i].FRONT_PRM3)) {
+          this.toastr.error('Please specify in Alpha stabilization - Zone ' + (i + 1), 'Error');
+          return;
+        }
+      }
+      if (Number(listEquipGenZone[i].REAR_ADIABAT) === 0 && Number(listEquipGenZone[i].REAR_CHANGE) === 2) {
+        if (isNullOrUndefined(listEquipGenZone[i].REAR_PRM3) || String(listEquipGenZone[i].REAR_PRM3) === ''
+        || isNaN(listEquipGenZone[i].REAR_PRM3)) {
+          this.toastr.error('Please specify in Alpha stabilization - Zone ' + (i + 1), 'Error');
+          return;
+        }
+      }
+      // Insulation tickness
+      if (Number(listEquipGenZone[i].TOP_ADIABAT) === 0 && Number(listEquipGenZone[i].TOP_CHANGE) === 3) {
+        if (isNullOrUndefined(listEquipGenZone[i].TOP_PRM1) || String(listEquipGenZone[i].TOP_PRM1) === ''
+        || isNaN(listEquipGenZone[i].TOP_PRM1)) {
+          this.toastr.error('Please specify in Insulation tickness - Zone ' + (i + 1), 'Error');
+          return;
+        }
+      }
+      if (Number(listEquipGenZone[i].BOTTOM_ADIABAT) === 0 && Number(listEquipGenZone[i].BOTTOM_CHANGE) === 3) {
+        if (isNullOrUndefined(listEquipGenZone[i].BOTTOM_PRM1) || String(listEquipGenZone[i].BOTTOM_PRM1) === ''
+        || isNaN(listEquipGenZone[i].BOTTOM_PRM1)) {
+          this.toastr.error('Please specify in Insulation tickness - Zone ' + (i + 1), 'Error');
+          return;
+        }
+      }
+      if (Number(listEquipGenZone[i].LEFT_ADIABAT) === 0 && Number(listEquipGenZone[i].LEFT_CHANGE) === 3) {
+        if (isNullOrUndefined(listEquipGenZone[i].LEFT_PRM1) || String(listEquipGenZone[i].LEFT_PRM1) === ''
+        || isNaN(listEquipGenZone[i].LEFT_PRM1)) {
+          this.toastr.error('Please specify in Insulation tickness - Zone ' + (i + 1), 'Error');
+          return;
+        }
+      }
+      if (Number(listEquipGenZone[i].RIGHT_ADIABAT) === 0 && Number(listEquipGenZone[i].RIGHT_CHANGE) === 3) {
+        if (isNullOrUndefined(listEquipGenZone[i].RIGHT_PRM1) || String(listEquipGenZone[i].RIGHT_PRM1) === ''
+        || isNaN(listEquipGenZone[i].RIGHT_PRM1)) {
+          this.toastr.error('Please specify in Insulation tickness - Zone ' + (i + 1), 'Error');
+          return;
+        }
+      }
+      if (Number(listEquipGenZone[i].FRONT_ADIABAT) === 0 && Number(listEquipGenZone[i].FRONT_CHANGE) === 3) {
+        if (isNullOrUndefined(listEquipGenZone[i].FRONT_PRM1) || String(listEquipGenZone[i].FRONT_PRM1) === ''
+        || isNaN(listEquipGenZone[i].FRONT_PRM1)) {
+          this.toastr.error('Please specify in Insulation tickness - Zone ' + (i + 1), 'Error');
+          return;
+        }
+      }
+      if (Number(listEquipGenZone[i].REAR_ADIABAT) === 0 && Number(listEquipGenZone[i].REAR_CHANGE) === 3) {
+        if (isNullOrUndefined(listEquipGenZone[i].REAR_PRM1) || String(listEquipGenZone[i].REAR_PRM1) === ''
+        || isNaN(listEquipGenZone[i].REAR_PRM1)) {
+          this.toastr.error('Please specify in Insulation tickness - Zone ' + (i + 1), 'Error');
+          return;
+        }
+      }
+      // Insulation conductivity
+      if (Number(listEquipGenZone[i].TOP_ADIABAT) === 0 && Number(listEquipGenZone[i].TOP_CHANGE) === 3) {
+        if (isNullOrUndefined(listEquipGenZone[i].TOP_PRM2) || String(listEquipGenZone[i].TOP_PRM2) === ''
+        || isNaN(listEquipGenZone[i].TOP_PRM2)) {
+          this.toastr.error('Please specify in Insulation conductivity - Zone ' + (i + 1), 'Error');
+          return;
+        }
+      }
+      if (Number(listEquipGenZone[i].BOTTOM_ADIABAT) === 0 && Number(listEquipGenZone[i].BOTTOM_CHANGE) === 3) {
+        if (isNullOrUndefined(listEquipGenZone[i].BOTTOM_PRM2) || String(listEquipGenZone[i].BOTTOM_PRM2) === ''
+        || isNaN(listEquipGenZone[i].BOTTOM_PRM2)) {
+          this.toastr.error('Please specify in Insulation conductivity - Zone ' + (i + 1), 'Error');
+          return;
+        }
+      }
+      if (Number(listEquipGenZone[i].LEFT_ADIABAT) === 0 && Number(listEquipGenZone[i].LEFT_CHANGE) === 3) {
+        if (isNullOrUndefined(listEquipGenZone[i].LEFT_PRM2) || String(listEquipGenZone[i].LEFT_PRM2) === ''
+        || isNaN(listEquipGenZone[i].LEFT_PRM2)) {
+          this.toastr.error('Please specify in Insulation conductivity - Zone ' + (i + 1), 'Error');
+          return;
+        }
+      }
+      if (Number(listEquipGenZone[i].RIGHT_ADIABAT) === 0 && Number(listEquipGenZone[i].RIGHT_CHANGE) === 3) {
+        if (isNullOrUndefined(listEquipGenZone[i].RIGHT_PRM2) || String(listEquipGenZone[i].RIGHT_PRM2) === ''
+        || isNaN(listEquipGenZone[i].RIGHT_PRM2)) {
+          this.toastr.error('Please specify in Insulation conductivity - Zone ' + (i + 1), 'Error');
+          return;
+        }
+      }
+      if (Number(listEquipGenZone[i].FRONT_ADIABAT) === 0 && Number(listEquipGenZone[i].FRONT_CHANGE) === 3) {
+        if (isNullOrUndefined(listEquipGenZone[i].FRONT_PRM2) || String(listEquipGenZone[i].FRONT_PRM2) === ''
+        || isNaN(listEquipGenZone[i].FRONT_PRM2)) {
+          this.toastr.error('Please specify in Insulation conductivity - Zone ' + (i + 1), 'Error');
+          return;
+        }
+      }
+      if (Number(listEquipGenZone[i].REAR_ADIABAT) === 0 && Number(listEquipGenZone[i].REAR_CHANGE) === 3) {
+        if (isNullOrUndefined(listEquipGenZone[i].REAR_PRM2) || String(listEquipGenZone[i].REAR_PRM2) === ''
+        || isNaN(listEquipGenZone[i].REAR_PRM2)) {
+          this.toastr.error('Please specify in Insulation conductivity - Zone ' + (i + 1), 'Error');
+          return;
+        }
+      }
+    }
+
     this.modalFilter.hide();
   }
 
@@ -1987,6 +2332,248 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
       this.getEquipmentFilter(equip.ID_EQUIP);
     }
     this.disableFilter = true;
+  }
+
+  checkEquipment(equipment, check) {
+    if (isNullOrUndefined(equipment.nameEquipment) || String(equipment.nameEquipment) === ''
+    || isNumber(equipment.nameEquipment)) {
+      this.toastr.error('Please specify Equipment name', 'Error');
+      return;
+    }
+
+    if (isNullOrUndefined(equipment.versionEquipment) || String(equipment.versionEquipment) === ''
+    || isNaN(equipment.versionEquipment)) {
+      this.toastr.error('Please specify Version', 'Error');
+      return;
+    }
+
+    if (Number(this.statusEquip) === 0) {
+      if (Number(this.equipGenerate) === 0) {
+        this.toastr.error('Please choose equipment', 'Error');
+        return;
+      }
+      if (!this.selectEquipGener.capabilitiesCalc) {
+        if (isNullOrUndefined(equipment.tempSetPoint) || String(equipment.tempSetPoint) === '' || isNaN(equipment.tempSetPoint)) {
+          this.toastr.error('Please specify regulation temperature', 'Error');
+          return;
+        }
+      } else {
+        if (isNullOrUndefined(equipment.dwellingTime) || String(equipment.dwellingTime) === '' || isNaN(equipment.dwellingTime)) {
+          this.toastr.error('Please specify  dwelling time', 'Error');
+          return;
+        }
+      }
+    }
+
+    if (Number(this.statusEquip) === 1) {
+      if (Number(this.equipTranslation) === 0) {
+        this.toastr.error('Please choose equipment', 'Error');
+        return;
+      }
+      if (isNullOrUndefined(equipment.newPos) || String(equipment.newPos) === '' || isNaN(equipment.newPos)) {
+        this.toastr.error('Please specify New position', 'Error');
+        return;
+      }
+      if (isNullOrUndefined(equipment.dwellingTime) || String(equipment.dwellingTime) === '' || isNaN(equipment.dwellingTime)) {
+        this.toastr.error('Please specify Dwelling time', 'Error');
+        return;
+      }
+    }
+
+    if (Number(this.statusEquip) === 2) {
+      if (Number(this.equipRotate) === 0) {
+        this.toastr.error('Please choose equipment', 'Error');
+        return;
+      }
+    }
+
+    if (Number(this.statusEquip) === 3) {
+      if (Number(this.equipMerge1) === 0 || Number(this.equipMerge2) === 0) {
+        this.toastr.error('Please choose equipment', 'Error');
+        return;
+      }
+
+      if (this.selectEquipmentMerge1.capabilitiesCalc || this.selectEquipmentMerge2.capabilitiesCalc) {
+        if (isNullOrUndefined(equipment.dwellingTime) || String(equipment.dwellingTime) === '' || isNaN(equipment.dwellingTime)) {
+          this.toastr.error('Please specify  dwelling time', 'Error');
+          return;
+        }
+      } else {
+        if (isNullOrUndefined(equipment.tempSetPoint) || String(equipment.tempSetPoint) === '' || isNaN(equipment.tempSetPoint)) {
+          this.toastr.error('Please specify regulation temperature', 'Error');
+          return;
+        }
+      }
+    }
+
+    equipment.typeEquipment = this.statusEquip;
+    equipment.typeCalculate = 0;
+
+    if (Number(this.statusEquip) === 0) {
+      equipment.equipmentId1 = this.selectEquipGener.ID_EQUIP;
+      if (!this.selectEquipGener.capabilitiesCalc) {
+        equipment.dwellingTime = 0;
+      } else {
+        equipment.tempSetPoint = 0;
+      }
+    } else if (Number(this.statusEquip) === 1) {
+      equipment.equipmentId1 = this.equipTranslation;
+    } else if (Number(this.statusEquip) === 2) {
+      equipment.equipmentId1 = this.equipRotate;
+    } else if (Number(this.statusEquip) === 3) {
+      equipment.equipmentId1 = this.equipMerge1;
+      equipment.equipmentId2 = this.equipMerge2;
+    }
+
+    if (this.filterEquipment) {
+      equipment.equipGenZone = this.filterEquipment.EquipGenZone;
+    } else {
+      equipment.equipGenZone = null;
+    }
+    this.referencedata.checkEquipment(equipment).subscribe(
+      (res) => {
+        if (res === 1) {
+          if (check === 0) {
+            this.saveNewEquipment(0);
+          } else if (check === 1) {
+            this.saveNewEquipment(1);
+          } else if (check === 2) {
+            this.onSelectFilter();
+          }
+        } else {
+          this.toastr.error(res.Message, 'Error');
+        }
+      },
+      err => {
+        console.log(err);
+      },
+      () => {
+      }
+    );
+  }
+
+  checkUpdateEquipment(equipment, check) {
+    if (isNullOrUndefined(equipment.EQUIP_NAME) || String(equipment.EQUIP_NAME) === ''
+    || isNumber(equipment.EQUIP_NAME)) {
+      this.toastr.error('Please specify Designation', 'Error');
+      return;
+    }
+
+    if (isNullOrUndefined(equipment.EQUIP_VERSION) || String(equipment.EQUIP_VERSION) === ''
+    || isNaN(equipment.EQUIP_VERSION)) {
+      this.toastr.error('Please specify Version', 'Error');
+      return;
+    }
+
+    if (isNullOrUndefined(equipment.EQP_LENGTH) || String(equipment.EQP_LENGTH) === ''
+    || isNaN(equipment.EQP_LENGTH) || Number(equipment.EQP_LENGTH) < 0) {
+      this.toastr.error('Please specify Length', 'Error');
+      return;
+    }
+
+    if (isNullOrUndefined(equipment.EQP_WIDTH) || String(equipment.EQP_WIDTH) === ''
+    || isNaN(equipment.EQP_WIDTH) || Number(equipment.EQP_WIDTH) < 0) {
+      this.toastr.error('Please specify Width', 'Error');
+      return;
+    }
+
+    if (isNullOrUndefined(equipment.EQP_HEIGHT) || String(equipment.EQP_HEIGHT) === ''
+    || isNaN(equipment.EQP_HEIGHT) || Number(equipment.EQP_HEIGHT) < 0) {
+      this.toastr.error('Please specify Height', 'Error');
+      return;
+    }
+
+    if (isNullOrUndefined(equipment.NB_TR) || String(equipment.NB_TR) === ''
+    || isNaN(equipment.NB_TR) || Number(equipment.NB_TR) < 0 || !isInteger(Number(equipment.NB_TR))) {
+      this.toastr.error('Please specify TR number', 'Error');
+      return;
+    }
+
+    if (isNullOrUndefined(equipment.NB_TS) || String(equipment.NB_TS) === ''
+    || isNaN(equipment.NB_TS) || Number(equipment.NB_TS) < 0 || !isInteger(Number(equipment.NB_TS))) {
+      this.toastr.error('Please specify Ts number', 'Error');
+      return;
+    }
+
+    if (isNullOrUndefined(equipment.NB_VC) || String(equipment.NB_VC) === ''
+    || isNaN(equipment.NB_VC) || Number(equipment.NB_VC) < 0 || !isInteger(Number(equipment.NB_VC))) {
+      this.toastr.error('Please specify VC number	', 'Error');
+      return;
+    }
+
+    if (isNullOrUndefined(equipment.MAX_FLOW_RATE) || String(equipment.MAX_FLOW_RATE) === ''
+    || isNaN(equipment.MAX_FLOW_RATE) || Number(equipment.MAX_FLOW_RATE) < 0) {
+      this.toastr.error('Please specify Max flow rate	', 'Error');
+      return;
+    }
+
+    if (isNullOrUndefined(equipment.TMP_REGUL_MIN) || String(equipment.TMP_REGUL_MIN) === ''
+    || isNaN(equipment.TMP_REGUL_MIN)) {
+      this.toastr.error('Please specify Mimimum regulation temperature', 'Error');
+      return;
+    }
+
+    if (isNullOrUndefined(equipment.MAX_NOZZLES_BY_RAMP) || String(equipment.MAX_NOZZLES_BY_RAMP) === ''
+    || isNaN(equipment.MAX_NOZZLES_BY_RAMP) || Number(equipment.MAX_NOZZLES_BY_RAMP || !isInteger(equipment.MAX_NOZZLES_BY_RAMP)) < 0) {
+      this.toastr.error('Please specify Nozzles/ramps number', 'Error');
+      return;
+    }
+
+    if (isNullOrUndefined(equipment.MAX_RAMPS) || String(equipment.MAX_RAMPS) === ''
+    || isNaN(equipment.MAX_RAMPS) || Number(equipment.MAX_RAMPS || !isInteger(equipment.MAX_RAMPS)) < 0) {
+      this.toastr.error('Please specify Ramp max number	', 'Error');
+      return;
+    }
+
+    this.updateEquipment(equipment);
+  }
+
+  checkRedrawCurves(idEquip) {
+    if (Number(this.dataCurve.isCapabilities) === 1) {
+      if (isNullOrUndefined(this.dataCurve.DWELLING_TIME) || String(this.dataCurve.DWELLING_TIME) === ''
+      || isNaN(this.dataCurve.DWELLING_TIME)) {
+        this.toastr.error('Please specify Dwelling Time', 'Error');
+        return;
+      }
+    } else {
+      if (isNullOrUndefined(this.dataCurve.REGUL_TEMP) || String(this.dataCurve.REGUL_TEMP) === ''
+      || isNaN(this.dataCurve.REGUL_TEMP)) {
+        this.toastr.error('Please specify Regulation temperature', 'Error');
+        return;
+      }
+    }
+    if (isNullOrUndefined(this.dataCurve.PRODTEMP) || String(this.dataCurve.PRODTEMP) === ''
+      || isNaN(this.dataCurve.PRODTEMP)) {
+        this.toastr.error('Please specify Initial temperature of the product', 'Error');
+        return;
+    }
+    if (isNullOrUndefined(this.dataCurve.LOADINGRATE) || String(this.dataCurve.LOADINGRATE) === ''
+      || isNaN(this.dataCurve.LOADINGRATE)) {
+        this.toastr.error('Please specify Loading Rate', 'Error');
+        return;
+    }
+
+    this.referencedata.checkRedrawCurves({
+      ID_EQUIP: idEquip,
+      isCapabilities: null,
+      DWELLING_TIME: this.dataCurve.DWELLING_TIME,
+      REGUL_TEMP: this.dataCurve.REGUL_TEMP,
+      PRODTEMP: this.dataCurve.PRODTEMP,
+      LOADINGRATE: this.dataCurve.LOADINGRATE,
+    }).subscribe(
+      (res) => {
+        if (res === 1) {
+          this.updateCurves(idEquip);
+        } else {
+          this.toastr.error(res.Message, 'Error');
+        }
+      },
+      err => {
+        console.log(err);
+      },
+      () => {
+      }
+    );
   }
   // end HAIDT
 }

@@ -7,15 +7,19 @@
   </a>
   <div *ngIf="!!study" class="ml-2">
     <i class="fa fa-folder-open-o"></i>
-    Study:
+    {{('Study:'| translate)}}
     <strong>{{study.STUDY_NAME}}</strong>
     <button class="btn btn-sm btn-info" (click)="onShowNotes()">
       <i class="fa fa-sticky-note-o"></i>
-      Notes
+      {{'Notes'|translate}}
     </button>
     <button class="btn btn-sm btn-warning" (click)="onCloseStudy()">
       <i class="fa fa-close"></i>
-      Close study
+      {{'Close'|translate}}
+    </button>
+    <button class="btn btn-sm btn-danger ml-3" (click)="onDeleteStudy()" [ladda]="laddaDeletingStudy">
+      <i class="fa fa-trash"></i>
+      {{'Delete'|translate}}
     </button>
   </div>
   <ul class="nav navbar-nav ml-auto">
@@ -33,7 +37,7 @@
         </div>
         <a class="dropdown-item" [routerLink]="['/profile']">
           <i class="fa fa-user"></i> Profile</a>
-        
+
         <a class="dropdown-item" [routerLink]="['/settings']">
           <i class="fa fa-wrench"></i> Settings</a>
 

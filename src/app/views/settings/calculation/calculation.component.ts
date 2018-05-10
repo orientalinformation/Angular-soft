@@ -46,37 +46,22 @@ export class CalculationComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
+    this.getSettingCaculation();
+  }
+
+  getSettingCaculation() {
     this.api.getMyCalculationParametersDef().subscribe(
       data => {
         data.VERT_SCAN_DEF = Number(data.VERT_SCAN_DEF);
         data.HORIZ_SCAN_DEF = Number(data.HORIZ_SCAN_DEF);
-
-        data.MAX_IT_NB_DEF = Number(data.MAX_IT_NB_DEF);
-        data.RELAX_COEFF_DEF = Number(data.RELAX_COEFF_DEF);
-        data.PRECISION_REQUEST_DEF = Number(data.PRECISION_REQUEST_DEF);
-
-        data.STOP_TOP_SURF_DEF = Number(data.STOP_TOP_SURF_DEF);
-        data.STOP_INT_DEF = Number(data.STOP_INT_DEF);
-        data.STOP_BOTTOM_SURF_DEF = Number(data.STOP_BOTTOM_SURF_DEF);
-        data.STOP_AVG_DEF = Number(data.STOP_AVG_DEF);
-
         data.STUDY_ALPHA_TOP_FIXED_DEF = Number(data.STUDY_ALPHA_TOP_FIXED_DEF);
         data.STUDY_ALPHA_BOTTOM_FIXED_DEF = Number(data.STUDY_ALPHA_BOTTOM_FIXED_DEF);
         data.STUDY_ALPHA_LEFT_FIXED_DEF = Number(data.STUDY_ALPHA_LEFT_FIXED_DEF);
         data.STUDY_ALPHA_RIGHT_FIXED_DEF = Number(data.STUDY_ALPHA_RIGHT_FIXED_DEF);
         data.STUDY_ALPHA_FRONT_FIXED_DEF = Number(data.STUDY_ALPHA_FRONT_FIXED_DEF);
         data.STUDY_ALPHA_REAR_FIXED_DEF = Number(data.STUDY_ALPHA_REAR_FIXED_DEF);
-
-        data.STUDY_ALPHA_TOP_DEF = Number(data.STUDY_ALPHA_TOP_DEF);
-        data.STUDY_ALPHA_BOTTOM_DEF = Number(data.STUDY_ALPHA_BOTTOM_DEF);
-        data.STUDY_ALPHA_LEFT_DEF = Number(data.STUDY_ALPHA_LEFT_DEF);
-        data.STUDY_ALPHA_RIGHT_DEF = Number(data.STUDY_ALPHA_RIGHT_DEF);
-        data.STUDY_ALPHA_FRONT_DEF = Number(data.STUDY_ALPHA_FRONT_DEF);
-        data.STUDY_ALPHA_REAR_DEF = Number(data.STUDY_ALPHA_REAR_DEF);
-
         data.STORAGE_STEP_DEF = Number(data.STORAGE_STEP_DEF);
         data.PRECISION_LOG_STEP_DEF = Number(data.PRECISION_LOG_STEP_DEF);
-        data.TIME_STEP_DEF = Number(data.TIME_STEP_DEF);
         this.calculationparametersdef = data;
         this.isLoading = false;
       }
@@ -96,9 +81,9 @@ export class CalculationComponent implements OnInit, AfterViewInit {
       return;
     }
 
-    if (isNullOrUndefined(this.calculationparametersdef.PRECISION_LOG_STEP_DEF)
-    || String(this.calculationparametersdef.PRECISION_LOG_STEP_DEF) === ''
-    || isNaN(this.calculationparametersdef.PRECISION_LOG_STEP_DEF)) {
+    if (isNullOrUndefined(this.calculationparametersdef.PRECISION_REQUEST_DEF)
+    || String(this.calculationparametersdef.PRECISION_REQUEST_DEF) === ''
+    || isNaN(this.calculationparametersdef.PRECISION_REQUEST_DEF)) {
       this.toastr.error('Please specify Precision of numerical modelling', 'Error');
       return;
     }
@@ -241,6 +226,7 @@ export class CalculationComponent implements OnInit, AfterViewInit {
       res => {
         if (res === 1) {
           this.toastr.success('Save mesh setting completed', 'successfully');
+          this.getSettingCaculation();
         } else {
           this.toastr.error(res.Message, 'Error');
         }

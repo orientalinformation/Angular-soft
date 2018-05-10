@@ -10,6 +10,8 @@ import { map } from 'rxjs/operators/map';
 import { filter } from 'rxjs/operators/filter';
 
 import { SVGChart } from '../models/svgchart';
+import { TemperatureDrawing } from '../models/temperature-drawing';
+import { ElmtEditForm } from '../models/elmt-edit-form';
 
 
 @Injectable()
@@ -95,7 +97,89 @@ export class InputService extends BaseService {
     return this.getDataSvgChartResponse().pipe(
       map(_r => _r.body)
     );
+  }
+  /**
+   * get data svg temperature
+   */
+  getDataSvgTemperatureResponse(): Observable<HttpResponse<TemperatureDrawing>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    let req = new HttpRequest<any>(
+      "GET",
+      this.rootUrl + `/input/tempprofile`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: TemperatureDrawing = null;
+        _body = _resp.body as TemperatureDrawing
+        return _resp.clone({body: _body}) as HttpResponse<TemperatureDrawing>;
+      })
+    );
+  }
+
+  /**
+   * get data svg temperature
+   */
+  getDataSvgTemperature(): Observable<TemperatureDrawing> {
+    return this.getDataSvgTemperatureResponse().pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * get data tempoint
+   * @param INDEX_TEMP - undefined
+   * @param ID_PROD - undefined
+   */
+  getDataTempointResponse(params: InputService.GetDataTempointParams): Observable<HttpResponse<ElmtEditForm>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    if (params.INDEXTEMP != null) __params = __params.set("INDEX_TEMP", params.INDEXTEMP.toString());
+    if (params.IDPROD != null) __params = __params.set("ID_PROD", params.IDPROD.toString());
+    let req = new HttpRequest<any>(
+      "GET",
+      this.rootUrl + `/input/temppoint`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: ElmtEditForm = null;
+        _body = _resp.body as ElmtEditForm
+        return _resp.clone({body: _body}) as HttpResponse<ElmtEditForm>;
+      })
+    );
+  }
+
+  /**
+   * get data tempoint
+   * @param INDEX_TEMP - undefined
+   * @param ID_PROD - undefined
+   */
+  getDataTempoint(params: InputService.GetDataTempointParams): Observable<ElmtEditForm> {
+    return this.getDataTempointResponse(params).pipe(
+      map(_r => _r.body)
+    );
   }}
 
 export module InputService {
+  export interface GetDataTempointParams {
+    INDEXTEMP: number;
+    IDPROD: number;
+  }
 }

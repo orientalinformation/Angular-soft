@@ -11,3 +11,4 @@ export * from './app-sidebar-nav';
 export * from './app-spinner/app-spinner.component';
 export * from './app-sys-utilz/app-sys-utilz.component';
 export * from './highcharts-chart/highcharts-chart.component';
+export * from './temp-profile-editor/temp-profile-editor.component';

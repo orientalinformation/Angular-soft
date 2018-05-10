@@ -34,18 +34,19 @@ export class SigninComponent implements OnInit {
               localStorage.setItem('colors', JSON.stringify(resp));
             }
           );
-          this.minmaxService.getMinMax().subscribe(
-            (res) => {
-              localStorage.setItem('MinMax', JSON.stringify(res));
-            }
-          );
           const userLogon = JSON.parse(localStorage.getItem('user'));
           this.profileService.getUnits(userLogon.ID_USER).subscribe(
             (res) => {
-              console.log(res);
               localStorage.setItem('UnitUser', JSON.stringify(res));
             }
           );
+          this.profileService.getMonetaryUser(userLogon.ID_USER).subscribe(
+            (res) => {
+              localStorage.setItem('MoneratyUser', JSON.stringify(res));
+            }
+          );
+          localStorage.setItem('IdCompInput', null);
+          localStorage.setItem('paramsCompInput', null);
           this.router.navigate(['/']);
         },
         error => {

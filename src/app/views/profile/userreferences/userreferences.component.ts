@@ -389,10 +389,15 @@ export class UserreferencesComponent implements OnInit, AfterViewInit {
     }).subscribe(
       data => {
         localStorage.setItem('UnitUser', JSON.stringify(data));
-          this.toastr.success('Update profile', 'successfully');
-          this.router.navigate(['/profile/userreferences']);
-          this.refrestUser();
+        this.toastr.success('Update profile', 'successfully');
+        this.router.navigate(['/profile/userreferences']);
+        this.refrestUser();
         this.isSave = false;
+        this.profileService.getMonetaryUser(this.userLogon.ID_USER).subscribe(
+          (res) => {
+            localStorage.setItem('MoneratyUser', JSON.stringify(res));
+          }
+        );
       },
       err => {
         console.log(err);

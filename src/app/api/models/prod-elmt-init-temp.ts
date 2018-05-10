@@ -3,5 +3,6 @@
 /**
  */
 export class ProdElmtInitTemp {
-    initTemp?: number;
+    isoThermal?: boolean;
+    tempPoints?: number[];
 }

@@ -7,8 +7,10 @@ import { ViewSelect } from './view-select';
  */
 export class BrainCalculator {
     dwellingTimes?: ViewDwellingTimes[];
-    sdisableFields?: number;
+    idStudyEquipment?: number;
+    sdisableCalculate?: number;
     checkOptim?: number;
+    scheckOptim?: number;
     sdisableOptim?: number;
     sdisableNbOptim?: number;
     epsilonTemp?: number;
@@ -32,7 +34,7 @@ export class BrainCalculator {
     tempPtIn?: number;
     tempPtBot?: number;
     tempPtAvg?: number;
-    sdisableCalculate?: number;
+    sdisableFields?: number;
     temperatures?: ViewTemperatures[];
     toc?: number;
     select1?: ViewSelect[];
@@ -47,6 +49,7 @@ export class BrainCalculator {
     sdisableTOC?: number;
     sdisableTS?: number;
     sdisableTR?: number;
+    CAP_VARIABLE_TR?: number;
     typeCalculate?: number;
     seValue1?: number;
     seValue2?: number;

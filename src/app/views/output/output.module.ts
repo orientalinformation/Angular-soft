@@ -14,6 +14,7 @@ import { ChartsModule } from 'ng2-charts/ng2-charts';
 import { ChartModule } from 'angular-highcharts';
 import { ModalModule } from 'ngx-bootstrap';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { LaddaModule } from 'angular2-ladda';
 
 @NgModule({
   imports: [
@@ -21,6 +22,9 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
     CommonModule,
     FormsModule,
     CalculationModule,
+    LaddaModule.forRoot({
+      style: 'slide-left',
+    }),
     TranslateModule.forChild(),
     TabsModule.forRoot(),
     ChartsModule,

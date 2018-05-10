@@ -8,17 +8,70 @@
 
 <div class="container-fluid">
   <div class="container">
-
+    <div class="card-header">
+        <strong>{{ 'Translation: ' | translate }}</strong>
+      <button type="button" class="btn btn-sm btn-success float-right">
+        <i class="fa fa-floppy-o"></i> {{'Save'|translate}}
+      </button>
+    </div>
     <div class="card product-container">
       <div class="card-body">
         <div style="margin-top:10px;" *ngIf="activePage=='interface'">
-
+          <table class="table table-bordered table-sm mb-0">
+            <thead>
+              <tr>
+                <th class="text-center">Reference language </th>
+                <th>
+                  <select class="form-control form-control-sm" [(ngModel)]="reflangue.langId">
+                    <option *ngFor="let lang of listLang" [value]="lang.ID_TRANSLATION">{{ lang.LABEL }}</option>
+                  </select>
+                </th>
+                <th class="text-center">To</th>
+                <th class="text-center">Translation language </th>
+                <th>
+                  <select class="form-control form-control-sm" [(ngModel)]="translangue.langId">
+                    <option *ngFor="let lang of listLang" [value]="lang.ID_TRANSLATION">{{ lang.LABEL }}</option>
+                  </select>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td colspan="2">Interface Label</td>
+                <td > </td>
+                <td colspan="2"><input class="form-control" type="text" name="changeLabel"></td>
+              </tr>
+            </tbody>
+          </table>
         </div>
         <div style="margin-top:10px;" *ngIf="activePage=='datalabel'">
-
+          <table class="table table-bordered table-sm mb-0">
+            <thead>
+              <tr>
+                <th class="text-center">Reference language </th>
+                <th>
+                  <select class="form-control form-control-sm" [(ngModel)]="reflangue.langId">
+                    <option *ngFor="let lang of listLang" [value]="lang.ID_TRANSLATION">{{ lang.LABEL }}</option>
+                  </select>
+                </th>
+                <th class="text-center">To</th>
+                <th class="text-center">Translation language </th>
+                <th>
+                  <select class="form-control form-control-sm" [(ngModel)]="translangue.langId">
+                    <option *ngFor="let lang of listLang1" [value]="lang.ID_TRANSLATION">{{ lang.LABEL }}</option>
+                  </select>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td colspan="2">Data Label</td>
+                <td > </td>
+                <td colspan="2"><input class="form-control" type="text" name="changeLabel"></td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-
-
       </div>
     </div>
   </div>

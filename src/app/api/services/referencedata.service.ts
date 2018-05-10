@@ -12,6 +12,10 @@ import { filter } from 'rxjs/operators/filter';
 import { ViewMinMax } from '../models/view-min-max';
 import { ViewComponent } from '../models/view-component';
 import { PackingElmt } from '../models/packing-elmt';
+import { PipeLineElmt } from '../models/pipe-line-elmt';
+import { NewEquipment } from '../models/new-equipment';
+import { ViewCurve } from '../models/view-curve';
+import { ViewTempSetPoint } from '../models/view-temp-set-point';
 import { VComponent } from '../models/vcomponent';
 import { ViewFamily } from '../models/view-family';
 import { ViewTemperature } from '../models/view-temperature';
@@ -21,10 +25,8 @@ import { Compenth } from '../models/compenth';
 import { FilterEquipment } from '../models/filter-equipment';
 import { ViewPackingElmt } from '../models/view-packing-elmt';
 import { ViewPipeLineElmt } from '../models/view-pipe-line-elmt';
-import { PipeLineElmt } from '../models/pipe-line-elmt';
 import { ViewEquipment } from '../models/view-equipment';
 import { RefEquipment } from '../models/ref-equipment';
-import { NewEquipment } from '../models/new-equipment';
 import { SaveEquipment } from '../models/save-equipment';
 import { SaveAsEquipment } from '../models/save-as-equipment';
 import { EquipmentFamily } from '../models/equipment-family';
@@ -35,9 +37,8 @@ import { Consumptions } from '../models/consumptions';
 import { EquipCharact } from '../models/equip-charact';
 import { ViewHighChart } from '../models/view-high-chart';
 import { DataHightChart } from '../models/data-hight-chart';
-import { ViewCurve } from '../models/view-curve';
-import { ViewTempSetPoint } from '../models/view-temp-set-point';
 import { ResultBuildForNewTR } from '../models/result-build-for-new-tr';
+import { ViewCapability } from '../models/view-capability';
 
 
 @Injectable()
@@ -163,6 +164,201 @@ export class ReferencedataService extends BaseService {
    */
   checkPacking(body: PackingElmt): Observable<ViewMinMax> {
     return this.checkPackingResponse(body).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * Check unit min max Pipeline
+   * @param body - body check Pipeline
+   */
+  checkPipelineResponse(body: PipeLineElmt): Observable<HttpResponse<ViewMinMax>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    __body = body;
+    let req = new HttpRequest<any>(
+      "POST",
+      this.rootUrl + `/referencedata/checkpipeline`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: ViewMinMax = null;
+        _body = _resp.body as ViewMinMax
+        return _resp.clone({body: _body}) as HttpResponse<ViewMinMax>;
+      })
+    );
+  }
+
+  /**
+   * Check unit min max Pipeline
+   * @param body - body check Pipeline
+   */
+  checkPipeline(body: PipeLineElmt): Observable<ViewMinMax> {
+    return this.checkPipelineResponse(body).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * Check unit min max Equipment
+   * @param body - body check Equipment
+   */
+  checkEquipmentResponse(body: NewEquipment): Observable<HttpResponse<ViewMinMax>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    __body = body;
+    let req = new HttpRequest<any>(
+      "POST",
+      this.rootUrl + `/referencedata/checkequipment`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: ViewMinMax = null;
+        _body = _resp.body as ViewMinMax
+        return _resp.clone({body: _body}) as HttpResponse<ViewMinMax>;
+      })
+    );
+  }
+
+  /**
+   * Check unit min max Equipment
+   * @param body - body check Equipment
+   */
+  checkEquipment(body: NewEquipment): Observable<ViewMinMax> {
+    return this.checkEquipmentResponse(body).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * Check unit min max Curves
+   * @param body - body check Curves
+   */
+  checkRedrawCurvesResponse(body: ViewCurve): Observable<HttpResponse<ViewMinMax>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    __body = body;
+    let req = new HttpRequest<any>(
+      "POST",
+      this.rootUrl + `/referencedata/checkredrawcurves`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: ViewMinMax = null;
+        _body = _resp.body as ViewMinMax
+        return _resp.clone({body: _body}) as HttpResponse<ViewMinMax>;
+      })
+    );
+  }
+
+  /**
+   * Check unit min max Curves
+   * @param body - body check Curves
+   */
+  checkRedrawCurves(body: ViewCurve): Observable<ViewMinMax> {
+    return this.checkRedrawCurvesResponse(body).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * Check unit min max tempsetpoint
+   * @param body - body check tempsetpoint
+   */
+  checkBuildForNewTRResponse(body: ViewTempSetPoint): Observable<HttpResponse<ViewMinMax>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    __body = body;
+    let req = new HttpRequest<any>(
+      "POST",
+      this.rootUrl + `/referencedata/checktempsetpoint`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: ViewMinMax = null;
+        _body = _resp.body as ViewMinMax
+        return _resp.clone({body: _body}) as HttpResponse<ViewMinMax>;
+      })
+    );
+  }
+
+  /**
+   * Check unit min max tempsetpoint
+   * @param body - body check tempsetpoint
+   */
+  checkBuildForNewTR(body: ViewTempSetPoint): Observable<ViewMinMax> {
+    return this.checkBuildForNewTRResponse(body).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * Get component by id
+   * @param id - undefined
+   */
+  getComponentByIdResponse(id: number): Observable<HttpResponse<VComponent>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    
+    let req = new HttpRequest<any>(
+      "GET",
+      this.rootUrl + `/referencedata/components/${id}`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: VComponent = null;
+        _body = _resp.body as VComponent
+        return _resp.clone({body: _body}) as HttpResponse<VComponent>;
+      })
+    );
+  }
+
+  /**
+   * Get component by id
+   * @param id - undefined
+   */
+  getComponentById(id: number): Observable<VComponent> {
+    return this.getComponentByIdResponse(id).pipe(
       map(_r => _r.body)
     );
   }
@@ -1950,6 +2146,45 @@ export class ReferencedataService extends BaseService {
    */
   buildForNewTR(body: ViewTempSetPoint): Observable<ResultBuildForNewTR> {
     return this.buildForNewTRResponse(body).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * Get value capability
+   * @param idEquip - equipment id
+   */
+  getCapabitityResponse(idEquip: number): Observable<HttpResponse<ViewCapability>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    
+    let req = new HttpRequest<any>(
+      "GET",
+      this.rootUrl + `/referencedata/capability/${idEquip}`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: ViewCapability = null;
+        _body = _resp.body as ViewCapability
+        return _resp.clone({body: _body}) as HttpResponse<ViewCapability>;
+      })
+    );
+  }
+
+  /**
+   * Get value capability
+   * @param idEquip - equipment id
+   */
+  getCapabitity(idEquip: number): Observable<ViewCapability> {
+    return this.getCapabitityResponse(idEquip).pipe(
       map(_r => _r.body)
     );
   }}

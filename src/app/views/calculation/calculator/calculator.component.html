@@ -90,9 +90,9 @@
             <table class="table table-bordered table-sm">
               <tr>
                 <th style="text-align:center" colspan="2">{{'Activation'|translate}}</th>
-                <th style="text-align:center" colspan="2">{{'Max of iterations'|translate}}</th>
-                <th style="text-align:center" colspan="2">{{'Coef.of relaxation'|translate}}</th>
-                <th style="text-align:center" colspan="2">{{'Temperature to stop'|translate}}
+                <th style="text-align:center" colspan="1">{{'Max of iterations'|translate}}</th>
+                <th style="text-align:center" colspan="1">{{'Coef.of relaxation'|translate}}</th>
+                <th style="text-align:center" colspan="4">{{'Temperature to stop'|translate}}
                   <br>({{ temperatureSymbol }})</th>
               </tr>
               <tr>
@@ -107,10 +107,10 @@
                     <span class="custom-control-indicator"></span>
                   </label>
                 </td>
-                <td rowspan="2" align="center">
+                <td rowspan="1" align="center">
                   <input type="text" class="form-control form-control-sm" name="MaxIter" id="MaxIter" style="width:80px; margin-top:20px;" [(ngModel)]="calculate.maxIter" [disabled]="calculate.sdisableFields == 1">
                 </td>
-                <td rowspan="2" align="center">
+                <td rowspan="1" align="center">
                   <input type="text" class="form-control form-control-sm" name="RelaxCoef" id="RelaxCoef" style="width:80px; margin-top:20px;" [(ngModel)]="calculate.relaxCoef" [disabled]="calculate.sdisableFields == 1">
                 </td>
                 <td style="text-align:center">{{'Surface'|translate}}</td>
@@ -130,6 +130,8 @@
                     <span class="custom-control-indicator"></span>
                   </label>
                 </td>
+                <td align="center"></td>
+                <td align="center"></td>
                 <td align="center">
                   <input type="text" class="form-control form-control-sm" name="TempPtSurf" id="TempPtSurf" style="width:80px;" [(ngModel)]="calculate.tempPtSurf" [disabled]="calculate.sdisableFields == 1">
                 </td>
@@ -282,7 +284,7 @@
             </td>
             <td align="center">
               <input type="text" *ngFor="let tr of brainCalculator.temperatures" style="width:80px;" name="tr{{ tr.name }}" id="" class="form-control form-control-sm" 
-              [(ngModel)]="tr.value" [disabled]="brainCalculator.sdisableTR == 1">
+              [(ngModel)]="tr.value" [disabled]="brainCalculator.sdisableTR == 1 || brainCalculator.CAP_VARIABLE_TR == 1">
             </td>
             <td align="center">
               <input type="text" class="form-control form-control-sm" style="width:80px;" name="toc" id="toc" [(ngModel)]="brainCalculator.toc"
@@ -302,8 +304,8 @@
           <tr>
             <td align="center">
               <label class="custom-control custom-checkbox">
-                <input type="checkbox" class="custom-control-input" name="cbOptim" id="cbOptim" [checked]="brainCalculator.checkOptim == 1" 
-                [(ngModel)]="brainCalculator.checkOptim" [disabled]="brainCalculator.sdisableOptim == 1">
+                <input type="checkbox" class="custom-control-input" name="cbOptim" id="cbOptim" [checked]="brainCalculator.scheckOptim == 1" 
+                [(ngModel)]="brainCalculator.scheckOptim" [disabled]="brainCalculator.sdisableOptim == 1">
                 <span class="custom-control-indicator"></span>
               </label>
             </td>
@@ -379,9 +381,9 @@
           <table class="table table-bordered table-sm">
             <tr>
               <th style="text-align:center" colspan="2">{{'Activation'|translate}}</th>
-              <th style="text-align:center" colspan="2">{{'Max of iterations'|translate}}</th>
-              <th style="text-align:center" colspan="2">{{'Coef.of relaxation'|translate}}</th>
-              <th style="text-align:center" colspan="2">{{'Temperature to stop'|translate}}
+              <th style="text-align:center" colspan="1">{{'Max of iterations'|translate}}</th>
+              <th style="text-align:center" colspan="1">{{'Coef.of relaxation'|translate}}</th>
+              <th style="text-align:center" colspan="4">{{'Temperature to stop'|translate}}
                 <br>({{ temperatureSymbol }})</th>
             </tr>
             <tr>
@@ -398,11 +400,11 @@
                   <span class="custom-control-indicator"></span>
                 </label>
               </td>
-              <td rowspan="2" align="center">
+              <td rowspan="1" align="center">
                 <input type="text" class="form-control form-control-sm" style="width:80px;" name="MaxIter" id="MaxIter" style="width:80px; margin-top:20px;"
                  [(ngModel)]="brainCalculator.maxIter" [disabled]="brainCalculator.sdisableFields == 1">
               </td>
-              <td rowspan="2" align="center">
+              <td rowspan="1" align="center">
                 <input type="text" class="form-control form-control-sm" style="width:80px;" name="RelaxCoef" id="RelaxCoef" style="width:80px; margin-top:20px;"
                  [(ngModel)]="brainCalculator.relaxCoef" [disabled]="brainCalculator.sdisableFields == 1">
               </td>
@@ -425,6 +427,8 @@
                   <span class="custom-control-indicator"></span>
                 </label>
               </td>
+              <td align="center"></td>
+              <td align="center"></td>
               <td align="center">
                 <input type="text" class="form-control form-control-sm" style="width:80px;" name="TempPtSurf" id="TempPtSurf" 
                 [disabled]="brainCalculator.sdisableFields == 1" [(ngModel)]="brainCalculator.tempPtSurf">

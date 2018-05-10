@@ -7,7 +7,6 @@ import { ToastrService } from 'ngx-toastr';
 import { isNullOrUndefined } from 'util';
 import { isInteger } from '@ng-bootstrap/ng-bootstrap/util/util';
 
-
 @Component({
   selector: 'app-result',
   templateUrl: './result.component.html',

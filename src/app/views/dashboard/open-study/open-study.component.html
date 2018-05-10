@@ -16,7 +16,7 @@
         <perfect-scrollbar style="max-height: 650px;">
           <div class="list-group" *ngIf="studies">
             <!-- mine -->
-            <h6 class="dropdown-header" *ngIf="studies.mine">MINE</h6>
+            <h6 class="dropdown-header" *ngIf="studies.mine">{{'MINE'|translate}}</h6>
             <a *ngFor="let study of (studies.mine | filter: filterString)" class="list-group-item list-group-item-action" [ngClass]="study == selectedStudy? 'active' : ''" (click)="onSelect(study)">
               <div class="d-flex w-100 justify-content-between">
                 {{study.STUDY_NAME}}
@@ -26,7 +26,7 @@
               </div>
             </a>
             <!-- others -->
-            <h6 class="dropdown-header" *ngIf="studies.mine && studies.others">OTHER</h6>
+            <h6 class="dropdown-header" *ngIf="studies.mine && studies.others">{{'OTHER'|translate}}</h6>
             <a *ngFor="let study of (studies.others | filter: filterString)" class="list-group-item list-group-item-action" [ngClass]="study == selectedStudy? 'active' : ''"
               (click)="onSelect(study)">
               <div class="d-flex w-100 justify-content-between">
@@ -41,7 +41,7 @@
         </perfect-scrollbar>
       </div>
     </div>
-  
+
     <div class="col-md-6">
       <div class="card">
         <div class="card-header">
@@ -95,13 +95,13 @@
         <div class="card-body">
           <ng-template #noSelectedStudy>
             <div class="text-muted text-center" style="min-height: 200px;padding-top:90px;">
-              Please select a study from the list before process to calculation.
+              {{'Please select a study from the list before process to calculation.'|translate}}
             </div>
           </ng-template>
           <div *ngIf="selectedStudy; else noSelectedStudy">
             <table class="table table-hover table-striped">
               <tr>
-                <th>Study Name</th>
+                <th>{{'Study Name'|translate}}</th>
                 <td>{{ selectedStudy.STUDY_NAME }}</td>
               </tr>
               <tr>
@@ -109,16 +109,16 @@
                 <td>{{ selectedStudy.USERNAM }}</td>
               </tr>
               <tr>
-                <th colspan="2">Comment</th>              
+                <th colspan="2">Comment</th>
               </tr>
               <tr>
                 <td colspan="2" [innerHTML]="selectedStudy.COMMENT_TXT | nl2br"></td>
               </tr>
-               
+
             </table>
           </div>
         </div>
-          
+
         <div class="card-footer text-center" *ngIf="selectedStudy">
           <button type="button" class="btn btn-danger" (click)="deleteStudy()" [ladda]="laddaDeletingStudy"><i class="fa fa-trash-o"></i> {{'Delete'|translate}}</button>
             <button type="button" class="btn btn-secondary" (click)="modalSaveAs.show()"><i class="fa fa-copy"></i> {{'Save As'|translate}}</button>

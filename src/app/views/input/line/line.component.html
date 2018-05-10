@@ -25,7 +25,7 @@
       </div>
       <ng-template #diameterEmpty>
         <div class="col-md-2">
-          <select name="diameter" [(ngModel)]="diameterSelected" id="diameter"  class="form-control" [disabled]="statusDiameter">
+          <select name="diameter" id="diameter"  class="form-control" [disabled]="statusDiameter">
             <option [value]="0">--None--</option>
           </select>
         </div>
@@ -33,10 +33,10 @@
     </div>
     <div class="form-group row" name="open1" >
       <div class="col-md-2">{{'Insulated line'|translate}}</div>
-      <div class="col-md-3" *ngIf="insulationTypeSelected != 5 && diameterSelected !=0 ; else insulatedlineEmpty">
+      <div class="col-md-3" *ngIf="insulationTypeSelected != 5 && diameterSelected !=0 && insulatedLine != []; else insulatedlineEmpty">
         <select name="insulatedline" [(ngModel)]="insulatedLineSelected" [disabled]="statusInsulatedLine" (change)="changeInsulatedLine()" id= "insulatedline" class="form-control" >
           <option [value]="0">--None--</option>
-          <option [value]="insulatedLineValue" >{{insulatedLine}}</option>
+          <option *ngFor= "let insulParams of insulatedLine, let i = index" [value]="insulatedLineValue[i]" >{{insulParams}}</option>
         </select>
       </div>
       <ng-template #insulatedlineEmpty>
@@ -53,11 +53,11 @@
     </div>
     <div class="form-group row">
       <div class="col-md-2">{{'Insulated valves'|translate}}</div>
-      <div class="col-md-3" *ngIf="insulationTypeSelected != 5 && diameterSelected !=0 ; else insularedValvesEmpty">
+      <div class="col-md-3" *ngIf="insulationTypeSelected != 5 && diameterSelected !=0 && insulatedval != []; else insularedValvesEmpty">
         <select name="insularedValves" [(ngModel)]= "insulatedvalSelected" [disabled]="statusInsulatedVal" (change)= "changeInsulatedVal()" class="form-control">
           <option [value]="0">--None--</option>
-          <option  [value]="insulatedvalValue">{{insulatedval}}</option>
-        </select>
+          <option *ngFor= "let insulvalParams of insulatedval, let i = index"  [value]="insulatedvalValue[i]">{{insulvalParams}}</option>
+        </select> 
       </div>
       <ng-template #insularedValvesEmpty>
           <div class="col-md-3" >
@@ -73,10 +73,11 @@
     </div>
     <div class="form-group row">
       <div class="col-md-2">{{'Tees'|translate}}</div>
-      <div class="col-md-3" *ngIf="insulationTypeSelected != 5 && diameterSelected !=0 ; else teesEmpty">
+      <div class="col-md-3" *ngIf="insulationTypeSelected != 5 && diameterSelected !=0 && tee != []; else teesEmpty">
         <select name="tees" [(ngModel)]="teeSelect" (change)= "changeTee()" class="form-control" [disabled]="statusTeeChoose">
           <option [value]="0">--None--</option>
-          <option [value]="teeValue">{{tee}}</option>
+          <option *ngFor= "let teeParams of tee, let i = index" [value]="teeValue[i]">{{teeParams}}</option>
+          
         </select>
       </div>
       <ng-template #teesEmpty>
@@ -93,10 +94,11 @@
     </div>
     <div class="form-group row">
       <div class="col-md-2">{{'Elbows'|translate}}</div>
-      <div class="col-md-3" *ngIf="insulationTypeSelected != 5 && diameterSelected !=0 ; else elbowsEmpty">
+      <div class="col-md-3" *ngIf="insulationTypeSelected != 5 && diameterSelected !=0 && elbows != []; else elbowsEmpty">
         <select name="elbows" [(ngModel)]= "elbowsSelected" (change)="changeElbows()" class="form-control" [disabled]="statusElbChoose">
           <option [value]="0">--None--</option>
-          <option [value]="elbowsValue">{{elbows}}</option>
+          <option *ngFor= "let elbowParams of elbows, let i = index" [value]="elbowsValue[i]">{{elbowParams}}</option>
+          
         </select>
       </div>
       <ng-template #elbowsEmpty>
@@ -113,10 +115,10 @@
     </div>
     <div class="form-group row">
       <div class="col-md-2">{{'Non-insulated line'|translate}}</div>
-      <div class="col-md-3" *ngIf="insulationTypeSelected != 5 && diameterSelected !=0 ; else nonInsulatedLineEmpty">
+      <div class="col-md-3" *ngIf="insulationTypeSelected != 5 && diameterSelected !=0 && noninsulatedline != []; else nonInsulatedLineEmpty">
         <select name="nonInsulatedLine" [(ngModel)]= "noninsulatedlineSelect" (change)="changeNonInLine()"  [disabled]="statusNonInsuLine" class="form-control">
           <option [value]="0">--None--</option>
-          <option [value]="non_insulated_lineValue">{{noninsulatedline}}</option>
+          <option *ngFor= "let noninsullineParams of noninsulatedline, let i = index" [value]="non_insulated_lineValue[i]">{{noninsullineParams}}</option>
         </select>
       </div>
       <ng-template #nonInsulatedLineEmpty>
@@ -133,10 +135,10 @@
     </div>
     <div class="form-group row">
       <div class="col-md-2">{{'Non-insulated valves'|translate}}</div>
-      <div class="col-md-3" *ngIf="insulationTypeSelected != 5 && diameterSelected !=0 ; else nonInsulatedValvesEmpty">
+      <div class="col-md-3" *ngIf="insulationTypeSelected != 5 && diameterSelected !=0 && noninsulatedvalves != []; else nonInsulatedValvesEmpty">
         <select name="nonInsulatedValves" [(ngModel)]= "noninsulatedvalvesSelect" (change)="changeNonInLineval()" [disabled]="statusNonInsuVal" class="form-control">
           <option [value]="0">--None--</option>
-          <option [value]="non_insulated_valValue">{{noninsulatedvalves}}</option>
+          <option *ngFor= "let noninsulvalsParams of noninsulatedvalves, let i = index" [value]="non_insulated_valValue[i]">{{noninsulvalsParams}}</option>
         </select>
       </div>
       <ng-template #nonInsulatedValvesEmpty>

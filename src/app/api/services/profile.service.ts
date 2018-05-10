@@ -9,11 +9,11 @@ import { Observable } from 'rxjs/Observable';
 import { map } from 'rxjs/operators/map';
 import { filter } from 'rxjs/operators/filter';
 
+import { Units } from '../models/units';
 import { ChangePassword } from '../models/change-password';
 import { Translation } from '../models/translation';
 import { Constructors } from '../models/constructors';
 import { MonetaryCurrency } from '../models/monetary-currency';
-import { Units } from '../models/units';
 import { Profile } from '../models/profile';
 
 
@@ -26,6 +26,45 @@ export class ProfileService extends BaseService {
     super(config, http);
   }
 
+  /**
+   * get Monetary user
+   * @param id - undefined
+   */
+  getMonetaryUserResponse(id: number): Observable<HttpResponse<Units>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    
+    let req = new HttpRequest<any>(
+      "GET",
+      this.rootUrl + `/users/${id}/unitsmonetary`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: Units = null;
+        _body = _resp.body as Units
+        return _resp.clone({body: _body}) as HttpResponse<Units>;
+      })
+    );
+  }
+
+  /**
+   * get Monetary user
+   * @param id - undefined
+   */
+  getMonetaryUser(id: number): Observable<Units> {
+    return this.getMonetaryUserResponse(id).pipe(
+      map(_r => _r.body)
+    );
+  }
   /**
    * Change password
    * @param id - undefined

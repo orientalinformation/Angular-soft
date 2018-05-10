@@ -55,6 +55,7 @@
     "ng2-charts": "1.6.0",
     "ng2-dragula": "1.5.0",
     "ng2-pdf-viewer": "^4.1.2",
+    "ng2-translate": "^5.0.0",
     "ngx-bootstrap": "2.0.0-beta.10",
     "ngx-localized-numbers": "^0.0.5",
     "ngx-perfect-scrollbar": "^5.0.5",

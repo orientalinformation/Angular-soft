@@ -4,11 +4,12 @@
  */
 export class productChart2DStatic {
     temperatureMax?: number;
-    idStudy?: number;
+    refreshTemp?: number;
+    idStudyEquipment?: number;
     selectedPlan?: number;
     temperatureStep?: number;
     temperatureMin?: number;
-    idStudyEquipment?: number;
+    idStudy?: number;
     timeSelected?: number;
     timeInterval?: number;
     axisX?: number;

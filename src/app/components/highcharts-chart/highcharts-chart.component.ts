@@ -7,6 +7,7 @@ import { Component, OnInit, ElementRef, EventEmitter, Input, Output } from '@ang
   styleUrls: ['./highcharts-chart.component.scss']
 })
 export class HighchartsChartComponent implements OnInit {
+  // @Input('')
 
   constructor(private el: ElementRef) { }
 

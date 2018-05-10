@@ -12,6 +12,7 @@ import { PipeTransform } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
 import { Math } from 'three';
 import { isNullOrUndefined } from 'util';
+import { User } from '../../../api/models/user';
 
 @Pipe({ name: 'ComponentFilter' })
 export class ComponentFilterPipe implements PipeTransform {
@@ -70,15 +71,38 @@ export class ComponentComponent implements OnInit {
   public densitySymbol = '';
   public study: Study;
   public listUnits: Array<Units>;
-
-
+  public checkBackStudy = 0;
+  public userLogon: User;
+  public idCompInput = 0;
+  public params: ApiService.AppendElementsToProductParams;
 
   constructor(private api: ApiService, private apiReference: ReferencedataService,
     private router: Router, private toastr: ToastrService) {
       localStorage.setItem('CompCurr', '');
+      this.userLogon = JSON.parse(localStorage.getItem('user'));
   }
 
   ngOnInit() {
+    // by haidt
+    const idCompInput2 = localStorage.getItem('IdCompInput');
+    if (idCompInput2 !== 'null') {
+      this.params = JSON.parse(localStorage.getItem('paramsCompInput'));
+      this.idCompInput = Number(idCompInput2);
+      this.apiReference.getComponentById(Number(idCompInput2)).subscribe(
+        data => {
+          localStorage.setItem('CompCurr', JSON.stringify(data));
+          this.onGetTemperature(data);
+        },
+        err => {
+          console.log(err);
+        },
+        () => {
+          localStorage.setItem('IdCompInput', null);
+          this.checkBackStudy = 1;
+        }
+      );
+    }
+
     this.activePageComponent = 'new';
     this.isLoading = true;
     this.getDataComponent(0);
@@ -172,6 +196,14 @@ export class ComponentComponent implements OnInit {
     this.isLoading = true;
     this.apiReference.getMyComponent().subscribe(
       data => {
+        for (let i = 0; i < data.others.length ; i++) {
+
+          if (Number(data.others[i].COMP_RELEASE) === 7) {
+            data.others[i].LABEL = data.others[i].LABEL + ' - v' + data.others[i].COMP_VERSION + ' - (@)';
+          } else {
+            data.others[i].LABEL = data.others[i].LABEL + ' - v' + data.others[i].COMP_VERSION;
+          }
+        }
         this.components = data;
         this.isLoading = false;
       },
@@ -184,6 +216,7 @@ export class ComponentComponent implements OnInit {
           const compCurr = JSON.parse(localStorage.getItem('CompCurr'));
           this.checkActiveComp = Number(compCurr.ID_COMP);
           this.selectComponent = compCurr;
+          console.log(this.selectComponent);
         }
       }
     );
@@ -262,6 +295,7 @@ export class ComponentComponent implements OnInit {
     this.apiReference.checkTemperature(this.newAttribute.temperature).subscribe(
       res => {
         if (res === 1) {
+          this.newAttribute.temperature = Number(this.newAttribute.temperature).toFixed(2);
           this.fieldArray.push(this.newAttribute);
           this.newAttribute = {};
         } else {
@@ -336,7 +370,7 @@ export class ComponentComponent implements OnInit {
       return;
     }
 
-    if (isNullOrUndefined(comp.AIR) || String(comp.SALT) === ''
+    if (isNullOrUndefined(comp.AIR) || String(comp.AIR) === ''
     || isNaN(comp.AIR)) {
       this.toastr.error('Please specify Air (volume)	', 'Error');
       return;
@@ -383,6 +417,15 @@ export class ComponentComponent implements OnInit {
           }
           if (check === 3) {
             this.runCalculate(this.selectComponent);
+
+            if (this.checkBackStudy === 1) {
+
+              if (this.idCompInput !== 0) {
+                this.api.appendElementsToProduct(this.params).subscribe( data => {
+                  // code
+                });
+              }
+            }
           }
 
         } else {
@@ -420,7 +463,7 @@ export class ComponentComponent implements OnInit {
     }).subscribe(
       response => {
         let success = true;
-        console.log(response);
+        // console.log(response);
 
         if (response === -2) {
           success = false;
@@ -528,7 +571,7 @@ export class ComponentComponent implements OnInit {
   getGeneratedData(comp) {
     this.apiReference.getCompenthsByIdComp(comp.ID_COMP).subscribe(
       data => {
-        console.log(data);
+        // console.log(data);
         this.compenths = data;
       },
       err => {
@@ -646,6 +689,7 @@ export class ComponentComponent implements OnInit {
         }
 
         if (success) {
+          this.params.componentId = response.ID_COMP;
           localStorage.setItem('CompCurr', JSON.stringify(response));
           this.toastr.success('Awake component', 'successfully');
           this.refrestComponent();
@@ -852,5 +896,11 @@ export class ComponentComponent implements OnInit {
         this.laddaIsCalculating = false;
       }
     );
+  }
+
+  // by haidt
+  comeBackStudy () {
+    this.checkBackStudy = 0;
+    this.router.navigate(['/input/product']);
   }
 }

@@ -133,7 +133,7 @@ export class ChainingComponent implements OnInit, AfterViewInit, AfterContentIni
       },
       err => {
         console.log(err);
-        swal('Error', 'Error when creating chaining child study, <br>please check console log for more detail!', 'error');
+        swal('Error', 'There is no results for this equipment.', 'error');
         this.laddaConfirm = false;
       }
     );

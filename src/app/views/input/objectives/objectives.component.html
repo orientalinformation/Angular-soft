@@ -1,14 +1,14 @@
 <div class="container" *ngIf="!isLoading">
     <div class="card" *ngIf="study">
       <app-chaining #chainingControls (loaded)="onChainingControlsLoaded()" *ngIf="study.CHAINING_CONTROLS"></app-chaining>
-      
+
       <div class="card-header">
         <strong>{{'CALCULATION MODE'|translate}}</strong>
         <button type="button" (click)="saveObjectiveView()" class="ml-2 btn btn-sm btn-success float-right">
           <i class="fa fa-floppy-o"></i> {{'SAVE'|translate}}
         </button>
         <button class="btn btn-warning btn-sm text float-right" *ngIf="studyState.CHAINING_CONTROLS && study.CHAINING_CONTROLS" (click)="createChildStudyDialog()">
-          <i class="fa fa-chain"></i> <span>{{'CHAINING'|translate}}</span>
+          <i class="fa fa-chain"></i> <span>{{'CREATE CHILD STUDY'|translate}}</span>
         </button>
         <!-- /.card-body -->
       </div><!-- /.card-header -->
@@ -158,7 +158,7 @@
               <label class="col-md-7 col-form-label" for="text-input">{{'Required Average temperature'|translate}}</label>
               <div class="col-md-5">
                 <div class="input-group">
-                  <input type="text" id="text-input" name="text-input" class="form-control" [(ngModel)]="production.AVG_T_DESIRED">
+                  <input type="text" id="text-input" name="text-input" class="form-control" [(ngModel)]="production.AVG_T_DESIRED" [disabled]="disabledField()">
                   <span class="input-group-addon" *ngIf="symbol">
                     <small>{{ symbol.temperatureSymbol }}</small>
                   </span>
@@ -177,10 +177,10 @@
               </div>
             </div>
           </div>
-        </div>      
+        </div>
       </div>
       <!-- /.card-body -->
-      
+
     </div> <!-- /.card -->
 </div><!-- #/container -->
 

@@ -6,9 +6,10 @@ import { ViewSelect } from './view-select';
 /**
  */
 export class StartBrainCalculate {
-    tempPtIn?: number;
+    tempPtSurf?: number;
     idStudy?: number;
     checkOptim?: boolean;
+    scheckOptim?: number;
     dwellingTimes?: ViewDwellingTimes[];
     temperatures?: ViewTemperatures[];
     toc?: number;
@@ -26,8 +27,8 @@ export class StartBrainCalculate {
     relaxCoef?: number;
     vRadioOn?: number;
     vRadioOff?: number;
-    tempPtSurf?: number;
     idStudyEquipment?: number;
+    tempPtIn?: number;
     tempPtBot?: number;
     tempPtAvg?: number;
     select1?: ViewSelect[];

@@ -99,34 +99,42 @@ export class UsersComponent implements OnInit, AfterViewInit {
       swal('Oops..', 'Please specify username!', 'warning');
       return;
     }
+
     if (this.user.username.length < 5 || this.user.username.length > 30) {
       swal('Oops..', 'Please username ( 5 : 30 )', 'warning');
       return;
     }
+
     if (!this.user.email) {
       swal('Oops..', 'Please specify email!', 'warning');
       return;
     }
+
     if (!this.emailPattern.test(this.user.email)) {
       swal('Oops..', ' Email is incorrect!', 'warning');
       return;
     }
+
     if (!this.user.password) {
       swal('Oops..', 'Please specify password!', 'warning');
       return;
     }
+
     if (this.user.password.length < 5 || this.user.password.length > 30) {
       swal('Oops..', 'Please password ( 5 : 30 )', 'warning');
       return;
     }
+
     if (!this.user.confirmpassword) {
       swal('Oops..', 'Please specify confirm password!', 'warning');
       return;
     }
+
     if (this.user.password !== this.user.confirmpassword) {
       swal('Oops..', 'Password was different to the confirm password!', 'warning');
       return;
     }
+
     this.isSavingUser = true;
     this.admin.newUser({
       username: this.user.username,
@@ -230,30 +238,37 @@ export class UsersComponent implements OnInit, AfterViewInit {
       swal('Oops..', 'Please specify username!', 'warning');
       return;
     }
-    if (this.user.username.length > 30) {
-      swal('Oops..', 'Please username ( 1 : 30 )', 'warning');
+
+    if (this.user.username.length < 5 || this.user.username.length > 30) {
+      swal('Oops..', 'Please username ( 5 : 30 )', 'warning');
       return;
     }
+
     if (!this.user.email) {
       swal('Oops..', 'Please specify email!', 'warning');
       return;
     }
+
     if (!this.emailPattern.test(this.user.email)) {
       swal('Oops..', ' Email is incorrect!', 'warning');
       return;
     }
-    if (!this.user.password) {
-      swal('Oops..', 'Please specify password!', 'warning');
+
+    if (this.user.password.length < 5 || this.user.password.length > 30) {
+      swal('Oops..', 'Please password ( 5 : 30 )', 'warning');
       return;
     }
+
     if (!this.user.confirmpassword) {
       swal('Oops..', 'Please specify confirm password!', 'warning');
       return;
     }
+
     if (this.user.password !== this.user.confirmpassword) {
       swal('Oops..', 'Password was different to the confirm password!', 'warning');
       return;
     }
+
     this.isUpdateUser = true;
     const body = {
       username: this.user.username,

@@ -533,6 +533,7 @@ export class CalculatorComponent implements OnInit, AfterViewInit {
 
     this.studyEquipment = JSON.parse(localStorage.getItem('studyEquipment'));
     this.apicalculator.checkBrainCalculationParameters({
+      idStudyEquipment: Number(this.studyEquipment.id),
       typeCalculate: this.studyEquipment.typeCalculate,
       dwellingTimes: this.brainCalculator.dwellingTimes,
       temperatures: this.brainCalculator.temperatures,
@@ -566,6 +567,7 @@ export class CalculatorComponent implements OnInit, AfterViewInit {
       (res) => {
         if (res === 1) {
           this.startBrainOptimumCalculate();
+          this.finishCalculate.emit(res);
         } else {
           this.toastr.error(res.Message, 'Error');
         }
@@ -587,10 +589,13 @@ export class CalculatorComponent implements OnInit, AfterViewInit {
       idStudy: this.study.ID_STUDY,
       idStudyEquipment: this.studyEquipment.id,
       checkOptim: this.studyEquipment.optimized,
+      scheckOptim: this.brainCalculator.scheckOptim,
       typeCalculate: this.studyEquipment.typeCalculate,
       dwellingTimes: this.brainCalculator.dwellingTimes,
       temperatures: this.brainCalculator.temperatures,
       toc: this.brainCalculator.toc,
+      epsilonEnth: this.brainCalculator.epsilonEnth,
+      epsilonTemp: this.brainCalculator.epsilonTemp,
       timeStep: this.brainCalculator.timeStep,
       precision: this.brainCalculator.precision,
       scheckStorage: this.brainCalculator.scheckStorage,

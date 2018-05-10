@@ -13,6 +13,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs/Observable';
 import { Report } from '../../../api/models/report';
 import {BrowserModule, DomSanitizer} from '@angular/platform-browser';
+import { Units } from '../../../api/models';
 
 @Component({
   selector: 'app-report-config',
@@ -75,6 +76,11 @@ export class ReportConfigComponent implements OnInit, AfterViewInit {
   public iframeReport;
   public ischeckUser = true;
 
+  // by haidt
+  public listUnits: Array<Units>;
+  public temperatureSymbol = '';
+  public meshesSymbol = '';
+
 
   constructor(private api: ApiService, private toastr: ToastrService, private router: Router, private http: HttpClient,
      private sanitizer: DomSanitizer) {
@@ -86,6 +92,21 @@ export class ReportConfigComponent implements OnInit, AfterViewInit {
     this.optionSelected = 0;
     this.typeGenerate = 0;
     this.checkUser();
+    this.listUnits = JSON.parse(localStorage.getItem('UnitUser'));
+
+    if (this.listUnits) {
+
+      for (let i = 0; i < this.listUnits.length; i++) {
+
+        if (Number(this.listUnits[i].TYPE_UNIT) === 8) {
+          this.temperatureSymbol = this.listUnits[i].SYMBOL;
+        }
+
+        if (Number(this.listUnits[i].TYPE_UNIT) === 20) {
+          this.meshesSymbol = this.listUnits[i].SYMBOL;
+        }
+      }
+    }
   }
 
   ngAfterViewInit() {
@@ -97,10 +118,15 @@ export class ReportConfigComponent implements OnInit, AfterViewInit {
     };
     this.api.checkControl(params).subscribe(
       data => {
-        this.checkcontrol = data.checkcontrol;
-        if (!data.checkcontrol) {
-          this.router.navigate(['/calculation/check-control']);
-          swal('Oops..', 'Report is available only when equipments are calculated numerically', 'error');
+
+        if (Number(this.user.ID_USER) === Number(this.study.ID_USER)) {
+          this.checkcontrol = data.checkcontrol;
+          if (!data.checkcontrol) {
+            this.router.navigate(['/calculation/check-control']);
+            swal('Oops..', 'Report is available only when equipments are calculated numerically', 'error');
+          }
+        } else {
+          this.checkcontrol = true;
         }
       }
     );
@@ -169,6 +195,8 @@ export class ReportConfigComponent implements OnInit, AfterViewInit {
       },
       err => {
         console.log(err);
+        swal('Oops..', err.error, 'error');
+        this.router.navigate(['/output/preliminary']);
       },
       () => {
 
@@ -368,11 +396,11 @@ export class ReportConfigComponent implements OnInit, AfterViewInit {
     this.showContentReportWaiting(this.typeGenerate);
     if (Number(this.typeGenerate) === 1) {
       this.loading = true;
-      this.laddaGenerate = true;
+      this.saveContentReport();
       this.viewPDF();
     } else if (Number(this.typeGenerate) === 0)  {
       this.loading = true;
-      // this.laddaGenerate = true;
+      this.saveContentReport();
       this.viewHTML();
     }
   }
@@ -492,4 +520,3 @@ export class ReportConfigComponent implements OnInit, AfterViewInit {
     }
   }
 }
-

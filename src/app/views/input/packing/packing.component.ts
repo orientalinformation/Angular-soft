@@ -13,6 +13,8 @@ import { TextService } from '../../../shared/text.service';
 import { Symbol } from '../../../api/models/symbol';
 import { ChainingComponent } from '../chaining/chaining.component';
 import { AuthenticationService } from '../../../authentication/authentication.service';
+import * as Models from '../../../api/models';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-packing',
@@ -45,10 +47,11 @@ export class PackingComponent implements OnInit, AfterContentChecked, AfterViewI
 
   public isLoading = true;
   public symbol: Symbol;
+  public minmaxProductMeshPacking: Models.ViewMinMaxProductMeshPacking;
 
   @ViewChild('chainingControls') chainingControls: ChainingComponent;
 
-  constructor(private api: ApiService, private router: Router,
+  constructor(private api: ApiService, private router: Router, private translate: TranslateService,
     private toastr: ToastrService, public text: TextService, private auth: AuthenticationService) {
     this.topNrLayer = 0;
     this.sideNrLayer = 0;
@@ -60,44 +63,43 @@ export class PackingComponent implements OnInit, AfterContentChecked, AfterViewI
 
   ngAfterViewInit() {
     this.study = JSON.parse(localStorage.getItem('study'));
-    this.api.getStudyPackingLayers(this.study.ID_STUDY).subscribe (
-      (response: ViewPackingLayer) => {
-        if (response.packing && response.packingLayers) {
-          this.packingView = response;
-
-          this.packingView.packingLayers.forEach(layer => {
-            switch (Number(layer.PACKING_SIDE_NUMBER)) {
-              case 1:
-                this.topLayers.push(layer);
-                break;
-
-              case 2:
-                this.sideLayers.push(layer);
-                break;
-
-              case 3:
-                this.bottomLayers.push(layer);
-                break;
-            }
-          });
-
-          this.packingName = this.packingView.packing.NOMEMBMAT;
-
-          this.topNrLayer = this.topLayers.length;
-          this.sideNrLayer = this.sideLayers.length;
-          this.bottomNrLayer = this.bottomLayers.length;
-        }
-      },
-      err => {
-
-      },
-      () => {
-        this.isLoading = false;
-      }
-    );
     this.api.getSymbol(this.study.ID_STUDY).subscribe(
       data => {
         this.symbol = data;
+        this.api.getStudyPackingLayers(this.study.ID_STUDY).subscribe (
+          (response: ViewPackingLayer) => {
+            if (response.packing && response.packingLayers) {
+              this.packingView = response;
+              this.packingView.packingLayers.forEach(layer => {
+                switch (Number(layer.PACKING_SIDE_NUMBER)) {
+                  case 1:
+                    this.topLayers.push(layer);
+                    break;
+                  case 2:
+                    this.sideLayers.push(layer);
+                    break;
+                  case 3:
+                    this.bottomLayers.push(layer);
+                    break;
+                }
+              });
+              this.packingName = this.packingView.packing.NOMEMBMAT;
+              this.topNrLayer = this.topLayers.length;
+              this.sideNrLayer = this.sideLayers.length;
+              this.bottomNrLayer = this.bottomLayers.length;
+            }
+          },
+          err => {
+          },
+          () => {
+            this.isLoading = false;
+          }
+        );
+        this.api.getMinMaxProductMeshPacking().subscribe(
+          mm => {
+            this.minmaxProductMeshPacking = mm;
+          }
+        );
       }
     );
     this.api.findPackingElements().subscribe(
@@ -163,6 +165,54 @@ export class PackingComponent implements OnInit, AfterContentChecked, AfterViewI
     if (!this.packingName) {
       swal('Oops', 'Please input packing name', 'error');
       return;
+    }
+    for (let i = 0; i < this.topLayers.length; i++) {
+      const thikness = Number(this.topLayers[i]['THICKNESS']);
+      if (!thikness) {
+        this.toastr.error(this.translate.instant('Enter a value in Thickne !'), 'Error');
+        return false;
+      } else if (!this.isNumberic(thikness)) {
+        this.toastr.error(this.translate.instant('Not a valid number in Thickne !'), 'Error');
+        return false;
+      } else if (i < 8 && !this.isInRangeOutput(thikness, this.minmaxProductMeshPacking.mmThickness.LIMIT_MIN,
+        this.minmaxProductMeshPacking.mmThickness.LIMIT_MAX)) {
+          this.toastr.error(this.translate.instant('Value out of range in Thickne') +
+          ' (' + this.minmaxProductMeshPacking.mmThickness.LIMIT_MIN + ' : '
+          + this.minmaxProductMeshPacking.mmThickness.LIMIT_MAX + ') !', 'Error');
+          return false;
+      }
+    }
+    for (let i = 0; i < this.sideLayers.length; i++) {
+      const thikness = Number(this.sideLayers[i]['THICKNESS']);
+      if (!thikness) {
+        this.toastr.error(this.translate.instant('Enter a value in Thickne !'), 'Error');
+        return false;
+      } else if (!this.isNumberic(thikness)) {
+        this.toastr.error(this.translate.instant('Not a valid number in Thickne !'), 'Error');
+        return false;
+      } else if (i < 8 && !this.isInRangeOutput(thikness, this.minmaxProductMeshPacking.mmThickness.LIMIT_MIN,
+        this.minmaxProductMeshPacking.mmThickness.LIMIT_MAX)) {
+          this.toastr.error(this.translate.instant('Value out of range in Thickne') +
+          ' (' + this.minmaxProductMeshPacking.mmThickness.LIMIT_MIN + ' : '
+          + this.minmaxProductMeshPacking.mmThickness.LIMIT_MAX + ') !', 'Error');
+          return false;
+      }
+    }
+    for (let i = 0; i < this.bottomLayers.length; i++) {
+      const thikness = Number(this.bottomLayers[i]['THICKNESS']);
+      if (!thikness) {
+        this.toastr.error(this.translate.instant('Enter a value in Thickne !'), 'Error');
+        return false;
+      } else if (!this.isNumberic(thikness)) {
+        this.toastr.error(this.translate.instant('Not a valid number in Thickne !'), 'Error');
+        return false;
+      } else if (i < 8 && !this.isInRangeOutput(thikness, this.minmaxProductMeshPacking.mmThickness.LIMIT_MIN,
+        this.minmaxProductMeshPacking.mmThickness.LIMIT_MAX)) {
+          this.toastr.error(this.translate.instant('Value out of range in Thickne') +
+          ' (' + this.minmaxProductMeshPacking.mmThickness.LIMIT_MIN + ' : '
+          + this.minmaxProductMeshPacking.mmThickness.LIMIT_MAX + ') !', 'Error');
+          return false;
+      }
     }
     this.laddaSavingPacking = true;
     const updateParams = {
@@ -279,6 +329,18 @@ export class PackingComponent implements OnInit, AfterContentChecked, AfterViewI
     if (!this.study) { return false; }
     const owned = this.auth.user().ID_USER === this.study.ID_USER;
     return owned && ((!this.study.CHAINING_CONTROLS) || (!this.study.HAS_CHILD && this.study.PARENT_ID === 0));
+  }
+
+  isNumberic(number) {
+    return Number.isInteger(Math.floor(number));
+  }
+
+  isInRangeOutput(value, min, max) {
+    if (value < min || value > max) {
+      return false;
+    } else {
+      return true;
+    }
   }
 
 }

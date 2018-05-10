@@ -26,8 +26,8 @@
                   <h6 class="dropdown-header">MINE</h6>
                   <a *ngFor="let comp of (components.mine | pipeLineFilter: filterString)" [ngClass]="checkActiveComp == comp.ID_COMP || comp == selectComponent? 'active' : ''"
                     (click)="onSelectComponent(comp);onGetTemperature(comp);" class="list-group-item list-group-item-action">
-                    <div class="d-flex w-100 justify-content-between">
-                      {{ comp.LABEL }} - (v{{ comp.COMP_VERSION }})
+                    <div class="d-flex w-100 justify-content-between" *ngIf="comp.COMP_RELEASE == 7; else release7mine">
+                      {{ comp.LABEL }} - (v{{ comp.COMP_VERSION }}) - (@) - {{ userLogon.USERNAM }}
                       <i *ngIf="comp.COMP_RELEASE == 3" class="fa fa-check text-success"></i>
                       <i *ngIf="comp.COMP_RELEASE == 6" class="fa fa-lock text-secondary"></i>
                       <i *ngIf="comp.COMP_RELEASE == 4" class="fa fa-certificate text-success"></i> 
@@ -35,12 +35,23 @@
                       <!-- <i class="fa fa-trash text-secondary"></i>
                             <i class="fa fa-exclamation-circle text-danger"></i> -->
                     </div>
+                    <ng-template #release7mine>
+                        <div class="d-flex w-100 justify-content-between">
+                            {{ comp.LABEL }} - (v{{ comp.COMP_VERSION }}) - {{ userLogon.USERNAM }}
+                            <i *ngIf="comp.COMP_RELEASE == 3" class="fa fa-check text-success"></i>
+                            <i *ngIf="comp.COMP_RELEASE == 6" class="fa fa-lock text-secondary"></i>
+                            <i *ngIf="comp.COMP_RELEASE == 4" class="fa fa-certificate text-success"></i>
+                            <i *ngIf="comp.COMP_RELEASE == 9" class="fa fa-exclamation-circle text-danger"></i>
+                            <!-- <i class="fa fa-lock text-secondary"></i>
+                                  <i class="fa fa-info-circle text-danger"></i>  -->
+                          </div>
+                    </ng-template>
                   </a>
                   <h6 class="dropdown-header">OTHERS</h6>
-                  <a *ngFor="let comp of (components.others | pipeLineFilter: filterString)" [ngClass]="comp == selectComponent? 'active' : ''"
+                  <a *ngFor="let comp of (components.others | pipeLineFilter: filterString)" [ngClass]="checkActiveComp == comp.ID_COMP || comp == selectComponent? 'active' : ''"
                     (click)="onSelectComponent(comp);onGetTemperature(comp);" class="list-group-item list-group-item-action">
-                    <div class="d-flex w-100 justify-content-between">
-                      {{ comp.LABEL }} - (v{{ comp.COMP_VERSION }})
+                    <div class="d-flex w-100 justify-content-between" *ngIf="comp.ID_USER == 1; else kernellabel">
+                      {{ comp.LABEL }}
                       <i *ngIf="comp.COMP_RELEASE == 3" class="fa fa-check text-success"></i>
                       <i *ngIf="comp.COMP_RELEASE == 6" class="fa fa-lock text-secondary"></i>
                       <i *ngIf="comp.COMP_RELEASE == 4" class="fa fa-certificate text-success"></i>
@@ -48,6 +59,17 @@
                       <!-- <i class="fa fa-lock text-secondary"></i>
                             <i class="fa fa-info-circle text-danger"></i>  -->
                     </div>
+                    <ng-template #kernellabel>
+                        <div class="d-flex w-100 justify-content-between">
+                            {{ comp.LABEL }} - {{ comp.USERNAM }}
+                            <i *ngIf="comp.COMP_RELEASE == 3" class="fa fa-check text-success"></i>
+                            <i *ngIf="comp.COMP_RELEASE == 6" class="fa fa-lock text-secondary"></i>
+                            <i *ngIf="comp.COMP_RELEASE == 4" class="fa fa-certificate text-success"></i>
+                            <i *ngIf="comp.COMP_RELEASE == 9" class="fa fa-exclamation-circle text-danger"></i>
+                            <!-- <i class="fa fa-lock text-secondary"></i>
+                                  <i class="fa fa-info-circle text-danger"></i>  -->
+                          </div>
+                    </ng-template>
                   </a>
                 </div>
               </perfect-scrollbar>
@@ -352,6 +374,9 @@
           </div>
           <div class="row col-md-12" *ngIf="selectComponent && !checkHideInfo">
             <div class="btn-component text-center" *ngIf="selectComponent && selectComponent.COMP_RELEASE != 6">
+              <button type="button" class="btn btn-secondary" *ngIf="checkBackStudy == 1" (click)="comeBackStudy()">
+                <i class="fa fa-chevron-circle-left"></i>&nbsp; {{ 'Come back to study'|translate }}
+              </button>
               <button type="button" class="btn btn-primary" id="calulationRun" (click)="checkDataComponent(selectComponent, 3);"
                [disabled]="selectComponent.ID_USER != dataComponent.ID_USER" [ladda]="laddaIsCalculating">
                 <i class="icon-energy"></i>&nbsp; {{ 'Calculate'|translate }}</button>
@@ -361,6 +386,9 @@
           </div>
         </div>
         <div class="btn-component text-center" *ngIf="selectComponent && selectComponent.COMP_RELEASE == 6">
+          <button type="button" class="btn btn-secondary" *ngIf="checkBackStudy == 1" (click)="comeBackStudy()">
+            <i class="fa fa-chevron-circle-left"></i>&nbsp; {{ 'Come back to study'|translate }}
+          </button>
           <button type="button" class="btn btn-primary" id="awakeCalculate" (click)="awakeComponent(selectComponent, 3);">
             <i class="icon-energy"></i>&nbsp; {{ 'Awake'|translate }}</button>
         </div>

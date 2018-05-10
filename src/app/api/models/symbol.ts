@@ -3,7 +3,7 @@
 /**
  */
 export class Symbol {
-    prodchartDimensionSymbol?: string;
+    prodDimensionSymbol?: string;
     productFlowSymbol?: string;
     temperatureSymbol?: string;
     percentSymbol?: string;
@@ -13,8 +13,8 @@ export class Symbol {
     monetarySymbol?: string;
     equipDimensionSymbol?: string;
     convectionSpeedSymbol?: string;
+    prodchartDimensionSymbol?: string;
     massSymbol?: string;
-    prodDimensionSymbol?: string;
     consumSymbol?: string;
     consumMaintienSymbol?: string;
     mefSymbol?: string;
@@ -24,4 +24,5 @@ export class Symbol {
     lineDimensionSymbol?: string;
     pressureSymbol?: string;
     materialRiseSymbol?: string;
+    convectionCoeffSymbol?: string;
 }

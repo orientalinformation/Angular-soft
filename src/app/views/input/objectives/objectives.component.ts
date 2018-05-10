@@ -7,6 +7,9 @@ import { ToastrService } from 'ngx-toastr';
 import { ChainingComponent } from '../chaining/chaining.component';
 import { ViewChaining } from '../../../api/models';
 import { Symbol } from '../../../api/models/symbol';
+import { ViewMinMaxProduction } from '../../../api/models/view-min-max-production';
+import { TranslateService } from '@ngx-translate/core';
+import { User } from '../../../api/models/user';
 
 @Component({
   selector: 'app-objectives',
@@ -17,6 +20,7 @@ export class ObjectivesComponent implements OnInit, AfterViewInit {
   @ViewChild('chainingControls') public chainingControls: ChainingComponent;
 
   public study: Study;
+  public user: User;
   public production: Production;
   public symbol: Symbol;
   public laddaSavingStudy = false;
@@ -35,7 +39,9 @@ export class ObjectivesComponent implements OnInit, AfterViewInit {
     AMBIENT_HUM: ''
   };
 
-  constructor(private api: ApiService, private toastr: ToastrService) { }
+  public minMaxProduction: ViewMinMaxProduction;
+
+  constructor(private api: ApiService, private toastr: ToastrService,  private translate: TranslateService) { }
 
   ngOnInit() {
     this.isLoading = true;
@@ -48,6 +54,90 @@ export class ObjectivesComponent implements OnInit, AfterViewInit {
   }
 
   saveObjectiveView() {
+    if (!this.production.DAILY_PROD) {
+      this.toastr.error(this.translate.instant('Enter a value in Daily production !'), 'Error');
+      return;
+    } else if (!this.isNumberic(this.production.DAILY_PROD)) {
+      this.toastr.error(this.translate.instant('Not a valid number in Daily production !'), 'Error');
+      return;
+    } else if (!this.isInRangeOutput(this.production.DAILY_PROD, this.minMaxProduction.mmDaily.LIMIT_MIN,
+      this.minMaxProduction.mmDaily.LIMIT_MAX)) {
+        this.toastr.error(this.translate.instant('Value out of range in Daily production') +
+        ' (' + this.minMaxProduction.mmDaily.LIMIT_MIN + ' : ' + this.minMaxProduction.mmDaily.LIMIT_MAX + ') !', 'Error');
+        return;
+    }
+    if (!this.production.WEEKLY_PROD) {
+      this.toastr.error(this.translate.instant('Enter a value in Weekly production !'), 'Error');
+      return;
+    } else if (!this.isNumberic(this.production.WEEKLY_PROD)) {
+      this.toastr.error(this.translate.instant('Not a valid number in Weekly production !'), 'Error');
+      return;
+    } else if (!this.isInRangeOutput(this.production.WEEKLY_PROD, this.minMaxProduction.mmWeekly.LIMIT_MIN,
+      this.minMaxProduction.mmWeekly.LIMIT_MAX)) {
+        this.toastr.error(this.translate.instant('Value out of range in Weekly production') +
+        ' (' + this.minMaxProduction.mmWeekly.LIMIT_MIN + ' : ' + this.minMaxProduction.mmWeekly.LIMIT_MAX + ') !', 'Error');
+        return;
+    }
+    if (!this.production.NB_PROD_WEEK_PER_YEAR) {
+      this.toastr.error(this.translate.instant('Enter a value in Annual production !'), 'Error');
+      return;
+    } else if (!this.isNumberic(this.production.NB_PROD_WEEK_PER_YEAR)) {
+      this.toastr.error(this.translate.instant('Not a valid number in Annual production !'), 'Error');
+      return;
+    } else if (!this.isInRangeOutput(this.production.NB_PROD_WEEK_PER_YEAR, this.minMaxProduction.mmAnnual.LIMIT_MIN,
+      this.minMaxProduction.mmAnnual.LIMIT_MAX)) {
+        this.toastr.error(this.translate.instant('Value out of range in Annual production') +
+        ' (' + this.minMaxProduction.mmAnnual.LIMIT_MIN + ' : ' + this.minMaxProduction.mmAnnual.LIMIT_MAX + ') !', 'Error');
+        return;
+    }
+    if (!this.production.AMBIENT_TEMP) {
+      this.toastr.error(this.translate.instant('Enter a value in Factory Air temperature !'), 'Error');
+      return;
+    } else if (!this.isNumberic(this.production.AMBIENT_TEMP)) {
+      this.toastr.error(this.translate.instant('Not a valid number in Factory Air temperature !'), 'Error');
+      return;
+    } else if (!this.isInRangeOutput(this.production.AMBIENT_TEMP, this.minMaxProduction.mmFactory.LIMIT_MIN,
+      this.minMaxProduction.mmFactory.LIMIT_MAX)) {
+        this.toastr.error(this.translate.instant('Value out of range in Factory Air temperature') +
+        ' (' + this.minMaxProduction.mmFactory.LIMIT_MIN + ' : ' + this.minMaxProduction.mmFactory.LIMIT_MAX + ') !', 'Error');
+        return;
+    }
+    if (!this.production.AMBIENT_HUM) {
+      this.toastr.error(this.translate.instant('Enter a value in Relative Humidity of Factory Air !'), 'Error');
+      return;
+    } else if (!this.isNumberic(this.production.AMBIENT_HUM)) {
+      this.toastr.error(this.translate.instant('Not a valid number in Relative Humidity of Factory Air !'), 'Error');
+      return;
+    } else if (!this.isInRangeOutput(this.production.AMBIENT_HUM, this.minMaxProduction.mmHumidity.LIMIT_MIN,
+      this.minMaxProduction.mmHumidity.LIMIT_MAX)) {
+        this.toastr.error(this.translate.instant('Value out of range in Relative Humidity of Factory Air') +
+        ' (' + this.minMaxProduction.mmHumidity.LIMIT_MIN + ' : ' + this.minMaxProduction.mmHumidity.LIMIT_MAX + ') !', 'Error');
+        return;
+    }
+    if (!this.production.AVG_T_DESIRED) {
+      this.toastr.error(this.translate.instant('Enter a value in Required Average temperature !'), 'Error');
+      return;
+    } else if (!this.isNumberic(this.production.AVG_T_DESIRED)) {
+      this.toastr.error(this.translate.instant('Not a valid number in Required Average temperature !'), 'Error');
+      return;
+    } else if (!this.isInRangeOutput(this.production.AVG_T_DESIRED, this.minMaxProduction.mmAverage.LIMIT_MIN,
+      this.minMaxProduction.mmAverage.LIMIT_MAX)) {
+        this.toastr.error(this.translate.instant('Value out of range in Required Average temperature') +
+        ' (' + this.minMaxProduction.mmAverage.LIMIT_MIN + ' : ' + this.minMaxProduction.mmAverage.LIMIT_MAX + ') !', 'Error');
+        return;
+    }
+    if (!this.production.PROD_FLOW_RATE) {
+      this.toastr.error(this.translate.instant('Enter a value in Required Production Rate !'), 'Error');
+      return;
+    } else if (!this.isNumberic(this.production.PROD_FLOW_RATE)) {
+      this.toastr.error(this.translate.instant('Not a valid number in Required Production Rate !'), 'Error');
+      return;
+    } else if (!this.isInRangeOutput(this.production.PROD_FLOW_RATE, this.minMaxProduction.mmProdFlow.LIMIT_MIN,
+      this.minMaxProduction.mmProdFlow.LIMIT_MAX)) {
+        this.toastr.error(this.translate.instant('Value out of range inRequired Production Rate') +
+        ' (' + this.minMaxProduction.mmProdFlow.LIMIT_MIN + ' : ' + this.minMaxProduction.mmProdFlow.LIMIT_MAX + ') !', 'Error');
+        return;
+    }
     this.laddaSavingObjectives = true;
     this.api.saveStudy({
       id: this.study.ID_STUDY,
@@ -106,6 +196,7 @@ export class ObjectivesComponent implements OnInit, AfterViewInit {
         localStorage.setItem('study', JSON.stringify(resp));
         this.study = resp;
         this.studyState = JSON.parse(localStorage.getItem('study'));
+        this.user = JSON.parse(localStorage.getItem('user'));
         this.api.getSymbol(this.study.ID_STUDY).subscribe(
           data => {
             this.symbol = data;
@@ -116,12 +207,6 @@ export class ObjectivesComponent implements OnInit, AfterViewInit {
             // console.log('get studies response:');
             console.log(data);
             this.production = data;
-            this.objectivesInput.DAILY_PROD = parseFloat((this.production.DAILY_PROD * 1).toFixed()).toFixed(2);
-            this.objectivesInput.WEEKLY_PROD = parseFloat((this.production.WEEKLY_PROD * 1).toFixed()).toFixed(2);
-            this.objectivesInput.NB_PROD_WEEK_PER_YEAR = parseFloat((this.production.NB_PROD_WEEK_PER_YEAR * 1).toFixed()).toFixed(2);
-            this.objectivesInput.DAILY_STARTUP = parseFloat((this.production.DAILY_STARTUP * 1).toFixed()).toFixed(2);
-            this.objectivesInput.AMBIENT_TEMP = parseFloat((this.production.AMBIENT_TEMP * 1).toFixed()).toFixed(2);
-            this.objectivesInput.AMBIENT_HUM = parseFloat((this.production.AMBIENT_HUM * 1).toFixed()).toFixed(2);
             this.isLoading = false;
           },
           err => {
@@ -136,10 +221,27 @@ export class ObjectivesComponent implements OnInit, AfterViewInit {
         console.log(err);
       }
     );
+    this.api.getMinMaxProduction().subscribe(
+      data => {
+        this.minMaxProduction = data;
+      }
+    );
   }
 
   disabledField() {
-    return !(!this.study.HAS_CHILD && this.study.PARENT_ID === 0);
+    return !((!this.study.HAS_CHILD && this.study.PARENT_ID === 0) && (this.study.ID_USER == this.user.ID_USER));
+  }
+
+  isNumberic(number) {
+    return Number.isInteger(Math.floor(number));
+  }
+
+  isInRangeOutput(value, min, max) {
+    if (value < min || value > max) {
+      return false;
+    } else {
+      return true;
+    }
   }
 
 }

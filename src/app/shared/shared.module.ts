@@ -10,6 +10,7 @@ import { NgxLocalizedNumbersService } from 'ngx-localized-numbers';
 import { FormsModule, FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { LaddaModule } from 'angular2-ladda';
 import { AppSpinnerComponent, HighchartsChartComponent } from '../components';
+import { TempProfileEditorComponent } from '../components';
 import { CommentComponent } from './comment/comment.component';
 
 @NgModule({
@@ -30,7 +31,8 @@ import { CommentComponent } from './comment/comment.component';
   declarations: [
     AppSpinnerComponent,
     CommentComponent,
-    HighchartsChartComponent
+    HighchartsChartComponent,
+    TempProfileEditorComponent
   ],
   providers: [
     StatusService,
@@ -48,6 +50,7 @@ import { CommentComponent } from './comment/comment.component';
     FormsModule,
     LaddaModule,
     AppSpinnerComponent,
+    TempProfileEditorComponent,
     CommentComponent,
     HighchartsChartComponent
   ]

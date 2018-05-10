@@ -5,7 +5,7 @@
     <div class="card">
       <div class="card-header">
         <strong>{{ 'PRODUCT DEFINITION' | translate }}</strong>
-        <button type="button" class="btn btn-sm btn-primary float-right" [disabled]="study.CHAINING_CONTROLS && (study.HAS_CHILD || study.PARENT_ID != 0)" (click)="modalEditProduct.show()" *ngIf="productShape != 0">
+        <button type="button" class="btn btn-sm btn-primary float-right" [disabled]="study.CHAINING_CONTROLS && (study.HAS_CHILD || study.PARENT_ID != 0) || disabledField()" (click)="modalEditProduct.show()" *ngIf="productShape != 0">
           <i class="fa fa-pencil-square-o"></i> {{'EDIT'|translate}}
         </button>
       </div>
@@ -42,7 +42,7 @@
               <div class="row">
                 <div class="col-md-5">
                   <strong>
-                    <label *ngIf="productShape == shapeNames.REC_STAND || productShape == shapeNames.BREAD 
+                    <label *ngIf="productShape == shapeNames.REC_STAND || productShape == shapeNames.BREAD
                       || productShape == shapeNames.CYL_STAND">{{'Height'|translate}}</label>
                     <label *ngIf="productShape == shapeNames.SLAB">{{'Thickness'|translate}}</label>
                     <label *ngIf="productShape == shapeNames.REC_LAY || productShape == shapeNames.CYL_LAY">{{'Length'|translate}}</label>
@@ -65,16 +65,16 @@
             </div>
           </div><!-- /col-md-10 -->
         </div>
-      </div> <!-- /.card-body -->    
+      </div> <!-- /.card-body -->
       <div *ngIf="productShape === 0" class="text-center card-body">
-        <button class="btn btn-primary btn-lg" (click)="modalEditProduct.show()">{{'DEFINE'|translate}}</button>
+        <button class="btn btn-primary btn-lg" (click)="modalEditProduct.show()" [disabled]="disabledField()">{{'DEFINE'|translate}}</button>
       </div><!-- /.card-body -->
     </div> <!-- /.card -->
 
     <div class="card">
       <div class="card-header">
         <strong>{{ '3D VIEW' | translate }}</strong>
-        <button type="button" class="btn btn-sm btn-primary float-right">
+        <button type="button" class="btn btn-sm btn-primary float-right" [disabled]="disabledField()">
           <i class="fa fa-refresh"></i>
         </button>
       </div>
@@ -83,13 +83,13 @@
       </div><!-- /.card-body -->
     </div><!-- /.card -->
   </div>
-  
+
   <div class="card">
     <div class="card-header">
       <strong>{{'PRODUCT ELEMENTS'|translate}}</strong>
       <div class="float-right">
-        <button type="button" class="btn btn-success btn-sm" 
-          [disabled]="study.CHAINING_CONTROLS && (study.HAS_CHILD || !study.CHAINING_ADD_COMP_ENABLE)"
+        <button type="button" class="btn btn-success btn-sm"
+          [disabled]="study.CHAINING_CONTROLS && (study.HAS_CHILD || !study.CHAINING_ADD_COMP_ENABLE) || disabledField()"
           data-style="slide-left" [ladda]="laddaAddComponent" (click)="onShowAddElement()">
           <i class="fa fa-plus"></i> {{'ADD'|translate}}
         </button>
@@ -112,7 +112,7 @@
           <td class="text-center nowrap">
             <a *ngIf="!isFirst" (click)="onMoveUpElement(element)"><i class="fa fa-caret-up" aria-hidden="true"></i></a><a *ngIf="!isLast" (click)="onMoveDownElement(element)"><i class="fa fa-caret-down" aria-hidden="true"></i></a>
           </td>
-          <td> <i class="fa fa-stop fa-lg" [style.color]="prodColors[i].CODE_HEXA"></i> {{'components.'+element.ID_COMP|translate}}</td>
+          <td> <i class="fa fa-stop fa-lg" [style.color]="prodColors[i].CODE_HEXA"></i> {{element.componentName}}</td>
           <td class="text-center">
             {{ element.PROD_ELMT_NAME }}
             <div *ngIf="study.CHAINING_CONTROLS && study.PARENT_ID != 0 && element.INSERT_LINE_ORDER != study.ID_STUDY">
@@ -123,14 +123,14 @@
           <td class="text-center">{{ element.PROD_ELMT_WEIGHT }}</td>
           <td class="text-center">{{ element.PROD_ELMT_REALWEIGHT }}</td>
           <td class="text-center nowrap">
-            <button class="btn btn-sm btn-primary" 
-              (click)="onEditElement(element)" 
-              [disabled]="study.HAS_CHILD || element.INSERT_LINE_ORDER != study.ID_STUDY">
+            <button class="btn btn-sm btn-primary"
+              (click)="onEditElement(element)"
+              [disabled]="(study.CHAINING_CONTROLS && (study.HAS_CHILD || study.PARENT_ID != 0) || disabledField())">
                 <i class="fa fa-pencil"></i>
             </button>
-            <button class="btn btn-sm btn-danger" 
-              (click)="onRemoveElement(element, i)" 
-              [disabled]="study.HAS_CHILD ||element.INSERT_LINE_ORDER != study.ID_STUDY" [ladda]="laddaDeletingElmts[i]">
+            <button class="btn btn-sm btn-danger"
+              (click)="onRemoveElement(element, i)"
+              [disabled]="(study.CHAINING_CONTROLS && (study.HAS_CHILD || study.PARENT_ID != 0) || disabledField())" [ladda]="laddaDeletingElmts[i]">
               <i class="fa fa-minus-circle"></i>
             </button>
           </td>
@@ -141,7 +141,7 @@
       <p>{{'No data to display'|translate}}</p>
     </div>
   </div>
-  
+
 </div>
 <!--Start model edit product -->
 <div bsModal class="modal fade" #modalEditProduct="bs-modal" role="dialog" aria-hidden="true">
@@ -159,13 +159,13 @@
         </div>
         <div class="col-md-8">
           <div class="form-group row">
-            <label class="col-md-3 col-form-label" for="text-input">Product name</label>
+            <label class="col-md-3 col-form-label" for="text-input">{{'Product name'|translate}}</label>
             <div class="col-md-9">
               <input type="text" id="text-input" name="text-input" class="form-control" [(ngModel)]="productForm.name">
             </div>
           </div>
           <div class="form-group row">
-            <label class="col-md-3 col-form-label" for="email-input">Product shape</label>
+            <label class="col-md-3 col-form-label" for="email-input">{{'Product shape'|translate}}</label>
             <div class="col-md-9">
               <select [(ngModel)]="productForm.shape" class="form-control" (ngModelChange)="onChangeShape()" >
                 <option *ngFor="let shape of availShapes" [value]="shape.ID_SHAPE">{{ 'SHAPECODE_'+shape.SHAPECODE | translate }}</option>
@@ -176,32 +176,28 @@
             <label class="col-md-3 col-form-label" for="email-input">Dimension 1</label>
             <div class="col-md-9">
               <div class="input-group">
-                <input type="text" name="dim1" class="form-control" [(ngModel)]="productForm.dim1" [disabled]="productForm.shape == 0 || productForm.shape == shapeNames.SLAB || productForm.shape == shapeNames.SPHERE">
+                <input type="text" name="dim1" class="form-control" [(ngModel)]="productForm.dim1" [disabled]="dimension1Disabled">
                 <span class="input-group-addon" *ngIf="symbol">{{symbol.prodDimensionSymbol}}</span>
-              </div>              
+              </div>
             </div>
           </div>
           <div class="form-group row">
             <label class="col-md-3 col-form-label" for="email-input">Dimension 2</label>
             <div class="col-md-9">
               <div class="input-group">
-                <input type="text" name="dim1" class="form-control" [(ngModel)]="productForm.dim2" [disabled]="productForm.shape == 0 || productForm.shape == shapeNames.SLAB || productForm.shape == shapeNames.SPHERE || 
-                                (productForm.shape == shapeNames.REC_STAND) || (productForm.shape == shapeNames.REC_LAY) || (productForm.shape == shapeNames.BREAD) ||
-                                (productForm.shape == shapeNames.CYL_STAND) || (productForm.shape == shapeNames.CYL_LAY) || (productForm.shape == shapeNames.CON_CYL_STAND) ||
-                                (productForm.shape == shapeNames.CON_CYL_LAY)">
+                <input type="text" name="dim1" class="form-control" [(ngModel)]="productForm.dim2" [disabled]="dimension2Disabled">
                 <span class="input-group-addon" *ngIf="symbol">{{symbol.prodDimensionSymbol}}</span>
-              </div>              
+              </div>
             </div>
           </div>
           <div class="form-group row">
             <label class="col-md-3 col-form-label" for="email-input">Dimension 3</label>
             <div class="col-md-9">
               <div class="input-group">
-                <input type="text" name="dim1" class="form-control" [(ngModel)]="productForm.dim3" [disabled]="productForm.shape == 0 || productForm.shape == shapeNames.SLAB || productForm.shape == shapeNames.SPHERE || (productForm.shape == shapeNames.CYL_STAND) || (productForm.shape
-                                == shapeNames.CYL_LAY) || (productForm.shape == shapeNames.CON_CYL_STAND) || (productForm.shape == shapeNames.CON_CYL_LAY)">
+                <input type="text" name="dim1" class="form-control" [(ngModel)]="productForm.dim3" [disabled]="dimension3Disabled">
                 <span class="input-group-addon" *ngIf="symbol">{{symbol.prodDimensionSymbol}}</span>
               </div>
-              
+
             </div>
           </div>
         </div>
@@ -276,7 +272,7 @@
                 </div>
               </div>
             </div>
-          
+
             <div class="card" *ngIf="components">
               <div class="card-header">
                 &nbsp;
@@ -292,14 +288,14 @@
               <div class="list-group">
                 <perfect-scrollbar style="max-height: 250px">
                   <div class="list-group">
-                    <a *ngFor="let component of (components.active | compFilter: filterString)" class="list-group-item list-group-item-action" 
-                      style="height:30px; padding: 5px 10px;"  [ngClass]="component == selectedAddingElement? 'active' : ''" 
-                      (click)="onSelectAddingElement(component)">
+                    <a *ngFor="let component of (components.active | compFilter: filterString)" class="list-group-item list-group-item-action"
+                      style="height:30px; padding: 5px 10px;"  [ngClass]="component == selectedAddingElement? 'active' : ''"
+                      (click)="onSelectAddingElement(component, 0)">
                       <p>{{ component.displayName }}</p>
                     </a>
                     <h6 class="dropdown-header text-center" *ngIf="components.sleeping">{{'--------------- SLEEPING COMPONENTS ---------------'|translate}}</h6>
                     <a *ngFor="let component of (components.sleeping | compFilter: filterString)" class="list-group-item list-group-item-action" style="height:30px; padding: 5px 10px;"
-                      [ngClass]="component == selectedAddingElement? 'active' : ''" (click)="onSelectAddingElement(component)">
+                      [ngClass]="component == selectedAddingElement? 'active' : ''" (click)="onSelectAddingElement(component, 1)">
                       <p>{{'SCD:'|translate}} {{ component.displayName }}</p>
                     </a>
                   </div>
@@ -321,7 +317,7 @@
   <div class="modal-dialog modal-primary">
     <div class="modal-content">
       <div class="modal-header">
-        <strong>{{'Product Component'|translate}}</strong>
+        <strong class="text-uppercase">{{'Product Component'|translate}}</strong>
         <button class="close" arria-label="Close" data-dismiss="modal" (click)="editCompModal.hide()">
           <span aria-hidden="true">×</span>
         </button>
@@ -340,7 +336,7 @@
             <div class="col-md-4" style="float:right">{{'Specific Dim.:'|translate}}</div>
             <div class="col-md-8">
               <div class="input-group">
-                <input type="text" name="specificDim" class="form-control" [(ngModel)]="elementForm.specific_dim">
+                <input type="text" name="specificDim" class="form-control" [(ngModel)]="elementForm.specific_dim" (input)="updateRealMass()">
                 <span class="input-group-addon" *ngIf="symbol">{{symbol.prodDimensionSymbol}}</span>
               </div>
             </div>

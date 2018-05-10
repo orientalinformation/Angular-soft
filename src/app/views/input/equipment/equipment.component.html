@@ -1,6 +1,6 @@
-<div class="container" *ngIf="study">
+<div class="container" *ngIf="!isLoadingView">
   <app-chaining #chainingControls (loaded)="onChainingControlsLoaded()" *ngIf="study.CHAINING_CONTROLS"></app-chaining>
-  
+
   <div class="row product-container">
     <div class="col-md-6" *ngIf="study.OPTION_ECO">
       <div class="card">
@@ -45,7 +45,7 @@
           </button> -->
         </div>
         <div class="card-body">
-          <div class="row">            
+          <div class="row">
             <div class="col-md-12">
               <div class="container">
                 <div class="row">
@@ -76,12 +76,12 @@
   </div>
 </div>
 
-<div class="container">
+<div class="container" *ngIf="!isLoadingView">
   <div class="card product-container">
-   
+
     <div class="card-header">
       <strong>{{'SELECTED EQUIPMENT' | translate}}</strong>
-     
+
       <div class="float-right">
         <button class="btn btn-sm btn-primary" (click)="recalculateEquipment()" [disabled]="!studyModifiable()">
             {{'Recalculate equipment parameters'|translate}}
@@ -90,7 +90,7 @@
           <i class="fa fa-plus"></i>
           {{'Add'|translate}}
         </button>
-        
+
       </div>
     </div>
     <table class="table table-bordered table-sm mb-0" *ngIf="equipmentsView && isUpdateInterval == false">
@@ -130,14 +130,17 @@
         </td>
         <td class="text-center align-middle" width="1%">
           <div style="margin-top:0.5em; white-space: nowrap">
-            <button type="button" [disabled]="!studyModifiable()" class="btn btn-success btn-sm" (click)="equipEditConfig(equip, i)" ngbTooltip="Operational settings"><i class="fa fa-cogs"></i></button>
-            <button type="button" [disabled]="!studyModifiable()" class="btn btn-primary btn-sm" [ladda]="laddaLoadingLayout" (click)="equipEditLayout(equip, i)" ngbTooltip="Layout editor"><i class="fa fa-th-large"></i></button>
-            <button type="button" [disabled]="!studyModifiable()" class="btn btn-danger btn-sm" (click)="deleteStudyEquipment(equip ,i)" ngbTooltip="Remove" [ladda]="laddaDeletingStudyEquip[i]"><i class="fa fa-trash"></i></button>
-          </div>  
+            <button type="button" [disabled]="!studyModifiable()" class="btn btn-success btn-sm" (click)="equipEditConfig(equip, i)"
+              ngbTooltip="Operational settings"><i class="fa fa-cogs"></i></button>
+            <button type="button" [disabled]="!studyModifiable()" class="btn btn-primary btn-sm" [ladda]="laddaLoadingLayout"
+              (click)="equipEditLayout(equip, i)" ngbTooltip="Layout editor"><i class="fa fa-th-large"></i></button>
+            <button type="button" [disabled]="!studyModifiable()" class="btn btn-danger btn-sm" (click)="deleteStudyEquipment(equip ,i)"
+              ngbTooltip="Remove" [ladda]="laddaDeletingStudyEquip[i]"><i class="fa fa-trash"></i></button>
+          </div>
         </td>
       </tr>
     </table>
-      
+
   </div> <!-- /.card -->
 </div>
 
@@ -169,13 +172,13 @@
                   </select>
                 </div>
               </div>
-              
+
               <div class="row form-group">
                 <div class="col-4">{{'Manufacturer'|translate}}</div>
                 <div class="col-8">
                   <select class="form-control" [(ngModel)]="manufacturerSelected" (change)="select_manufacturer()">
                     <option value="">{{ 'All'|translate }}</option>
-                    <option *ngFor="let item of manufacturer; let i = index" [value]="item.CONSTRUCTOR">
+                    <option *ngFor="let item of manufacturers; let i = index" [value]="item.CONSTRUCTOR">
                       {{ item.CONSTRUCTOR }}
                     </option>
                   </select>
@@ -185,15 +188,15 @@
               <div class="row form-group">
                 <div class="col-4">{{'Equipment Series'|translate}}</div>
                 <div class="col-8">
-                  <select class="form-control" [(ngModel)]="familySelected" (change)="select_family()">
+                  <select class="form-control" [(ngModel)]="seriesSelected" (change)="select_family()">
                     <option [value]="-1">{{ 'All'|translate }}</option>
-                    <option *ngFor="let family of families; let i = index" [value]="family.ID_FAMILY">
-                      {{ family.LABEL }}
+                    <option *ngFor="let seri of series; let i = index" [value]="seri.ID_FAMILY">
+                      {{ seri.LABEL }}
                     </option>
                   </select>
                 </div>
               </div>
-            
+
               <div class="row form-group">
                 <div class="col-4">{{'Equipment origin'|translate}}</div>
                 <div class="col-8">
@@ -205,7 +208,7 @@
                   </select>
                 </div>
               </div>
-            
+
               <div class="row form-group">
                 <div class="col-4">{{'Process type'|translate}}</div>
                 <div class="col-8">
@@ -217,33 +220,33 @@
                   </select>
                 </div>
               </div>
-            
+
               <div class="row form-group">
                 <div class="col-4">{{'Model'|translate}}</div>
                 <div class="col-8">
-                  <select class="form-control" [(ngModel)]="seriesSelected" (change)="select_model()">
+                  <select class="form-control" [(ngModel)]="modelSelected" (change)="select_model()">
                     <option [value]="-1">{{ 'All'|translate }}</option>
-                    <option *ngFor="let seri of series; let i = index" [value]="seri.ID_EQUIPSERIES">
-                      {{ seri.LABEL }}
+                    <option *ngFor="let model of models; let i = index" [value]="model.ID_EQUIPSERIES">
+                      {{ model.LABEL }}
                     </option>
                   </select>
                 </div>
               </div>
-            
+
               <div class="row form-group">
                 <div class="col-4" *ngIf="symbol">{{'Size'|translate}} ({{symbol.equipDimensionSymbol}})</div>
                 <div class="col-8">
-                  <select class="form-control" [(ngModel)]="dimensionSelected" (change)="select_size()">
+                  <select class="form-control" [(ngModel)]="sizeSelected" (change)="select_size()">
                     <option value="">{{ 'All'|translate }}</option>
-                    <option *ngFor="let dimension of dimensions; let i = index" value="{{ dimension.EQP_LENGTH }}x{{ dimension.EQP_WIDTH }}">
-                      {{ dimension.DISPLAY_LENGTH }} x {{ dimension.DISPLAY_WIDTH }}
+                    <option *ngFor="let size of sizes; let i = index" value="{{ size.EQP_LENGTH }}x{{ size.EQP_WIDTH }}">
+                      {{ size.DISPLAY_LENGTH }} x {{ size.DISPLAY_WIDTH }}
                     </option>
                   </select>
                 </div>
               </div>
             </div>
           </div>
-    
+
           <div class="card" >
             <div class="card-header" style="text-align:center;">
               <div id="equipment-search-box-container">&nbsp;
@@ -260,13 +263,14 @@
                 <a class="list-group-item list-group-item-action" *ngFor="let equip of (equipments | filter: filterString)"
                   style="height:30px; padding: 5px 10px;"  name="eid" id="eid" (click)="onSelectAddingEquipment(equip)"
                   [ngClass]="equip == selectedAddingEquipment? 'active' : ''">
-                    {{equip.EQUIP_NAME}} - {{equip.EQUIP_VERSION}} 
+                    {{equip.EQUIP_NAME}} - {{equip.EQUIP_VERSION}}
                   <span *ngIf="equip.EQUIP_RELEASE == 3">({{'Active'|translate}})</span>
+                  <span *ngIf="equip.EQUIP_RELEASE == 2">({{'Test'|translate}})</span>
                 </a>
               </div>
             </perfect-scrollbar>
           </div>
-            
+
           </div>
       </div>
       <div class="modal-footer">
@@ -287,11 +291,11 @@
         </div>
         <div class="modal-body">
         <h5 class="text-danger" *ngIf="equipment">{{ equipment.displayName }}</h5>
-        <div style="padding: 5px 0"><strong >Input :</strong></div>  
+        <div style="padding: 5px 0"><strong >Input :</strong></div>
         <div class="row">
-          <div class="col-md-7">
+          <div class="col-md-8">
             <div class="form-group row">
-              <div class="col-md-6" *ngIf="symbol">{{'Spaces (length x width)'|translate}} ({{symbol.equipDimensionSymbol}})</div>
+              <div class="col-md-6" *ngIf="symbol">{{'Spaces (length x width)'|translate}} ({{symbol.prodDimensionSymbol}})</div>
               <input type="text" class="col-md-2" style="height:30px;" [(ngModel)]="editLayoutForm.lengthInterval">
               <div class="col-md-2"></div>
               <input type="text"class="col-md-2" style="height:30px;" [(ngModel)]="editLayoutForm.widthInterval">
@@ -318,21 +322,17 @@
               <input type="text" class="col-md-3" style="height:30px;" >
             </div>
           </div>
-          <div class="col-md-5">
-            <div style="float:right">
-              <div style="width: 250px; height: 250px; border:1px solid #ccc" id="top_show_svg">
-                <h3 class="text-muted text-center">Image not available</h3>
-              </div>
-            </div>
+          <div class="col-md-4">
+            <img id="stdEqpLayoutImg" style="width: 100%">
           </div>
         </div>
-        <div style="padding:10px;"><strong >{{'Output'|translate}} :</strong></div> 
+        <div style="padding:10px;"><strong >{{'Output'|translate}} :</strong></div>
         <table class="table  table-bordered table-sm"  >
           <thead>
             <tr *ngIf="symbol">
-              <td align="center" *ngIf="equipment.ORIENTATION == 0;else equipTitle;"><strong>Width of Spaces. ({{symbol.shelvesWidthSymbol}})</strong></td>
+              <td align="center" *ngIf="equipment.ORIENTATION == 0;else equipTitle;"><strong>Width of Spaces. ({{symbol.prodDimensionSymbol}})</strong></td>
               <ng-template #equipTitle>
-              <td align="center"><strong>Side remaining interval ({{symbol.shelvesWidthSymbol}})</strong></td>
+              <td align="center"><strong>Side remaining interval ({{symbol.prodDimensionSymbol}})</strong></td>
               </ng-template>
               <td align="center" *ngIf="equipment.ORIENTATION == 1;else equipNumberPer;"><strong> {{'Number per tunnel length'|translate}}</strong></td>
               <ng-template #equipNumberPer>
@@ -355,10 +355,144 @@
           <strong style="padding:15px;" *ngIf="equipment.layoutResults != ''">{{'Belt coverage'|translate}} <input type="text" value="{{equipment.layoutResults.LOADING_RATE}}" style="heigth:30px;width:60px;" disabled="true"> (%)</strong>
           <div style="float:right;margin-right:20px;" >
             <button class="btn btn-md btn-secondary" (click)="closeEditModal()">{{'Close'|translate}}</button>
-            <button class="btn btn-md btn-primary" (click)="updateStdEquipLayout()">{{'Apply'|translate}}</button>
+            <button class="btn btn-md btn-primary" [ladda]="laddaUpdateLayout" (click)="updateStdEquipLayout()">{{'Apply'|translate}}</button>
           </div>
         </div>
-      </div> 
+      </div>
     </div>
   </div>
 </div>
+
+<div bsModal class="modal fade bd-example-modal-lg" #inputModal="bs-modal" role="dialog" aria-hidden="true"  >
+  <div class="modal-dialog modal-primary" role="document" style="max-width:60%;">
+    <div class="modal-content">
+      <div class="modal-header"><strong >{{'Operating Settings'|translate}}</strong>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="inputModal.hide()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div style="padding: 5px 0"><strong >{{'Operating Settings'|translate}} :</strong></div>
+        <table class="table  table-bordered table-sm"  >
+          <thead>
+            <tr *ngIf="symbol">
+              <td align="center"><strong>{{'Residence / Dwell time'|translate}} ({{symbol.timeSymbol}})</strong></td>
+              <td align="center"><strong>{{'Control temperature '|translate}} ({{symbol.temperatureSymbol}})</strong></td>
+              <td align="center"><strong>{{'Convection Setting '|translate}} ({{symbol.convectionSpeedSymbol}})</strong></td>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngIf="operatingSetting">
+              <td align="center">
+                <div *ngFor="let item of operatingSetting.studyEquipment.ts, let i = index">
+                  <input type="text" class="form-control form-control-sm" [(ngModel)]="tsValue[i]" style="width:80px">
+                </div>
+              </td>
+              <td align="center">
+                  <div *ngFor="let item of operatingSetting.studyEquipment.tr, let i = index">
+                    <input type="text" class="form-control form-control-sm" [(ngModel)]="trValue[i]" [disabled]="disabledTr" style="width:80px">
+                  </div>
+              </td>
+              <td align="center">
+                <div *ngFor="let item of operatingSetting.studyEquipment.vc, let i = index">
+                  <input type="text" class="form-control form-control-sm" [(ngModel)]="vcValue[i]" disabled style="width:80px">
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div style="padding: 5px 0" *ngIf="symbol"><strong >{{'Alpha'|translate}} {{symbol.convectionCoeffSymbol}} :</strong></div>
+        <div class="table-responsive">
+          <table class="table table-bordered table-sm">
+            <thead>
+              <tr *ngIf="symbol">
+                <td align="center"><strong>{{'Top'|translate}}</strong></td>
+                <td align="center"><strong>{{'Bottom'|translate}}</strong></td>
+                <td align="center"><strong>{{'Left'|translate}}</strong></td>
+                <td align="center"><strong>{{'Right'|translate}}</strong></td>
+                <td align="center"><strong>{{'Front'|translate}}</strong></td>
+                <td align="center"><strong>{{'Rear'|translate}}</strong></td>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td align="center">
+                  <input type="checkbox" [(ngModel)]="alphaTopFix">
+                </td>
+                <td align="center">
+                  <input type="checkbox" [(ngModel)]="alphaBottomFix">
+                </td>
+                <td align="center">
+                  <input type="checkbox" [(ngModel)]="alphaLeftFix">
+                </td>
+                <td align="center">
+                  <input type="checkbox" [(ngModel)]="alphaRightFix">
+                </td>
+                <td align="center">
+                  <input type="checkbox" [(ngModel)]="alphaFrontFix">
+                </td>
+                <td align="center">
+                  <input type="checkbox" [(ngModel)]="alphaRearFix">
+                </td>
+              </tr>
+              <tr>
+                  <td align="center">
+                    <input type="text" class="form-control form-control-sm" [(ngModel)]="alphaTop" [disabled]="!alphaTopFix" style="width:80px">
+                  </td>
+                  <td align="center">
+                    <input type="text" class="form-control form-control-sm" [(ngModel)]="alphaBottom" [disabled]="!alphaBottomFix" style="width:80px">
+                  </td>
+                  <td align="center">
+                    <input type="text" class="form-control form-control-sm" [(ngModel)]="alphaLeft" [disabled]="!alphaLeftFix" style="width:80px">
+                  </td>
+                  <td align="center">
+                    <input type="text" class="form-control form-control-sm" [(ngModel)]="alphaRight" [disabled]="!alphaRightFix" style="width:80px">
+                  </td>
+                  <td align="center">
+                    <input type="text" class="form-control form-control-sm" [(ngModel)]="alphaFront" [disabled]="!alphaFrontFix" style="width:80px">
+                  </td>
+                  <td align="center">
+                    <input type="text" class="form-control form-control-sm" [(ngModel)]="alphaRear" [disabled]="!alphaRearFix" style="width:80px">
+                  </td>
+                </tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="padding: 5px 0"><strong *ngIf="symbol">{{'Gas Temperature'|translate}} ({{symbol.temperatureSymbol}}):</strong></div>
+        <div class="row">
+          <div class="col-md-2" *ngIf="operatingSetting">
+            <input type="text" class="form-control form-control-sm" [(ngModel)]="operatingSetting.studyEquipment.TExt" style="width:80px">
+          </div>
+        </div>
+        <div style="padding: 5px 0 0"><strong >{{'Gas temperature'|translate}} - ZFIII LN2:</strong></div>
+        <p class="text-danger">{{'NB: data given for a input temperature of product equal to'|translate}} +20°C</p>
+        <div class="table-responsive">
+          <table class="table table-bordered table-sm" *ngIf="operatingSetting">
+            <tbody>
+              <tr>
+                <td align="center">
+                  <strong *ngIf="symbol">{{'Control temperature'|translate}} ({{symbol.temperatureSymbol}})</strong>
+                </td>
+                <td align="center" style="vertical-align:middle" *ngFor="let tempExts of operatingSetting.resultTempExts">{{tempExts.TR}}</td>
+              </tr>
+              <tr>
+                <td align="center">
+                  <strong *ngIf="symbol">{{'Gas temperature'|translate}} ({{symbol.temperatureSymbol}})</strong>
+                </td>
+                <td align="center" style="vertical-align:middle" *ngFor="let tempExts of operatingSetting.resultTempExts">{{tempExts.T_EXT}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      <div>
+        <div style="float:right;margin-right:20px;" >
+          <button class="btn btn-md btn-secondary" (click)="inputModal.hide()">{{'Close'|translate}}</button>
+          <button class="btn btn-md btn-primary" (click)="saveConfig()">{{'Confirm'|translate}}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<app-spinner *ngIf="isLoadingView"></app-spinner>

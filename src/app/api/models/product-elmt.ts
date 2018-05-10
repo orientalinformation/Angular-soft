@@ -3,7 +3,7 @@
 /**
  */
 export class ProductElmt {
-    SHAPE_POS1?: number;
+    SHAPE_POS2?: number;
     ID_PRODUCT_ELMT?: number;
     ID_SHAPE?: number;
     ID_COMP?: number;
@@ -13,8 +13,8 @@ export class ProductElmt {
     SHAPE_PARAM3?: number;
     PROD_DEHYD?: number;
     PROD_DEHYD_COST?: number;
+    SHAPE_POS1?: number;
     ID_PROD?: number;
-    SHAPE_POS2?: number;
     SHAPE_POS3?: number;
     PROD_ELMT_ISO?: number;
     ORIGINAL_THICK?: number;
@@ -24,4 +24,5 @@ export class ProductElmt {
     PROD_ELMT_REALWEIGHT?: number;
     ID_STUDY?: number;
     SHAPECODE?: number;
+    componentName?: string;
 }

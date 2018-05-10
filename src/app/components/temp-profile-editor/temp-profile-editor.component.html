@@ -1,0 +1,78 @@
+<svg *ngIf="loaded" preserveAspectRatio="none" attr.width="{{drawing.svgXsize}}" attr.height="{{drawing.svgYsize}}" (mousemove)="deplacerext($event)" (mouseup)="relacherext($event)"
+  xml:lang="fr" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+  <!-- rectangle englobant -->
+  <rect x="0" y="0" attr.width="{{drawing.svgXsize}}" attr.height="{{drawing.svgYsize}}" fill="white" stroke="white" />
+
+  <!-- rectangle de la zone de dessin -->
+  <rect attr.x="{{drawing.x0}}" attr.y="{{drawing.y0}}" attr.width="{{drawing.xsize}}" attr.height="{{drawing.ysize}}"
+    fill="lightgray" stroke="black" stroke-width="2" />
+
+  <path id="testPath" attr.d="{{drawing.path}}" fill="none" stroke="blue" stroke-width="2" />
+  <!-- bouton a modifier -->
+
+  <circle *ngFor="let lines2 of lines;let i = index" id="c{{i}}" attr.cx="{{lines2.X_POSITION}}" attr.cy="{{lines2.Y_POINT}}" 
+    r="3" fill="gray" fill-opacity="0,5" stroke="black" stroke-width="1" (mouseover)="mouseover($event, i)" (mouseout)="mouseout($event, i)" 
+    (mousedown)="cliquer($event, i)" (mouseup)="relacher($event, i)" />
+
+  <!-- graduation haut -->
+  <line attr.x1="{{drawing.x0}}" attr.y1="{{drawing.y0}}" attr.x2="{{drawing.x0}}" attr.y2="{{drawing.getYTopGraduate}}" stroke="black" stroke-width="2"
+  />
+  <!--text id="tempMinTop" x="{{drawing.x0}}" y="{{drawing.getYTopLegend}}" text-anchor="middle">0 C</text-->
+  <text attr.x="{{drawing.x0}}" attr.y="{{drawing.getYTopLegend}}" text-anchor="middle">{{legends.getTempMin}} {{legends.getLegendTemperature}}</text>
+
+  <line attr.x1="{{drawing.getXquarter}}" attr.y1="{{drawing.y0}}" attr.x2="{{drawing.getXquarter}}" attr.y2="{{drawing.getYTopGraduate}}" stroke="black"
+    stroke-width="2" />
+  <!--text id="tempQuarterTop" attr.x="{{drawing.getXquarter}}" attr.y="{{drawing.getYTopLegend}}" text-anchor="middle">0 C</text-->
+  <text attr.x="{{drawing.getXquarter}}" attr.y="{{drawing.getYTopLegend}}" text-anchor="middle">{{legends.getQuarterTemp}} {{legends.getLegendTemperature}}</text>
+
+  <line attr.x1="{{drawing.getXmedium}}" attr.y1="{{drawing.y0}}" attr.x2="{{drawing.getXmedium}}" attr.y2="{{drawing.getYTopGraduate}}" stroke="black"
+    stroke-width="2" />
+  <!--text id="tempMediumTop" attr.x="{{drawing.getXmedium}}" attr.y="{{drawing.getYTopLegend}}" text-anchor="middle">10 C</text-->
+  <text attr.x="{{drawing.getXmedium}}" attr.y="{{drawing.getYTopLegend}}" text-anchor="middle">{{legends.getMediumTemp}} {{legends.getLegendTemperature}}</text>
+
+  <line attr.x1="{{drawing.getXThreeQuarter}}" attr.y1="{{drawing.y0}}" attr.x2="{{drawing.getXThreeQuarter}}" attr.y2="{{drawing.getYTopGraduate}}"
+    stroke="black" stroke-width="2" />
+  <!--text id="temp3QuarterTop" attr.x="{{drawing.getXThreeQuarter}}" attr.y="{{drawing.getYTopLegend}}" text-anchor="middle">0 C</text-->
+  <text attr.x="{{drawing.getXThreeQuarter}}" attr.y="{{drawing.getYTopLegend}}" text-anchor="middle">{{legends.getThreeQuarterTemp}} {{legends.getLegendTemperature}}</text>
+
+  <line attr.x1="{{drawing.getRightLimit}}" attr.y1="{{drawing.y0}}" attr.x2="{{drawing.getRightLimit}}" attr.y2="{{drawing.getYTopGraduate}}"
+    stroke="black" stroke-width="2" />
+  <!--text id="tempMaxTop" attr.x="{{drawing.getRightLimit}}" attr.y="{{drawing.getYTopLegend}}" text-anchor="middle">20 C</text-->
+  <text attr.x="{{drawing.getRightLimit}}" attr.y="{{drawing.getYTopLegend}}" text-anchor="middle">{{legends.getTempMax}} {{legends.getLegendTemperature}}</text>
+
+  <!-- graduation bas -->
+  <line attr.x1="{{drawing.x0}}" attr.y1="{{drawing.getBottomLimit}}" attr.x2="{{drawing.x0}}" attr.y2="{{drawing.getYBottomGraduate}}" stroke="black"
+    stroke-width="2" />
+  <!--text id="tempMinBot" attr.x="{{drawing.x0}}" attr.y="{{drawing.getYBottomLegend}}" text-anchor="middle">D-100 C</text-->
+  <text attr.x="{{drawing.x0}}" attr.y="{{drawing.getYBottomLegend}}" text-anchor="middle">{{legends.getTempMin}} {{legends.getLegendTemperature}}</text>
+
+  <line attr.x1="{{drawing.getXquarter}}" attr.y1="{{drawing.getBottomLimit}}" attr.x2="{{drawing.getXquarter}}" attr.y2="{{drawing.getYBottomGraduate}}"
+    stroke="black" stroke-width="2" />
+  <!--text id="tempQuarterBot" attr.x="{{drawing.getXquarter}}" attr.y="{{drawing.getYBottomLegend}}" text-anchor="middle">D-50 C</text-->
+  <text attr.x="{{drawing.getXquarter}}" attr.y="{{drawing.getYBottomLegend}}" text-anchor="middle">{{legends.getQuarterTemp}} {{legends.getLegendTemperature}}</text>
+
+  <line attr.x1="{{drawing.getXmedium}}" attr.y1="{{drawing.getBottomLimit}}" attr.x2="{{drawing.getXmedium}}" attr.y2="{{drawing.getYBottomGraduate}}"
+    stroke="black" stroke-width="2" />
+  <!--text id="tempMediumBot" attr.x="{{drawing.getXmedium}}" attr.y="{{drawing.getYBottomLegend}}" text-anchor="middle">D0 C</text-->
+  <text attr.x="{{drawing.getXmedium}}" attr.y="{{drawing.getYBottomLegend}}" text-anchor="middle">{{legends.getMediumTemp}} {{legends.getLegendTemperature}}</text>
+
+  <line attr.x1="{{drawing.getXThreeQuarter}}" attr.y1="{{drawing.getBottomLimit}}" attr.x2="{{drawing.getXThreeQuarter}}" attr.y2="{{drawing.getYBottomGraduate}}"
+    stroke="black" stroke-width="2" />
+  <!--text id="temp3QuarterBot" attr.x="{{drawing.getXThreeQuarter}}" attr.y="{{drawing.getYBottomLegend}}" text-anchor="middle">D50 C</text-->
+  <text attr.x="{{drawing.getXThreeQuarter}}" attr.y="{{drawing.getYBottomLegend}}" text-anchor="middle">{{legends.getThreeQuarterTemp}} {{legends.getLegendTemperature}}</text>
+
+  <line attr.x1="{{drawing.getRightLimit}}" attr.y1="{{drawing.getBottomLimit}}" attr.x2="{{drawing.getRightLimit}}" attr.y2="{{drawing.getYBottomGraduate}}"
+    stroke="black" stroke-width="2" />
+  <!--text id="tempMaxBot" attr.x="{{drawing.getRightLimit}}" attr.y="{{drawing.getYBottomLegend}}" text-anchor="middle">D100 C</text-->
+  <text attr.x="{{drawing.getRightLimit}}" attr.y="{{drawing.getYBottomLegend}}" text-anchor="middle">{{legends.getTempMax}} {{legends.getLegendTemperature}}</text>
+
+  <!-- arrow -->
+  <line attr.x1="{{drawing.getXArrow}}" attr.y1="{{drawing.y0}}" attr.x2="{{drawing.getXArrow}}" attr.y2="{{drawing.getBottomLimit}}" stroke="black"
+    stroke-width="2" />
+  <line attr.x1="{{drawing.getXArrow}}" attr.y1="{{drawing.y0}}" attr.x2="{{drawing.getXArrowRight}}" attr.y2="{{drawing.getYArrow}}" stroke="black"
+    stroke-width="2" />
+  <line attr.x1="{{drawing.getXArrow}}" attr.y1="{{drawing.y0}}" attr.x2="{{drawing.getXArrowLeft}}" attr.y2="{{drawing.getYArrow}}" stroke="black"
+    stroke-width="2" />
+  <text attr.x="{{drawing.getTextArrow}}" attr.y="{{drawing.getYMediumSVG}}" text-anchor="middle" writing-mode="tb-rl">H = {{legends.getHeight}}</text>
+</svg>

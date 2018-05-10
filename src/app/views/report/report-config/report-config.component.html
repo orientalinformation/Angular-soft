@@ -190,37 +190,37 @@
             <tr>
               <td align="center" style="vertical-align:middle">
                 {{'Overall Cryogen Consumption Ratio (product + equipment and pipeline losses) Unit of Cryogen, per piece of product.' | translate}}
-                (kg)
+                ({{ report.consumptionSymbol}})
               </td>
               <td align="center" style="vertical-align:middle">
-                {{'Total Cryogen Consumption (product + equipment and pipeline losses).' | translate}}  (kg/kg)
+                {{'Total Cryogen Consumption (product + equipment and pipeline losses).' | translate}}  ({{ report.consumptionSymbol }}/kg)
               </td>
               <td align="center" style="vertical-align:middle">
-                {{'Specific Cryogen Consumption Ratio (product only) Unit of Cryogen, per unit weight of product.' | translate }}  (kg/kg)
+                {{'Specific Cryogen Consumption Ratio (product only) Unit of Cryogen, per unit weight of product.' | translate }}  ({{ report.consumptionSymbol }}/kg)
               </td>
               <td align="center" style="vertical-align:middle">
-                {{'Total Cryogen Consumption per hour' | translate }} (kg)
+                {{'Total Cryogen Consumption per hour' | translate }} ({{ report.consumptionSymbol }})
               </td>
               <td align="center" style="vertical-align:middle">
-                {{'Total Cryogen Consumption per day' | translate}} (kg)
+                {{'Total Cryogen Consumption per day' | translate}} ({{ report.consumptionSymbol }})
               </td>
               <td align="center" style="vertical-align:middle">
-                {{'Total Cryogen Consumption per week' | translate}} (kg)
+                {{'Total Cryogen Consumption per week' | translate}} ({{ report.consumptionSymbol }})
               </td>
               <td align="center" style="vertical-align:middle">
-                {{'Total Cryogen Consumption per month' | translate}} (kg)
+                {{'Total Cryogen Consumption per month' | translate}} ({{ report.consumptionSymbol }})
               </td>
               <td align="center" style="vertical-align:middle">
-                {{'Total Cryogen Consumption per year' | translate }} (kg)
+                {{'Total Cryogen Consumption per year' | translate }} ({{ report.consumptionSymbol }})
               </td>
               <td align="center" style="vertical-align:middle">
-                {{'Equipment Cryogen Consumption' | translate}} (kg)	
+                {{'Equipment Cryogen Consumption' | translate}} ({{ report.consumptionSymbol }})	
               </td>
               <td align="center" style="vertical-align:middle">
-                {{'Pipeline consumption' | translate}} (kg)
+                {{'Pipeline consumption' | translate}} ({{ report.consumptionSymbol }})
               </td>
               <td align="center" style="vertical-align:middle">
-                {{'Tank losses' | translate}} (kg)
+                {{'Tank losses' | translate}} ({{ report.consumptionSymbol }})
               </td>
             </tr>
             <tr>
@@ -482,7 +482,6 @@
                         </div>
                       </ng-template>
                     </div>
-      
                     <div class="form-group row" style="margin-left:10px;" *ngIf="report.productElmt.ID_SHAPE == 1 || report.productElmt.ID_SHAPE == 6; else checkContourTemperature">
                       <label class="col-md-4 col-form-label" for="text-input">{{'Temperature step' | translate}} </label>
                       <div class="col-md-2">
@@ -496,19 +495,22 @@
                         <label class="col-md-4 col-form-label" for="text-input">{{'Temperature step' | translate}} </label>
                         <div class="col-md-2">
                           <div class="input-group">
-                            <input type="text" class="form-control form-control-sm" [disabled]="ischeckUser" placeholder="0.00" [(ngModel)]="report.CONTOUR2D_TEMP_STEP">
+                            <input type="text" class="form-control form-control-sm" [disabled]="ischeckUser" placeholder="0.00" 
+                            [(ngModel)]="report.CONTOUR2D_TEMP_STEP">
                           </div>
                         </div>
                         <div class="col-md-2">
                           <div class="input-group">
-                            <input type="text" class="form-control form-control-sm" [disabled]="ischeckUser" placeholder="0.00" [(ngModel)]="report.refContRep2DTempStepRef" disabled>
+                            <input type="text" class="form-control form-control-sm" [disabled]="ischeckUser" placeholder="0.00" 
+                            [(ngModel)]="report.refContRep2DTempStepRef" disabled>
                           </div>
                         </div>
                       </div>
                     </ng-template>
       
-                    <div class="form-group row" style="margin-left:10px;" *ngIf="report.productElmt.ID_SHAPE == 1 || report.productElmt.ID_SHAPE == 6; else checkContourTemperatureMin">
-                      <label class="col-md-4 col-form-label" for="text-input">{{'Temperature Min' | translate}}  ({{ report.temperatureSymbol }})</label>
+                    <div class="form-group row" style="margin-left:10px;" *ngIf="report.productElmt.ID_SHAPE == 1 
+                    || report.productElmt.ID_SHAPE == 6; else checkContourTemperatureMin">
+                      <label class="col-md-4 col-form-label" for="text-input">{{'Temperature Min' | translate}}  ({{ temperatureSymbol }})</label>
                       <div class="col-md-2">
                         <div class="input-group">
                           <input type="text" class="form-control form-control-sm" placeholder="0.00" disabled>
@@ -517,21 +519,26 @@
                     </div>
                     <ng-template #checkContourTemperatureMin>
                       <div class="form-group row" style="margin-left:10px;" >
-                        <label class="col-md-4 col-form-label" for="text-input">{{'Temperature Min' | translate}}  ({{ report.temperatureSymbol }})</label>
+                        <label class="col-md-4 col-form-label" for="text-input">{{'Temperature Min' | translate}}  ({{ temperatureSymbol }})</label>
                         <div class="col-md-2">
                           <div class="input-group">
-                            <input type="text" class="form-control form-control-sm" [disabled]="ischeckUser" placeholder="0.00" [(ngModel)]="report.CONTOUR2D_TEMP_MIN">
+                            <input type="text" class="form-control form-control-sm" [disabled]="ischeckUser" placeholder="0.00" 
+                            [(ngModel)]="report.CONTOUR2D_TEMP_MIN">
                           </div>
                         </div>
                         <div class="col-md-2">
                           <div class="input-group">
-                            <input type="text" class="form-control form-control-sm" [disabled]="ischeckUser" placeholder="0.00" [(ngModel)]="report.refContRep2DTempMinRef" disabled>
+                            <input type="text" class="form-control form-control-sm" [disabled]="ischeckUser" placeholder="0.00" 
+                            [(ngModel)]="report.refContRep2DTempMinRef" disabled>
                           </div>
                         </div>
                       </div>
                     </ng-template>
-                    <div class="form-group row" style="margin-left:10px;" *ngIf="report.productElmt.ID_SHAPE == 1 || report.productElmt.ID_SHAPE == 6; else checkContourTemperatureMax">
-                      <label class="col-md-4 col-form-label" for="text-input">{{'Temperature Max' | translate}}  ({{ report.temperatureSymbol }})</label>
+
+
+                    <div class="form-group row" style="margin-left:10px;" *ngIf="report.productElmt.ID_SHAPE == 1 
+                    || report.productElmt.ID_SHAPE == 6; else checkContourTemperatureMax">
+                      <label class="col-md-4 col-form-label" for="text-input">{{'Temperature Max' | translate}}  ({{ temperatureSymbol }})</label>
                       <div class="col-md-2">
                         <div class="input-group">
                           <input type="text" class="form-control form-control-sm" [disabled]="ischeckUser" placeholder="0.00" disabled>
@@ -540,7 +547,7 @@
                     </div>
                     <ng-template #checkContourTemperatureMax>
                       <div class="form-group row" style="margin-left:10px;" >
-                        <label class="col-md-4 col-form-label" for="text-input">{{'Temperature Max' | translate}}  ({{ report.temperatureSymbol }})</label>
+                        <label class="col-md-4 col-form-label" for="text-input">{{'Temperature Max' | translate}}  ({{ temperatureSymbol }})</label>
                         <div class="col-md-2">
                           <div class="input-group">
                             <input type="text" class="form-control form-control-sm" [disabled]="ischeckUser" placeholder="0.00" [(ngModel)]="report.CONTOUR2D_TEMP_MAX">
@@ -559,7 +566,7 @@
             <table class="table table-bordered table-sm" *ngIf="report.isThereCompleteNumericalResults">
               <tr>
                 <td colspan="3">
-                    <strong>{{'Following-up Point (mm)' | translate}}</strong>
+                    <strong>{{'Following-up Point ' | translate}} ({{ meshesSymbol }})</strong>
                     <button class="btn btn-primary btn-sm" [disabled]="ischeckUser" style="float:right;margin-right:10px;"> {{'Selected points' | translate}}</button>
                 </td>
               </tr>
