@@ -21,13 +21,12 @@ export class AuthenticationService {
   }
 
   login(username: string, password: string) {
-    console.log('auth service send login');
+    // console.log('auth service send login');
     return this.api.login({ username, password })
       .do(resp => this.setSession(resp));
   }
 
   private setSession(authResponse) {
-    console.log(authResponse.token);
     // const expiresAt = moment().add(authResponse.expiresIn, 'second');
     localStorage.setItem('token', authResponse.token);
     localStorage.setItem('user', JSON.stringify(authResponse.user));

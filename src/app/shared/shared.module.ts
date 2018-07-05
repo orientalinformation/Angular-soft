@@ -12,6 +12,8 @@ import { LaddaModule } from 'angular2-ladda';
 import { AppSpinnerComponent, HighchartsChartComponent } from '../components';
 import { TempProfileEditorComponent } from '../components';
 import { CommentComponent } from './comment/comment.component';
+import { TranslateModule } from '@ngx-translate/core';
+// import { CodemirrorModule } from 'codemirror';
 
 @NgModule({
   entryComponents: [
@@ -26,7 +28,8 @@ import { CommentComponent } from './comment/comment.component';
     AuthenticationModule,
     FormsModule,
     ReactiveFormsModule,
-    NgxLocalizedNumbers.forRoot()
+    NgxLocalizedNumbers.forRoot(),
+    // CodemirrorModule
   ],
   declarations: [
     AppSpinnerComponent,

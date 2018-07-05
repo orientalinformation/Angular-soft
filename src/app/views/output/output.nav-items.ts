@@ -1,5 +1,5 @@
 const outputChart = localStorage.getItem('outputChart');
-console.log(outputChart);
+// console.log(outputChart);
 if (outputChart != null) {
     this.productChartNav = [
         {

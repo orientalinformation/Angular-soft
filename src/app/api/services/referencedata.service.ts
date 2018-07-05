@@ -17,6 +17,7 @@ import { NewEquipment } from '../models/new-equipment';
 import { ViewCurve } from '../models/view-curve';
 import { ViewTempSetPoint } from '../models/view-temp-set-point';
 import { VComponent } from '../models/vcomponent';
+import { RefEquipment } from '../models/ref-equipment';
 import { ViewFamily } from '../models/view-family';
 import { ViewTemperature } from '../models/view-temperature';
 import { ResultCalculateFreeze } from '../models/result-calculate-freeze';
@@ -26,7 +27,6 @@ import { FilterEquipment } from '../models/filter-equipment';
 import { ViewPackingElmt } from '../models/view-packing-elmt';
 import { ViewPipeLineElmt } from '../models/view-pipe-line-elmt';
 import { ViewEquipment } from '../models/view-equipment';
-import { RefEquipment } from '../models/ref-equipment';
 import { SaveEquipment } from '../models/save-equipment';
 import { SaveAsEquipment } from '../models/save-as-equipment';
 import { EquipmentFamily } from '../models/equipment-family';
@@ -359,6 +359,45 @@ export class ReferencedataService extends BaseService {
    */
   getComponentById(id: number): Observable<VComponent> {
     return this.getComponentByIdResponse(id).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * get equipment from input
+   * @param idEquip - id equip
+   */
+  getInputEquipmentResponse(idEquip: number): Observable<HttpResponse<RefEquipment>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    
+    let req = new HttpRequest<any>(
+      "GET",
+      this.rootUrl + `/referencedata/inputequipment/${idEquip}`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: RefEquipment = null;
+        _body = _resp.body as RefEquipment
+        return _resp.clone({body: _body}) as HttpResponse<RefEquipment>;
+      })
+    );
+  }
+
+  /**
+   * get equipment from input
+   * @param idEquip - id equip
+   */
+  getInputEquipment(idEquip: number): Observable<RefEquipment> {
+    return this.getInputEquipmentResponse(idEquip).pipe(
       map(_r => _r.body)
     );
   }

@@ -239,7 +239,7 @@ export class TempProfileEditorComponent implements OnInit {
   }
 
   clearAll() {
-    console.log('clear', this.size);
+    // console.log('clear', this.size);
     this.svgData = JSON.parse(localStorage.getItem('svgData'));
     if (this.svgData) {
       this.oTemp = [this.getOInit()];
@@ -261,8 +261,8 @@ export class TempProfileEditorComponent implements OnInit {
   }
 
   generatePoints() {
-    console.log('Generate point');
-    console.log(this.size);
+    // console.log('Generate point');
+    // console.log(this.size);
   }
 
   getOInit() {

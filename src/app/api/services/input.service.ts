@@ -63,6 +63,48 @@ export class InputService extends BaseService {
     );
   }
   /**
+   * Update study
+   * @param idStudy - study id
+   * @param COMMENT_TXT - study comment
+   */
+  updateStudyResponse(params: InputService.UpdateStudyParams): Observable<HttpResponse<number>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    
+    if (params.COMMENTTXT != null) __params = __params.set("COMMENT_TXT", params.COMMENTTXT.toString());
+    let req = new HttpRequest<any>(
+      "PUT",
+      this.rootUrl + `/input/update/${params.idStudy}`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'text'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: number = null;
+        _body = parseFloat(_resp.body as string)
+        return _resp.clone({body: _body}) as HttpResponse<number>;
+      })
+    );
+  }
+
+  /**
+   * Update study
+   * @param idStudy - study id
+   * @param COMMENT_TXT - study comment
+   */
+  updateStudy(params: InputService.UpdateStudyParams): Observable<number> {
+    return this.updateStudyResponse(params).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
    * get data svg
    */
   getDataSvgChartResponse(): Observable<HttpResponse<SVGChart>> {
@@ -178,6 +220,10 @@ export class InputService extends BaseService {
   }}
 
 export module InputService {
+  export interface UpdateStudyParams {
+    idStudy: number;
+    COMMENTTXT?: string;
+  }
   export interface GetDataTempointParams {
     INDEXTEMP: number;
     IDPROD: number;

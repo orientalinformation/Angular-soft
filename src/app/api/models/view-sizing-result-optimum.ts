@@ -10,4 +10,5 @@ export class ViewSizingResultOptimum {
     availableEquipment?: SizingOptimumData;
     dataGrapChart?: SizingOptimumData;
     productFlowRate?: number;
+    imageSizing?: string;
 }

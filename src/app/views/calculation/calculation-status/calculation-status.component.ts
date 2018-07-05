@@ -28,7 +28,7 @@ export class CalculationStatusComponent implements OnInit {
     this.apiCaculator.getMyStudies(this.study_current).subscribe(
       data => {
         this.studies = data;
-        console.log(this.studies);
+        // console.log(this.studies);
         this.isLoading = false;
       },
       err => {

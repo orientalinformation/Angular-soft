@@ -90,10 +90,10 @@ export class UnitsComponent implements OnInit, AfterViewInit {
     }
   }
   onModalValuePrice() {
-    console.log(this.priceMoneySelect);
+    // console.log(this.priceMoneySelect);
     this.api.getMonetaryCurrencyById(this.priceMoneySelect).subscribe(
       data => {
-        console.log(this.priceText);
+        // console.log(this.priceText);
         this.priceText = data.MONEY_TEXT;
         this.priceSymbol = data.MONEY_SYMB;
       }
@@ -110,12 +110,12 @@ export class UnitsComponent implements OnInit, AfterViewInit {
     }
   }
   savePrice() {
-    console.log(this.modifyPrice);
+    // console.log(this.modifyPrice);
     if (this.modifyPrice == 1) {
       if (this.priceText == '') {
-        swal('Oops..', this.translate.instant('Enter a value in Text !'), 'error');
+        swal('Warning', this.translate.instant('Enter a value in Text !'), 'error');
       } else if (this.priceSymbol == '') {
-        swal('Oops..', this.translate.instant('Enter a value in Symbol !'), 'error');
+        swal('Warning', this.translate.instant('Enter a value in Symbol !'), 'error');
       }
       const params = {
         ID_MONETARY_CURRENCY: this.priceMoneySelect,
@@ -133,9 +133,9 @@ export class UnitsComponent implements OnInit, AfterViewInit {
     }
     if (this.modifyPrice == 0) {
       if (this.priceTextNew == '') {
-        swal('Oops..', this.translate.instant('Enter a value in Text !'), 'error');
+        swal('Warning', this.translate.instant('Enter a value in Text !'), 'error');
       } else if (this.priceSymbolNew == '') {
-        swal('Oops..', this.translate.instant('Enter a value in Symbol !'), 'error');
+        swal('Warning', this.translate.instant('Enter a value in Symbol !'), 'error');
       }
       const params = {
         MONEY_TEXT: this.priceTextNew,
@@ -185,19 +185,19 @@ export class UnitsComponent implements OnInit, AfterViewInit {
   saveUnit() {
     if (this.modifyUnit == 1) {
       if (this.valueUnitSymbol == '') {
-        swal('Oops..', this.translate.instant('Enter a value in Symbol !'), 'error');
+        swal('Warning', this.translate.instant('Enter a value in Symbol !'), 'error');
         return false;
       } else if (!this.valueUnitCoeffA) {
-        swal('Oops..', this.translate.instant('Enter a value in A !'), 'error');
+        swal('Warning', this.translate.instant('Enter a value in A !'), 'error');
         return false;
       } else if (Number.isInteger(Math.floor(this.valueUnitCoeffA)) === false) {
-        swal('Oops..', this.translate.instant('Not a valid number in A !'), 'error');
+        swal('Warning', this.translate.instant('Not a valid number in A !'), 'error');
         return false;
       } else if (!this.valueUnitCoeffB) {
-        swal('Oops..', this.translate.instant('Enter a value in B !'), 'error');
+        swal('Warning', this.translate.instant('Enter a value in B !'), 'error');
         return false;
       } else if (Number.isInteger(Math.floor(this.valueUnitCoeffB)) === false) {
-        swal('Oops..', this.translate.instant('Not a valid number in B !'), 'error');
+        swal('Warning', this.translate.instant('Not a valid number in B !'), 'error');
         return false;
       }
       const params = {
@@ -216,8 +216,8 @@ export class UnitsComponent implements OnInit, AfterViewInit {
           this.refeshView();
         },
         (err) => {
-          swal('Error', err.error.message, 'error');
-          console.log(err);
+          swal('Error',this.translate.instant( err.error.message), 'error');
+          // console.log(err);
         },
         () => {
         }
@@ -225,13 +225,13 @@ export class UnitsComponent implements OnInit, AfterViewInit {
     }
     if (this.modifyUnit == 0) {
       if (this.newUnitSymbol == '') {
-        swal('Oops..', this.translate.instant('Enter a value in Symbol !'), 'error');
+        swal('Warning', this.translate.instant('Enter a value in Symbol !'), 'error');
         return false;
       } else if (Number.isInteger(Math.floor(this.newUnitCoeffA)) === false) {
-        swal('Oops..', this.translate.instant('Not a valid number in A !'), 'error');
+        swal('Warning', this.translate.instant('Not a valid number in A !'), 'error');
         return false;
       } else if (Number.isInteger(Math.floor(this.newUnitCoeffB)) === false) {
-        swal('Oops..', this.translate.instant('Not a valid number in B !'), 'error');
+        swal('Warning', this.translate.instant('Not a valid number in B !'), 'error');
         return false;
       }
       const params = {
@@ -252,8 +252,8 @@ export class UnitsComponent implements OnInit, AfterViewInit {
           this.refeshView();
         },
         (err) => {
-          swal('Error', err.error.message, 'error');
-          console.log(err);
+          swal('Error', this.translate.instant(err.error.message), 'error');
+          // console.log(err);
         },
         () => {
         }

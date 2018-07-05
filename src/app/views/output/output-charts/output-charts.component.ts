@@ -283,6 +283,7 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
   public sort = 1;
   public percent = 0;
   public contourValue;
+  public planDisabled = false;
 
   public POINT_TOP_X: number;
   public POINT_TOP_Y: number;
@@ -357,9 +358,9 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
       this.study = JSON.parse(localStorage.getItem('study'));
       this.api.getstudyEquipmentProductChart(this.study.ID_STUDY).subscribe(
         dataEquip => {
-          console.log(dataEquip);
+          // console.log(dataEquip);
           if (dataEquip == '') {
-            swal('Oops..', 'This study has no product charts results.', 'error');
+            swal('Warning', 'This study has no product charts results.', 'error');
             this.router.navigate(['/output/preliminary']);
           } else {
             this.outputProductChartList = dataEquip;
@@ -367,7 +368,10 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
             this.api.getProductElmt(this.study.ID_STUDY).subscribe(
               data => {
                 this.shape = data.SHAPECODE;
-                console.log(this.shape);
+                if (this.shape == 1 || this.shape == 6) {
+                  this.planDisabled = true;
+                }
+                // console.log(this.shape);
               }
             );
             this.refeshView();
@@ -382,10 +386,11 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
         this.symbol = data;
         this.activePage = 'location';
         this.loadData();
-        console.log(this.radioMeshAxis);
-        console.log(this.radioMeshPlan);
+        // console.log(this.radioMeshAxis);
+        // console.log(this.radioMeshPlan);
         this.api.getTempRecordPts(this.study.ID_STUDY).subscribe(
           dataTemp => {
+            // console.log(dataTemp);
             this.tempRecordPts = dataTemp;
             this.nbSteps = dataTemp.NB_STEPS;
             this.NB_STEPS = this.nbSteps;
@@ -818,7 +823,7 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
             }
           };
         }
-        console.log(this.axis3Disable);
+        // console.log(this.axis3Disable);
         if (this.shape == 2 || this.shape == 9) {
           if (this.outputProductChart.ORIENTATION == 1) {
             this.plan1Disable = false;
@@ -843,91 +848,94 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
           this.selectedPlan = 3;
         }
         this.imgProd3D = 'assets/img/output/' + this.folderImg + '/shape.png';
-        console.log(this.plan3Disable);
+        // console.log(this.plan3Disable);
         this.api.getlocationAxisSelected(this.study.ID_STUDY).subscribe(
           data => {
-            console.log(data);
+            // console.log(data);
             this.locationAxisSelected = data;
-            this.selectedPointStorage.point.top.x = data['top'][0];
-            this.selectedPointStorage.point.top.y = data['top'][1];
-            this.selectedPointStorage.point.top.z = data['top'][2];
-            this.selectedPointStorage.point.int.x = data['int'][0];
-            this.selectedPointStorage.point.int.y = data['int'][1];
-            this.selectedPointStorage.point.int.z = data['int'][2];
-            this.selectedPointStorage.point.bot.x = data['bot'][0];
-            this.selectedPointStorage.point.bot.y = data['bot'][1];
-            this.selectedPointStorage.point.bot.z = data['bot'][2];
+            this.selectedPointStorage.point.top.x = data['top'][0].value;
+            this.selectedPointStorage.point.top.y = data['top'][1].value;
+            this.selectedPointStorage.point.top.z = data['top'][2].value;
+            this.selectedPointStorage.point.int.x = data['int'][0].value;
+            this.selectedPointStorage.point.int.y = data['int'][1].value;
+            this.selectedPointStorage.point.int.z = data['int'][2].value;
+            this.selectedPointStorage.point.bot.x = data['bot'][0].value;
+            this.selectedPointStorage.point.bot.y = data['bot'][1].value;
+            this.selectedPointStorage.point.bot.z = data['bot'][2].value;
+            this.selectedPointStorage.plan.x = data['plan'][0].value;
+            this.selectedPointStorage.plan.y = data['plan'][1].value;
+            this.selectedPointStorage.plan.z = data['plan'][2].value;
             if (this.shape == 1) {
-              this.selectedPointStorage.axis.axe1.x = data['axe1'][0];
-              this.selectedPointStorage.axis.axe1.y = data['axe1'][1];
-              this.selectedPointStorage.axis.axe1.z = data['axe1'][2];
-              this.selectedPointStorage.axis.axe2.x = data['axe2'][0];
-              this.selectedPointStorage.axis.axe2.y = data['axe2'][1];
-              this.selectedPointStorage.axis.axe2.z = data['axe2'][2];
-              this.selectedPointStorage.axis.axe3.x = data['axe3'][0];
-              this.selectedPointStorage.axis.axe3.y = data['axe3'][1];
-              this.selectedPointStorage.axis.axe3.z = data['axe3'][2];
+              this.selectedPointStorage.axis.axe1.x = data['axe1'][0].value;
+              this.selectedPointStorage.axis.axe1.y = data['axe1'][1].value;
+              this.selectedPointStorage.axis.axe1.z = data['axe1'][2].value;
+              this.selectedPointStorage.axis.axe2.x = data['axe2'][0].value;
+              this.selectedPointStorage.axis.axe2.y = data['axe2'][1].value;
+              this.selectedPointStorage.axis.axe2.z = data['axe2'][2].value;
+              this.selectedPointStorage.axis.axe3.x = data['axe3'][0].value;
+              this.selectedPointStorage.axis.axe3.y = data['axe3'][1].value;
+              this.selectedPointStorage.axis.axe3.z = data['axe3'][2].value;
             } else if (this.shape == 2 || this.shape == 9) {
               if (this.outputProductChart.ORIENTATION == 1) {
-                this.selectedPointStorage.axis.axe1.x = data['axe3'][0];
-                this.selectedPointStorage.axis.axe1.y = data['axe3'][1];
-                this.selectedPointStorage.axis.axe1.z = data['axe3'][2];
-                this.selectedPointStorage.axis.axe2.x = data['axe2'][0];
-                this.selectedPointStorage.axis.axe2.y = data['axe2'][1];
-                this.selectedPointStorage.axis.axe2.z = data['axe2'][2];
-                this.selectedPointStorage.axis.axe3.x = data['axe1'][0];
-                this.selectedPointStorage.axis.axe3.y = data['axe1'][1];
-                this.selectedPointStorage.axis.axe3.z = data['axe1'][2];
+                this.selectedPointStorage.axis.axe1.x = data['axe3'][0].value;
+                this.selectedPointStorage.axis.axe1.y = data['axe3'][1].value;
+                this.selectedPointStorage.axis.axe1.z = data['axe3'][2].value;
+                this.selectedPointStorage.axis.axe2.x = data['axe2'][0].value;
+                this.selectedPointStorage.axis.axe2.y = data['axe2'][1].value;
+                this.selectedPointStorage.axis.axe2.z = data['axe2'][2].value;
+                this.selectedPointStorage.axis.axe3.x = data['axe1'][0].value;
+                this.selectedPointStorage.axis.axe3.y = data['axe1'][1].value;
+                this.selectedPointStorage.axis.axe3.z = data['axe1'][2].value;
               } else {
-                this.selectedPointStorage.axis.axe1.x = data['axe1'][0];
-                this.selectedPointStorage.axis.axe1.y = data['axe1'][1];
-                this.selectedPointStorage.axis.axe1.z = data['axe1'][2];
-                this.selectedPointStorage.axis.axe2.x = data['axe2'][0];
-                this.selectedPointStorage.axis.axe2.y = data['axe2'][1];
-                this.selectedPointStorage.axis.axe2.z = data['axe2'][2];
-                this.selectedPointStorage.axis.axe3.x = data['axe3'][0];
-                this.selectedPointStorage.axis.axe3.y = data['axe3'][1];
-                this.selectedPointStorage.axis.axe3.z = data['axe3'][2];
+                this.selectedPointStorage.axis.axe1.x = data['axe1'][0].value;
+                this.selectedPointStorage.axis.axe1.y = data['axe1'][1].value;
+                this.selectedPointStorage.axis.axe1.z = data['axe1'][2].value;
+                this.selectedPointStorage.axis.axe2.x = data['axe2'][0].value;
+                this.selectedPointStorage.axis.axe2.y = data['axe2'][1].value;
+                this.selectedPointStorage.axis.axe2.z = data['axe2'][2].value;
+                this.selectedPointStorage.axis.axe3.x = data['axe3'][0].value;
+                this.selectedPointStorage.axis.axe3.y = data['axe3'][1].value;
+                this.selectedPointStorage.axis.axe3.z = data['axe3'][2].value;
               }
             } else if (this.shape == 3) {
               if (this.outputProductChart.ORIENTATION == 1) {
-                this.selectedPointStorage.axis.axe1.x = data['axe3'][0];
-                this.selectedPointStorage.axis.axe1.y = data['axe3'][1];
-                this.selectedPointStorage.axis.axe1.z = data['axe3'][2];
-                this.selectedPointStorage.axis.axe2.x = data['axe1'][0];
-                this.selectedPointStorage.axis.axe2.y = data['axe1'][1];
-                this.selectedPointStorage.axis.axe2.z = data['axe1'][2];
-                this.selectedPointStorage.axis.axe3.x = data['axe2'][0];
-                this.selectedPointStorage.axis.axe3.y = data['axe2'][1];
-                this.selectedPointStorage.axis.axe3.z = data['axe2'][2];
+                this.selectedPointStorage.axis.axe1.x = data['axe3'][0].value;
+                this.selectedPointStorage.axis.axe1.y = data['axe3'][1].value;
+                this.selectedPointStorage.axis.axe1.z = data['axe3'][2].value;
+                this.selectedPointStorage.axis.axe2.x = data['axe1'][0].value;
+                this.selectedPointStorage.axis.axe2.y = data['axe1'][1].value;
+                this.selectedPointStorage.axis.axe2.z = data['axe1'][2].value;
+                this.selectedPointStorage.axis.axe3.x = data['axe2'][0].value;
+                this.selectedPointStorage.axis.axe3.y = data['axe2'][1].value;
+                this.selectedPointStorage.axis.axe3.z = data['axe2'][2].value;
               } else {
-                this.selectedPointStorage.axis.axe1.x = data['axe2'][0];
-                this.selectedPointStorage.axis.axe1.y = data['axe2'][1];
-                this.selectedPointStorage.axis.axe1.z = data['axe2'][2];
-                this.selectedPointStorage.axis.axe2.x = data['axe1'][0];
-                this.selectedPointStorage.axis.axe2.y = data['axe1'][1];
-                this.selectedPointStorage.axis.axe2.z = data['axe1'][2];
-                this.selectedPointStorage.axis.axe3.x = data['axe3'][0];
-                this.selectedPointStorage.axis.axe3.y = data['axe3'][1];
-                this.selectedPointStorage.axis.axe3.z = data['axe3'][2];
+                this.selectedPointStorage.axis.axe1.x = data['axe2'][0].value;
+                this.selectedPointStorage.axis.axe1.y = data['axe2'][1].value;
+                this.selectedPointStorage.axis.axe1.z = data['axe2'][2].value;
+                this.selectedPointStorage.axis.axe2.x = data['axe1'][0].value;
+                this.selectedPointStorage.axis.axe2.y = data['axe1'][1].value;
+                this.selectedPointStorage.axis.axe2.z = data['axe1'][2].value;
+                this.selectedPointStorage.axis.axe3.x = data['axe3'][0].value;
+                this.selectedPointStorage.axis.axe3.y = data['axe3'][1].value;
+                this.selectedPointStorage.axis.axe3.z = data['axe3'][2].value;
               }
             } else if (this.shape == 4 || this.shape == 5) {
-              this.selectedPointStorage.axis.axe1.x = data['axe1'][0];
-              this.selectedPointStorage.axis.axe1.y = data['axe1'][1];
-              this.selectedPointStorage.axis.axe1.z = data['axe1'][2];
-              this.selectedPointStorage.axis.axe2.x = data['axe2'][0];
-              this.selectedPointStorage.axis.axe2.y = data['axe2'][1];
-              this.selectedPointStorage.axis.axe2.z = data['axe2'][2];
+              this.selectedPointStorage.axis.axe1.x = data['axe1'][0].value;
+              this.selectedPointStorage.axis.axe1.y = data['axe1'][1].value;
+              this.selectedPointStorage.axis.axe1.z = data['axe1'][2].value;
+              this.selectedPointStorage.axis.axe2.x = data['axe2'][0].value;
+              this.selectedPointStorage.axis.axe2.y = data['axe2'][1].value;
+              this.selectedPointStorage.axis.axe2.z = data['axe2'][2].value;
               this.selectedPointStorage.axis.axe3.x = 0.0;
               this.selectedPointStorage.axis.axe3.y = 0.0;
               this.selectedPointStorage.axis.axe3.z = 0.0;
             } else if (this.shape ==7 || this.shape == 8) {
-              this.selectedPointStorage.axis.axe1.x = data['axe2'][0];
-              this.selectedPointStorage.axis.axe1.y = data['axe2'][1];
-              this.selectedPointStorage.axis.axe1.z = data['axe2'][2];
-              this.selectedPointStorage.axis.axe2.x = data['axe1'][0];
-              this.selectedPointStorage.axis.axe2.y = data['axe1'][1];
-              this.selectedPointStorage.axis.axe2.z = data['axe1'][2];
+              this.selectedPointStorage.axis.axe1.x = data['axe2'][0].value;
+              this.selectedPointStorage.axis.axe1.y = data['axe2'][1].value;
+              this.selectedPointStorage.axis.axe1.z = data['axe2'][2].value;
+              this.selectedPointStorage.axis.axe2.x = data['axe1'][0].value;
+              this.selectedPointStorage.axis.axe2.y = data['axe1'][1].value;
+              this.selectedPointStorage.axis.axe2.z = data['axe1'][2].value;
               this.selectedPointStorage.axis.axe3.x = 0.0;
               this.selectedPointStorage.axis.axe3.y = 0.0;
               this.selectedPointStorage.axis.axe3.z = 0.0;
@@ -935,9 +943,9 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
               this.selectedPointStorage.axis.axe1.x = 0.0;
               this.selectedPointStorage.axis.axe1.y = 0.0;
               this.selectedPointStorage.axis.axe1.z = 0.0;
-              this.selectedPointStorage.axis.axe2.x = data['axe1'][0];
-              this.selectedPointStorage.axis.axe2.y = data['axe1'][1];
-              this.selectedPointStorage.axis.axe2.z = data['axe1'][2];
+              this.selectedPointStorage.axis.axe2.x = data['axe1'][0].value;
+              this.selectedPointStorage.axis.axe2.y = data['axe1'][1].value;
+              this.selectedPointStorage.axis.axe2.z = data['axe1'][2].value;
               this.selectedPointStorage.axis.axe3.x = 0.0;
               this.selectedPointStorage.axis.axe3.y = 0.0;
               this.selectedPointStorage.axis.axe3.z = 0.0;
@@ -952,10 +960,7 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
               this.selectedPointStorage.axis.axe3.y = 0.0;
               this.selectedPointStorage.axis.axe3.z = 0.0;
             }
-            this.selectedPointStorage.plan.x = data['plan'][0];
-            this.selectedPointStorage.plan.y = data['plan'][1];
-            this.selectedPointStorage.plan.z = data['plan'][2];
-            console.log(this.selectedPointStorage);
+            // console.log(this.selectedPointStorage);
           }
         );
         this.api.getMeshPoints(this.study.ID_STUDY).subscribe(
@@ -1001,7 +1006,7 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
               this.mesAxisYData = [];
               this.mesAxisZData = [];
             }
-            console.log(data);
+            // console.log(data);
           }
         );
       }
@@ -1079,7 +1084,7 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
     this.mesAxisXSelected = 0;
     this.mesAxisYSelected = 0;
     this.mesAxisZSelected = 0;
-    console.log(this.outputProductChart.ORIENTATION);
+    // console.log(this.outputProductChart.ORIENTATION);
     this.activeBtn = 'axis';
     this.radioDisable = false;
     this.radio1Disable = this.radioMeshAxis.obj1;
@@ -1179,10 +1184,11 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
   onrbChange(recordType, value) {
     this.selectDisable = false;
     this.radioChecked = value;
-    console.log(this.shape);
-    console.log(this.selectedPointStorage);
+    // console.log(this.shape);
+    // console.log(this.selectedPointStorage);
     this.api.getMeshPoints(this.study.ID_STUDY).subscribe(
       data => {
+        // console.log(data);
         if (this.shape == 1) {
           this.mesAxisX = data[0];
           this.mesAxisY = data[1];
@@ -1224,7 +1230,7 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
           this.mesAxisY = [];
           this.mesAxisZ = [];
         }
-        console.log(data);
+        // console.log(data);
         if (recordType === 'points') {
           if (value === 0) {
             this.select1Disable = this.selectedMeshPoint.obj1.x;
@@ -1244,7 +1250,7 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
           }
         }
         if (recordType === 'axis') {
-          console.log(this.shape);
+          // console.log(this.shape);
           if (this.shape == 2 || this.shape == 9) {
             if (this.outputProductChart.ORIENTATION == 1) {
               this.imgAxis.axis1 = 'axe3.png';
@@ -1654,15 +1660,15 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
         this.mesAxisZSelected = this.selectedPointStorage.plan.z;
       }
     }
-    console.log(this.mesAxisXSelected);
-    console.log(this.mesAxisYSelected);
-    console.log(this.mesAxisZSelected);
+    // console.log(this.mesAxisXSelected);
+    // console.log(this.mesAxisYSelected);
+    // console.log(this.mesAxisZSelected);
   }
 
   changeX() {
-    console.log(this.recordType);
-    console.log(this.radioChecked);
-    console.log(this.mesAxisXSelected);
+    // console.log(this.recordType);
+    // console.log(this.radioChecked);
+    // console.log(this.mesAxisXSelected);
     if (this.recordType === 'points') {
       if (this.radioChecked === 0) {
         if (this.shape == 1) {
@@ -1838,12 +1844,12 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
         this.selectedPointStorage.plan.x = this.mesAxisXSelected;
       }
     }
-    console.log(this.selectedPointStorage);
+    // console.log(this.selectedPointStorage);
   }
 
   changeY() {
-    console.log(this.recordType);
-    console.log(this.radioChecked);
+    // console.log(this.recordType);
+    // console.log(this.radioChecked);
     if (this.recordType === 'points') {
       if (this.radioChecked === 0) {
         if (this.shape == 1) {
@@ -2022,8 +2028,8 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
   }
 
   changeZ() {
-    console.log(this.recordType);
-    console.log(this.radioChecked);
+    // console.log(this.recordType);
+    // console.log(this.radioChecked);
     if (this.recordType === 'points') {
       if (this.radioChecked === 0) {
         if (this.shape == 1) {
@@ -2143,7 +2149,7 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
           this.selectedPointStorage.axis.axe2.z = this.mesAxisZSelected;
         } else if (this.shape == 7 || this.shape == 8) {
           this.selectedPointStorage.axis.axe2.z = this.mesAxisZSelected;
-        } else if (this.shape == 6){
+        } else if (this.shape == 6) {
           this.selectedPointStorage.axis.axe2.z = this.mesAxisZSelected;
         } else {
           this.selectedPointStorage.axis.axe2.z = this.mesAxisZSelected;
@@ -2167,7 +2173,7 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
           this.selectedPointStorage.axis.axe3.z = this.mesAxisZSelected;
         } else if (this.shape == 7 || this.shape == 8) {
           this.selectedPointStorage.axis.axe3.z = this.mesAxisZSelected;
-        } else if (this.shape == 6){
+        } else if (this.shape == 6) {
           this.selectedPointStorage.axis.axe3.z = this.mesAxisZSelected;
         } else {
           this.selectedPointStorage.axis.axe3.z = this.mesAxisZSelected;
@@ -2193,20 +2199,20 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
         this.selectedPointStorage.plan.z = this.mesAxisZSelected;
       } else if (this.shape == 7 || this.shape == 8) {
         this.selectedPointStorage.plan.z = this.mesAxisZSelected;
-      } else if (this.shape == 6){
+      } else if (this.shape == 6) {
         this.selectedPointStorage.plan.z = this.mesAxisZSelected;
       } else {
         this.selectedPointStorage.plan.z = this.mesAxisZSelected;
       }
     }
-    console.log(this.mesAxisZSelected);
+    // console.log(this.mesAxisZSelected);
   }
 
   saveAll() {
-    console.log(this.mesAxisXData);
-    console.log(this.mesAxisYData);
-    console.log(this.mesAxisZData);
-    console.log(this.selectedPointStorage);
+    // console.log(this.mesAxisXData);
+    // console.log(this.mesAxisYData);
+    // console.log(this.mesAxisZData);
+    // console.log(this.selectedPointStorage);
     if (!this.nbSteps) {
       this.toastr.error(this.translate.instant('Enter a value in Number of samples !'), 'Error');
       return;
@@ -2216,207 +2222,207 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
     }
 
     if (this.shape == 1) {
-      this.POINT_TOP_X = this.getValueSelected('x', this.selectedPointStorage.point.top.x);
-      this.POINT_TOP_Y = this.getValueSelected('y', this.selectedPointStorage.point.top.y);
-      this.POINT_TOP_Z = this.getValueSelected('z', this.selectedPointStorage.point.top.z);
-      this.POINT_INT_X = this.getValueSelected('x', this.selectedPointStorage.point.int.x);
-      this.POINT_INT_Y = this.getValueSelected('y', this.selectedPointStorage.point.int.y);
-      this.POINT_INT_Z = this.getValueSelected('z', this.selectedPointStorage.point.int.z);
-      this.POINT_BOT_X = this.getValueSelected('x', this.selectedPointStorage.point.bot.x);
-      this.POINT_BOT_Y = this.getValueSelected('y', this.selectedPointStorage.point.bot.y);
-      this.POINT_BOT_Z = this.getValueSelected('z', this.selectedPointStorage.point.bot.z);
-      this.AXIS_AXE1_X = this.getValueSelected('x', this.selectedPointStorage.axis.axe1.x);
-      this.AXIS_AXE1_Y = this.getValueSelected('y', this.selectedPointStorage.axis.axe1.y);
-      this.AXIS_AXE1_Z = this.getValueSelected('z', this.selectedPointStorage.axis.axe1.z);
-      this.AXIS_AXE2_X = this.getValueSelected('x', this.selectedPointStorage.axis.axe2.x);
-      this.AXIS_AXE2_Y = this.getValueSelected('y', this.selectedPointStorage.axis.axe2.y);
-      this.AXIS_AXE2_Z = this.getValueSelected('z', this.selectedPointStorage.axis.axe2.z);
-      this.AXIS_AXE3_X = this.getValueSelected('x', this.selectedPointStorage.axis.axe3.x);
-      this.AXIS_AXE3_Y = this.getValueSelected('y', this.selectedPointStorage.axis.axe3.y);
-      this.AXIS_AXE3_Z = this.getValueSelected('z', this.selectedPointStorage.axis.axe3.z);
-      this.PLAN_X = this.getValueSelected('x', this.selectedPointStorage.plan.x);
-      this.PLAN_Y = this.getValueSelected('y', this.selectedPointStorage.plan.y);
-      this.PLAN_Z = this.getValueSelected('z', this.selectedPointStorage.plan.z);
+      this.POINT_TOP_X = this.selectedPointStorage.point.top.x;
+      this.POINT_TOP_Y = this.selectedPointStorage.point.top.y;
+      this.POINT_TOP_Z = this.selectedPointStorage.point.top.z;
+      this.POINT_INT_X = this.selectedPointStorage.point.int.x;
+      this.POINT_INT_Y = this.selectedPointStorage.point.int.y;
+      this.POINT_INT_Z = this.selectedPointStorage.point.int.z;
+      this.POINT_BOT_X = this.selectedPointStorage.point.bot.x;
+      this.POINT_BOT_Y = this.selectedPointStorage.point.bot.y;
+      this.POINT_BOT_Z = this.selectedPointStorage.point.bot.z;
+      this.AXIS_AXE1_X = this.selectedPointStorage.axis.axe1.x;
+      this.AXIS_AXE1_Y = this.selectedPointStorage.axis.axe1.y;
+      this.AXIS_AXE1_Z = this.selectedPointStorage.axis.axe1.z;
+      this.AXIS_AXE2_X = this.selectedPointStorage.axis.axe2.x;
+      this.AXIS_AXE2_Y = this.selectedPointStorage.axis.axe2.y;
+      this.AXIS_AXE2_Z = this.selectedPointStorage.axis.axe2.z;
+      this.AXIS_AXE3_X = this.selectedPointStorage.axis.axe3.x;
+      this.AXIS_AXE3_Y = this.selectedPointStorage.axis.axe3.y;
+      this.AXIS_AXE3_Z = this.selectedPointStorage.axis.axe3.z;
+      this.PLAN_X = this.selectedPointStorage.plan.x;
+      this.PLAN_Y = this.selectedPointStorage.plan.y;
+      this.PLAN_Z = this.selectedPointStorage.plan.z;
     } else if (this.shape == 2 || this.shape == 9) {
       if (this.outputProductChart.ORIENTATION == 1) {
-        this.POINT_TOP_X = this.getValueSelected('x', this.selectedPointStorage.point.top.z);
-        this.POINT_TOP_Y = this.getValueSelected('y', this.selectedPointStorage.point.top.y);
-        this.POINT_TOP_Z = this.getValueSelected('z', this.selectedPointStorage.point.top.x);
-        this.POINT_INT_X = this.getValueSelected('x', this.selectedPointStorage.point.int.z);
-        this.POINT_INT_Y = this.getValueSelected('y', this.selectedPointStorage.point.int.y);
-        this.POINT_INT_Z = this.getValueSelected('z', this.selectedPointStorage.point.int.x);
-        this.POINT_BOT_X = this.getValueSelected('x', this.selectedPointStorage.point.bot.z);
-        this.POINT_BOT_Y = this.getValueSelected('y', this.selectedPointStorage.point.bot.y);
-        this.POINT_BOT_Z = this.getValueSelected('z', this.selectedPointStorage.point.bot.x);
-        this.AXIS_AXE1_X = this.getValueSelected('x', this.selectedPointStorage.axis.axe1.z);
-        this.AXIS_AXE1_Y = this.getValueSelected('y', this.selectedPointStorage.axis.axe1.y);
-        this.AXIS_AXE1_Z = this.getValueSelected('z', this.selectedPointStorage.axis.axe1.x);
-        this.AXIS_AXE2_X = this.getValueSelected('x', this.selectedPointStorage.axis.axe2.z);
-        this.AXIS_AXE2_Y = this.getValueSelected('y', this.selectedPointStorage.axis.axe2.y);
-        this.AXIS_AXE2_Z = this.getValueSelected('z', this.selectedPointStorage.axis.axe2.x);
-        this.AXIS_AXE3_X = this.getValueSelected('x', this.selectedPointStorage.axis.axe3.z);
-        this.AXIS_AXE3_Y = this.getValueSelected('y', this.selectedPointStorage.axis.axe3.y);
-        this.AXIS_AXE3_Z = this.getValueSelected('z', this.selectedPointStorage.axis.axe3.x);
-        this.PLAN_X = this.getValueSelected('x', this.selectedPointStorage.plan.z);
-        this.PLAN_Y = this.getValueSelected('y', this.selectedPointStorage.plan.y);
-        this.PLAN_Z = this.getValueSelected('z', this.selectedPointStorage.plan.x);
+        this.POINT_TOP_X = this.selectedPointStorage.point.top.z;
+        this.POINT_TOP_Y = this.selectedPointStorage.point.top.y;
+        this.POINT_TOP_Z = this.selectedPointStorage.point.top.x;
+        this.POINT_INT_X = this.selectedPointStorage.point.int.z;
+        this.POINT_INT_Y = this.selectedPointStorage.point.int.y;
+        this.POINT_INT_Z = this.selectedPointStorage.point.int.x;
+        this.POINT_BOT_X = this.selectedPointStorage.point.bot.z;
+        this.POINT_BOT_Y = this.selectedPointStorage.point.bot.y;
+        this.POINT_BOT_Z = this.selectedPointStorage.point.bot.x;
+        this.AXIS_AXE1_X = this.selectedPointStorage.axis.axe1.z;
+        this.AXIS_AXE1_Y = this.selectedPointStorage.axis.axe1.y;
+        this.AXIS_AXE1_Z = this.selectedPointStorage.axis.axe1.x;
+        this.AXIS_AXE2_X = this.selectedPointStorage.axis.axe2.z;
+        this.AXIS_AXE2_Y = this.selectedPointStorage.axis.axe2.y;
+        this.AXIS_AXE2_Z = this.selectedPointStorage.axis.axe2.x;
+        this.AXIS_AXE3_X = this.selectedPointStorage.axis.axe3.z;
+        this.AXIS_AXE3_Y = this.selectedPointStorage.axis.axe3.y;
+        this.AXIS_AXE3_Z = this.selectedPointStorage.axis.axe3.x;
+        this.PLAN_X = this.selectedPointStorage.plan.z;
+        this.PLAN_Y = this.selectedPointStorage.plan.y;
+        this.PLAN_Z = this.selectedPointStorage.plan.x;
       } else {
-        this.POINT_TOP_X = this.getValueSelected('x', this.selectedPointStorage.point.top.x);
-        this.POINT_TOP_Y = this.getValueSelected('y', this.selectedPointStorage.point.top.y);
-        this.POINT_TOP_Z = this.getValueSelected('z', this.selectedPointStorage.point.top.z);
-        this.POINT_INT_X = this.getValueSelected('x', this.selectedPointStorage.point.int.x);
-        this.POINT_INT_Y = this.getValueSelected('y', this.selectedPointStorage.point.int.y);
-        this.POINT_INT_Z = this.getValueSelected('z', this.selectedPointStorage.point.int.z);
-        this.POINT_BOT_X = this.getValueSelected('x', this.selectedPointStorage.point.bot.x);
-        this.POINT_BOT_Y = this.getValueSelected('y', this.selectedPointStorage.point.bot.y);
-        this.POINT_BOT_Z = this.getValueSelected('z', this.selectedPointStorage.point.bot.z);
-        this.AXIS_AXE1_X = this.getValueSelected('x', this.selectedPointStorage.axis.axe1.x);
-        this.AXIS_AXE1_Y = this.getValueSelected('y', this.selectedPointStorage.axis.axe1.y);
-        this.AXIS_AXE1_Z = this.getValueSelected('z', this.selectedPointStorage.axis.axe1.z);
-        this.AXIS_AXE2_X = this.getValueSelected('x', this.selectedPointStorage.axis.axe2.x);
-        this.AXIS_AXE2_Y = this.getValueSelected('y', this.selectedPointStorage.axis.axe2.y);
-        this.AXIS_AXE2_Z = this.getValueSelected('z', this.selectedPointStorage.axis.axe2.z);
-        this.AXIS_AXE3_X = this.getValueSelected('x', this.selectedPointStorage.axis.axe3.x);
-        this.AXIS_AXE3_Y = this.getValueSelected('y', this.selectedPointStorage.axis.axe3.y);
-        this.AXIS_AXE3_Z = this.getValueSelected('z', this.selectedPointStorage.axis.axe3.z);
-        this.PLAN_X = this.getValueSelected('x', this.selectedPointStorage.plan.x);
-        this.PLAN_Y = this.getValueSelected('y', this.selectedPointStorage.plan.y);
-        this.PLAN_Z = this.getValueSelected('z', this.selectedPointStorage.plan.z);
+        this.POINT_TOP_X = this.selectedPointStorage.point.top.x;
+        this.POINT_TOP_Y = this.selectedPointStorage.point.top.y;
+        this.POINT_TOP_Z = this.selectedPointStorage.point.top.z;
+        this.POINT_INT_X = this.selectedPointStorage.point.int.x;
+        this.POINT_INT_Y = this.selectedPointStorage.point.int.y;
+        this.POINT_INT_Z = this.selectedPointStorage.point.int.z;
+        this.POINT_BOT_X = this.selectedPointStorage.point.bot.x;
+        this.POINT_BOT_Y = this.selectedPointStorage.point.bot.y;
+        this.POINT_BOT_Z = this.selectedPointStorage.point.bot.z;
+        this.AXIS_AXE1_X = this.selectedPointStorage.axis.axe1.x;
+        this.AXIS_AXE1_Y = this.selectedPointStorage.axis.axe1.y;
+        this.AXIS_AXE1_Z = this.selectedPointStorage.axis.axe1.z;
+        this.AXIS_AXE2_X = this.selectedPointStorage.axis.axe2.x;
+        this.AXIS_AXE2_Y = this.selectedPointStorage.axis.axe2.y;
+        this.AXIS_AXE2_Z = this.selectedPointStorage.axis.axe2.z;
+        this.AXIS_AXE3_X = this.selectedPointStorage.axis.axe3.x;
+        this.AXIS_AXE3_Y = this.selectedPointStorage.axis.axe3.y;
+        this.AXIS_AXE3_Z = this.selectedPointStorage.axis.axe3.z;
+        this.PLAN_X = this.selectedPointStorage.plan.x;
+        this.PLAN_Y = this.selectedPointStorage.plan.y;
+        this.PLAN_Z = this.selectedPointStorage.plan.z;
       }
     } else if (this.shape == 3) {
       if (this.outputProductChart.ORIENTATION == 1) {
-        this.POINT_TOP_X = this.getValueSelected('x', this.selectedPointStorage.point.top.z);
-        this.POINT_TOP_Y = this.getValueSelected('y', this.selectedPointStorage.point.top.x);
-        this.POINT_TOP_Z = this.getValueSelected('z', this.selectedPointStorage.point.top.y);
-        this.POINT_INT_X = this.getValueSelected('x', this.selectedPointStorage.point.int.z);
-        this.POINT_INT_Y = this.getValueSelected('y', this.selectedPointStorage.point.int.x);
-        this.POINT_INT_Z = this.getValueSelected('z', this.selectedPointStorage.point.int.y);
-        this.POINT_BOT_X = this.getValueSelected('x', this.selectedPointStorage.point.bot.z);
-        this.POINT_BOT_Y = this.getValueSelected('y', this.selectedPointStorage.point.bot.x);
-        this.POINT_BOT_Z = this.getValueSelected('z', this.selectedPointStorage.point.bot.y);
-        this.AXIS_AXE1_X = this.getValueSelected('x', this.selectedPointStorage.axis.axe1.z);
-        this.AXIS_AXE1_Y = this.getValueSelected('y', this.selectedPointStorage.axis.axe1.x);
-        this.AXIS_AXE1_Z = this.getValueSelected('z', this.selectedPointStorage.axis.axe1.y);
-        this.AXIS_AXE2_X = this.getValueSelected('x', this.selectedPointStorage.axis.axe2.z);
-        this.AXIS_AXE2_Y = this.getValueSelected('y', this.selectedPointStorage.axis.axe2.x);
-        this.AXIS_AXE2_Z = this.getValueSelected('z', this.selectedPointStorage.axis.axe2.y);
-        this.AXIS_AXE3_X = this.getValueSelected('x', this.selectedPointStorage.axis.axe3.z);
-        this.AXIS_AXE3_Y = this.getValueSelected('y', this.selectedPointStorage.axis.axe3.x);
-        this.AXIS_AXE3_Z = this.getValueSelected('z', this.selectedPointStorage.axis.axe3.y);
-        this.PLAN_X = this.getValueSelected('x', this.selectedPointStorage.plan.z);
-        this.PLAN_Y = this.getValueSelected('y', this.selectedPointStorage.plan.x);
-        this.PLAN_Z = this.getValueSelected('z', this.selectedPointStorage.plan.y);
+        this.POINT_TOP_X = this.selectedPointStorage.point.top.z;
+        this.POINT_TOP_Y = this.selectedPointStorage.point.top.x;
+        this.POINT_TOP_Z = this.selectedPointStorage.point.top.y;
+        this.POINT_INT_X = this.selectedPointStorage.point.int.z;
+        this.POINT_INT_Y = this.selectedPointStorage.point.int.x;
+        this.POINT_INT_Z = this.selectedPointStorage.point.int.y;
+        this.POINT_BOT_X = this.selectedPointStorage.point.bot.z;
+        this.POINT_BOT_Y = this.selectedPointStorage.point.bot.x;
+        this.POINT_BOT_Z = this.selectedPointStorage.point.bot.y;
+        this.AXIS_AXE1_X = this.selectedPointStorage.axis.axe1.z;
+        this.AXIS_AXE1_Y = this.selectedPointStorage.axis.axe1.x;
+        this.AXIS_AXE1_Z = this.selectedPointStorage.axis.axe1.y;
+        this.AXIS_AXE2_X = this.selectedPointStorage.axis.axe2.z;
+        this.AXIS_AXE2_Y = this.selectedPointStorage.axis.axe2.x;
+        this.AXIS_AXE2_Z = this.selectedPointStorage.axis.axe2.y;
+        this.AXIS_AXE3_X = this.selectedPointStorage.axis.axe3.z;
+        this.AXIS_AXE3_Y = this.selectedPointStorage.axis.axe3.x;
+        this.AXIS_AXE3_Z = this.selectedPointStorage.axis.axe3.y;
+        this.PLAN_X = this.selectedPointStorage.plan.z;
+        this.PLAN_Y = this.selectedPointStorage.plan.x;
+        this.PLAN_Z = this.selectedPointStorage.plan.y;
       } else {
-        this.POINT_TOP_X = this.getValueSelected('x', this.selectedPointStorage.point.top.y);
-        this.POINT_TOP_Y = this.getValueSelected('y', this.selectedPointStorage.point.top.x);
-        this.POINT_TOP_Z = this.getValueSelected('z', this.selectedPointStorage.point.top.z);
-        this.POINT_INT_X = this.getValueSelected('x', this.selectedPointStorage.point.int.y);
-        this.POINT_INT_Y = this.getValueSelected('y', this.selectedPointStorage.point.int.x);
-        this.POINT_INT_Z = this.getValueSelected('z', this.selectedPointStorage.point.int.z);
-        this.POINT_BOT_X = this.getValueSelected('x', this.selectedPointStorage.point.bot.y);
-        this.POINT_BOT_Y = this.getValueSelected('y', this.selectedPointStorage.point.bot.x);
-        this.POINT_BOT_Z = this.getValueSelected('z', this.selectedPointStorage.point.bot.z);
-        this.AXIS_AXE1_X = this.getValueSelected('x', this.selectedPointStorage.axis.axe1.y);
-        this.AXIS_AXE1_Y = this.getValueSelected('y', this.selectedPointStorage.axis.axe1.x);
-        this.AXIS_AXE1_Z = this.getValueSelected('z', this.selectedPointStorage.axis.axe1.z);
-        this.AXIS_AXE2_X = this.getValueSelected('x', this.selectedPointStorage.axis.axe2.y);
-        this.AXIS_AXE2_Y = this.getValueSelected('y', this.selectedPointStorage.axis.axe2.x);
-        this.AXIS_AXE2_Z = this.getValueSelected('z', this.selectedPointStorage.axis.axe2.z);
-        this.AXIS_AXE3_X = this.getValueSelected('x', this.selectedPointStorage.axis.axe3.y);
-        this.AXIS_AXE3_Y = this.getValueSelected('y', this.selectedPointStorage.axis.axe3.x);
-        this.AXIS_AXE3_Z = this.getValueSelected('z', this.selectedPointStorage.axis.axe3.z);
-        this.PLAN_X = this.getValueSelected('x', this.selectedPointStorage.plan.y);
-        this.PLAN_Y = this.getValueSelected('y', this.selectedPointStorage.plan.x);
-        this.PLAN_Z = this.getValueSelected('z', this.selectedPointStorage.plan.z);
+        this.POINT_TOP_X = this.selectedPointStorage.point.top.y;
+        this.POINT_TOP_Y = this.selectedPointStorage.point.top.x;
+        this.POINT_TOP_Z = this.selectedPointStorage.point.top.z;
+        this.POINT_INT_X = this.selectedPointStorage.point.int.y;
+        this.POINT_INT_Y = this.selectedPointStorage.point.int.x;
+        this.POINT_INT_Z = this.selectedPointStorage.point.int.z;
+        this.POINT_BOT_X = this.selectedPointStorage.point.bot.y;
+        this.POINT_BOT_Y = this.selectedPointStorage.point.bot.x;
+        this.POINT_BOT_Z = this.selectedPointStorage.point.bot.z;
+        this.AXIS_AXE1_X = this.selectedPointStorage.axis.axe1.y;
+        this.AXIS_AXE1_Y = this.selectedPointStorage.axis.axe1.x;
+        this.AXIS_AXE1_Z = this.selectedPointStorage.axis.axe1.z;
+        this.AXIS_AXE2_X = this.selectedPointStorage.axis.axe2.y;
+        this.AXIS_AXE2_Y = this.selectedPointStorage.axis.axe2.x;
+        this.AXIS_AXE2_Z = this.selectedPointStorage.axis.axe2.z;
+        this.AXIS_AXE3_X = this.selectedPointStorage.axis.axe3.y;
+        this.AXIS_AXE3_Y = this.selectedPointStorage.axis.axe3.x;
+        this.AXIS_AXE3_Z = this.selectedPointStorage.axis.axe3.z;
+        this.PLAN_X = this.selectedPointStorage.axis.axe3.y;
+        this.PLAN_Y = this.selectedPointStorage.plan.x;
+        this.PLAN_Z = this.selectedPointStorage.plan.z;
       }
     } else if (this.shape == 4 || this.shape == 5) {
-      this.POINT_TOP_X = this.getValueSelected('x', this.selectedPointStorage.point.top.x);
-      this.POINT_TOP_Y = this.getValueSelected('y', this.selectedPointStorage.point.top.y);
-      this.POINT_TOP_Z = this.getValueSelected('z', this.selectedPointStorage.point.top.z);
-      this.POINT_INT_X = this.getValueSelected('x', this.selectedPointStorage.point.int.x);
-      this.POINT_INT_Y = this.getValueSelected('y', this.selectedPointStorage.point.int.y);
-      this.POINT_INT_Z = this.getValueSelected('z', this.selectedPointStorage.point.int.z);
-      this.POINT_BOT_X = this.getValueSelected('x', this.selectedPointStorage.point.bot.x);
-      this.POINT_BOT_Y = this.getValueSelected('y', this.selectedPointStorage.point.bot.y);
-      this.POINT_BOT_Z = this.getValueSelected('z', this.selectedPointStorage.point.bot.z);
-      this.AXIS_AXE1_X = this.getValueSelected('x', this.selectedPointStorage.axis.axe1.x);
-      this.AXIS_AXE1_Y = this.getValueSelected('y', this.selectedPointStorage.axis.axe1.y);
-      this.AXIS_AXE1_Z = this.getValueSelected('z', this.selectedPointStorage.axis.axe1.z);
-      this.AXIS_AXE2_X = this.getValueSelected('x', this.selectedPointStorage.axis.axe2.x);
-      this.AXIS_AXE2_Y = this.getValueSelected('y', this.selectedPointStorage.axis.axe2.y);
-      this.AXIS_AXE2_Z = this.getValueSelected('z', this.selectedPointStorage.axis.axe2.z);
-      this.AXIS_AXE3_X = this.getValueSelected('x', this.selectedPointStorage.axis.axe3.x);
-      this.AXIS_AXE3_Y = this.getValueSelected('y', this.selectedPointStorage.axis.axe3.y);
-      this.AXIS_AXE3_Z = this.getValueSelected('z', this.selectedPointStorage.axis.axe3.z);
-      this.PLAN_X = this.getValueSelected('x', this.selectedPointStorage.plan.x);
-      this.PLAN_Y = this.getValueSelected('y', this.selectedPointStorage.plan.y);
-      this.PLAN_Z = this.getValueSelected('z', this.selectedPointStorage.plan.z);
+      this.POINT_TOP_X = this.selectedPointStorage.point.top.x;
+      this.POINT_TOP_Y = this.selectedPointStorage.point.top.y;
+      this.POINT_TOP_Z = this.selectedPointStorage.point.top.z;
+      this.POINT_INT_X = this.selectedPointStorage.point.int.x;
+      this.POINT_INT_Y = this.selectedPointStorage.point.int.y;
+      this.POINT_INT_Z = this.selectedPointStorage.point.int.z;
+      this.POINT_BOT_X = this.selectedPointStorage.point.bot.x;
+      this.POINT_BOT_Y = this.selectedPointStorage.point.bot.y;
+      this.POINT_BOT_Z = this.selectedPointStorage.point.bot.z;
+      this.AXIS_AXE1_X = this.selectedPointStorage.axis.axe1.x;
+      this.AXIS_AXE1_Y = this.selectedPointStorage.axis.axe1.y;
+      this.AXIS_AXE1_Z = this.selectedPointStorage.axis.axe1.z;
+      this.AXIS_AXE2_X = this.selectedPointStorage.axis.axe2.x;
+      this.AXIS_AXE2_Y = this.selectedPointStorage.axis.axe2.y;
+      this.AXIS_AXE2_Z = this.selectedPointStorage.axis.axe2.z;
+      this.AXIS_AXE3_X = this.selectedPointStorage.axis.axe3.x;
+      this.AXIS_AXE3_Y = this.selectedPointStorage.axis.axe3.y;
+      this.AXIS_AXE3_Z = this.selectedPointStorage.axis.axe3.z;
+      this.PLAN_X = this.selectedPointStorage.plan.x;
+      this.PLAN_Y = this.selectedPointStorage.plan.y;
+      this.PLAN_Z = this.selectedPointStorage.plan.z;
     } else if (this.shape == 7 || this.shape == 8) {
-      this.POINT_TOP_X = this.getValueSelected('x', this.selectedPointStorage.point.top.y);
-      this.POINT_TOP_Y = this.getValueSelected('y', this.selectedPointStorage.point.top.x);
-      this.POINT_TOP_Z = this.getValueSelected('z', this.selectedPointStorage.point.top.z);
-      this.POINT_INT_X = this.getValueSelected('x', this.selectedPointStorage.point.int.y);
-      this.POINT_INT_Y = this.getValueSelected('y', this.selectedPointStorage.point.int.x);
-      this.POINT_INT_Z = this.getValueSelected('z', this.selectedPointStorage.point.int.z);
-      this.POINT_BOT_X = this.getValueSelected('x', this.selectedPointStorage.point.bot.y);
-      this.POINT_BOT_Y = this.getValueSelected('y', this.selectedPointStorage.point.bot.x);
-      this.POINT_BOT_Z = this.getValueSelected('z', this.selectedPointStorage.point.bot.z);
-      this.AXIS_AXE1_X = this.getValueSelected('x', this.selectedPointStorage.axis.axe1.y);
-      this.AXIS_AXE1_Y = this.getValueSelected('y', this.selectedPointStorage.axis.axe1.x);
-      this.AXIS_AXE1_Z = this.getValueSelected('z', this.selectedPointStorage.axis.axe1.z);
-      this.AXIS_AXE2_X = this.getValueSelected('x', this.selectedPointStorage.axis.axe2.y);
-      this.AXIS_AXE2_Y = this.getValueSelected('y', this.selectedPointStorage.axis.axe2.x);
-      this.AXIS_AXE2_Z = this.getValueSelected('z', this.selectedPointStorage.axis.axe2.z);
-      this.AXIS_AXE3_X = this.getValueSelected('x', this.selectedPointStorage.axis.axe3.y);
-      this.AXIS_AXE3_Y = this.getValueSelected('y', this.selectedPointStorage.axis.axe3.x);
-      this.AXIS_AXE3_Z = this.getValueSelected('z', this.selectedPointStorage.axis.axe3.z);
-      this.PLAN_X = this.getValueSelected('x', this.selectedPointStorage.plan.y);
-      this.PLAN_Y = this.getValueSelected('y', this.selectedPointStorage.plan.x);
-      this.PLAN_Z = this.getValueSelected('z', this.selectedPointStorage.plan.z);
+      this.POINT_TOP_X = this.selectedPointStorage.point.top.y;
+      this.POINT_TOP_Y = this.selectedPointStorage.point.top.x;
+      this.POINT_TOP_Z = this.selectedPointStorage.point.top.z;
+      this.POINT_INT_X = this.selectedPointStorage.point.int.y;
+      this.POINT_INT_Y = this.selectedPointStorage.point.int.x;
+      this.POINT_INT_Z = this.selectedPointStorage.point.int.z;
+      this.POINT_BOT_X = this.selectedPointStorage.point.bot.y;
+      this.POINT_BOT_Y = this.selectedPointStorage.point.bot.x;
+      this.POINT_BOT_Z = this.selectedPointStorage.point.bot.z;
+      this.AXIS_AXE1_X = this.selectedPointStorage.axis.axe1.y;
+      this.AXIS_AXE1_Y = this.selectedPointStorage.axis.axe1.x;
+      this.AXIS_AXE1_Z = this.selectedPointStorage.axis.axe1.z;
+      this.AXIS_AXE2_X = this.selectedPointStorage.axis.axe2.y;
+      this.AXIS_AXE2_Y = this.selectedPointStorage.axis.axe2.x;
+      this.AXIS_AXE2_Z = this.selectedPointStorage.axis.axe2.z;
+      this.AXIS_AXE3_X = this.selectedPointStorage.axis.axe3.y;
+      this.AXIS_AXE3_Y = this.selectedPointStorage.axis.axe3.x;
+      this.AXIS_AXE3_Z = this.selectedPointStorage.axis.axe3.z;
+      this.PLAN_X = this.selectedPointStorage.axis.axe3.y;
+      this.PLAN_Y = this.selectedPointStorage.plan.x;
+      this.PLAN_Z = this.selectedPointStorage.plan.z;
     } else if (this.shape == 6) {
-      this.POINT_TOP_X = this.getValueSelected('x', this.selectedPointStorage.point.top.x);
-      this.POINT_TOP_Y = this.getValueSelected('y', this.selectedPointStorage.point.top.y);
-      this.POINT_TOP_Z = this.getValueSelected('z', this.selectedPointStorage.point.top.z);
-      this.POINT_INT_X = this.getValueSelected('x', this.selectedPointStorage.point.int.x);
-      this.POINT_INT_Y = this.getValueSelected('y', this.selectedPointStorage.point.int.y);
-      this.POINT_INT_Z = this.getValueSelected('z', this.selectedPointStorage.point.int.z);
-      this.POINT_BOT_X = this.getValueSelected('x', this.selectedPointStorage.point.bot.x);
-      this.POINT_BOT_Y = this.getValueSelected('y', this.selectedPointStorage.point.bot.y);
-      this.POINT_BOT_Z = this.getValueSelected('z', this.selectedPointStorage.point.bot.z);
-      this.AXIS_AXE1_X = this.getValueSelected('x', this.selectedPointStorage.axis.axe1.x);
-      this.AXIS_AXE1_Y = this.getValueSelected('y', this.selectedPointStorage.axis.axe1.y);
-      this.AXIS_AXE1_Z = this.getValueSelected('z', this.selectedPointStorage.axis.axe1.z);
-      this.AXIS_AXE2_X = this.getValueSelected('x', this.selectedPointStorage.axis.axe2.x);
-      this.AXIS_AXE2_Y = this.getValueSelected('y', this.selectedPointStorage.axis.axe2.y);
-      this.AXIS_AXE2_Z = this.getValueSelected('z', this.selectedPointStorage.axis.axe2.z);
-      this.AXIS_AXE3_X = this.getValueSelected('x', this.selectedPointStorage.axis.axe3.x);
-      this.AXIS_AXE3_Y = this.getValueSelected('y', this.selectedPointStorage.axis.axe3.y);
-      this.AXIS_AXE3_Z = this.getValueSelected('z', this.selectedPointStorage.axis.axe3.z);
-      this.PLAN_X = this.getValueSelected('x', this.selectedPointStorage.plan.x);
-      this.PLAN_Y = this.getValueSelected('y', this.selectedPointStorage.plan.y);
-      this.PLAN_Z = this.getValueSelected('z', this.selectedPointStorage.plan.z);
+      this.POINT_TOP_X = this.selectedPointStorage.point.top.x;
+      this.POINT_TOP_Y = this.selectedPointStorage.point.top.y;
+      this.POINT_TOP_Z = this.selectedPointStorage.point.top.z;
+      this.POINT_INT_X = this.selectedPointStorage.point.int.x;
+      this.POINT_INT_Y = this.selectedPointStorage.point.int.y;
+      this.POINT_INT_Z = this.selectedPointStorage.point.int.z;
+      this.POINT_BOT_X = this.selectedPointStorage.point.bot.x;
+      this.POINT_BOT_Y = this.selectedPointStorage.point.bot.y;
+      this.POINT_BOT_Z = this.selectedPointStorage.point.bot.z;
+      this.AXIS_AXE1_X = this.selectedPointStorage.axis.axe1.x;
+      this.AXIS_AXE1_Y = this.selectedPointStorage.axis.axe1.y;
+      this.AXIS_AXE1_Z = this.selectedPointStorage.axis.axe1.z;
+      this.AXIS_AXE2_X = this.selectedPointStorage.axis.axe2.x;
+      this.AXIS_AXE2_Y = this.selectedPointStorage.axis.axe2.y;
+      this.AXIS_AXE2_Z = this.selectedPointStorage.axis.axe2.z;
+      this.AXIS_AXE3_X = this.selectedPointStorage.axis.axe3.x;
+      this.AXIS_AXE3_Y = this.selectedPointStorage.axis.axe3.y;
+      this.AXIS_AXE3_Z = this.selectedPointStorage.axis.axe3.z;
+      this.PLAN_X = this.selectedPointStorage.plan.x;
+      this.PLAN_Y = this.selectedPointStorage.plan.y;
+      this.PLAN_Z = this.selectedPointStorage.plan.z;
     } else {
-      this.POINT_TOP_X = this.getValueSelected('x', this.selectedPointStorage.point.top.x);
-      this.POINT_TOP_Y = this.getValueSelected('y', this.selectedPointStorage.point.top.y);
-      this.POINT_TOP_Z = this.getValueSelected('z', this.selectedPointStorage.point.top.z);
-      this.POINT_INT_X = this.getValueSelected('x', this.selectedPointStorage.point.int.x);
-      this.POINT_INT_Y = this.getValueSelected('y', this.selectedPointStorage.point.int.y);
-      this.POINT_INT_Z = this.getValueSelected('z', this.selectedPointStorage.point.int.z);
-      this.POINT_BOT_X = this.getValueSelected('x', this.selectedPointStorage.point.bot.x);
-      this.POINT_BOT_Y = this.getValueSelected('y', this.selectedPointStorage.point.bot.y);
-      this.POINT_BOT_Z = this.getValueSelected('z', this.selectedPointStorage.point.bot.z);
-      this.AXIS_AXE1_X = this.getValueSelected('x', this.selectedPointStorage.axis.axe1.x);
-      this.AXIS_AXE1_Y = this.getValueSelected('y', this.selectedPointStorage.axis.axe1.y);
-      this.AXIS_AXE1_Z = this.getValueSelected('z', this.selectedPointStorage.axis.axe1.z);
-      this.AXIS_AXE2_X = this.getValueSelected('x', this.selectedPointStorage.axis.axe2.x);
-      this.AXIS_AXE2_Y = this.getValueSelected('y', this.selectedPointStorage.axis.axe2.y);
-      this.AXIS_AXE2_Z = this.getValueSelected('z', this.selectedPointStorage.axis.axe2.z);
-      this.AXIS_AXE3_X = this.getValueSelected('x', this.selectedPointStorage.axis.axe3.x);
-      this.AXIS_AXE3_Y = this.getValueSelected('y', this.selectedPointStorage.axis.axe3.y);
-      this.AXIS_AXE3_Z = this.getValueSelected('z', this.selectedPointStorage.axis.axe3.z);
-      this.PLAN_X = this.getValueSelected('x', this.selectedPointStorage.plan.x);
-      this.PLAN_Y = this.getValueSelected('y', this.selectedPointStorage.plan.y);
-      this.PLAN_Z = this.getValueSelected('z', this.selectedPointStorage.plan.z);
+      this.POINT_TOP_X = this.selectedPointStorage.point.top.x;
+      this.POINT_TOP_Y = this.selectedPointStorage.point.top.y;
+      this.POINT_TOP_Z = this.selectedPointStorage.point.top.z;
+      this.POINT_INT_X = this.selectedPointStorage.point.int.x;
+      this.POINT_INT_Y = this.selectedPointStorage.point.int.y;
+      this.POINT_INT_Z = this.selectedPointStorage.point.int.z;
+      this.POINT_BOT_X = this.selectedPointStorage.point.bot.x;
+      this.POINT_BOT_Y = this.selectedPointStorage.point.bot.y;
+      this.POINT_BOT_Z = this.selectedPointStorage.point.bot.z;
+      this.AXIS_AXE1_X = this.selectedPointStorage.axis.axe1.x;
+      this.AXIS_AXE1_Y = this.selectedPointStorage.axis.axe1.y;
+      this.AXIS_AXE1_Z = this.selectedPointStorage.axis.axe1.z;
+      this.AXIS_AXE2_X = this.selectedPointStorage.axis.axe2.x;
+      this.AXIS_AXE2_Y = this.selectedPointStorage.axis.axe2.y;
+      this.AXIS_AXE2_Z = this.selectedPointStorage.axis.axe2.z;
+      this.AXIS_AXE3_X = this.selectedPointStorage.axis.axe3.x;
+      this.AXIS_AXE3_Y = this.selectedPointStorage.axis.axe3.y;
+      this.AXIS_AXE3_Z = this.selectedPointStorage.axis.axe3.z;
+      this.PLAN_X = this.selectedPointStorage.plan.x;
+      this.PLAN_Y = this.selectedPointStorage.plan.y;
+      this.PLAN_Z = this.selectedPointStorage.plan.z;
     }
     const params: Models.LocationAxisParams = {
       ID_STUDY_EQUIPMENTS: this.outputProductChart.ID_STUDY_EQUIPMENTS,
@@ -2443,7 +2449,10 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
       PLAN_Y: this.PLAN_Y,
       PLAN_Z: this.PLAN_Z,
     };
-    console.log(params);
+    // console.log(this.mesAxisXData);
+    // console.log(this.mesAxisYData);
+    // console.log(this.mesAxisZData);
+    // console.log(params);
     this.api.saveLocationAxis({
       id: this.study.ID_STUDY,
       body: params
@@ -2497,6 +2506,7 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
     this.displayProductSectionPage = false;
     this.displayTimeBasePage = false;
     this.display2dOutlinePage = false;
+    this.loadLocationData = false;
     this.refeshView();
   }
 
@@ -2509,9 +2519,10 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
     this.displayProductSectionPage = false;
     this.displayTimeBasePage = false;
     this.display2dOutlinePage = false;
+    this.loadHeatExchangeData = false;
     this.api.getstudyEquipmentProductChart(this.study.ID_STUDY).subscribe(
       data => {
-        console.log(data);
+        // console.log(data);
         for (let i = 0; i < Object.keys(data).length; i++) {
           if (data[i].ID_STUDY_EQUIPMENTS == this.selectedEquip) {
             this.outputProductChart = data[i];
@@ -2572,9 +2583,9 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
                   }],
               }
             };
+            this.loadHeatExchangeData = true;
           }
         );
-        this.loadHeatExchangeData = true;
       }
     );
   }
@@ -2588,6 +2599,7 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
     this.displayProductSectionPage = true;
     this.displayTimeBasePage = false;
     this.display2dOutlinePage = false;
+    this.loadProductSectionData = false;
     const params: ApiService.ProductSectionParams = {
       idStudy: this.study.ID_STUDY,
       idStudyEquipment: this.outputProductChart['ID_STUDY_EQUIPMENTS'],
@@ -2595,6 +2607,7 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
     };
     this.api.productSection(params).subscribe(
       data => {
+        // console.log(data);
         this.productSectionDataChart = data.dataChart;
         this.productSectionResult = data.resultLabel;
         this.productSectionValue = data.result.resultValue;
@@ -2621,9 +2634,10 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
     this.displayProductSectionPage = false;
     this.displayTimeBasePage = true;
     this.display2dOutlinePage = false;
+    this.loadTimeBaseData = false;
     this.api.getstudyEquipmentProductChart(this.study.ID_STUDY).subscribe(
       data => {
-        console.log(data);
+        // console.log(data);
         for (let i = 0; i < Object.keys(data).length; i++) {
           if (data[i].ID_STUDY_EQUIPMENTS == this.selectedEquip) {
             this.outputProductChart = data[i];
@@ -2635,7 +2649,7 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
         };
         this.api.timeBased(params).subscribe(
           dataTimeBased => {
-            console.log(dataTimeBased);
+            // console.log(dataTimeBased);
             this.timeBasedResult = dataTimeBased.result;
             this.timeBasedCurve = dataTimeBased.curve;
             this.timeBasedLabel = dataTimeBased.label;
@@ -2653,7 +2667,7 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
               type: 'line', radius: 0, fill: false, borderColor: 'rgb(0,255,0)', backgroundColor: 'rgb(0,255,0)', borderWidth: 2}
             ];
             this.timeBasedChartData =  chartData;
-            console.log(this.timeBasedChartData);
+            // console.log(this.timeBasedChartData);
             this.timeBasedChartOptions = {
               animation: false,
               responsive: false,
@@ -2710,15 +2724,18 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
     this.displayProductSectionPage = false;
     this.displayTimeBasePage = false;
     this.display2dOutlinePage = true;
+    this.displayContourChart = false;
     const params: ApiService.Productchart2DParams = {
       idStudy: this.study.ID_STUDY,
       idStudyEquipment: this.outputProductChart['ID_STUDY_EQUIPMENTS'],
       selectedPlan: this.selectedPlan,
       dimension: this.translate.instant('Dimension')
     };
+    this.loadProductChartData = false;
+    this.displayContourChart = false;
     this.api.getstudyEquipmentProductChart(this.study.ID_STUDY).subscribe(
     data => {
-      console.log(data);
+      // console.log(data);
       for (let i = 0; i < Object.keys(data).length; i++) {
         if (data[i].ID_STUDY_EQUIPMENTS == this.selectedEquip) {
           this.outputProductChart = data[i];
@@ -2731,7 +2748,7 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
       );
       this.api.productchart2D(params).subscribe(
         dataPr => {
-          console.log(dataPr);
+          // console.log(dataPr);
           this.minTempStep = dataPr.minMax.minTempStep;
           this.maxTempStep = dataPr.minMax.maxTempStep;
           this.minTemperature = dataPr.minMax.minTemperature;
@@ -2760,7 +2777,7 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
   }
 
   changeAxePS() {
-    console.log(this.selectedAxe);
+    // console.log(this.selectedAxe);
 
     this.loadProductSectionData = false;
     const params: ApiService.ProductSectionParams = {
@@ -2770,7 +2787,7 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
     };
     this.api.productSection(params).subscribe(
       data => {
-        console.log(data);
+        // console.log(data);
         this.productSectionResult = data.resultLabel;
         this.productSectionValue = data.result.resultValue;
         this.productSectionRecAxis = data.result.recAxis;
@@ -2798,7 +2815,7 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
       return;
     }
     this.loadProductSectionData = false;
-    console.log(this.NB_STEPS);
+    // console.log(this.NB_STEPS);
     const params = {
       ID_STUDY: this.study.ID_STUDY,
       ID_STUDY_EQUIPMENTS: this.outputProductChart['ID_STUDY_EQUIPMENTS'],
@@ -2807,7 +2824,7 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
     };
     this.api.saveTempRecordPts(params).subscribe(
       data => {
-        console.log(data);
+        // console.log(data);
         this.productSectionResult = data.resultLabel;
         this.productSectionValue = data.result.resultValue;
         this.productSectionRecAxis = data.result.recAxis;
@@ -2824,7 +2841,7 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
       },
       (err) => {
         swal('Error', err.error.message, 'error');
-        console.log(err);
+        // console.log(err);
         this.loadProductSectionData = true;
       },
       () => {
@@ -2861,7 +2878,7 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
     this.productSectionColours = [
       { backgroundColor: [this.dataArrColor], }
     ];
-    console.log(this.dataArrColor);
+    // console.log(this.dataArrColor);
     this.productSectionChartData =  JSON.parse(JSON.stringify(this.dataArrChart));
     this.productSectionChartOptions = {
       animation: false,
@@ -2917,7 +2934,7 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
     const temperatureStepId = <HTMLElement>document.getElementById('temperatureStep');
     const temperatureMinId = <HTMLElement>document.getElementById('temperatureMin');
     const temperatureMaxId = <HTMLElement>document.getElementById('temperatureMax');
-    console.log(Number.isInteger(this.temperatureStep));
+    // console.log(Number.isInteger(this.temperatureStep));
     if (!this.temperatureStep) {
       temperatureStepId.focus();
       swal('Oops', this.translate.instant('Enter a value in Temperature step !'), 'error');
@@ -2975,10 +2992,10 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
       axisY: this.axisY,
       dimension: this.translate.instant('Dimension'),
     };
-    console.log(params);
+    // console.log(params);
     this.api.productChart2DStatic(params).subscribe(
       dataPr => {
-        console.log(dataPr);
+        // console.log(dataPr);
         this.temperatureMin = dataPr.chartTempInterval[0];
         this.temperatureMax = dataPr.chartTempInterval[1];
         this.temperatureStep = dataPr.chartTempInterval[2];
@@ -2993,7 +3010,7 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
     const temperatureStepId = <HTMLElement>document.getElementById('temperatureStep');
     const temperatureMinId = <HTMLElement>document.getElementById('temperatureMin');
     const temperatureMaxId = <HTMLElement>document.getElementById('temperatureMax');
-    console.log(Number.isInteger(this.temperatureStep));
+    // console.log(Number.isInteger(this.temperatureStep));
     if (!this.temperatureStep) {
       temperatureStepId.focus();
       swal('Oops', this.translate.instant('Enter a value in Temperature step !'), 'error');
@@ -3050,10 +3067,10 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
       axisY: this.axisY,
       dimension: this.translate.instant('Dimension'),
     };
-    console.log(params);
+    // console.log(params);
     this.api.productChart2DStatic(params).subscribe(
       dataPr => {
-        console.log(dataPr);
+        // console.log(dataPr);
         this.temperatureMin = dataPr.chartTempInterval[0];
         this.temperatureMax = dataPr.chartTempInterval[1];
         this.temperatureStep = dataPr.chartTempInterval[2];
@@ -3068,7 +3085,7 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
     const temperatureStepId = <HTMLElement>document.getElementById('temperatureStep');
     const temperatureMinId = <HTMLElement>document.getElementById('temperatureMin');
     const temperatureMaxId = <HTMLElement>document.getElementById('temperatureMax');
-    console.log(Number.isInteger(this.temperatureStep));
+    // console.log(Number.isInteger(this.temperatureStep));
     if (!this.temperatureStep) {
       temperatureStepId.focus();
       swal('Oops', this.translate.instant('Enter a value in Temperature step !'), 'error');
@@ -3115,7 +3132,7 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
     for (let i = 0; i < Object.keys(this.timeRecords).length; i++) {
       if (this.timeSelected == this.timeRecords[i]['RECORD_TIME']) {
         if (type == 0) {
-          console.log(this.timeSelected);
+          // console.log(this.timeSelected);
           if (i > 0) {
             this.timeSelected = this.timeRecords[i - 1]['RECORD_TIME'];
           } else {
@@ -3123,7 +3140,7 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
             return;
           }
         } else if (type == 1) {
-          console.log(this.timeSelected);
+          // console.log(this.timeSelected);
           if (i < Object.keys(this.timeRecords).length - 1) {
             this.timeSelected = this.timeRecords[i + 1]['RECORD_TIME'];
             break;
@@ -3150,7 +3167,7 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
     };
     this.api.productChart2DStatic(params).subscribe(
       dataPr => {
-        console.log(dataPr);
+        // console.log(dataPr);
         this.temperatureMin = dataPr.chartTempInterval[0];
         this.temperatureMax = dataPr.chartTempInterval[1];
         this.temperatureStep = dataPr.chartTempInterval[2];
@@ -3188,7 +3205,7 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
     };
     this.api.productchart2DAnim(params).subscribe(
       data => {
-        console.log(data);
+        // console.log(data);
         this.temperatureMin = data.chartTempInterval[0];
         this.temperatureMax = data.chartTempInterval[1];
         this.temperatureStep = data.chartTempInterval[2];
@@ -3198,7 +3215,7 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
           contourImage.src = data.imageContour[i];
           this.contourImages.push(contourImage);
         }
-        console.log(this.contourImages);
+        // console.log(this.contourImages);
         this.displayContourChart = false;
         this.loadProductChart = true;
         this.displayAnimationContour = setInterval(() => {
@@ -3212,7 +3229,7 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
     this.api.readDataContour(this.outputProductChart['ID_STUDY_EQUIPMENTS']).subscribe(
       data => {
         this.contourValue = JSON.parse(data.valueContour);
-        console.log(this.contourValue);
+        // console.log(this.contourValue);
         this.valuesModal.show();
       }
     );
@@ -3233,7 +3250,7 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
       this.sort = 1;
     }
     this.percent = 100 - (100 - (this.sort / this.contourImages.length) * 100);
-    console.log(this.percent);
+    // console.log(this.percent);
   }
 
   stopAnimationContour() {

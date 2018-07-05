@@ -15,6 +15,7 @@ import { ToastrService } from 'ngx-toastr';
 import { Units } from '../../../api/models';
 import { isNullOrUndefined } from 'util';
 import { isInteger } from '@ng-bootstrap/ng-bootstrap/util/util';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-calculator',
@@ -50,7 +51,7 @@ export class CalculatorComponent implements OnInit, AfterViewInit {
 
 
   constructor(private modalService: BsModalService, private api: ApiService, private router: Router,
-     private apicalculator: CalculatorService, private toastr: ToastrService) { }
+     private apicalculator: CalculatorService, private toastr: ToastrService, private translate: TranslateService) { }
 
   ngOnInit() {
     if (localStorage.getItem('study')) {
@@ -96,7 +97,8 @@ export class CalculatorComponent implements OnInit, AfterViewInit {
         data => {
           this.calculate = data;
           if (Number(data.timeStep) === -1) {
-            swal('Oops..', 'All equipments selected to be calculated have some results. Please, go to analytic results output.', 'error');
+            swal('Warning', this.translate.instant('All equipments selected to be calculated have some results.' + 
+            'Please, go to analytic results output.'), 'error');
             this.router.navigate(['/output/preliminary']);
             this.calcModal.hide();
           }
@@ -123,7 +125,7 @@ export class CalculatorComponent implements OnInit, AfterViewInit {
 
     this.api.getStudyEquipmentCalculation(params).subscribe(
       data => {
-        console.log(data);
+        // console.log(data);
         this.brainCalculator = data;
         localStorage.setItem('studyEquipment', JSON.stringify({ id: idStudyEquipment, optimized: isOptimized, typeCalculate: type }));
         this.isLoading = false;
@@ -146,7 +148,7 @@ export class CalculatorComponent implements OnInit, AfterViewInit {
 
     this.api.getStudyEquipmentCalculation(params).subscribe(
       data => {
-        console.log(data);
+        // console.log(data);
         this.brainCalculator = data;
         localStorage.setItem('studyEquipment', JSON.stringify({ id: idStudyEquipment, optimized: null }));
         this.brainCalculate.show();
@@ -182,19 +184,19 @@ export class CalculatorComponent implements OnInit, AfterViewInit {
     if (Number(this.calculate.checkOptim) === 1) {
       if (isNullOrUndefined(this.calculate.epsilonTemp) || String(this.calculate.epsilonTemp) === ''
       || isNaN(this.calculate.epsilonTemp)) {
-        this.toastr.error('Please specify Temperature margin', 'Error');
+        this.toastr.error(this.translate.instant('Please specify Temperature margin'), 'Error');
         return;
       }
 
       if (isNullOrUndefined(this.calculate.epsilonEnth) || String(this.calculate.epsilonEnth) === ''
       || isNaN(this.calculate.epsilonEnth)) {
-        this.toastr.error('Please specify Enthalpy error', 'Error');
+        this.toastr.error(this.translate.instant('Please specify Enthalpy error'), 'Error');
         return;
       }
 
       if (isNullOrUndefined(this.calculate.nbOptimIter) || String(this.calculate.nbOptimIter) === ''
       || isNaN(this.calculate.nbOptimIter)) {
-        this.toastr.error('Please specify Number of iterations', 'Error');
+        this.toastr.error(this.translate.instant('Please specify Number of iterations'), 'Error');
         return;
       }
     }
@@ -202,7 +204,7 @@ export class CalculatorComponent implements OnInit, AfterViewInit {
     if (Number(this.calculate.sdisableTimeStep) !== 1) {
       if (isNullOrUndefined(this.calculate.timeStep) || String(this.calculate.timeStep) === ''
      || isNaN(this.calculate.timeStep)) {
-        this.toastr.error('Please specify Time Step', 'Error');
+        this.toastr.error(this.translate.instant('Please specify Time Step'), 'Error');
         return;
       }
     }
@@ -210,7 +212,7 @@ export class CalculatorComponent implements OnInit, AfterViewInit {
     if (Number(this.calculate.sdisablePrecision) !== 1) {
       if (isNullOrUndefined(this.calculate.precision) || String(this.calculate.precision) === ''
        || isNaN(this.calculate.precision)) {
-        this.toastr.error('Please specify Precision of numerical modelling', 'Error');
+        this.toastr.error(this.translate.instant('Please specify Precision of numerical modelling'), 'Error');
         return;
       }
     }
@@ -218,7 +220,7 @@ export class CalculatorComponent implements OnInit, AfterViewInit {
     if (Number(this.calculate.sdisableNbOptim) !== 1) {
       if (isNullOrUndefined(this.calculate.storagestep) || String(this.calculate.storagestep) === ''
        || isNaN(this.calculate.storagestep)) {
-        this.toastr.error('Please specify Step', 'Error');
+        this.toastr.error(this.translate.instant('Please specify Step'), 'Error');
         return;
       }
     }
@@ -226,37 +228,37 @@ export class CalculatorComponent implements OnInit, AfterViewInit {
     if (Number(this.calculate.sdisableFields) !== 1) {
       if (isNullOrUndefined(this.calculate.maxIter) || String(this.calculate.maxIter) === ''
        || isNaN(this.calculate.maxIter)) {
-        this.toastr.error('Please specify Max of iterations', 'Error');
+        this.toastr.error(this.translate.instant('Please specify Max of iterations'), 'Error');
         return;
       }
 
       if (isNullOrUndefined(this.calculate.relaxCoef) || String(this.calculate.relaxCoef) === ''
        || isNaN(this.calculate.relaxCoef)) {
-        this.toastr.error('Please specify Coef. of relaxation', 'Error');
+        this.toastr.error(this.translate.instant('Please specify Coef. of relaxation'), 'Error');
         return;
       }
 
       if (isNullOrUndefined(this.calculate.tempPtSurf) || String(this.calculate.tempPtSurf) === ''
        || isNaN(this.calculate.tempPtSurf)) {
-        this.toastr.error('Please specify Surface', 'Error');
+        this.toastr.error(this.translate.instant('Please specify Surface'), 'Error');
         return;
       }
 
       if (isNullOrUndefined(this.calculate.tempPtIn) || String(this.calculate.tempPtIn) === ''
        || isNaN(this.calculate.tempPtIn)) {
-        this.toastr.error('Please specify Internal', 'Error');
+        this.toastr.error(this.translate.instant('Please specify Internal'), 'Error');
         return;
       }
 
       if (isNullOrUndefined(this.calculate.tempPtBot) || String(this.calculate.tempPtBot) === ''
        || isNaN(this.calculate.tempPtBot)) {
-        this.toastr.error('Please specify Bottom', 'Error');
+        this.toastr.error(this.translate.instant('Please specify Bottom'), 'Error');
         return;
       }
 
       if (isNullOrUndefined(this.calculate.tempPtAvg) || String(this.calculate.tempPtAvg) === ''
        || isNaN(this.calculate.tempPtAvg)) {
-        this.toastr.error('Please specify Average', 'Error');
+        this.toastr.error(this.translate.instant('Please specify Average'), 'Error');
         return;
       }
     }
@@ -291,16 +293,16 @@ export class CalculatorComponent implements OnInit, AfterViewInit {
 
     }).subscribe(
       (res) => {
-        console.log(res);
+        // console.log(res);
         if (res === 1) {
           this.startCalculate();
           this.calcModal.hide();
         } else {
-          this.toastr.error(res.Message, 'Error');
+          this.toastr.error(this.translate.instant(res.Message), 'Error');
         }
       },
       err => {
-        console.log(err);
+        // console.log(err);
       },
       () => {
 
@@ -349,7 +351,7 @@ export class CalculatorComponent implements OnInit, AfterViewInit {
 
     }).subscribe(
       (res) => {
-        console.log(res);
+        // console.log(res);
         this.laddaIsCalculating = false;
         let success = true;
         for (let i = 0; i < res.length; i++) {
@@ -380,12 +382,13 @@ export class CalculatorComponent implements OnInit, AfterViewInit {
   startEstimation() {
     this.laddaIsCalculating = true;
     // if (this.study.OPTION_CRYOPIPELINE) {
-    //   swal('Oops..', 'This calculate does not have enabled CryoPipeline calculation option', 'error');
+    //   swal('Warning', 'This calculate does not have enabled CryoPipeline calculation option', 'error');
     //   this.router.navigate(['/input/objectives']);
     // }
 
     if (this.study.OPTION_EXHAUSTPIPELINE) {
-      swal('Oops..', 'This calculate does not have enabled ExhaustPipeline calculation option', 'error');
+      swal('Warning', this.translate.instant('This calculate does not have enabled ExhaustPipeline' +
+       ' calculation option'), 'error');
       this.router.navigate(['/input/objectives']);
     }
 
@@ -423,7 +426,7 @@ export class CalculatorComponent implements OnInit, AfterViewInit {
       for (let i = 0 ; i < this.brainCalculator.dwellingTimes.length; i++ ) {
         if (isNullOrUndefined(this.brainCalculator.dwellingTimes[i].value) || String(this.brainCalculator.dwellingTimes[i].value) === ''
         || isNaN(this.brainCalculator.dwellingTimes[i].value)) {
-          this.toastr.error('Please specify Residence / Dwell time', 'Error');
+          this.toastr.error(this.translate.instant('Please specify Residence / Dwell time'), 'Error');
           return;
         }
       }
@@ -433,7 +436,7 @@ export class CalculatorComponent implements OnInit, AfterViewInit {
       for (let i = 0 ; i < this.brainCalculator.temperatures.length; i++ ) {
         if (isNullOrUndefined(this.brainCalculator.temperatures[i].value) || String(this.brainCalculator.temperatures[i].value) === ''
         || isNaN(this.brainCalculator.temperatures[i].value)) {
-          this.toastr.error('Please specify Control temperature', 'Error');
+          this.toastr.error(this.translate.instant('Please specify Control temperature'), 'Error');
           return;
         }
       }
@@ -443,7 +446,7 @@ export class CalculatorComponent implements OnInit, AfterViewInit {
     ||  Number(this.brainCalculator.sdisableTOC) !== 1) {
       if (isNullOrUndefined(this.brainCalculator.toc) || String(this.brainCalculator.toc) === ''
       || isNaN(this.brainCalculator.toc)) {
-        this.toastr.error('Please specify Loading rate', 'Error');
+        this.toastr.error(this.translate.instant('Please specify Loading rate'), 'Error');
         return;
       }
     }
@@ -451,13 +454,13 @@ export class CalculatorComponent implements OnInit, AfterViewInit {
     if (Number(this.brainCalculator.checkOptim) === 1 || Number(this.brainCalculator.sdisableOptim)) {
       if (isNullOrUndefined(this.brainCalculator.epsilonTemp) || String(this.brainCalculator.epsilonTemp) === ''
       || isNaN(this.brainCalculator.epsilonTemp)) {
-        this.toastr.error('Please specify Temperature margin', 'Error');
+        this.toastr.error(this.translate.instant('Please specify Temperature margin'), 'Error');
         return;
       }
 
       if (isNullOrUndefined(this.brainCalculator.epsilonEnth) || String(this.brainCalculator.epsilonEnth) === ''
       || isNaN(this.brainCalculator.epsilonEnth)) {
-        this.toastr.error('Please specify Enthalpy error', 'Error');
+        this.toastr.error(this.translate.instant('Please specify Enthalpy error'), 'Error');
         return;
       }
     }
@@ -466,7 +469,7 @@ export class CalculatorComponent implements OnInit, AfterViewInit {
     || Number(this.brainCalculator.sdisableNbOptim) !== 1) {
       if (isNullOrUndefined(this.brainCalculator.nbOptimIter) || String(this.brainCalculator.nbOptimIter) === ''
       || isNaN(this.brainCalculator.nbOptimIter)) {
-        this.toastr.error('Please specify Number of iterations', 'Error');
+        this.toastr.error(this.translate.instant('Please specify Number of iterations'), 'Error');
         return;
       }
     }
@@ -474,13 +477,13 @@ export class CalculatorComponent implements OnInit, AfterViewInit {
     if (Number(this.brainCalculator.sdisableTimeStep) !== 1) {
       if (isNullOrUndefined(this.brainCalculator.timeStep) || String(this.brainCalculator.timeStep) === ''
      || isNaN(this.brainCalculator.timeStep)) {
-        this.toastr.error('Please specify Time Step', 'Error');
+        this.toastr.error(this.translate.instant('Please specify Time Step'), 'Error');
         return;
       }
 
       if (isNullOrUndefined(this.brainCalculator.precision) || String(this.brainCalculator.precision) === ''
         || isNaN(this.brainCalculator.precision)) {
-        this.toastr.error('Please specify Precision of numerical modelling', 'Error');
+        this.toastr.error(this.translate.instant('Please specify Precision of numerical modelling'), 'Error');
         return;
       }
     }
@@ -488,7 +491,7 @@ export class CalculatorComponent implements OnInit, AfterViewInit {
     if (Number(this.brainCalculator.scheckStorage) === 1 || Number(this.brainCalculator.sdisableStorage) !== 1) {
       if (isNullOrUndefined(this.brainCalculator.storagestep) || String(this.brainCalculator.storagestep) === ''
        || isNaN(this.brainCalculator.storagestep)) {
-        this.toastr.error('Please specify Step', 'Error');
+        this.toastr.error(this.translate.instant('Please specify Step'), 'Error');
         return;
       }
     }
@@ -496,37 +499,37 @@ export class CalculatorComponent implements OnInit, AfterViewInit {
     if (Number(this.brainCalculator.sdisableFields) !== 1) {
       if (isNullOrUndefined(this.brainCalculator.maxIter) || String(this.brainCalculator.maxIter) === ''
        || isNaN(this.brainCalculator.maxIter)) {
-        this.toastr.error('Please specify Max of iterations', 'Error');
+        this.toastr.error(this.translate.instant('Please specify Max of iterations'), 'Error');
         return;
       }
 
       if (isNullOrUndefined(this.brainCalculator.relaxCoef) || String(this.brainCalculator.relaxCoef) === ''
        || isNaN(this.brainCalculator.relaxCoef)) {
-        this.toastr.error('Please specify Coef. of relaxation', 'Error');
+        this.toastr.error(this.translate.instant('Please specify Coef. of relaxation'), 'Error');
         return;
       }
 
       if (isNullOrUndefined(this.brainCalculator.tempPtSurf) || String(this.brainCalculator.tempPtSurf) === ''
        || isNaN(this.brainCalculator.tempPtSurf)) {
-        this.toastr.error('Please specify Surface', 'Error');
+        this.toastr.error(this.translate.instant('Please specify Surface'), 'Error');
         return;
       }
 
       if (isNullOrUndefined(this.brainCalculator.tempPtIn) || String(this.brainCalculator.tempPtIn) === ''
        || isNaN(this.brainCalculator.tempPtIn)) {
-        this.toastr.error('Please specify Internal', 'Error');
+        this.toastr.error(this.translate.instant('Please specify Internal'), 'Error');
         return;
       }
 
       if (isNullOrUndefined(this.brainCalculator.tempPtBot) || String(this.brainCalculator.tempPtBot) === ''
        || isNaN(this.brainCalculator.tempPtBot)) {
-        this.toastr.error('Please specify Bottom', 'Error');
+        this.toastr.error(this.translate.instant('Please specify Bottom'), 'Error');
         return;
       }
 
       if (isNullOrUndefined(this.brainCalculator.tempPtAvg) || String(this.brainCalculator.tempPtAvg) === ''
        || isNaN(this.brainCalculator.tempPtAvg)) {
-        this.toastr.error('Please specify Average', 'Error');
+        this.toastr.error(this.translate.instant('Please specify Average'), 'Error');
         return;
       }
     }
@@ -569,11 +572,11 @@ export class CalculatorComponent implements OnInit, AfterViewInit {
           this.startBrainOptimumCalculate();
           this.finishCalculate.emit(res);
         } else {
-          this.toastr.error(res.Message, 'Error');
+          this.toastr.error(this.translate.instant(res.Message), 'Error');
         }
       },
       err => {
-        console.log(err);
+        // console.log(err);
       },
       () => {
 
@@ -651,61 +654,61 @@ export class CalculatorComponent implements OnInit, AfterViewInit {
     if (Number(this.brainCalculator.sdisableFields) !== 1) {
       if (isNullOrUndefined(this.brainCalculator.maxIter) || String(this.brainCalculator.maxIter) === ''
        || isNaN(this.brainCalculator.maxIter)) {
-        this.toastr.error('Please specify Max of iterations', 'Error');
+        this.toastr.error(this.translate.instant('Please specify Max of iterations'), 'Error');
         return;
       }
 
       if (isNullOrUndefined(this.brainCalculator.relaxCoef) || String(this.brainCalculator.relaxCoef) === ''
        || isNaN(this.brainCalculator.relaxCoef)) {
-        this.toastr.error('Please specify Coef. of relaxation', 'Error');
+        this.toastr.error(this.translate.instant('Please specify Coef. of relaxation'), 'Error');
         return;
       }
 
       if (isNullOrUndefined(this.brainCalculator.precision) || String(this.brainCalculator.precision) === ''
         || isNaN(this.brainCalculator.precision)) {
-        this.toastr.error('Please specify Precision of numerical modelling', 'Error');
+        this.toastr.error(this.translate.instant('Please specify Precision of numerical modelling'), 'Error');
         return;
       }
 
       if (isNullOrUndefined(this.brainCalculator.tempPtSurf) || String(this.brainCalculator.tempPtSurf) === ''
        || isNaN(this.brainCalculator.tempPtSurf)) {
-        this.toastr.error('Please specify Surface', 'Error');
+        this.toastr.error(this.translate.instant('Please specify Surface'), 'Error');
         return;
       }
 
       if (isNullOrUndefined(this.brainCalculator.tempPtIn) || String(this.brainCalculator.tempPtIn) === ''
        || isNaN(this.brainCalculator.tempPtIn)) {
-        this.toastr.error('Please specify Internal', 'Error');
+        this.toastr.error(this.translate.instant('Please specify Internal'), 'Error');
         return;
       }
 
       if (isNullOrUndefined(this.brainCalculator.tempPtBot) || String(this.brainCalculator.tempPtBot) === ''
        || isNaN(this.brainCalculator.tempPtBot)) {
-        this.toastr.error('Please specify Bottom', 'Error');
+        this.toastr.error(this.translate.instant('Please specify Bottom'), 'Error');
         return;
       }
 
       if (isNullOrUndefined(this.brainCalculator.tempPtAvg) || String(this.brainCalculator.tempPtAvg) === ''
        || isNaN(this.brainCalculator.tempPtAvg)) {
-        this.toastr.error('Please specify Average', 'Error');
+        this.toastr.error(this.translate.instant('Please specify Average'), 'Error');
         return;
       }
 
       if (isNullOrUndefined(this.brainCalculator.precisionlogstep) || String(this.brainCalculator.precisionlogstep) === ''
       || isNaN(this.brainCalculator.precisionlogstep) || !isInteger(Number(this.brainCalculator.precisionlogstep)) ) {
-       this.toastr.error('Please specify Precision log step', 'Error');
+       this.toastr.error(this.translate.instant('Please specify Precision log step'), 'Error');
        return;
       }
 
       if (isNullOrUndefined(this.brainCalculator.timeStep) || String(this.brainCalculator.timeStep) === ''
       || isNaN(this.brainCalculator.timeStep)) {
-        this.toastr.error('Please specify Time Step', 'Error');
+        this.toastr.error(this.translate.instant('Please specify Time Step'), 'Error');
         return;
       }
 
       if (isNullOrUndefined(this.brainCalculator.storagestep) || String(this.brainCalculator.storagestep) === ''
        || isNaN(this.brainCalculator.storagestep)) {
-        this.toastr.error('Please specify Storage Step', 'Error');
+        this.toastr.error(this.translate.instant('Please specify Storage Step'), 'Error');
         return;
       }
     }
@@ -737,11 +740,11 @@ export class CalculatorComponent implements OnInit, AfterViewInit {
             this.loadBrainOptim();
           }
         } else {
-          this.toastr.error(res.Message, 'Error');
+          this.toastr.error(this.translate.instant(res.Message), 'Error');
         }
       },
       err => {
-        console.log(err);
+        // console.log(err);
       },
       () => {
 
@@ -872,7 +875,7 @@ export class CalculatorComponent implements OnInit, AfterViewInit {
     }).subscribe(
       data => {
         this.brainOptim = data;
-        console.log(data);
+        // console.log(data);
       },
       err => {
 
@@ -930,7 +933,7 @@ export class CalculatorComponent implements OnInit, AfterViewInit {
     this.apicalculator.getProgressBarStudyEquipment(this.study.ID_STUDY).subscribe(
       data => {
         this.progressbar = data;
-        console.log(data);
+        // console.log(data);
       },
       err => {
 

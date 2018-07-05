@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { TempRecordPtsDef } from '../../../api/models/temp-record-pts-def';
 import { ApiService } from '../../../api/services';
 import { AfterViewInit } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import swal from 'sweetalert2';
 import { ToastrService } from 'ngx-toastr';
 import { isNullOrUndefined } from 'util';
@@ -17,7 +18,7 @@ export class ResultComponent implements OnInit, AfterViewInit {
   public laddaSavingResult = false;
   public isLoading = false;
 
-  constructor(private api: ApiService, private toastr: ToastrService) { }
+  constructor(private api: ApiService, private toastr: ToastrService, private translate: TranslateService) { }
 
   ngOnInit() {
     this.isLoading = true;
@@ -63,7 +64,7 @@ export class ResultComponent implements OnInit, AfterViewInit {
     || String(this.temprecordptsdef.AXIS1_PT_TOP_SURF_DEF) === ''
     || isNaN(this.temprecordptsdef.AXIS1_PT_TOP_SURF_DEF)
     || !isInteger(Number(this.temprecordptsdef.AXIS1_PT_TOP_SURF_DEF))) {
-      this.toastr.error('Please specify Top- X', 'Error');
+      this.toastr.error(this.translate.instant('Please specify Top- X'), 'Error');
       return;
     }
 
@@ -71,7 +72,7 @@ export class ResultComponent implements OnInit, AfterViewInit {
     || String(this.temprecordptsdef.AXIS2_PT_TOP_SURF_DEF) === ''
     || isNaN(this.temprecordptsdef.AXIS2_PT_TOP_SURF_DEF)
     || !isInteger(Number(this.temprecordptsdef.AXIS2_PT_TOP_SURF_DEF))) {
-      this.toastr.error('Please specify Top- Y ', 'Error');
+      this.toastr.error(this.translate.instant('Please specify Top- Y '), 'Error');
       return;
     }
 
@@ -79,7 +80,7 @@ export class ResultComponent implements OnInit, AfterViewInit {
     || String(this.temprecordptsdef.AXIS3_PT_TOP_SURF_DEF) === ''
     || isNaN(this.temprecordptsdef.AXIS3_PT_TOP_SURF_DEF)
     || !isInteger(Number(this.temprecordptsdef.AXIS3_PT_TOP_SURF_DEF))) {
-      this.toastr.error('Please specify Top- Z ', 'Error');
+      this.toastr.error(this.translate.instant('Please specify Top- Z '), 'Error');
       return;
     }
 
@@ -87,7 +88,7 @@ export class ResultComponent implements OnInit, AfterViewInit {
     || String(this.temprecordptsdef.AXIS1_PT_INT_PT_DEF) === ''
     || isNaN(this.temprecordptsdef.AXIS1_PT_INT_PT_DEF)
     || !isInteger(Number(this.temprecordptsdef.AXIS1_PT_INT_PT_DEF))) {
-      this.toastr.error('Please specify Inside- X', 'Error');
+      this.toastr.error(this.translate.instant('Please specify Inside- X'), 'Error');
       return;
     }
 
@@ -95,7 +96,7 @@ export class ResultComponent implements OnInit, AfterViewInit {
     || String(this.temprecordptsdef.AXIS2_PT_INT_PT_DEF) === ''
     || isNaN(this.temprecordptsdef.AXIS2_PT_INT_PT_DEF)
     || !isInteger(Number(this.temprecordptsdef.AXIS2_PT_INT_PT_DEF))) {
-      this.toastr.error('Please specify Inside- Y', 'Error');
+      this.toastr.error(this.translate.instant('Please specify Inside- Y'), 'Error');
       return;
     }
 
@@ -103,7 +104,7 @@ export class ResultComponent implements OnInit, AfterViewInit {
     || String(this.temprecordptsdef.AXIS3_PT_INT_PT_DEF) === ''
     || isNaN(this.temprecordptsdef.AXIS3_PT_INT_PT_DEF)
     || !isInteger(Number(this.temprecordptsdef.AXIS3_PT_INT_PT_DEF))) {
-      this.toastr.error('Please specify Inside- Z', 'Error');
+      this.toastr.error(this.translate.instant('Please specify Inside- Z'), 'Error');
       return;
     }
 
@@ -111,7 +112,7 @@ export class ResultComponent implements OnInit, AfterViewInit {
     || String(this.temprecordptsdef.AXIS1_PT_BOT_SURF_DEF) === ''
     || isNaN(this.temprecordptsdef.AXIS1_PT_BOT_SURF_DEF)
     || !isInteger(Number(this.temprecordptsdef.AXIS1_PT_BOT_SURF_DEF))) {
-      this.toastr.error('Please specify Bottom- X', 'Error');
+      this.toastr.error(this.translate.instant('Please specify Bottom- X'), 'Error');
       return;
     }
 
@@ -119,7 +120,7 @@ export class ResultComponent implements OnInit, AfterViewInit {
     || String(this.temprecordptsdef.AXIS2_PT_BOT_SURF_DEF) === ''
     || isNaN(this.temprecordptsdef.AXIS2_PT_BOT_SURF_DEF)
     || !isInteger(Number(this.temprecordptsdef.AXIS2_PT_BOT_SURF_DEF))) {
-      this.toastr.error('Please specify Bottom- Y', 'Error');
+      this.toastr.error(this.translate.instant('Please specify Bottom- Y'), 'Error');
       return;
     }
 
@@ -127,7 +128,7 @@ export class ResultComponent implements OnInit, AfterViewInit {
     || String(this.temprecordptsdef.AXIS3_PT_BOT_SURF_DEF) === ''
     || isNaN(this.temprecordptsdef.AXIS3_PT_BOT_SURF_DEF)
     || !isInteger(Number(this.temprecordptsdef.AXIS3_PT_BOT_SURF_DEF))) {
-      this.toastr.error('Please specify Bottom- Z', 'Error');
+      this.toastr.error(this.translate.instant('Please specify Bottom- Z'), 'Error');
       return;
     }
 
@@ -135,7 +136,7 @@ export class ResultComponent implements OnInit, AfterViewInit {
     || String(this.temprecordptsdef.AXIS3_PL_1_2_DEF) === ''
     || isNaN(this.temprecordptsdef.AXIS3_PL_1_2_DEF)
     || !isInteger(Number(this.temprecordptsdef.AXIS3_PL_1_2_DEF))) {
-      this.toastr.error('Please specify Plan 12- Y', 'Error');
+      this.toastr.error(this.translate.instant('Please specify Plan 12- Y'), 'Error');
       return;
     }
 
@@ -143,7 +144,7 @@ export class ResultComponent implements OnInit, AfterViewInit {
     || String(this.temprecordptsdef.AXIS2_PL_1_3_DEF) === ''
     || isNaN(this.temprecordptsdef.AXIS2_PL_1_3_DEF)
     || !isInteger(Number(this.temprecordptsdef.AXIS2_PL_1_3_DEF))) {
-      this.toastr.error('Please specify Plan 13- Z', 'Error');
+      this.toastr.error(this.translate.instant('Please specify Plan 13- Z'), 'Error');
       return;
     }
 
@@ -151,7 +152,7 @@ export class ResultComponent implements OnInit, AfterViewInit {
     || String(this.temprecordptsdef.AXIS1_PL_2_3_DEF) === ''
     || isNaN(this.temprecordptsdef.AXIS1_PL_2_3_DEF)
     || !isInteger(Number(this.temprecordptsdef.AXIS1_PL_2_3_DEF))) {
-      this.toastr.error('Please specify Plan 23- X', 'Error');
+      this.toastr.error(this.translate.instant('Please specify Plan 23- X'), 'Error');
       return;
     }
 
@@ -159,7 +160,7 @@ export class ResultComponent implements OnInit, AfterViewInit {
     || String(this.temprecordptsdef.AXIS2_AX_1_DEF) === ''
     || isNaN(this.temprecordptsdef.AXIS2_AX_1_DEF)
     || !isInteger(Number(this.temprecordptsdef.AXIS2_AX_1_DEF))) {
-      this.toastr.error('Please specify Axis 1- Y', 'Error');
+      this.toastr.error(this.translate.instant('Please specify Axis 1- Y'), 'Error');
       return;
     }
 
@@ -167,7 +168,7 @@ export class ResultComponent implements OnInit, AfterViewInit {
     || String(this.temprecordptsdef.AXIS3_AX_1_DEF) === ''
     || isNaN(this.temprecordptsdef.AXIS3_AX_1_DEF)
     || !isInteger(Number(this.temprecordptsdef.AXIS3_AX_1_DEF))) {
-      this.toastr.error('Please specify Axis 1- Z', 'Error');
+      this.toastr.error(this.translate.instant('Please specify Axis 1- Z'), 'Error');
       return;
     }
 
@@ -175,7 +176,7 @@ export class ResultComponent implements OnInit, AfterViewInit {
     || String(this.temprecordptsdef.AXIS1_AX_2_DEF) === ''
     || isNaN(this.temprecordptsdef.AXIS1_AX_2_DEF)
     || !isInteger(Number(this.temprecordptsdef.AXIS1_AX_2_DEF))) {
-      this.toastr.error('Please specify Axis 2- X ', 'Error');
+      this.toastr.error(this.translate.instant('Please specify Axis 2- X '), 'Error');
       return;
     }
 
@@ -183,7 +184,7 @@ export class ResultComponent implements OnInit, AfterViewInit {
     || String(this.temprecordptsdef.AXIS3_AX_2_DEF) === ''
     || isNaN(this.temprecordptsdef.AXIS3_AX_2_DEF)
     || !isInteger(Number(this.temprecordptsdef.AXIS3_AX_2_DEF))) {
-      this.toastr.error('Please specify Axis 2- Z ', 'Error');
+      this.toastr.error(this.translate.instant('Please specify Axis 2- Z '), 'Error');
       return;
     }
 
@@ -191,7 +192,7 @@ export class ResultComponent implements OnInit, AfterViewInit {
     || String(this.temprecordptsdef.AXIS1_AX_3_DEF) === ''
     || isNaN(this.temprecordptsdef.AXIS1_AX_3_DEF)
     || !isInteger(Number(this.temprecordptsdef.AXIS1_AX_3_DEF))) {
-      this.toastr.error('Please specify Axis 3- X', 'Error');
+      this.toastr.error(this.translate.instant('Please specify Axis 3- X'), 'Error');
       return;
     }
 
@@ -199,7 +200,7 @@ export class ResultComponent implements OnInit, AfterViewInit {
     || String(this.temprecordptsdef.AXIS2_AX_3_DEF) === ''
     || isNaN(this.temprecordptsdef.AXIS2_AX_3_DEF)
     || !isInteger(Number(this.temprecordptsdef.AXIS2_AX_3_DEF))) {
-      this.toastr.error('Please specify Axis 3- Y', 'Error');
+      this.toastr.error(this.translate.instant('Please specify Axis 3- Y'), 'Error');
       return;
     }
 
@@ -226,9 +227,9 @@ export class ResultComponent implements OnInit, AfterViewInit {
     }).subscribe(
       res => {
         if (res === 1) {
-          this.toastr.success('Save result setting completed', 'successfully');
+          this.toastr.success(this.translate.instant('Save result setting completed'), 'successfully');
         } else {
-          this.toastr.error(res.Message, 'Error');
+          this.toastr.error(this.translate.instant(res.Message), 'Error');
         }
       },
       err => {

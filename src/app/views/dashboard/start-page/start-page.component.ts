@@ -5,6 +5,7 @@ import swal from 'sweetalert2';
 import { Study } from '../../../api/models';
 import { ApiService } from '../../../api/services/api.service';
 import { Router } from '@angular/router';
+import { TranslateService } from '@ngx-translate/core';
 
 
 @Component({
@@ -17,7 +18,7 @@ export class StartPageComponent implements OnInit, AfterViewInit {
   public recentStudies: Study[];
   public isLoading = false;
 
-  constructor(private api: ApiService, private router: Router) { }
+  constructor(private api: ApiService, private router: Router, private translate: TranslateService) { }
 
   ngOnInit() {
     this.isLoading = true;
@@ -30,7 +31,7 @@ export class StartPageComponent implements OnInit, AfterViewInit {
         this.isLoading = false;
       },
       (err) => {
-        console.log(err);
+        // console.log(err);
         this.isLoading = false;
       },
       () => {
@@ -40,7 +41,7 @@ export class StartPageComponent implements OnInit, AfterViewInit {
   }
 
   startTutorial() {
-    swal('Warning', 'Not yet implement', 'warning');
+    swal('Warning', this.translate.instant('Not yet implement'), 'warning');
   }
 
   open(study: Study) {
@@ -49,6 +50,8 @@ export class StartPageComponent implements OnInit, AfterViewInit {
     this.api.openStudy(study.ID_STUDY)
       .subscribe(
       data => {
+        localStorage.setItem('productWarning', 'Y');
+        localStorage.setItem('productDeleteWarning', 'Y');
         this.router.navigate(['/input']);
         this.isLoading = false;
       },

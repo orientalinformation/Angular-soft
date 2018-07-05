@@ -16,7 +16,21 @@ export class TextService {
     SPHERE: 6,
     CON_CYL_STAND: 7,
     CON_CYL_LAY: 8,
-    BREAD: 9
+    BREAD: 9,
+    D_REC_BLOCK_V: 10,
+    D_REC_BLOCK_H: 11,
+    D_STAND_CYL: 12,
+    D_LYI_CYL: 13,
+    D_SPHERE: 14,
+    D_STAND_CON_CYL: 15,
+    D_LYN_CON_CYL: 16,
+    D_REC_BLOCK: 17,
+    D_TRAP_3D: 18,
+    D_STAND_OVAL: 19,
+    D_LYN_OVAL: 20,
+    D_STAND_CON_OVAL: 21,
+    D_LYN_CON_OVAL: 22,
+    D_SEMI_CYL: 23
   };
 
   constructor(private translate: TranslateService, private api: ApiService) { }
@@ -25,7 +39,7 @@ export class TextService {
     this.api.getComponentTranslations(this.translate.currentLang)
       .subscribe(
         (data: Translation[]) => {
-          console.log('got components translations');
+          // console.log('got components translations');
           data.forEach(
             (each, index) => {
               this.translate.set(
@@ -35,7 +49,7 @@ export class TextService {
                );
             }
           );
-          console.log('add components translations complete');
+          // console.log('add components translations complete');
           this._initialized = true;
         }
       );
@@ -43,7 +57,7 @@ export class TextService {
     this.api.getPackingTranslations(this.translate.currentLang)
       .subscribe(
       (data: Translation[]) => {
-        console.log('got packing translations');
+        // console.log('got packing translations');
         data.forEach(
           (each, index) => {
             this.translate.set(
@@ -53,7 +67,7 @@ export class TextService {
             );
           }
         );
-        console.log('add packing translations complete');
+        // console.log('add packing translations complete');
         this._initialized = true;
       }
       );

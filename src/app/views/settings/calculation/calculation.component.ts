@@ -4,6 +4,7 @@ import { ApiService } from '../../../api/services';
 import { Units } from '../../../api/models';
 import { AfterViewInit } from '@angular/core';
 import swal from 'sweetalert2';
+import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 import { isNullOrUndefined, isNumber } from 'util';
 import { isInteger } from '@ng-bootstrap/ng-bootstrap/util/util';
@@ -22,7 +23,7 @@ export class CalculationComponent implements OnInit, AfterViewInit {
   public convectionCoeffSymbol = '';
   public timeSymbol = '';
 
-  constructor(private api: ApiService, private toastr: ToastrService) {
+  constructor(private api: ApiService, private toastr: ToastrService, private translate: TranslateService) {
     this.isLoading = true;
   }
 
@@ -71,101 +72,101 @@ export class CalculationComponent implements OnInit, AfterViewInit {
   saveMyCalculationParametersDef() {
     if (isNullOrUndefined(this.calculationparametersdef.MAX_IT_NB_DEF) || String(this.calculationparametersdef.MAX_IT_NB_DEF) === ''
     || isNaN(this.calculationparametersdef.MAX_IT_NB_DEF)) {
-      this.toastr.error('Please specify Max of iterations', 'Error');
+      this.toastr.error(this.translate.instant('Please specify Max of iterations'), 'Error');
       return;
     }
 
     if (isNullOrUndefined(this.calculationparametersdef.RELAX_COEFF_DEF) || String(this.calculationparametersdef.RELAX_COEFF_DEF) === ''
     || isNaN(this.calculationparametersdef.RELAX_COEFF_DEF)) {
-      this.toastr.error('Please specify Coef. of relaxation', 'Error');
+      this.toastr.error(this.translate.instant('Please specify Coef. of relaxation'), 'Error');
       return;
     }
 
     if (isNullOrUndefined(this.calculationparametersdef.PRECISION_REQUEST_DEF)
     || String(this.calculationparametersdef.PRECISION_REQUEST_DEF) === ''
     || isNaN(this.calculationparametersdef.PRECISION_REQUEST_DEF)) {
-      this.toastr.error('Please specify Precision of numerical modelling', 'Error');
+      this.toastr.error(this.translate.instant('Please specify Precision of numerical modelling'), 'Error');
       return;
     }
 
     if (isNullOrUndefined(this.calculationparametersdef.STOP_TOP_SURF_DEF) || String(this.calculationparametersdef.STOP_TOP_SURF_DEF) === ''
     || isNaN(this.calculationparametersdef.STOP_TOP_SURF_DEF)) {
-      this.toastr.error('Please specify Surface', 'Error');
+      this.toastr.error(this.translate.instant('Please specify Surface'), 'Error');
       return;
     }
 
     if (isNullOrUndefined(this.calculationparametersdef.STOP_INT_DEF) || String(this.calculationparametersdef.STOP_INT_DEF) === ''
     || isNaN(this.calculationparametersdef.STOP_INT_DEF)) {
-      this.toastr.error('Please specify Internal', 'Error');
+      this.toastr.error(this.translate.instant('Please specify Internal'), 'Error');
       return;
     }
 
     if (isNullOrUndefined(this.calculationparametersdef.STOP_BOTTOM_SURF_DEF)
     || String(this.calculationparametersdef.STOP_BOTTOM_SURF_DEF) === ''
     || isNaN(this.calculationparametersdef.STOP_BOTTOM_SURF_DEF)) {
-      this.toastr.error('Please specify Bottom', 'Error');
+      this.toastr.error(this.translate.instant('Please specify Bottom'), 'Error');
       return;
     }
 
     if (isNullOrUndefined(this.calculationparametersdef.STOP_AVG_DEF)
     || String(this.calculationparametersdef.STOP_AVG_DEF) === ''
     || isNaN(this.calculationparametersdef.STOP_AVG_DEF)) {
-      this.toastr.error('Please specify Average', 'Error');
+      this.toastr.error(this.translate.instant('Please specify Average'), 'Error');
       return;
     }
 
     if (isNullOrUndefined(this.calculationparametersdef.STUDY_ALPHA_TOP_DEF)
     || String(this.calculationparametersdef.STUDY_ALPHA_TOP_DEF) === ''
     || isNaN(this.calculationparametersdef.STUDY_ALPHA_TOP_DEF)) {
-      this.toastr.error('Please specify Alpha top', 'Error');
+      this.toastr.error(this.translate.instant('Please specify Alpha top'), 'Error');
       return;
     }
 
     if (isNullOrUndefined(this.calculationparametersdef.STUDY_ALPHA_BOTTOM_DEF)
     || String(this.calculationparametersdef.STUDY_ALPHA_BOTTOM_DEF) === ''
     || isNaN(this.calculationparametersdef.STUDY_ALPHA_BOTTOM_DEF)) {
-      this.toastr.error('Please specify Alpha bottom', 'Error');
+      this.toastr.error(this.translate.instant('Please specify Alpha bottom'), 'Error');
       return;
     }
 
     if (isNullOrUndefined(this.calculationparametersdef.STUDY_ALPHA_LEFT_DEF)
     || String(this.calculationparametersdef.STUDY_ALPHA_LEFT_DEF) === ''
     || isNaN(this.calculationparametersdef.STUDY_ALPHA_LEFT_DEF)) {
-      this.toastr.error('Please specify Alpha left', 'Error');
+      this.toastr.error(this.translate.instant('Please specify Alpha left'), 'Error');
       return;
     }
 
     if (isNullOrUndefined(this.calculationparametersdef.STUDY_ALPHA_RIGHT_DEF)
     || String(this.calculationparametersdef.STUDY_ALPHA_RIGHT_DEF) === ''
     || isNaN(this.calculationparametersdef.STUDY_ALPHA_RIGHT_DEF)) {
-      this.toastr.error('Please specify Alpha right', 'Error');
+      this.toastr.error(this.translate.instant('Please specify Alpha right'), 'Error');
       return;
     }
 
     if (isNullOrUndefined(this.calculationparametersdef.STUDY_ALPHA_FRONT_DEF)
     || String(this.calculationparametersdef.STUDY_ALPHA_FRONT_DEF) === ''
     || isNaN(this.calculationparametersdef.STUDY_ALPHA_FRONT_DEF)) {
-      this.toastr.error('Please specify Alpha front', 'Error');
+      this.toastr.error(this.translate.instant('Please specify Alpha front'), 'Error');
       return;
     }
 
     if (isNullOrUndefined(this.calculationparametersdef.STUDY_ALPHA_REAR_DEF)
     || String(this.calculationparametersdef.STUDY_ALPHA_REAR_DEF) === ''
     || isNaN(this.calculationparametersdef.STUDY_ALPHA_REAR_DEF)) {
-      this.toastr.error('Please specify Alpha rear', 'Error');
+      this.toastr.error(this.translate.instant('Please specify Alpha rear'), 'Error');
       return;
     }
 
     if (isNullOrUndefined(this.calculationparametersdef.STORAGE_STEP_DEF)
     || String(this.calculationparametersdef.STORAGE_STEP_DEF) === ''
     || isNaN(this.calculationparametersdef.STORAGE_STEP_DEF) || !isInteger(Number(this.calculationparametersdef.STORAGE_STEP_DEF))) {
-      this.toastr.error('Please specify Storage step', 'Error');
+      this.toastr.error(this.translate.instant('Please specify Storage step'), 'Error');
       return;
     }
 
     if (Number(this.calculationparametersdef.STORAGE_STEP_DEF) < 1
     || Number(this.calculationparametersdef.STORAGE_STEP_DEF) > 100000000) {
-      this.toastr.error('Value out of range in Storage step (1 : 100000000) !', 'Error');
+      this.toastr.error(this.translate.instant('Value out of range in Storage step (1 : 100000000) !'), 'Error');
       return;
     }
 
@@ -173,20 +174,20 @@ export class CalculationComponent implements OnInit, AfterViewInit {
     || String(this.calculationparametersdef.PRECISION_LOG_STEP_DEF) === ''
     || isNaN(this.calculationparametersdef.PRECISION_LOG_STEP_DEF)
     || !isInteger(Number(this.calculationparametersdef.PRECISION_LOG_STEP_DEF))) {
-      this.toastr.error('Please specify Precision log step', 'Error');
+      this.toastr.error(this.translate.instant('Please specify Precision log step'), 'Error');
       return;
     }
 
     if (Number(this.calculationparametersdef.PRECISION_LOG_STEP_DEF) < 1
     || Number(this.calculationparametersdef.PRECISION_LOG_STEP_DEF) > 100000000) {
-      this.toastr.error('Value out of range in Precision log step (1 : 100000000) !', 'Error');
+      this.toastr.error(this.translate.instant('Value out of range in Precision log step (1 : 100000000) !'), 'Error');
       return;
     }
 
     if (isNullOrUndefined(this.calculationparametersdef.TIME_STEP_DEF)
     || String(this.calculationparametersdef.TIME_STEP_DEF) === ''
     || isNaN(this.calculationparametersdef.TIME_STEP_DEF)) {
-      this.toastr.error('Please specify Time Step', 'Error');
+      this.toastr.error(this.translate.instant('Please specify Time Step'), 'Error');
       return;
     }
     this.laddaSavingcalculation = true;
@@ -228,11 +229,11 @@ export class CalculationComponent implements OnInit, AfterViewInit {
           this.toastr.success('Save mesh setting completed', 'successfully');
           this.getSettingCaculation();
         } else {
-          this.toastr.error(res.Message, 'Error');
+          this.toastr.error(this.translate.instant(res.Message), 'Error');
         }
       },
       err => {
-        console.log(err);
+        // console.log(err);
       },
       () => {
         this.laddaSavingcalculation = false;

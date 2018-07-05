@@ -79,39 +79,39 @@
                         <div class="col-md-2" align="center" >
                             <label class="custom-control custom-radio" >
                                 <input type="radio" class="custom-control-input" name="status-packing" 
-                                [(ngModel)]="updatePackingElmt.PACKING_RELEASE" value="1" [checked]="selectPackingElmt.PACKING_RELEASE == 1" 
+                                [(ngModel)]="updatePackingElmt.PACKING_RELEASE" [value]="1" 
                                 [disabled]="selectPackingElmt.PACKING_RELEASE == 4 || selectPackingElmt.PACKING_RELEASE == 5 || selectPackingElmt.PACKING_RELEASE == 3 || selectPackingElmt.PACKING_RELEASE == 9">{{ 'Draft'|translate }}
                                 <span class="custom-control-indicator"></span>
                             </label>
                         </div>
                         <div class="col-md-2" align="center" >
                             <label class="custom-control custom-radio" >
-                                <input type="radio" value="2" class="custom-control-input" name="status-packing" 
-                                [(ngModel)]="updatePackingElmt.PACKING_RELEASE" value="2" [checked]="selectPackingElmt.PACKING_RELEASE == 2" 
+                                <input type="radio" [value]="2" class="custom-control-input" name="status-packing" 
+                                [(ngModel)]="updatePackingElmt.PACKING_RELEASE" 
                                 [disabled]="selectPackingElmt.PACKING_RELEASE == 4 || selectPackingElmt.PACKING_RELEASE == 5 || selectPackingElmt.PACKING_RELEASE == 3 || selectPackingElmt.PACKING_RELEASE == 9">{{ 'Test'|translate }}
                                 <span class="custom-control-indicator"></span>
                             </label>
                         </div>
                         <div class="col-md-2" align="center" >
                             <label class="custom-control custom-radio" >
-                                <input type="radio" value="3" class="custom-control-input" name="status-packing" 
-                                [(ngModel)]="updatePackingElmt.PACKING_RELEASE" value="3" [checked]="selectPackingElmt.PACKING_RELEASE == 3" 
+                                <input type="radio" [value]="3" class="custom-control-input" name="status-packing" 
+                                [(ngModel)]="updatePackingElmt.PACKING_RELEASE"  
                                 [disabled]="selectPackingElmt.PACKING_RELEASE == 4 || selectPackingElmt.PACKING_RELEASE == 5 || selectPackingElmt.PACKING_RELEASE == 9">{{ 'Active'|translate }}
                                 <span class="custom-control-indicator"></span>
                             </label>
                         </div>
                         <div class="col-md-2" align="center" >
                             <label class="custom-control custom-radio" >
-                                <input type="radio" value="4" class="custom-control-input" name="status-packing" 
-                                [(ngModel)]="updatePackingElmt.PACKING_RELEASE" value="4" [checked]="selectPackingElmt.PACKING_RELEASE == 4" 
+                                <input type="radio" [value]="4" class="custom-control-input" name="status-packing" 
+                                [(ngModel)]="updatePackingElmt.PACKING_RELEASE"
                                 [disabled]="selectPackingElmt.PACKING_RELEASE == 5 || selectPackingElmt.PACKING_RELEASE == 9">{{ 'Certified'|translate }}
                                 <span class="custom-control-indicator"></span>
                             </label>
                         </div>
                         <div class="col-md-2" align="center" >
                             <label class="custom-control custom-radio" >
-                                <input type="radio" value="9" class="custom-control-input" name="status-packing" 
-                                [(ngModel)]="updatePackingElmt.PACKING_RELEASE" value="9" [checked]="selectPackingElmt.PACKING_RELEASE == 9" 
+                                <input type="radio" [value]="9" class="custom-control-input" name="status-packing" 
+                                [(ngModel)]="updatePackingElmt.PACKING_RELEASE"
                                 [disabled]="selectPackingElmt.PACKING_RELEASE == 4 || selectPackingElmt.PACKING_RELEASE == 5 || selectPackingElmt.PACKING_RELEASE == 9">{{ 'Obsolete'|translate }}
                                 <span class="custom-control-indicator"></span>
                             </label>
@@ -185,34 +185,31 @@
                         <div class="col-md-1"></div>
                         <div class="col-md-2" align="center" >
                             <label class="custom-control custom-radio" >
-
-                                <!-- <input type="radio" class="custom-control-input" checked name="status-packing-add" [(ngModel)]="newPackingElmt.release" >{{ 'Draft'|translate }} -->
-
-                                <input type="radio" value="1" [(ngModel)]="newPackingElmt.PACKING_RELEASE" class="custom-control-input" name="status-packing-add">{{ 'Draft'|translate }}
+                                <input type="radio" [value]="1" [(ngModel)]="newPackingElmt.PACKING_RELEASE" class="custom-control-input" name="status-packing-add">{{ 'Draft'|translate }}
                                 <span class="custom-control-indicator"></span>
                             </label>
                         </div>
                         <div class="col-md-2" align="center" >
                             <label class="custom-control custom-radio" >
-                                <input type="radio" value="2" [(ngModel)]="newPackingElmt.PACKING_RELEASE" class="custom-control-input check" name="status-packing-add">{{ 'Test'|translate }}
+                                <input type="radio" [value]="2" [(ngModel)]="newPackingElmt.PACKING_RELEASE" class="custom-control-input check" name="status-packing-add">{{ 'Test'|translate }}
                                 <span class="custom-control-indicator"></span>
                             </label>
                         </div>
                         <div class="col-md-2" align="center" >
                             <label class="custom-control custom-radio" >
-                                <input type="radio" value="3" [(ngModel)]="newPackingElmt.PACKING_RELEASE" class="custom-control-input" name="status-packing-add">{{ 'Active'|translate }}
+                                <input type="radio" [value]="3" [(ngModel)]="newPackingElmt.PACKING_RELEASE" class="custom-control-input" name="status-packing-add">{{ 'Active'|translate }}
                                 <span class="custom-control-indicator"></span>
                             </label>
                         </div>
                         <div class="col-md-2" align="center" >
                             <label class="custom-control custom-radio" >
-                                <input type="radio" value="4" [(ngModel)]="newPackingElmt.PACKING_RELEASE" class="custom-control-input" name="status-packing-add" disabled>{{ 'Certified'|translate }}
+                                <input type="radio" [value]="4" [(ngModel)]="newPackingElmt.PACKING_RELEASE" class="custom-control-input" name="status-packing-add" disabled>{{ 'Certified'|translate }}
                                 <span class="custom-control-indicator"></span>
                             </label>
                         </div>
                         <div class="col-md-2" align="center" >
                             <label class="custom-control custom-radio" >
-                                <input type="radio" value="9" [(ngModel)]="newPackingElmt.PACKING_RELEASE" class="custom-control-input" name="status-packing-add" disabled>{{ 'Obsolete'|translate }}
+                                <input type="radio" [value]="9" [(ngModel)]="newPackingElmt.PACKING_RELEASE" class="custom-control-input" name="status-packing-add" disabled>{{ 'Obsolete'|translate }}
                                 <span class="custom-control-indicator"></span>
                             </label>
                         </div>

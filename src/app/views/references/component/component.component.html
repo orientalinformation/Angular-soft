@@ -94,19 +94,22 @@
                   <div class="col">
                     <div class="col-md-2" align="center">
                       <label class="custom-control custom-radio">
-                        <input type="radio" class="custom-control-input" name="statusComp"  value="1" [(ngModel)]="selectComponent.COMP_RELEASE">{{ 'Draft'|translate }}
+                        <input type="radio" class="custom-control-input" name="statusComp"  [value]="1" [(ngModel)]="selectComponent.COMP_RELEASE" 
+                        [disabled]="selectComponent.COMP_RELEASE == 7">{{ 'Draft'|translate }}
                         <span class="custom-control-indicator"></span>
                       </label>
                     </div>
                     <div class="col-md-2" align="center">
                       <label class="custom-control custom-radio">
-                        <input type="radio" class="custom-control-input" name="statusComp" value="2" [(ngModel)]="selectComponent.COMP_RELEASE" [disabled]="selectComponent.COMP_GEN_STATUS != 1">{{ 'Test'|translate }}
+                        <input type="radio" class="custom-control-input" name="statusComp" [value]="2" [(ngModel)]="selectComponent.COMP_RELEASE" 
+                        [disabled]="(selectComponent.COMP_GEN_STATUS != 1) || (selectComponent.COMP_RELEASE == 7)">{{ 'Test'|translate }}
                         <span class="custom-control-indicator"></span>
                       </label>
                     </div>
                     <div class="col-md-2" align="center">
                       <label class="custom-control custom-radio">
-                        <input type="radio" class="custom-control-input" name="statusComp" value="3" [(ngModel)]="selectComponent.COMP_RELEASE" [disabled]="selectComponent.COMP_GEN_STATUS != 1">{{ 'Active'|translate }}
+                        <input type="radio" class="custom-control-input" name="statusComp" [value]="3" [(ngModel)]="selectComponent.COMP_RELEASE" 
+                        [disabled]="(selectComponent.COMP_GEN_STATUS != 1) || (selectComponent.COMP_RELEASE == 7)">{{ 'Active'|translate }}
                         <span class="custom-control-indicator"></span>
                       </label>
                     </div>
@@ -114,13 +117,15 @@
                   <div class="col">
                     <div class="col-md-2" align="center">
                       <label class="custom-control custom-radio">
-                        <input type="radio" class="custom-control-input" name="statusComp"  value="4" [(ngModel)]="selectComponent.COMP_RELEASE" [disabled]="selectComponent.COMP_GEN_STATUS != 1">{{ 'Certified'|translate }}
+                        <input type="radio" class="custom-control-input" name="statusComp"  [value]="4" [(ngModel)]="selectComponent.COMP_RELEASE" 
+                        [disabled]="(selectComponent.COMP_GEN_STATUS != 1) || (selectComponent.COMP_RELEASE == 7)">{{ 'Certified'|translate }}
                         <span class="custom-control-indicator"></span>
                       </label>
                     </div>
                     <div class="col-md-2" align="center">
                       <label class="custom-control custom-radio">
-                        <input type="radio" class="custom-control-input" name="statusComp" value="9" [(ngModel)]="selectComponent.COMP_RELEASE" [disabled]="selectComponent.COMP_GEN_STATUS != 1">{{ 'Obsolete'|translate }}
+                        <input type="radio" class="custom-control-input" name="statusComp" [value]="9" [(ngModel)]="selectComponent.COMP_RELEASE"
+                        [disabled]="(selectComponent.COMP_GEN_STATUS != 1) || (selectComponent.COMP_RELEASE == 7)">{{ 'Obsolete'|translate }}
                         <span class="custom-control-indicator"></span>
                       </label>
                     </div>
@@ -386,7 +391,7 @@
           </div>
         </div>
         <div class="btn-component text-center" *ngIf="selectComponent && selectComponent.COMP_RELEASE == 6">
-          <button type="button" class="btn btn-secondary" *ngIf="checkBackStudy == 1" (click)="comeBackStudy()">
+          <button type="button" class="btn btn-secondary" *ngIf="checkBackStudy == 1" (click)="comBackStudyNoAdd();">
             <i class="fa fa-chevron-circle-left"></i>&nbsp; {{ 'Come back to study'|translate }}
           </button>
           <button type="button" class="btn btn-primary" id="awakeCalculate" (click)="awakeComponent(selectComponent, 3);">

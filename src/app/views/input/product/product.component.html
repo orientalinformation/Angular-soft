@@ -5,7 +5,9 @@
     <div class="card">
       <div class="card-header">
         <strong>{{ 'PRODUCT DEFINITION' | translate }}</strong>
-        <button type="button" class="btn btn-sm btn-primary float-right" [disabled]="study.CHAINING_CONTROLS && (study.HAS_CHILD || study.PARENT_ID != 0) || disabledField()" (click)="modalEditProduct.show()" *ngIf="productShape != 0">
+        <button type="button" class="btn btn-sm btn-primary float-right" 
+        [disabled]="study.CHAINING_CONTROLS && (study.HAS_CHILD || study.PARENT_ID != 0) || disabledField()" 
+        (click)="modalEditProduct.show()" *ngIf="productShape != 0">
           <i class="fa fa-pencil-square-o"></i> {{'EDIT'|translate}}
         </button>
       </div>
@@ -24,18 +26,41 @@
                 <div class="col-md-7">{{ 'SHAPECODE_'+productShape | translate }}</div>
               </div>
               <!-- dimension 1 -->
-              <div class="row" *ngIf="productShape != shapeNames.SLAB && productShape != shapeNames.SPHERE">
+              <div class="row" *ngIf="productShape != shapeNames.SLAB && productShape != shapeNames.SPHERE 
+              && productShape != shapeNames.D_SPHERE && productShape != shapeNames.D_TRAP_3D 
+              && productShape != shapeNames.D_STAND_OVAL && productShape != shapeNames.D_LYN_OVAL">
                 <div class="col-md-5">
-                  <label *ngIf="productShape == shapeNames.REC_STAND || productShape == shapeNames.BREAD">{{'Length'|translate}}</label>
-                  <label *ngIf="productShape == shapeNames.CYL_LAY || productShape == shapeNames.CYL_STAND">{{'Diameter'|translate}}</label>
-                  <label *ngIf="productShape == shapeNames.REC_LAY || productShape == shapeNames.CON_CYL_STAND
-                                    || productShape == shapeNames.CON_CYL_LAY">{{'Height'|translate}}</label>
+                  <label *ngIf="productShape == shapeNames.REC_STAND || productShape == shapeNames.BREAD 
+                  || productShape == shapeNames.CON_CYL_LAY || productShape == shapeNames.D_REC_BLOCK_V 
+                  || productShape == shapeNames.D_LYN_CON_CYL || productShape == shapeNames.D_REC_BLOCK">{{'Length'|translate}}</label>
+                  <label *ngIf="productShape == shapeNames.CYL_LAY || productShape == shapeNames.CYL_STAND 
+                  || productShape == shapeNames.D_STAND_CYL || productShape == shapeNames.D_LYI_CYL">{{'Diameter'|translate}}</label>
+                  <label *ngIf="productShape == shapeNames.REC_LAY || productShape == shapeNames.CON_CYL_STAND 
+                  || productShape == shapeNames.D_REC_BLOCK_H || productShape == shapeNames.D_STAND_CON_CYL">{{'Height'|translate}}</label>
+                </div>
+                <div class="col-md-7" *ngIf="symbol">{{prodDim1}} {{symbol.prodDimensionSymbol}}</div>
+              </div>
+              <div class="row" *ngIf="productShape == shapeNames.D_TRAP_3D || productShape == shapeNames.D_STAND_OVAL 
+              || productShape == shapeNames.D_LYN_OVAL">
+                <div class="col-md-5">
+                  <label *ngIf="productShape == shapeNames.D_TRAP_3D">{{'Base Length'|translate}}</label>
+                  <label *ngIf="productShape == shapeNames.D_STAND_OVAL || productShape == shapeNames.D_LYN_OVAL">{{'Major Diameter'|translate}}</label>
                 </div>
                 <div class="col-md-7" *ngIf="symbol">{{prodDim1}} {{symbol.prodDimensionSymbol}}</div>
               </div>
               <!-- dimension 3 -->
-              <div class="row" *ngIf="(productShape == shapeNames.REC_STAND || productShape == shapeNames.REC_LAY || productShape == shapeNames.BREAD)">
+              <div class="row" *ngIf="(productShape == shapeNames.REC_STAND || productShape == shapeNames.REC_LAY 
+              || productShape == shapeNames.BREAD || productShape == shapeNames.D_REC_BLOCK_V 
+              || productShape == shapeNames.D_REC_BLOCK_H || productShape == shapeNames.D_REC_BLOCK)">
                 <div class="col-md-5">{{'Width'|translate}}</div>
+                <div class="col-md-7" *ngIf="symbol">{{prodDim3}} {{symbol.prodDimensionSymbol}}</div>
+              </div>
+              <div class="row" *ngIf="productShape == shapeNames.D_TRAP_3D || productShape == shapeNames.D_STAND_OVAL 
+              || productShape == shapeNames.D_LYN_OVAL">
+                <div class="col-md-5">
+                  <label *ngIf="productShape == shapeNames.D_TRAP_3D">{{'Base Width'|translate}}</label>
+                  <label *ngIf="productShape == shapeNames.D_STAND_OVAL || productShape == shapeNames.D_LYN_OVAL">{{'Minor Diameter'|translate}}</label>
+                </div>
                 <div class="col-md-7" *ngIf="symbol">{{prodDim3}} {{symbol.prodDimensionSymbol}}</div>
               </div>
               <!-- variable dimension -->
@@ -43,11 +68,16 @@
                 <div class="col-md-5">
                   <strong>
                     <label *ngIf="productShape == shapeNames.REC_STAND || productShape == shapeNames.BREAD
-                      || productShape == shapeNames.CYL_STAND">{{'Height'|translate}}</label>
+                      || productShape == shapeNames.CYL_STAND || productShape == shapeNames.D_REC_BLOCK_V 
+                      || productShape == shapeNames.D_STAND_CYL || productShape == shapeNames.D_REC_BLOCK 
+                      || productShape == shapeNames.D_TRAP_3D || productShape == shapeNames.D_STAND_OVAL">{{'Height'|translate}}</label>
                     <label *ngIf="productShape == shapeNames.SLAB">{{'Thickness'|translate}}</label>
-                    <label *ngIf="productShape == shapeNames.REC_LAY || productShape == shapeNames.CYL_LAY">{{'Length'|translate}}</label>
-                    <label *ngIf="productShape == shapeNames.SPHERE || productShape == shapeNames.CON_CYL_STAND
-                      || productShape == shapeNames.CON_CYL_LAY">{{'Diameter'|translate}}</label>
+                    <label *ngIf="productShape == shapeNames.REC_LAY || productShape == shapeNames.CYL_LAY 
+                      || productShape == shapeNames.D_REC_BLOCK_H || productShape == shapeNames.D_LYI_CYL 
+                      || productShape == shapeNames.D_LYN_OVAL">{{'Length'|translate}}</label>
+                    <label *ngIf="productShape == shapeNames.SPHERE || productShape == shapeNames.CON_CYL_STAND 
+                      || productShape == shapeNames.CON_CYL_LAY || productShape == shapeNames.D_SPHERE 
+                      || productShape == shapeNames.D_STAND_CON_CYL || productShape == shapeNames.D_LYN_CON_CYL">{{'Diameter'|translate}}</label>
                   </strong>
                 </div>
                 <div class="col-md-7" *ngIf="symbol">{{prodDim2}} {{symbol.prodDimensionSymbol}}</div>
@@ -78,8 +108,8 @@
           <i class="fa fa-refresh"></i>
         </button>
       </div>
-      <div class="card-body">
-
+      <div class="card-body threejs-container">
+        <app-threedview [model]="productModel" [shape]="productShape"></app-threedview>
       </div><!-- /.card-body -->
     </div><!-- /.card -->
   </div>
@@ -101,7 +131,9 @@
           <th class="text-center" width="2%"><i class="fa fa-sort" aria-hidden="true"></i></th>
           <th class="text-center">{{'Component name'|translate}}</th>
           <th class="text-center">{{'Description'|translate}}</th>
-          <th class="text-center">{{'Specific Dim.'|translate}} ({{symbol.prodDimensionSymbol}})</th>
+          <th class="text-center">{{'Specific Dim'|translate}} ({{symbol.prodDimensionSymbol}})</th>
+          <th class="text-center" *ngIf="productShape == 18">{{'Specific Dim 4'|translate}} ({{symbol.prodDimensionSymbol}})</th>
+          <th class="text-center" *ngIf="productShape == 18">{{'Specific Dim 5'|translate}} ({{symbol.prodDimensionSymbol}})</th>
           <th class="text-center">{{'Calculated Mass'|translate}} ({{symbol.massSymbol}})</th>
           <th class="text-center">{{'Real mass'|translate}} ({{symbol.massSymbol}})</th>
           <th class="text-center" width="1%">{{'Actions'|translate}}</th>
@@ -110,9 +142,10 @@
       <tbody>
         <tr *ngFor="let element of elements; first as isFirst; last as isLast; let i = index">
           <td class="text-center nowrap">
-            <a *ngIf="!isFirst" (click)="onMoveUpElement(element)"><i class="fa fa-caret-up" aria-hidden="true"></i></a><a *ngIf="!isLast" (click)="onMoveDownElement(element)"><i class="fa fa-caret-down" aria-hidden="true"></i></a>
+            <a *ngIf="!isFirst" (click)="onMoveUpElement(element)"><i class="fa fa-caret-up" aria-hidden="true"></i></a>
+            <a *ngIf="!isLast" (click)="onMoveDownElement(element)"><i class="fa fa-caret-down" aria-hidden="true"></i></a>
           </td>
-          <td> <i class="fa fa-stop fa-lg" [style.color]="prodColors[i].CODE_HEXA"></i> {{element.componentName}}</td>
+          <td> <i class="fa fa-stop fa-lg" [style.color]="element.prodcharColor ? element.prodcharColor.CODE_HEXA : prodColors[i].CODE_HEXA" (click)="showModalSelectColor(element, i + 1)" style="cursor:pointer"></i> {{element.componentName}}</td>
           <td class="text-center">
             {{ element.PROD_ELMT_NAME }}
             <div *ngIf="study.CHAINING_CONTROLS && study.PARENT_ID != 0 && element.INSERT_LINE_ORDER != study.ID_STUDY">
@@ -120,17 +153,19 @@
             </div>
           </td>
           <td class="text-center">{{ element.SHAPE_PARAM2 }}</td>
+          <td class="text-center" *ngIf="productShape == 18">{{ element.SHAPE_PARAM4 }}</td>
+          <td class="text-center" *ngIf="productShape == 18">{{ element.SHAPE_PARAM5 }}</td>
           <td class="text-center">{{ element.PROD_ELMT_WEIGHT }}</td>
           <td class="text-center">{{ element.PROD_ELMT_REALWEIGHT }}</td>
           <td class="text-center nowrap">
             <button class="btn btn-sm btn-primary"
               (click)="onEditElement(element)"
-              [disabled]="(study.CHAINING_CONTROLS && (study.HAS_CHILD || study.PARENT_ID != 0) || disabledField())">
+              [disabled]="((study.CHAINING_CONTROLS && (study.HAS_CHILD || study.PARENT_ID != 0) && element.INSERT_LINE_ORDER != study.ID_STUDY) || disabledField())">
                 <i class="fa fa-pencil"></i>
             </button>
             <button class="btn btn-sm btn-danger"
               (click)="onRemoveElement(element, i)"
-              [disabled]="(study.CHAINING_CONTROLS && (study.HAS_CHILD || study.PARENT_ID != 0) || disabledField())" [ladda]="laddaDeletingElmts[i]">
+              [disabled]="((study.CHAINING_CONTROLS && (study.HAS_CHILD || study.PARENT_ID != 0) && element.INSERT_LINE_ORDER != study.ID_STUDY) || disabledField())" [ladda]="laddaDeletingElmts[i]">
               <i class="fa fa-minus-circle"></i>
             </button>
           </td>
@@ -141,7 +176,6 @@
       <p>{{'No data to display'|translate}}</p>
     </div>
   </div>
-
 </div>
 <!--Start model edit product -->
 <div bsModal class="modal fade" #modalEditProduct="bs-modal" role="dialog" aria-hidden="true">
@@ -164,14 +198,19 @@
               <input type="text" id="text-input" name="text-input" class="form-control" [(ngModel)]="productForm.name">
             </div>
           </div>
-          <div class="form-group row">
+          <!-- add filter shape 3d -->
+          <div class="form-group row" *ngIf="study.CALCULATION_MODE">
             <label class="col-md-3 col-form-label" for="email-input">{{'Product shape'|translate}}</label>
-            <div class="col-md-9">
-              <select [(ngModel)]="productForm.shape" class="form-control" (ngModelChange)="onChangeShape()" >
-                <option *ngFor="let shape of availShapes" [value]="shape.ID_SHAPE">{{ 'SHAPECODE_'+shape.SHAPECODE | translate }}</option>
-              </select>
-            </div>
+              <div class="col-md-6" [ngClass]="study.CALCULATION_MODE == 3 ? 'col-md-6':'col-md-9'">
+                <select [(ngModel)]="productForm.shape" class="form-control" (ngModelChange)="onChangeShape()">
+                  <option *ngFor="let shape of availShapes" [value]="shape.ID_SHAPE">{{ 'SHAPECODE_'+shape.SHAPECODE | translate }}</option>
+                </select>
+              </div>
+              <div class="col-md-3" *ngIf="study.CALCULATION_MODE == 3">
+                <button class="btn btn-primary" (click)="change3DProduct()">{{ dText|translate}}</button>
+              </div>
           </div>
+          <!-- End add filter shape 3d -->
           <div class="form-group row">
             <label class="col-md-3 col-form-label" for="email-input">Dimension 1</label>
             <div class="col-md-9">
@@ -197,9 +236,28 @@
                 <input type="text" name="dim1" class="form-control" [(ngModel)]="productForm.dim3" [disabled]="dimension3Disabled">
                 <span class="input-group-addon" *ngIf="symbol">{{symbol.prodDimensionSymbol}}</span>
               </div>
-
             </div>
           </div>
+          <!-- add new 3D -->
+          <div class="form-group row" *ngIf="showText == true">
+            <label class="col-md-3 col-form-label" for="email-input">Dimension 4</label>
+            <div class="col-md-9">
+              <div class="input-group">
+                <input type="text" name="dim4" class="form-control" [(ngModel)]="productForm.dim4" [disabled]="dimension4Disabled">
+                <span class="input-group-addon" *ngIf="symbol">{{symbol.prodDimensionSymbol}}</span>
+              </div>
+            </div>
+          </div>
+          <div class="form-group row" *ngIf="showText == true">
+            <label class="col-md-3 col-form-label" for="email-input">Dimension 5</label>
+            <div class="col-md-9">
+              <div class="input-group">
+                <input type="text" name="dim5" class="form-control" [(ngModel)]="productForm.dim5" [disabled]="dimension5Disabled">
+                <span class="input-group-addon" *ngIf="symbol">{{symbol.prodDimensionSymbol}}</span>
+              </div>
+            </div>
+          </div>
+          <!-- End 3D -->
         </div>
       </div><!-- modal-body -->
       <div class="modal-footer">
@@ -333,10 +391,28 @@
             </div>
           </div>
           <div class="form-group row">
-            <div class="col-md-4" style="float:right">{{'Specific Dim.:'|translate}}</div>
+            <div class="col-md-4" style="float:right">{{'Specific Dim:'|translate}}</div>
             <div class="col-md-8">
               <div class="input-group">
-                <input type="text" name="specificDim" class="form-control" [(ngModel)]="elementForm.specific_dim" (input)="updateRealMass()">
+                <input type="text" name="specificDim" class="form-control" [(ngModel)]="elementForm.specific_dim">
+                <span class="input-group-addon" *ngIf="symbol">{{symbol.prodDimensionSymbol}}</span>
+              </div>
+            </div>
+          </div>
+          <div class="form-group row" *ngIf="productShape == 18">
+            <div class="col-md-4" style="float:right">{{'Specific Dim 4:'|translate}}</div>
+            <div class="col-md-8">
+              <div class="input-group">
+                <input type="text" name="specificDim4" class="form-control" [(ngModel)]="elementForm.specific_dim4">
+                <span class="input-group-addon" *ngIf="symbol">{{symbol.prodDimensionSymbol}}</span>
+              </div>
+            </div>
+          </div>
+          <div class="form-group row" *ngIf="productShape == 18">
+            <div class="col-md-4" style="float:right">{{'Specific Dim 5:'|translate}}</div>
+            <div class="col-md-8">
+              <div class="input-group">
+                <input type="text" name="specificDim5" class="form-control" [(ngModel)]="elementForm.specific_dim5">
                 <span class="input-group-addon" *ngIf="symbol">{{symbol.prodDimensionSymbol}}</span>
               </div>
             </div>
@@ -369,4 +445,35 @@
   </div>
 </div>
 <!-- End Model edit com -->
+<!-- Start model select color -->
+<div bsModal class="modal fade" #selectcolorModal="bs-modal" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-primary">
+    <div class="modal-content">
+      <div class="modal-header">
+        <strong class="text-uppercase">{{'Select Layer Color'|translate}}</strong>
+        <button class="close" arria-label="Close" data-dismiss="modal" (click)="selectcolorModal.hide()">
+          <span aria-hidden="true">×</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div *ngIf="colorItems.length > 0 && colorSelected.length > 0">
+          <ng-select [allowClear]="true"
+                      [items]="colorItems"
+                      [active]="colorSelected"
+                      [disabled]="disabled"
+                      (data)="refreshValue($event)"
+                      (selected)="selected($event, product.ID_PROD)"
+                      (removed)="removed($event)"
+                      (typed)="typed($event)"
+                      placeholder="No color selected">
+          </ng-select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary btn-sm" (click)="selectcolorModal.hide()">{{'Close'|translate}}</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End model select color -->
 <app-spinner *ngIf="isLoading"></app-spinner>

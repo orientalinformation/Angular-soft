@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-profile-layout',
@@ -8,28 +9,28 @@ import { Component, OnInit } from '@angular/core';
 export class ProfileLayoutComponent implements OnInit {
   public nav = [
     {
-      name: 'Profile',
+      name: this.translate.instant('Profile'),
       url: '/profile',
       icon: 'icon-user',
     },
     {
-      name: 'Settings',
+      name: this.translate.instant('Settings'),
       url: '/settings',
       icon: 'icon-wrench',
     },
     {
-      name: 'Reference data',
+      name: this.translate.instant('Reference data'),
       url: '/references',
       icon: 'fa fa-database',
     },
     {
-      name: 'Back',
+      name: this.translate.instant('Back'),
       url: '/home',
       icon: 'icon-action-undo',
     }
   ];
 
-  constructor() { }
+  constructor(private translate: TranslateService) { }
 
   ngOnInit() {
   }

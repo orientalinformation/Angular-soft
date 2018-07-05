@@ -10,7 +10,7 @@
       <div class="col-md-2">{{'Insulation type'|translate}}</div>
       <div class="col-md-2">
         <select name="insulationType" id="insulationType" [(ngModel)]= "insulationTypeSelected" [disabled]="statusInsulation" (change)="loadInsulationType()" class="form-control">
-          <option [value]="5">--None--</option>
+          <option [value]="5">{{'None'|translate}}</option>
           <option *ngFor="let insuParams of insulationParamShow" [value]="insuParams.value">{{insuParams.name}}</option>
         </select>
       </div>
@@ -19,14 +19,14 @@
       <div class="col-md-2" *ngIf="symbol">{{'Insulation Diameter'|translate}} ({{symbol.lineDimensionSymbol}}) </div>
       <div class="col-md-2" *ngIf="insulationTypeSelected != 5; else diameterEmpty" >
         <select name="diameter" [(ngModel)]="diameterSelected" id="diameter" (change)="loadDiameter()" class="form-control" [disabled]="statusDiameter">
-          <option [value]="0">--None--</option>
+          <option [value]="0">{{'None'|translate}}</option>
           <option *ngFor="let param of diameterParamShow" [value]="param">{{ param }}</option>
         </select>
       </div>
       <ng-template #diameterEmpty>
         <div class="col-md-2">
           <select name="diameter" id="diameter"  class="form-control" [disabled]="statusDiameter">
-            <option [value]="0">--None--</option>
+            <option [value]="0">{{'None'|translate}}</option>
           </select>
         </div>
       </ng-template>
@@ -35,14 +35,14 @@
       <div class="col-md-2">{{'Insulated line'|translate}}</div>
       <div class="col-md-3" *ngIf="insulationTypeSelected != 5 && diameterSelected !=0 && insulatedLine != []; else insulatedlineEmpty">
         <select name="insulatedline" [(ngModel)]="insulatedLineSelected" [disabled]="statusInsulatedLine" (change)="changeInsulatedLine()" id= "insulatedline" class="form-control" >
-          <option [value]="0">--None--</option>
+          <option [value]="0">{{'None'|translate}}</option>
           <option *ngFor= "let insulParams of insulatedLine, let i = index" [value]="insulatedLineValue[i]" >{{insulParams}}</option>
         </select>
       </div>
       <ng-template #insulatedlineEmpty>
         <div class="col-md-3">
           <select name="insulatedline" [(ngModel)]="insulatedLineSelected" [disabled]="statusInsulatedLine" (change)="changeInsulatedLine()" id= "insulatedline" class="form-control" >
-            <option [value]="0">--None--</option>
+            <option [value]="0">{{'None'|translate}}</option>
           </select>
         </div>
       </ng-template>
@@ -55,14 +55,14 @@
       <div class="col-md-2">{{'Insulated valves'|translate}}</div>
       <div class="col-md-3" *ngIf="insulationTypeSelected != 5 && diameterSelected !=0 && insulatedval != []; else insularedValvesEmpty">
         <select name="insularedValves" [(ngModel)]= "insulatedvalSelected" [disabled]="statusInsulatedVal" (change)= "changeInsulatedVal()" class="form-control">
-          <option [value]="0">--None--</option>
+          <option [value]="0">{{'None'|translate}}</option>
           <option *ngFor= "let insulvalParams of insulatedval, let i = index"  [value]="insulatedvalValue[i]">{{insulvalParams}}</option>
         </select> 
       </div>
       <ng-template #insularedValvesEmpty>
           <div class="col-md-3" >
             <select name="insularedValves" [(ngModel)]= "insulatedvalSelected" [disabled]="statusInsulatedVal" (change)= "changeInsulatedVal()" class="form-control">
-              <option [value]="0">--None--</option>
+              <option [value]="0">{{'None'|translate}}</option>
             </select>
           </div>
       </ng-template>
@@ -75,7 +75,7 @@
       <div class="col-md-2">{{'Tees'|translate}}</div>
       <div class="col-md-3" *ngIf="insulationTypeSelected != 5 && diameterSelected !=0 && tee != []; else teesEmpty">
         <select name="tees" [(ngModel)]="teeSelect" (change)= "changeTee()" class="form-control" [disabled]="statusTeeChoose">
-          <option [value]="0">--None--</option>
+          <option [value]="0">{{'None'|translate}}</option>
           <option *ngFor= "let teeParams of tee, let i = index" [value]="teeValue[i]">{{teeParams}}</option>
           
         </select>
@@ -83,7 +83,7 @@
       <ng-template #teesEmpty>
         <div class="col-md-3" >
           <select name="tees" [(ngModel)]="teeSelect" (change)= "changeTee()" class="form-control" [disabled]="statusTeeChoose">
-            <option [value]="0">--None--</option>
+            <option [value]="0">{{'None'|translate}}</option>
           </select>
         </div>
       </ng-template>
@@ -96,7 +96,7 @@
       <div class="col-md-2">{{'Elbows'|translate}}</div>
       <div class="col-md-3" *ngIf="insulationTypeSelected != 5 && diameterSelected !=0 && elbows != []; else elbowsEmpty">
         <select name="elbows" [(ngModel)]= "elbowsSelected" (change)="changeElbows()" class="form-control" [disabled]="statusElbChoose">
-          <option [value]="0">--None--</option>
+          <option [value]="0">{{'None'|translate}}</option>
           <option *ngFor= "let elbowParams of elbows, let i = index" [value]="elbowsValue[i]">{{elbowParams}}</option>
           
         </select>
@@ -104,7 +104,7 @@
       <ng-template #elbowsEmpty>
         <div class="col-md-3" >
           <select name="elbows" [(ngModel)]= "elbowsSelected" (change)="changeElbows()" class="form-control" [disabled]="statusElbChoose">
-            <option [value]="0">--None--</option>
+            <option [value]="0">{{'None'|translate}}</option>
           </select>
         </div>
       </ng-template>
@@ -117,14 +117,14 @@
       <div class="col-md-2">{{'Non-insulated line'|translate}}</div>
       <div class="col-md-3" *ngIf="insulationTypeSelected != 5 && diameterSelected !=0 && noninsulatedline != []; else nonInsulatedLineEmpty">
         <select name="nonInsulatedLine" [(ngModel)]= "noninsulatedlineSelect" (change)="changeNonInLine()"  [disabled]="statusNonInsuLine" class="form-control">
-          <option [value]="0">--None--</option>
+          <option [value]="0">{{'None'|translate}}</option>
           <option *ngFor= "let noninsullineParams of noninsulatedline, let i = index" [value]="non_insulated_lineValue[i]">{{noninsullineParams}}</option>
         </select>
       </div>
       <ng-template #nonInsulatedLineEmpty>
         <div class="col-md-3" >
           <select name="nonInsulatedLine" [(ngModel)]= "noninsulatedlineSelect" (change)="changeNonInLine()" [disabled]="statusNonInsuLine" class="form-control">
-            <option [value]="0">--None--</option>
+            <option [value]="0">{{'None'|translate}}</option>
           </select>
         </div>
       </ng-template>
@@ -137,14 +137,14 @@
       <div class="col-md-2">{{'Non-insulated valves'|translate}}</div>
       <div class="col-md-3" *ngIf="insulationTypeSelected != 5 && diameterSelected !=0 && noninsulatedvalves != []; else nonInsulatedValvesEmpty">
         <select name="nonInsulatedValves" [(ngModel)]= "noninsulatedvalvesSelect" (change)="changeNonInLineval()" [disabled]="statusNonInsuVal" class="form-control">
-          <option [value]="0">--None--</option>
+          <option [value]="0">{{'None'|translate}}</option>
           <option *ngFor= "let noninsulvalsParams of noninsulatedvalves, let i = index" [value]="non_insulated_valValue[i]">{{noninsulvalsParams}}</option>
         </select>
       </div>
       <ng-template #nonInsulatedValvesEmpty>
         <div class="col-md-3">
           <select name="nonInsulatedValves" [(ngModel)]= "noninsulatedvalvesSelect" (change)="changeNonInLineval()" [disabled]="statusNonInsuVal" class="form-control">
-            <option [value]="0">--None--</option>
+            <option [value]="0">{{'None'|translate}}</option>
           </select>
         </div>
       </ng-template>
@@ -157,14 +157,14 @@
       <div class="col-md-2">{{'Storage tank'|translate}}</div>
       <div class="col-md-4" *ngIf="insulationTypeSelected != 5; else storageTankEmpty">
         <select  name="storageTank" [(ngModel)]="storageTankSelected" id= "storageTank"  class="form-control" [disabled]="statusStank">
-          <option [value]="0">--None--</option>
+          <option [value]="0">{{'None'|translate}}</option>
           <option *ngFor= "let stParams of storageTankParam, let i = index" [value]="storageTankValue[i]">{{ stParams }}</option>
         </select>
       </div>
       <ng-template #storageTankEmpty>
         <div class="col-md-4" >
           <select  name="storageTank" [(ngModel)]="storageTankSelected" id= "storageTank"  class="form-control" [disabled]="statusStank">
-            <option [value]="0">--None--</option>
+            <option [value]="0">{{'None'|translate}}</option>
           </select>
         </div>
       </ng-template>

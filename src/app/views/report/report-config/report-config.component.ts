@@ -31,7 +31,7 @@ export class ReportConfigComponent implements OnInit, AfterViewInit {
   public studyID: any;
   public optionSelected: number;
   public typeGenerate: number;
-  public loading: boolean;
+  public loading = false;
   public laddaGenerate = false;
   public fileToUpload: File = null;
   public checkUpload = 0;
@@ -75,6 +75,7 @@ export class ReportConfigComponent implements OnInit, AfterViewInit {
   public progressFileHtml = '';
   public iframeReport;
   public ischeckUser = true;
+  public symbol: Models.Symbol;
 
   // by haidt
   public listUnits: Array<Units>;
@@ -83,7 +84,7 @@ export class ReportConfigComponent implements OnInit, AfterViewInit {
 
 
   constructor(private api: ApiService, private toastr: ToastrService, private router: Router, private http: HttpClient,
-     private sanitizer: DomSanitizer) {
+     private sanitizer: DomSanitizer, private translate: TranslateService) {
     this.study = JSON.parse(localStorage.getItem('study'));
     this.user = JSON.parse(localStorage.getItem('user'));
   }
@@ -111,6 +112,7 @@ export class ReportConfigComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit() {
     this.progressFileHtml = '';
+    localStorage.setItem('iframeReport', this.progressFileHtml);
     this.isLoading = true;
     const params: ApiService.CheckControlViewParams = {
       idStudy: this.study.ID_STUDY,
@@ -123,15 +125,20 @@ export class ReportConfigComponent implements OnInit, AfterViewInit {
           this.checkcontrol = data.checkcontrol;
           if (!data.checkcontrol) {
             this.router.navigate(['/calculation/check-control']);
-            swal('Oops..', 'Report is available only when equipments are calculated numerically', 'error');
+            swal('Warning', this.translate.instant('Report is available only when equipments are calculated numerically'), 'error');
           }
         } else {
           this.checkcontrol = true;
         }
       }
     );
-    this.loadReport();
-    this.loadMeshAxisPos();
+    this.api.getSymbol(this.study.ID_STUDY).subscribe(
+      data => {
+        this.symbol = data;
+        this.loadReport();
+        this.loadMeshAxisPos();
+      }
+    );
     if (this.displayProgesReport) {
       clearInterval(this.displayProgesReport);
     }
@@ -140,7 +147,7 @@ export class ReportConfigComponent implements OnInit, AfterViewInit {
   loadReport() {
     this.api.getReport(this.study.ID_STUDY).subscribe(
       resp => {
-        console.log(resp);
+        // console.log(resp);
         localStorage.setItem('ip', resp.ip);
         resp.ASSES_CONSUMP = Number(resp.ASSES_CONSUMP);
         resp.ASSES_ECO = Number(resp.ASSES_ECO);
@@ -188,14 +195,17 @@ export class ReportConfigComponent implements OnInit, AfterViewInit {
         resp.SIZING_TR_MAX = Number(resp.SIZING_TR_MAX);
         resp.SIZING_TR_MIN = Number(resp.SIZING_TR_MIN);
         resp.SIZING_VALUES = Number(resp.SIZING_VALUES);
+        resp.isSizingValuesChosen = Number(resp.isSizingValuesChosen);
+        resp.isSizingValuesMax = Number(resp.isSizingValuesMax);
 
         this.report = resp;
+        // console.log(this.report);
         localStorage.setItem('reportParam', JSON.stringify(resp));
         this.reportParam = JSON.parse(localStorage.getItem('reportParam'));
       },
       err => {
         console.log(err);
-        swal('Oops..', err.error, 'error');
+        swal('Warning', this.translate.instant(err.error), 'error');
         this.router.navigate(['/output/preliminary']);
       },
       () => {
@@ -208,6 +218,7 @@ export class ReportConfigComponent implements OnInit, AfterViewInit {
     this.api.getMeshAxisPos(this.study.ID_STUDY)
       .subscribe(
       resp => {
+        // console.log(resp);
         this.meshAxisPos = resp;
         this.isLoading = false;
       },
@@ -220,26 +231,26 @@ export class ReportConfigComponent implements OnInit, AfterViewInit {
   }
 
   saveContentReport() {
+    console.log(this.report);
     if (Number(this.user.ID_USER) === Number(this.study.ID_USER)) {
       this.isSaveReport = true;
       this.api.saveReport({
         id: this.study.ID_STUDY,
         body: this.report
-      })
-        .subscribe(
+      }).subscribe(
         resp => {
-          console.log(this.report);
+          // console.log(this.report);
           localStorage.setItem('reportParam', JSON.stringify(this.report));
           if (resp === 1) {
-            this.toastr.success('Save report of user success', 'successfully');
+            this.toastr.success(this.translate.instant('Save report of user success'), 'successfully');
           } else {
-            swal('Oops..', 'Save report error!', 'error');
+            swal('Warning', this.translate.instant('Save report error!'), 'error');
           }
           this.isSaveReport = false;
         },
         err => {
           console.log(err);
-          this.toastr.error(err.error, 'error');
+          this.toastr.error(this.translate.instant(err.error), 'error');
           this.isSaveReport = false;
         },
         () => {
@@ -310,7 +321,17 @@ export class ReportConfigComponent implements OnInit, AfterViewInit {
     };
     this.api.downLoadPDF(reportParam).subscribe(
     data => {
-      window.location.href = data.url;
+      this.isProcessHeatBalance = true;
+      this.isProcessSizing = true;
+      this.isProcessEnthalpie = true;
+      this.isProcessProductSection = true;
+      this.isProcessTimeBased = true;
+      this.isProcessContour = true;
+      this.isLoadingProgess = false;
+      this.progressFileHtml = data.url;
+      localStorage.setItem('iframeReport', this.progressFileHtml);
+      this.modalGeneration.hide();
+      this.router.navigate(['/report/reportview']);
     },
     err => {
       console.log(err);
@@ -380,7 +401,17 @@ export class ReportConfigComponent implements OnInit, AfterViewInit {
     };
     this.api.downLoadHtmlToPDF(reportParam).subscribe(
       data => {
-        window.location.href = data.url;
+        this.isProcessHeatBalance = true;
+        this.isProcessSizing = true;
+        this.isProcessEnthalpie = true;
+        this.isProcessProductSection = true;
+        this.isProcessTimeBased = true;
+        this.isProcessContour = true;
+        this.isLoadingProgess = false;
+        this.progressFileHtml = data.url;
+        localStorage.setItem('iframeReport', this.progressFileHtml);
+        this.modalGeneration.hide();
+        this.router.navigate(['/report/reportview']);
       },
       err => {
         console.log(err);
@@ -392,22 +423,15 @@ export class ReportConfigComponent implements OnInit, AfterViewInit {
   }
 
   generatePDF() {
-    console.log(this.reportParam.AXE1_X);
+    // console.log(this.reportParam.AXE1_X);
     this.showContentReportWaiting(this.typeGenerate);
-    if (Number(this.typeGenerate) === 1) {
-      this.loading = true;
-      this.saveContentReport();
-      this.viewPDF();
-    } else if (Number(this.typeGenerate) === 0)  {
-      this.loading = true;
-      this.saveContentReport();
-      this.viewHTML();
-    }
+    this.saveContentReport();
+    this.loading = true;
   }
 
   showContentReportWaiting(typeGenerate) {
-    console.log(this.report);
-    console.log(this.reportParam);
+    // console.log(this.report);
+    // console.log(this.reportParam);
     this.isRepCustomer = this.report.REP_CUSTOMER;
     this.isRefContRepProdList = this.report.PROD_LIST;
     this.isRefContRepProd3D = this.report.PROD_3D;
@@ -433,16 +457,23 @@ export class ReportConfigComponent implements OnInit, AfterViewInit {
     this.isProcessTimeBased = false;
     this.isProcessContour = false;
     this.isLoadingProgess = true;
-    this.displayProgesReport = setInterval(() => {
+
+    if (Number(this.typeGenerate) === 1) {
+      this.viewPDF();
+    } else if (Number(this.typeGenerate) === 0)  {
+      this.viewHTML();
+    }
+
+    /*this.displayProgesReport = setInterval(() => {
       this.processingReport(typeGenerate);
-    }, 1000);
+    }, 1000);*/
   }
 
   processingReport(typeGenerate) {
     this.api.processingReport(this.study.ID_STUDY).subscribe(
       data => {
         if (data != null) {
-          console.log(data);
+          // console.log(data);
           this.isProcessHeatBalance = true;
           this.isProcessSizing = true;
           this.isProcessEnthalpie = true;
@@ -475,24 +506,24 @@ export class ReportConfigComponent implements OnInit, AfterViewInit {
   handleFileInput(files: FileList) {
     this.checkUpload = 1;
     this.fileToUpload = files.item(0);
-    console.log('logo');
+    // console.log('logo');
     this.uploadFileToActivity();
   }
 
   handleFilePhotoPath(files: FileList) {
     this.checkUpload = 2;
     this.fileToUpload = files.item(0);
-    console.log('photo path');
+    // console.log('photo path');
     this.uploadFileToActivity();
   }
 
   uploadFileToActivity() {
     this.postFile(this.fileToUpload).subscribe(
       data => {
-        console.log(data);
+        // console.log(data);
       },
       error => {
-        console.log(error);
+        // console.log(error);
       },
       () => {
       });

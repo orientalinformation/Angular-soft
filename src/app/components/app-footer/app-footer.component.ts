@@ -8,8 +8,11 @@ import { OnInit } from '@angular/core/src/metadata/lifecycle_hooks';
 })
 export class AppFooterComponent implements OnInit {
   public statusText;
+  public date;
 
-  constructor(private status: StatusService) { }
+  constructor(private status: StatusService) {
+    this.date = new Date();
+  }
 
   ngOnInit() {
     this.status.getStatusIndicator()

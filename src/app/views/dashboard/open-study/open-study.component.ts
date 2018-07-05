@@ -4,6 +4,7 @@ import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/do';
 import { map } from 'rxjs/operators/map';
 import { ApiService } from '../../../api/services';
+import { InputService } from '../../../api/services/input.service';
 import { error } from 'selenium-webdriver';
 import { Study, ViewOpenStudy } from '../../../api/models';
 import { IOption } from 'ng-select';
@@ -15,9 +16,11 @@ import { ModalDirective } from 'ngx-bootstrap/modal/modal.directive';
 import * as Models from '../../../api/models';
 
 import swal from 'sweetalert2';
+import { ToastrService } from 'ngx-toastr';
 import { Users } from '../../../api/models/users';
 import { ViewFamily } from '../../../api/models/view-family';
 import { ViewComponents } from '../../../api/models/view-components';
+import { TranslateService } from '@ngx-translate/core';
 
 @Pipe({ name: 'filter' })
 export class FilterPipe implements PipeTransform {
@@ -56,6 +59,7 @@ export class OpenStudyComponent implements OnInit, AfterViewInit {
   public laddaDeletingStudy = false;
   public laddaSaveStudyAs = false;
   public users: Users;
+  public user: Models.User;
   public compFamily: ViewFamily;
   public subFamily: ViewFamily;
   public components: ViewComponents;
@@ -63,9 +67,12 @@ export class OpenStudyComponent implements OnInit, AfterViewInit {
   public compFamilySelected = 0;
   public subFamilySelected = 0;
   public componentSelected = 0;
+  public isLoading = true;
 
-  constructor(private api: ApiService, private router: Router) {}
+  constructor(private api: ApiService, private router: Router,
+    private input: InputService, private toastr: ToastrService, private translate: TranslateService) {}
   ngOnInit() {
+    this.user = JSON.parse(localStorage.getItem('user'));
   }
 
   openStudy() {
@@ -76,6 +83,8 @@ export class OpenStudyComponent implements OnInit, AfterViewInit {
         data => {
           this.api.getProductViewModel(this.selectedStudy.ID_PROD).subscribe(
             (response: Models.ViewProduct) => {
+              localStorage.setItem('productWarning', 'Y');
+              localStorage.setItem('productDeleteWarning', 'Y');
               localStorage.setItem('productView', JSON.stringify(response));
               const elements = response.elements;
               if (elements.length > 0) {
@@ -104,11 +113,12 @@ export class OpenStudyComponent implements OnInit, AfterViewInit {
   }
 
   onSelect(study: Study) {
-    console.log('select study: ' + study.ID_STUDY);
+    // console.log('select study: ' + study.ID_STUDY);
     this.selectedStudy = study;
   }
 
   refrestListStudies() {
+    this.isLoading = true;
     localStorage.removeItem('study');
     this.selectedStudy = null;
     this.api.findStudies({})
@@ -117,9 +127,11 @@ export class OpenStudyComponent implements OnInit, AfterViewInit {
         // console.log('get studies response:');
         // console.log(data);
         this.studies = data;
+        this.isLoading = false;
       },
       err => {
         console.log(err);
+        this.isLoading = false;
       },
       () => {
         // console.log('find sttudies completed');
@@ -148,14 +160,14 @@ export class OpenStudyComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    console.log('open study initializing');
+    // console.log('open study initializing');
     this.refrestListStudies();
   }
 
   deleteStudy() {
     swal({
-      title: 'Are you sure?',
-      text: 'You won\'t be able to revert this!',
+      title: this.translate.instant('Are you sure?'),
+      text: this.translate.instant('You won\'t be able to revert this!'),
       type: 'warning',
       showCancelButton: true,
       cancelButtonColor: '#3085d6',
@@ -166,11 +178,11 @@ export class OpenStudyComponent implements OnInit, AfterViewInit {
         this.laddaDeletingStudy = true;
         this.api.deleteStudyById(this.selectedStudy.ID_STUDY).subscribe(
           data => {
-            console.log(data);
+            // console.log(data);
             this.laddaDeletingStudy = false;
             swal(
-              'Deleted!',
-              'Your study has been deleted.',
+              this.translate.instant('Deleted!'),
+              this.translate.instant('Your study has been deleted.'),
               'success'
             );
             this.refrestListStudies();
@@ -188,16 +200,16 @@ export class OpenStudyComponent implements OnInit, AfterViewInit {
   }
 
   saveStudyAs() {
-    console.log(this.name);
+    // console.log(this.name);
     if (!this.name) {
-      swal('Error', 'Please specify study name!', 'error');
+      this.toastr.error(this.translate.instant('Please specify study name!'), 'Error');
       return false;
     }
     this.laddaSaveStudyAs = true;
     this.studyID = this.selectedStudy.ID_STUDY;
     const studyName = this.name;
         // console.log(studyName);
-        console.log(this.name);
+        // console.log(this.name);
     this.api.saveStudyAs({
       id: this.studyID,
       name: this.name
@@ -208,7 +220,7 @@ export class OpenStudyComponent implements OnInit, AfterViewInit {
         this.refrestListStudies();
       },
       (err) => {
-        swal('Error', err.error.message, 'error');
+        this.toastr.error(this.translate.instant(err.error.message), 'Error');
         console.log(err);
         this.laddaSaveStudyAs = false;
       },
@@ -240,15 +252,17 @@ export class OpenStudyComponent implements OnInit, AfterViewInit {
         this.subFamily = data;
       }
     );
+
     this.api.findComponents({
       idStudy: 0,
       compfamily: this.compFamilySelected,
     }).subscribe(
       data => {
-        console.log(data);
+        // console.log(data);
         this.components = data;
       }
     );
+
     this.api.findStudies({
         idUser: this.userSelected,
         compfamily: this.compFamilySelected
@@ -271,7 +285,7 @@ export class OpenStudyComponent implements OnInit, AfterViewInit {
       subfamily: this.subFamilySelected
     }).subscribe(
       data => {
-        console.log(data);
+        // console.log(data);
         this.components = data;
       }
     );
@@ -309,4 +323,7 @@ export class OpenStudyComponent implements OnInit, AfterViewInit {
     );
   }
 
+  disabledField() {
+    return !(Number(this.selectedStudy.ID_USER) === Number(this.user.ID_USER));
+  }
 }

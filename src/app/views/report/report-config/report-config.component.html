@@ -158,14 +158,14 @@
                 </label><br>
                 <label class="form-checkbox-label"style="padding:10px 0px 0px 20px;">
                   <label class="switch switch-icon switch-primary-outline-alt" >
-                    <input type="checkbox" class="switch-input" name="refContRepPacking" [disabled]="ischeckUser" [(ngModel)]="study.ID_PACKING" [checked]="study.ID_PACKING > 0" [disabled]="study.ID_PACKING == 0" value="1">
+                    <input type="checkbox" class="switch-input" name="refContRepPacking" [disabled]="ischeckUser || study.ID_PACKING == 0" [(ngModel)]="study.ID_PACKING" [checked]="study.ID_PACKING > 0" value="1">
                     <span class="switch-label" data-on="&#xf00c;" data-off="&#xf00d;"></span>
                     <span class="switch-handle"></span>
                   </label>
                   {{'Packaging data' | translate}}
                 </label><br>
                 <label class="form-checkbox-label"style="padding:10px 0px 0px 20px;">
-                  <label class="switch switch-icon switch-primary-outline-alt" *ngIf="study.OPTION_CRYOPIPELINE != null && !study.OPTION_CRYOPIPELINE; else notPipe">
+                  <label class="switch switch-icon switch-primary-outline-alt" *ngIf="study.OPTION_CRYOPIPELINE != null && !(study.OPTION_CRYOPIPELINE == 0); else notPipe">
                     <input type="checkbox" class="switch-input" name="refContRepPipeLine" [disabled]="ischeckUser" [(ngModel)]="report.PIPELINE" [checked]="report.PIPELINE == 1" value="1">
                     <span class="switch-label" data-on="&#xf00c;" data-off="&#xf00d;"></span>
                     <span class="switch-handle"></span>
@@ -183,127 +183,128 @@
             </tr>
           </table>
           <strong style="padding:5px;">{{'Calculation Output' | translate}}</strong>
-          <table class="table table-bordered table-sm" style="margin-top:10px; font-size: 12px;">
-            <tr>
-              <td colspan="11"><strong>{{'Consumption & Prices' | translate}}</strong></td>
-            </tr>
-            <tr>
-              <td align="center" style="vertical-align:middle">
-                {{'Overall Cryogen Consumption Ratio (product + equipment and pipeline losses) Unit of Cryogen, per piece of product.' | translate}}
-                ({{ report.consumptionSymbol}})
-              </td>
-              <td align="center" style="vertical-align:middle">
-                {{'Total Cryogen Consumption (product + equipment and pipeline losses).' | translate}}  ({{ report.consumptionSymbol }}/kg)
-              </td>
-              <td align="center" style="vertical-align:middle">
-                {{'Specific Cryogen Consumption Ratio (product only) Unit of Cryogen, per unit weight of product.' | translate }}  ({{ report.consumptionSymbol }}/kg)
-              </td>
-              <td align="center" style="vertical-align:middle">
-                {{'Total Cryogen Consumption per hour' | translate }} ({{ report.consumptionSymbol }})
-              </td>
-              <td align="center" style="vertical-align:middle">
-                {{'Total Cryogen Consumption per day' | translate}} ({{ report.consumptionSymbol }})
-              </td>
-              <td align="center" style="vertical-align:middle">
-                {{'Total Cryogen Consumption per week' | translate}} ({{ report.consumptionSymbol }})
-              </td>
-              <td align="center" style="vertical-align:middle">
-                {{'Total Cryogen Consumption per month' | translate}} ({{ report.consumptionSymbol }})
-              </td>
-              <td align="center" style="vertical-align:middle">
-                {{'Total Cryogen Consumption per year' | translate }} ({{ report.consumptionSymbol }})
-              </td>
-              <td align="center" style="vertical-align:middle">
-                {{'Equipment Cryogen Consumption' | translate}} ({{ report.consumptionSymbol }})	
-              </td>
-              <td align="center" style="vertical-align:middle">
-                {{'Pipeline consumption' | translate}} ({{ report.consumptionSymbol }})
-              </td>
-              <td align="center" style="vertical-align:middle">
-                {{'Tank losses' | translate}} ({{ report.consumptionSymbol }})
-              </td>
-            </tr>
-            <tr>
-              <td align="center">
-                <label class="custom-control custom-checkbox" style="margin-left:1.5em" >
-                  <input type="checkbox" class="custom-control-input" [disabled]="ischeckUser" name="refContRepConsOverall" [(ngModel)]="report.CONS_OVERALL" [checked]="report.CONS_OVERALL == 1">
-                  <span class="custom-control-indicator"></span>
-                </label>
-              </td>
-              <td align="center">
-                <label class="custom-control custom-checkbox" style="margin-left:1.5em" >
-                  <input type="checkbox" class="custom-control-input" [disabled]="ischeckUser" name="refContRepConsTotal" [(ngModel)]="report.CONS_TOTAL" [checked]="report.CONS_TOTAL == 1">
-                  <span class="custom-control-indicator"></span>
-                </label>
-              </td>
-              <td align="center">
-                <label class="custom-control custom-checkbox" style="margin-left:1.5em" >
-                  <input type="checkbox" class="custom-control-input" [disabled]="ischeckUser" name="refContRepConsSpecific" [(ngModel)]="report.CONS_SPECIFIC" [checked]="report.CONS_SPECIFIC == 1">
-                  <span class="custom-control-indicator"></span>
-                </label>
-              </td>
-              <td align="center">
-                <label class="custom-control custom-checkbox" style="margin-left:1.5em" >
-                  <input type="checkbox" class="custom-control-input" name="refContRepConsHour" [disabled]="ischeckUser" [(ngModel)]="report.CONS_HOUR" [checked]="report.CONS_HOUR == 1" value="1">
-                  <span class="custom-control-indicator"></span>
-                </label>
-              </td>
-              <td align="center">
-                <label class="custom-control custom-checkbox" style="margin-left:1.5em" >
-                  <input type="checkbox" class="custom-control-input" [disabled]="ischeckUser" name="refContRepConsDay" [(ngModel)]="report.CONS_DAY" [checked]="report.CONS_DAY == 1" value="1">
-                  <span class="custom-control-indicator"></span>
-                </label>
-              </td>
-              <td align="center">
-                <label class="custom-control custom-checkbox" style="margin-left:1.5em" >
-                  <input type="checkbox" class="custom-control-input" [disabled]="ischeckUser" name="refContRepConsWeek" [(ngModel)]="report.CONS_WEEK" [checked]="report.CONS_WEEK == 1" value="1" >
-                  <span class="custom-control-indicator"></span>
-                </label>
-              </td>
-              <td align="center">
-                <label class="custom-control custom-checkbox" style="margin-left:1.5em" >
-                  <input type="checkbox" class="custom-control-input" [disabled]="ischeckUser" name="refContRepConsMonth" [(ngModel)]="report.CONS_MONTH" [checked]="report.CONS_MONTH == 1" value="1">
-                  <span class="custom-control-indicator"></span>
-                </label>
-              </td>
-              <td align="center">
-                <label class="custom-control custom-checkbox" style="margin-left:1.5em" >
-                  <input type="checkbox" class="custom-control-input" [disabled]="ischeckUser" name="refContRepConsYear" [(ngModel)]="report.CONS_YEAR" [checked]="report.CONS_YEAR == 1" value="1">
-                  <span class="custom-control-indicator"></span>
-                </label>
-              </td>
-              <td align="center">
-                <label class="custom-control custom-checkbox" style="margin-left:1.5em" >
-                  <input type="checkbox" class="custom-control-input" [disabled]="ischeckUser" name="refContRepConsEquip" [(ngModel)]="report.CONS_EQUIP" [checked]="report.CONS_EQUIP == 1" value="1">
-                  <span class="custom-control-indicator"></span>
-                </label>
-              </td>
-              <td align="center">
-                <label class="custom-control custom-checkbox" style="margin-left:1.5em" >
-                  <input type="checkbox" class="custom-control-input" [disabled]="ischeckUser" name="refContRepConsPipe" [(ngModel)]="report.CONS_PIPE" [checked]="report.CONS_PIPE == 1" value="1">
-                  <span class="custom-control-indicator"></span>
-                </label>
-              </td>
-              <td align="center">
-                <label class="custom-control custom-checkbox" style="margin-left:1.5em" >
-                  <input type="checkbox" class="custom-control-input" [disabled]="ischeckUser" name="refContRepConsTank" [(ngModel)]="report.CONS_TANK" [checked]="report.CONS_TANK == 1" value="1">
-                  <span class="custom-control-indicator"></span>
-                </label>
-              </td>
-            </tr>
-            <tr>
-              <td colspan="11">
-                <label class="custom-control custom-checkbox" style="margin-left:1.5em" >
-                  <input type="checkbox" class="custom-control-input" [disabled]="ischeckUser" name="refContRepConsPie" [(ngModel)]="report.REP_CONS_PIE" [checked]="report.REP_CONS_PIE == 1" value="1">
-                  <span class="custom-control-indicator"></span>  
-                  <span style="margin-top: 0.3em;">{{'Consumption pies' | translate}}</span>
-                </label>
-              </td>
-            </tr>
-          </table>
-
+          <div class="table-responsive">
+            <table class="table table-bordered table-sm" style="margin-top:10px; font-size: 12px;">
+              <tr>
+                <td colspan="11"><strong>{{'Consumption & Prices' | translate}}</strong></td>
+              </tr>
+              <tr>
+                <td align="center" style="vertical-align:middle">
+                  {{'Overall Cryogen Consumption Ratio (product + equipment and pipeline losses) Unit of Cryogen, per piece of product.' | translate}}
+                  ({{ symbol.consumSymbol}})
+                </td>
+                <td align="center" style="vertical-align:middle">
+                  {{'Total Cryogen Consumption (product + equipment and pipeline losses).' | translate}}  ({{ symbol.consumSymbol }}/kg)
+                </td>
+                <td align="center" style="vertical-align:middle">
+                  {{'Specific Cryogen Consumption Ratio (product only) Unit of Cryogen, per unit weight of product.' | translate }}  ({{ symbol.consumSymbol }}/kg)
+                </td>
+                <td align="center" style="vertical-align:middle">
+                  {{'Total Cryogen Consumption per hour' | translate }} ({{ symbol.consumSymbol }})
+                </td>
+                <td align="center" style="vertical-align:middle">
+                  {{'Total Cryogen Consumption per day' | translate}} ({{ symbol.consumSymbol }})
+                </td>
+                <td align="center" style="vertical-align:middle">
+                  {{'Total Cryogen Consumption per week' | translate}} ({{ symbol.consumSymbol }})
+                </td>
+                <td align="center" style="vertical-align:middle">
+                  {{'Total Cryogen Consumption per month' | translate}} ({{ symbol.consumSymbol }})
+                </td>
+                <td align="center" style="vertical-align:middle">
+                  {{'Total Cryogen Consumption per year' | translate }} ({{ symbol.consumSymbol }})
+                </td>
+                <td align="center" style="vertical-align:middle">
+                  {{'Equipment Cryogen Consumption' | translate}} ({{ symbol.consumSymbol }})	
+                </td>
+                <td align="center" style="vertical-align:middle">
+                  {{'Pipeline consumption' | translate}} ({{ symbol.consumSymbol }})
+                </td>
+                <td align="center" style="vertical-align:middle">
+                  {{'Tank losses' | translate}} ({{ symbol.consumSymbol }})
+                </td>
+              </tr>
+              <tr>
+                <td align="center">
+                  <label class="custom-control custom-checkbox" style="margin-left:1.5em" >
+                    <input type="checkbox" class="custom-control-input" [disabled]="ischeckUser" name="refContRepConsOverall" [(ngModel)]="report.CONS_OVERALL" [checked]="report.CONS_OVERALL == 1">
+                    <span class="custom-control-indicator"></span>
+                  </label>
+                </td>
+                <td align="center">
+                  <label class="custom-control custom-checkbox" style="margin-left:1.5em" >
+                    <input type="checkbox" class="custom-control-input" [disabled]="ischeckUser" name="refContRepConsTotal" [(ngModel)]="report.CONS_TOTAL" [checked]="report.CONS_TOTAL == 1">
+                    <span class="custom-control-indicator"></span>
+                  </label>
+                </td>
+                <td align="center">
+                  <label class="custom-control custom-checkbox" style="margin-left:1.5em" >
+                    <input type="checkbox" class="custom-control-input" [disabled]="ischeckUser" name="refContRepConsSpecific" [(ngModel)]="report.CONS_SPECIFIC" [checked]="report.CONS_SPECIFIC == 1">
+                    <span class="custom-control-indicator"></span>
+                  </label>
+                </td>
+                <td align="center">
+                  <label class="custom-control custom-checkbox" style="margin-left:1.5em" >
+                    <input type="checkbox" class="custom-control-input" name="refContRepConsHour" [disabled]="ischeckUser" [(ngModel)]="report.CONS_HOUR" [checked]="report.CONS_HOUR == 1" value="1">
+                    <span class="custom-control-indicator"></span>
+                  </label>
+                </td>
+                <td align="center">
+                  <label class="custom-control custom-checkbox" style="margin-left:1.5em" >
+                    <input type="checkbox" class="custom-control-input" [disabled]="ischeckUser" name="refContRepConsDay" [(ngModel)]="report.CONS_DAY" [checked]="report.CONS_DAY == 1" value="1">
+                    <span class="custom-control-indicator"></span>
+                  </label>
+                </td>
+                <td align="center">
+                  <label class="custom-control custom-checkbox" style="margin-left:1.5em" >
+                    <input type="checkbox" class="custom-control-input" [disabled]="ischeckUser" name="refContRepConsWeek" [(ngModel)]="report.CONS_WEEK" [checked]="report.CONS_WEEK == 1" value="1" >
+                    <span class="custom-control-indicator"></span>
+                  </label>
+                </td>
+                <td align="center">
+                  <label class="custom-control custom-checkbox" style="margin-left:1.5em" >
+                    <input type="checkbox" class="custom-control-input" [disabled]="ischeckUser" name="refContRepConsMonth" [(ngModel)]="report.CONS_MONTH" [checked]="report.CONS_MONTH == 1" value="1">
+                    <span class="custom-control-indicator"></span>
+                  </label>
+                </td>
+                <td align="center">
+                  <label class="custom-control custom-checkbox" style="margin-left:1.5em" >
+                    <input type="checkbox" class="custom-control-input" [disabled]="ischeckUser" name="refContRepConsYear" [(ngModel)]="report.CONS_YEAR" [checked]="report.CONS_YEAR == 1" value="1">
+                    <span class="custom-control-indicator"></span>
+                  </label>
+                </td>
+                <td align="center">
+                  <label class="custom-control custom-checkbox" style="margin-left:1.5em" >
+                    <input type="checkbox" class="custom-control-input" [disabled]="ischeckUser" name="refContRepConsEquip" [(ngModel)]="report.CONS_EQUIP" [checked]="report.CONS_EQUIP == 1" value="1">
+                    <span class="custom-control-indicator"></span>
+                  </label>
+                </td>
+                <td align="center">
+                  <label class="custom-control custom-checkbox" style="margin-left:1.5em" >
+                    <input type="checkbox" class="custom-control-input" [disabled]="ischeckUser" name="refContRepConsPipe" [(ngModel)]="report.CONS_PIPE" [checked]="report.CONS_PIPE == 1" value="1">
+                    <span class="custom-control-indicator"></span>
+                  </label>
+                </td>
+                <td align="center">
+                  <label class="custom-control custom-checkbox" style="margin-left:1.5em" >
+                    <input type="checkbox" class="custom-control-input" [disabled]="ischeckUser" name="refContRepConsTank" [(ngModel)]="report.CONS_TANK" [checked]="report.CONS_TANK == 1" value="1">
+                    <span class="custom-control-indicator"></span>
+                  </label>
+                </td>
+              </tr>
+              <tr>
+                <td colspan="11">
+                  <label class="custom-control custom-checkbox" style="margin-left:1.5em" >
+                    <input type="checkbox" class="custom-control-input" [disabled]="ischeckUser" name="refContRepConsPie" [(ngModel)]="report.REP_CONS_PIE" [checked]="report.REP_CONS_PIE == 1" value="1">
+                    <span class="custom-control-indicator"></span>  
+                    <span style="margin-top: 0.3em;">{{'Consumption pies' | translate}}</span>
+                  </label>
+                </td>
+              </tr>
+            </table>
+          </div>
           <!-- optimum -->
-          <div *ngIf="study.CALCULATION_MODE == 3">
+          <div *ngIf="study.CALCULATION_MODE == 3" class="table-responsive">
             <table class="table table-bordered table-sm" style="font-size: 12px;">
               <tr>
                 <td>
@@ -574,7 +575,7 @@
                 <td width="60%">
                     <strong >{{'Points' | translate}}</strong>
                     <div class="form-group row">
-                      <label class="col-md-2 col-form-label" for="text-input">Top :</label>
+                      <label class="col-md-2 col-form-label" for="text-input">{{'Top'|translate}}</label>
                       <label class="col-md-1 col-form-label">1</label>
                       <div class="col-md-2" *ngIf="report.productElmt.ID_SHAPE != 1 || report.productElmt.ID_SHAPE != 6; else shapeEmpty ">
                         <div class="input-group" *ngIf="meshAxisPos">
@@ -587,7 +588,7 @@
                         <div class="col-md-2">
                           <div class="input-group">
                             <select class="form-control form-control-sm" [disabled]="ischeckUser">
-                              <option value="0">None</option>
+                              <option value="0">{{'None'|translate}}</option>
                             </select>
                           </div>
                         </div>
@@ -614,7 +615,7 @@
                         <div class="col-md-2">
                           <div class="input-group">
                             <select class="form-control form-control-sm" [disabled]="ischeckUser">
-                              <option value="0"> None </option>
+                              <option value="0"> {{'None'|translate}} </option>
                             </select>
                           </div>
                         </div>
@@ -634,7 +635,7 @@
                         <div class="col-md-2">
                           <div class="input-group">
                             <select class="form-control form-control-sm" [disabled]="ischeckUser">
-                              <option value="0"> None </option>
+                              <option value="0"> {{'None'|translate}} </option>
                             </select>
                           </div>
                         </div>
@@ -659,7 +660,7 @@
                         <div class="col-md-2">
                           <div class="input-group">
                             <select class="form-control form-control-sm" [disabled]="ischeckUser">
-                              <option value="0"> None </option>
+                              <option value="0"> {{'None'|translate}} </option>
                             </select>
                           </div>
                         </div>
@@ -679,7 +680,7 @@
                         <div class="col-md-2">
                           <div class="input-group">
                             <select class="form-control form-control-sm" [disabled]="ischeckUser">
-                              <option value="0"> None </option>
+                              <option value="0"> {{'None'|translate}} </option>
                             </select>
                           </div>
                         </div>
@@ -704,7 +705,7 @@
                         <div class="col-md-2">
                           <div class="input-group">
                             <select class="form-control form-control-sm" [disabled]="ischeckUser">
-                              <option value="0"> None </option>
+                              <option value="0"> {{'None'|translate}} </option>
                             </select>
                           </div>
                         </div>
@@ -735,7 +736,7 @@
                         <div class="col-md-3">
                           <div class="input-group">
                             <select class="form-control form-control-sm" [disabled]="ischeckUser">
-                              <option value="0"> None </option>
+                              <option value="0"> {{'None'|translate}} </option>
                             </select>
                           </div>
                         </div>
@@ -755,7 +756,7 @@
                         <div class="col-md-3">
                           <div class="input-group">
                             <select class="form-control form-control-sm" [disabled]="ischeckUser">
-                              <option value="0"> None </option>
+                              <option value="0"> {{'None'|translate}} </option>
                             </select>
                           </div>
                         </div>
@@ -772,7 +773,7 @@
                         <div class="col-md-3">
                           <div class="input-group">
                             <select class="form-control form-control-sm" [disabled]="ischeckUser">
-                              <option value="0"> None</option>
+                              <option value="0"> {{'None'|translate}}</option>
                             </select>
                           </div>
                         </div>
@@ -792,7 +793,7 @@
                         <div class="col-md-3">
                           <div class="input-group">
                             <select class="form-control form-control-sm" [disabled]="ischeckUser">
-                              <option value="0"> None </option>
+                              <option value="0"> {{'None'|translate}} </option>
                             </select>
                           </div>
                         </div>
@@ -824,7 +825,7 @@
                       <div class="col-md-2">
                         <div class="input-group">
                           <select class="form-control form-control-sm" [disabled]="ischeckUser">
-                            <option value="0"> None </option>
+                            <option value="0"> {{'None'|translate}} </option>
                           </select>
                         </div>
                       </div>
@@ -850,7 +851,7 @@
                         <div class="col-md-2">
                           <div class="input-group">
                             <select class="form-control form-control-sm" [disabled]="ischeckUser">
-                              <option value="0"> None </option>
+                              <option value="0"> {{'None'|translate}} </option>
                             </select>
                           </div>
                         </div>
@@ -1162,7 +1163,7 @@
                 <td width="50%">
                     <strong >{{'Points' | translate}}</strong>
                     <div class="form-group row">
-                      <label class="col-md-2 col-form-label" for="text-input">Top :</label>
+                      <label class="col-md-2 col-form-label" for="text-input">{{'Top'|translate}}</label>
                       <label class="col-md-1 col-form-label">1</label>
                       <div class="col-md-2" *ngIf="report.productElmt.ID_SHAPE != 1 || report.productElmt.ID_SHAPE != 6; else shapeEmptyEs ">
                         <div class="input-group" *ngIf="meshAxisPos">

@@ -6,6 +6,7 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import swal from 'sweetalert2';
 import { Units } from '../../../api/models';
 import { ToastrService } from 'ngx-toastr';
+import { TranslateService } from '@ngx-translate/core';
 import { isNumber } from '@ng-bootstrap/ng-bootstrap/util/util';
 import { isNullOrUndefined } from 'util';
 
@@ -24,7 +25,7 @@ export class MeshComponent implements OnInit, AfterViewInit {
   public meshesSymbol = '';
 
 
-  constructor(private api: ApiService, private toastr: ToastrService) {
+  constructor(private api: ApiService, private toastr: ToastrService, private translate: TranslateService) {
    }
 
   ngOnInit() {
@@ -54,19 +55,19 @@ export class MeshComponent implements OnInit, AfterViewInit {
   saveMyMeshParamDef() {
     if (isNullOrUndefined(this.meshparamdef.MESH_1_SIZE) || String(this.meshparamdef.MESH_1_SIZE) === ''
     || isNaN(this.meshparamdef.MESH_1_SIZE )) {
-      this.toastr.error('Please specify Dimension 1', 'Error');
+      this.toastr.error(this.translate.instant('Please specify Dimension 1'), 'Error');
       return;
     }
 
     if (isNullOrUndefined(this.meshparamdef.MESH_2_SIZE) || String(this.meshparamdef.MESH_2_SIZE) === ''
     || isNaN(this.meshparamdef.MESH_2_SIZE )) {
-      this.toastr.error('Please specify Dimension 2', 'Error');
+      this.toastr.error(this.translate.instant('Please specify Dimension 2'), 'Error');
       return;
     }
 
     if (isNullOrUndefined(this.meshparamdef.MESH_3_SIZE) || String(this.meshparamdef.MESH_3_SIZE) === ''
     || isNaN(this.meshparamdef.MESH_3_SIZE )) {
-      this.toastr.error('Please specify Dimension 3', 'Error');
+      this.toastr.error(this.translate.instant('Please specify Dimension 3'), 'Error');
       return;
     }
 
@@ -78,14 +79,14 @@ export class MeshComponent implements OnInit, AfterViewInit {
     }).subscribe(
       res => {
         if (res === 1) {
-          this.toastr.success('Save mesh setting completed', 'successfully');
+          this.toastr.success(this.translate.instant('Save mesh setting completed'), 'successfully');
         } else {
-          this.toastr.error(res.Message, 'Error');
+          this.toastr.error(this.translate.instant(res.Message), 'Error');
         }
       },
       err => {
         this.laddaSavingMesh = false;
-        console.log(err);
+        // console.log(err);
       },
       () => {
         this.laddaSavingMesh = false;

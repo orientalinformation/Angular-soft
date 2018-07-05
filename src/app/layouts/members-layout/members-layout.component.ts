@@ -1,5 +1,6 @@
 import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { Study } from '../../api/models';
+import { TranslateService } from '@ngx-translate/core';
 import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
@@ -11,22 +12,22 @@ import { Router, ActivatedRoute } from '@angular/router';
 export class MembersLayoutComponent implements OnInit, AfterViewInit {
   public nav = [
     {
-      name: 'Input',
+      name: this.translate.instant('Input'),
       url: '/input',
       icon: 'icon-note',
     },
     {
-      name: 'Calculate',
+      name: this.translate.instant('Calculate'),
       url: '/calculation',
       icon: 'icon-energy',
     },
     {
-      name: 'Output',
+      name: this.translate.instant('Output'),
       url: '/output',
       icon: 'icon-pie-chart',
     },
     {
-      name: 'Report',
+      name: this.translate.instant('Report'),
       url: '/report',
       icon: 'icon-doc',
     }
@@ -34,7 +35,7 @@ export class MembersLayoutComponent implements OnInit, AfterViewInit {
 
   public subnav = [];
 
-  constructor(private router: Router, private route: ActivatedRoute) { }
+  constructor(private router: Router, private route: ActivatedRoute, private translate: TranslateService) { }
 
   ngOnInit() {
 
@@ -46,8 +47,8 @@ export class MembersLayoutComponent implements OnInit, AfterViewInit {
 
   subnavChangedHandler(subnav) {
     this.subnav = subnav;
-    console.log('subnav received:');
-    console.log(subnav);
+    // console.log('subnav received:');
+    // console.log(subnav);
   }
 
 }

@@ -59,7 +59,7 @@
                     <button class="btn btn-block btn-outline-primary" [class.active]="activeBtn == 'axis'" (click)="selectAxis()">Axis</button>
                   </div>
                   <div class="col-md-4 text-center">
-                    <button class="btn btn-block btn-outline-primary" [class.active]="activeBtn == 'plans'" (click)="selectPlans()">Plans</button>
+                    <button class="btn btn-block btn-outline-primary" [disabled]="planDisabled" [class.active]="activeBtn == 'plans'" (click)="selectPlans()">Plans</button>
                   </div>
                 </div>
                 <div class="row form-group" style="margin-top:30px;height:30px">
@@ -89,7 +89,7 @@
                             <label class="col-md-3 col-form-label text-success">X</label>
                             <div class="col-md-9">
                               <select class="form-control" (change)="changeX()" [(ngModel)]="mesAxisXSelected" [disabled]="select1Disable">
-                                <option *ngFor="let axis of mesAxisX" [value]="axis.name">{{ axis.name }}</option>
+                                <option *ngFor="let axis of mesAxisX" [value]="axis.value">{{ axis.name }}</option>
                               </select>
                             </div>
                         </div>
@@ -99,7 +99,7 @@
                             <label class="col-md-3 col-form-label text-primary">Y</label>
                             <div class="col-md-9">
                               <select class="form-control" (change)="changeY()" [(ngModel)]="mesAxisYSelected" [disabled]="select2Disable">
-                                <option *ngFor="let axis of mesAxisY" [value]="axis.name">{{ axis.name }}</option>
+                                <option *ngFor="let axis of mesAxisY" [value]="axis.value">{{ axis.name }}</option>
                               </select>
                             </div>
                         </div>
@@ -111,7 +111,7 @@
                             <strong class="col-md-3 col-form-label text-success">X</strong>
                             <div class="col-md-9">
                               <select class="form-control" (change)="changeY()" [(ngModel)]="mesAxisYSelected" [disabled]="select2Disable">
-                                <option *ngFor="let axis of mesAxisY" [value]="axis.name">{{ axis.name }}</option>
+                                <option *ngFor="let axis of mesAxisY" [value]="axis.value">{{ axis.name }}</option>
                               </select>
                             </div>
                         </div>
@@ -121,7 +121,7 @@
                             <label class="col-md-3 col-form-label text-primary">Y</label>
                             <div class="col-md-9">
                               <select class="form-control"  (change)="changeX()" [(ngModel)]="mesAxisXSelected" [disabled]="select1Disable">
-                                <option *ngFor="let axis of mesAxisX" [value]="axis.name">{{ axis.name }}</option>
+                                <option *ngFor="let axis of mesAxisX" [value]="axis.value">{{ axis.name }}</option>
                               </select>
                             </div>
                         </div>
@@ -131,8 +131,8 @@
                       <div class="row">
                           <label class="col-md-3 col-form-label text-warning">Z</label>
                           <div class="col-md-9">
-                            <select class="form-control"  (change)="changeZ()" [(ngModel)]="mesAxisZSelected" [disabled]="select3Disable">
-                              <option *ngFor="let axis of mesAxisZ" [value]="axis.name">{{ axis.name }}</option>
+                            <select class="form-control" (change)="changeZ()" [(ngModel)]="mesAxisZSelected" [disabled]="select3Disable">
+                              <option *ngFor="let axis of mesAxisZ" [value]="axis.value">{{ axis.name }}</option>
                             </select>
                           </div>
                       </div>
@@ -143,11 +143,11 @@
                 <strong class="text-danger">{{symbol.meshesSymbol}}</strong>
               </div>
             </div>
-            <div class="row form-group">
+            <!-- <div class="row form-group">
               <div class="col-md-12 text-center">
                 <button class="btn btn-success" (click)="saveAll()" [disabled]="disableChange">Save</button>
               </div>
-            </div>
+            </div> -->
             <div class="text-center" style="padding-top:15px">
                 <img *ngIf="folderImg" src="assets/img/output/{{folderImg}}/orientation.png">
             </div>
@@ -176,20 +176,22 @@
             <ng-template tabHeading><i class="icon-doc"></i> {{'Value'|translate}}</ng-template>
             <h5 class="text-danger" style="font-weight:600">{{'Value'|translate}}</h5>
             <h6 class="text-primary text-center" *ngIf="symbol">{{'Enthalpy'|translate}} ({{symbol.enthalpySymbol}}) vs {{'Time'|translate}} ({{symbol.timeSymbol}})</h6>
-            <table class="table table-bordered table-sm">
-              <tr>
-                  <th>{{'Equipment'|translate}}</th>
+            <div class="table-responsive">
+              <table class="table table-bordered table-sm">
+                <tr>
+                    <th>{{'Equipment'|translate}}</th>
+                    <ng-container *ngFor="let result of headExchangeResult">
+                    <th class="text-center">{{result.x}}</th>
+                    </ng-container>
+                </tr>
+                <tr>
+                  <td *ngIf="outputProductChart">{{outputProductChart.displayName}}</td>
                   <ng-container *ngFor="let result of headExchangeResult">
-                  <th class="text-center">{{result.x}}</th>
+                  <td class="text-center">{{result.y}}</td>
                   </ng-container>
-              </tr>
-              <tr>
-                <td *ngIf="outputProductChart">{{outputProductChart.displayName}}</td>
-                <ng-container *ngFor="let result of headExchangeResult">
-                <td class="text-center">{{result.y}}</td>
-                </ng-container>
-              </tr>
-            </table>
+                </tr>
+              </table>
+            </div>
           </tab>
         </tabset>
       </div>
@@ -299,6 +301,7 @@
             <h5 class="text-danger" style="font-weight:600">{{'Value'|translate}}</h5>
             <div class="text-center" *ngIf="outputProductChart"><h4 style="color:#f00">{{outputProductChart.displayName}}</h4></div>
             <h6 class="text-primary text-center" *ngIf="symbol">{{'Temperature'|translate}} ({{symbol.temperatureSymbol}}) vs {{'Time'|translate}} ({{symbol.timeSymbol}})</h6>
+            <div class="table-responsive">
             <table class="table table-bordered table-sm">
                 <tr>
                     <th class="text-center">{{'Points'|translate}}</th>
@@ -331,6 +334,7 @@
                   </ng-container>
                 </tr>
               </table>
+            </div>
           </tab>
         </tabset>
       </div>

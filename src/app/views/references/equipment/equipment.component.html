@@ -81,7 +81,7 @@
                         <tfoot>
                             <tr>
                                 <td align="center" style="vertical-align:middle">
-                                    <input type="text" class="form-control form-control-sm col-md-6" placeholder="0.00" [(ngModel)]="this.newRamp.POSITION">
+                                    <input type="text" class="form-control form-control-sm col-md-6" placeholder="0.00" [(ngModel)]="this.newRamp.POSITION" maxlength="10">
                                 </td>
                                 <td align="center">
                                     <div>
@@ -122,10 +122,10 @@
                         <tfoot>
                             <tr>
                                 <td align="center" style="vertical-align:middle">
-                                    <input type="text" class="form-control form-control-sm" placeholder="0.00" [(ngModel)]="this.newShelve.SPACE">
+                                    <input type="text" class="form-control form-control-sm" placeholder="0.00" [(ngModel)]="this.newShelve.SPACE" maxlength="10">
                                 </td>
                                 <td align="center" style="vertical-align:middle">
-                                    <input type="text" class="form-control form-control-sm" placeholder="0.00" [(ngModel)]="this.newShelve.NB">
+                                    <input type="text" class="form-control form-control-sm" placeholder="0.00" [(ngModel)]="this.newShelve.NB" maxlength="10">
                                 </td>
                                 <td align="center">
                                     <div>
@@ -246,7 +246,7 @@
                             <th style="width: 50%">{{ 'Length'|translate }}</th>
                             <td>
                                 <div class="input-group">
-                                    <input type="text" class="form-control form-control-sm" [(ngModel)]="selectEquipment.EQP_LENGTH" placeholder="0.00">
+                                    <input type="text" class="form-control form-control-sm" [(ngModel)]="selectEquipment.EQP_LENGTH" placeholder="0.00" maxlength="10">
                                     <span class="input-group-addon">{{ equipDimensionSymbol }}</span>
                                 </div>
                             </td>
@@ -255,7 +255,7 @@
                             <th style="width: 50%">{{ 'Width'|translate }}</th>
                             <td>
                                 <div class="input-group">
-                                    <input type="text" class="form-control form-control-sm" [(ngModel)]="selectEquipment.EQP_WIDTH" placeholder="0.00">
+                                    <input type="text" class="form-control form-control-sm" [(ngModel)]="selectEquipment.EQP_WIDTH" placeholder="0.00" maxlength="10">
                                     <span class="input-group-addon">{{ equipDimensionSymbol }}</span>
                                 </div>
                             </td>
@@ -264,7 +264,7 @@
                             <th style="width: 50%">{{ 'Height'|translate }}</th>
                             <td>
                                 <div class="input-group">
-                                    <input type="text" class="form-control form-control-sm" [(ngModel)]="selectEquipment.EQP_HEIGHT" placeholder="0.00">
+                                    <input type="text" class="form-control form-control-sm" [(ngModel)]="selectEquipment.EQP_HEIGHT" placeholder="0.00" maxlength="10">
                                     <span class="input-group-addon">{{ equipDimensionSymbol }}</span>
                                 </div>
                             </td>
@@ -272,26 +272,26 @@
                         <tr>
                             <th style="width: 50%">{{ 'TR number'|translate }}</th>
                             <td>
-                                <input type="text" class="form-control form-control-sm" [(ngModel)]="selectEquipment.NB_TR" placeholder="0.00">
+                                <input type="text" class="form-control form-control-sm" [(ngModel)]="selectEquipment.NB_TR" placeholder="0.00" maxlength="5" size="5">
                             </td>
                         </tr>
                         <tr>
                             <th style="width: 50%">{{ 'TS number'|translate }}</th>
                             <td>
-                                <input type="text" class="form-control form-control-sm" [(ngModel)]="selectEquipment.NB_TS" placeholder="0.00">
+                                <input type="text" class="form-control form-control-sm" [(ngModel)]="selectEquipment.NB_TS" placeholder="0.00" maxlength="5">
                             </td>
                         </tr>
                         <tr>
                             <th style="width: 50%">{{ 'VC number'|translate }}</th>
                             <td>
-                                <input type="text" class="form-control form-control-sm" [(ngModel)]="selectEquipment.NB_VC"  placeholder="0.00">
+                                <input type="text" class="form-control form-control-sm" [(ngModel)]="selectEquipment.NB_VC"  placeholder="0.00" maxlength="5">
                             </td>
                         </tr>
                         <tr>
                             <th style="width: 50%">{{ 'Max flow rate'|translate }}</th>
                             <td>
                                 <div class="input-group">
-                                    <input type="text" class="form-control form-control-sm" [(ngModel)]="selectEquipment.MAX_FLOW_RATE" placeholder="0.00">
+                                    <input type="text" class="form-control form-control-sm" [(ngModel)]="selectEquipment.MAX_FLOW_RATE" placeholder="0.00" maxlength="10">
                                     <span class="input-group-addon" [innerHTML]="selectEquipment.consumptionSymbol1 + '/h'"></span>
                                 </div>
                             </td>
@@ -300,7 +300,7 @@
                             <th style="width: 50%">{{ 'Mimimum regulation temperature'|translate }}</th>
                             <td>
                                 <div class="input-group">
-                                    <input type="text" class="form-control form-control-sm" [(ngModel)]="selectEquipment.TMP_REGUL_MIN" placeholder="0.00">
+                                    <input type="text" class="form-control form-control-sm" [(ngModel)]="selectEquipment.TMP_REGUL_MIN" placeholder="0.00" maxlength="10">
                                     <span class="input-group-addon">{{ temperatureSymbol }}</span>
                                 </div>
                             </td>
@@ -308,13 +308,13 @@
                         <tr>
                             <th style="width: 50%">{{ 'Nozzles/ramps number'|translate }}</th>
                             <td>
-                                <input type="text" class="form-control form-control-sm" [(ngModel)]="selectEquipment.MAX_NOZZLES_BY_RAMP" placeholder="0.00">
+                                <input type="text" class="form-control form-control-sm" [(ngModel)]="selectEquipment.MAX_NOZZLES_BY_RAMP" placeholder="0.00" maxlength="10">
                             </td>
                         </tr>
                         <tr>
                             <th style="width: 50%">{{ 'Ramp max number'|translate }}</th>
                             <td>
-                                <input type="text" class="form-control form-control-sm" [(ngModel)]="selectEquipment.MAX_RAMPS" placeholder="0.00">
+                                <input type="text" class="form-control form-control-sm" [(ngModel)]="selectEquipment.MAX_RAMPS" placeholder="0.00" maxlength="10">
                             </td>
                         </tr>
                         <tr>
@@ -334,31 +334,31 @@
                     <div class="col-md-1"></div>
                     <div class="col-md-2" align="center" >
                         <label class="custom-control custom-radio" >
-                            <input type="radio" value="1" class="custom-control-input" name="statusEquip" [(ngModel)]="selectEquipment.EQUIP_RELEASE">{{ 'Draft'|translate }}
+                            <input type="radio" [value]="1" class="custom-control-input" name="statusEquip" [(ngModel)]="selectEquipment.EQUIP_RELEASE">{{ 'Draft'|translate }}
                             <span class="custom-control-indicator"></span>
                         </label>
                     </div>
                     <div class="col-md-2" align="center" >
                         <label class="custom-control custom-radio" >
-                            <input type="radio" value="2" class="custom-control-input" name="statusEquip" [(ngModel)]="selectEquipment.EQUIP_RELEASE">{{ 'Test'|translate }}
+                            <input type="radio" [value]="2" class="custom-control-input" name="statusEquip" [(ngModel)]="selectEquipment.EQUIP_RELEASE">{{ 'Test'|translate }}
                             <span class="custom-control-indicator"></span>
                         </label>
                     </div>
                     <div class="col-md-2" align="center" >
                         <label class="custom-control custom-radio" >
-                            <input type="radio" value="3" class="custom-control-input" name="statusEquip" [(ngModel)]="selectEquipment.EQUIP_RELEASE">{{ 'Active'|translate }}
+                            <input type="radio" [value]="3" class="custom-control-input" name="statusEquip" [(ngModel)]="selectEquipment.EQUIP_RELEASE">{{ 'Active'|translate }}
                             <span class="custom-control-indicator"></span>
                         </label>
                     </div>
                     <div class="col-md-2" align="center" >
                         <label class="custom-control custom-radio" >
-                            <input type="radio" value="4" class="custom-control-input" name="statusEquip" [(ngModel)]="selectEquipment.EQUIP_RELEASE">{{ 'Certified'|translate }}
+                            <input type="radio" [value]="4" class="custom-control-input" name="statusEquip" [(ngModel)]="selectEquipment.EQUIP_RELEASE">{{ 'Certified'|translate }}
                             <span class="custom-control-indicator"></span>
                         </label>
                     </div>
                     <div class="col-md-2" align="center" >
                         <label class="custom-control custom-radio" >
-                            <input type="radio" value="9" class="custom-control-input" name="statusEquip" [(ngModel)]="selectEquipment.EQUIP_RELEASE">{{ 'Obsolete'|translate }}
+                            <input type="radio" [value]="9" class="custom-control-input" name="statusEquip" [(ngModel)]="selectEquipment.EQUIP_RELEASE">{{ 'Obsolete'|translate }}
                             <span class="custom-control-indicator"></span>
                         </label>
                     </div>
@@ -412,13 +412,13 @@
                             <tfoot>
                                 <tr>
                                   <td align="center" style="vertical-align:middle">
-                                      <input type="text" class="form-control form-control-sm" placeholder="0.00" [(ngModel)]="newConsumption.TEMPERATURE">
+                                      <input type="text" class="form-control form-control-sm" placeholder="0.00" [(ngModel)]="newConsumption.TEMPERATURE" maxlength="10">
                                   </td>
                                   <td align="center" style="vertical-align:middle">
-                                      <input type="text" class="form-control form-control-sm" placeholder="0.00" [(ngModel)]="newConsumption.CONSUMPTION_PERM">
+                                      <input type="text" class="form-control form-control-sm" placeholder="0.00" [(ngModel)]="newConsumption.CONSUMPTION_PERM" maxlength="10">
                                   </td>
                                   <td align="center" style="vertical-align:middle">
-                                      <input type="text" class="form-control form-control-sm" placeholder="0.00" [(ngModel)]="newConsumption.CONSUMPTION_GETCOLD">
+                                      <input type="text" class="form-control form-control-sm" placeholder="0.00" [(ngModel)]="newConsumption.CONSUMPTION_GETCOLD" maxlength="10">
                                   </td>
                                   <td align="center">
                                       <div>
@@ -448,6 +448,9 @@
                 </button>
                 <button type="button" class="btn btn-success" *ngIf="selectEquipment" [disabled]="selectEquipment.ID_USER != listEquipment.ID_USER" 
                 (click)="checkUpdateEquipment(selectEquipment, 0);"><i class="fa fa-floppy-o" aria-hidden="true"></i> {{ 'Save'|translate }}</button>
+                <button type="button" class="btn btn-secondary" *ngIf="checkBackStudy == 1" (click)="comeBackStudy();">
+                    <i class="fa fa-chevron-circle-left"></i>&nbsp; {{ 'Come back to study'|translate }}
+                </button>
               </div>
             </div>
           </div>
@@ -1076,7 +1079,8 @@
                             <div class="form-group row" >
                                 <div class="col-md-5"></div>   
                                 <div class="col-md-7">
-                                    <input type="text" id="circle_value" name="text-input" class="form-control" (change)="setpoint();" [value]="" (keypress)="setpointenter($event);" disabled>
+                                    <input type="text" id="circle_value" name="text-input" class="form-control" (change)="setpoint();" 
+                                    [(ngModel)]="circleValue" (keypress)="setpointenter($event);" [disabled]="disabledYvalue == true">
                                 </div>
                             </div>
                         </div>
@@ -1085,7 +1089,7 @@
                 </div>
                 <div class="card-footer">
                     <div class="row text-center" style="display: flex; align-items: center; justify-content: center;">
-                        <button type="button" id="rescale" class="btn btn-success btn-sm" style="margin-right: 10px;" (click)="refreshScaleChart();"> {{ 'Apply'|translate }}</button>
+                        <button type="button" id="rescale" class="btn btn-success btn-sm" style="margin-right: 10px;" (click)="refreshScaleChart();" [disabled]="disabledConfirm == 0"> {{ 'Apply'|translate }}</button>
                         <button type="button" class="btn btn-primary btn-sm" style="margin-right: 10px;" (click)="clearSelectedPoints();" >{{ 'Initialize'|translate }}</button>
                         <button type="button" class="btn btn-warning btn-sm" style="margin-right: 10px;" (click)="submitGenerate();">{{ 'Generate'|translate }}</button>
                     </div>
@@ -1179,7 +1183,6 @@
                             <tr>
                                 <td align="center">
                                     <div style="margin-top:0.5em">
-                                        <!-- <input type="checkbox" class="form-control"> -->
                                         <label class="custom-control custom-checkbox">
                                             <input type="checkbox" class="custom-control-input" value="0" [(ngModel)]="dataHighChart.checkTop" [disabled]="isSelectChart == 0">
                                             <span class="custom-control-indicator"></span>

@@ -3,7 +3,7 @@
     <button type="button" *ngFor="let nav of subnav"
       [class.active]="router.isActive(nav.url)"
       class="btn btn-outline-secondary" [routerLink]="nav.url">
-      {{ nav.name }}
+      {{ nav.name | translate}}
     </button>
   </div>
 </div>

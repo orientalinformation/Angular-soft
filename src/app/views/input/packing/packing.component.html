@@ -4,13 +4,15 @@
   <div class="card product-container">
     <div class="card-header">
       <strong>{{ 'PRODUCT PACKAGING SPECIFICATIONS' | translate }}</strong>
-      <button type="button" class="btn btn-sm btn-success float-right" [ladda]="laddaSavingPacking" (click)="savePacking()">
+      <button type="button" class="btn btn-sm btn-success float-right" [ladda]="laddaSavingPacking" (click)="savePacking()" 
+      [disabled]="((study.CHAINING_CONTROLS) && (study.HAS_CHILD || study.PARENT_ID === 0)) || disabledField()">
         <i class="fa fa-floppy-o"></i> {{'Save'|translate}}
       </button>
     </div>
     <div class="card card-body">
       <p>
-        {{'Packaging name'|translate}} <input type="text" [(ngModel)]="packingName" [disabled]="!studyModifiable()">
+        {{'Packaging name'|translate}} <input type="text" [(ngModel)]="packingName" 
+        [disabled]="((study.CHAINING_CONTROLS) && (study.HAS_CHILD || study.PARENT_ID === 0)) || disabledField()">
       </p>
       <div class="row">
         <div class="col-md-6">
@@ -19,8 +21,9 @@
               <th style="text-align:center">{{ getTopLabel(productShape)|translate }}</th>
               <th style="text-align:center" align="center">{{'Number of Layers'|translate}}</th>
               <td align="center">
-                <select [disabled]="!studyModifiable()" name="toplayersNr" [(ngModel)]="topNrLayer"
-                  id="toplaynum" class="form-control" style="width:60px;height:30px;" (change)="onTopNrLayerChanged()" >
+                <select [disabled]="((study.CHAINING_CONTROLS) && (study.HAS_CHILD || study.PARENT_ID === 0)) || disabledField()"
+                 name="toplayersNr" [(ngModel)]="topNrLayer" id="toplaynum" class="form-control" style="width:60px;height:30px;" 
+                 (change)="onTopNrLayerChanged()" >
                   <option value="0">0</option>
                   <option value="1">1</option>
                   <option value="2">2</option>
@@ -41,12 +44,17 @@
             <tr *ngFor="let layer of topLayers; let idx = index">
               <td align="center" colspan="2">
                   {{idx + 1}}
-                  <select [(ngModel)]="layer.ID_PACKING_ELMT" style="width:200px;" [disabled]="!studyModifiable()">
-                    <option *ngFor="let element of packingElements" [value]="element.ID_PACKING_ELMT">{{'packings.'+element.ID_PACKING_ELMT|translate}}</option>
+                  <select [(ngModel)]="layer.ID_PACKING_ELMT" style="width:200px;" 
+                  [disabled]="((study.CHAINING_CONTROLS) && (study.HAS_CHILD || study.PARENT_ID === 0)) || disabledField()">
+                    <option *ngFor="let element of packingElements" [value]="element.ID_PACKING_ELMT">
+                      {{'packings.'+element.ID_PACKING_ELMT|translate}} 
+                      - v{{ element.PACKING_VERSION}}({{'active'|translate}})
+                    </option>
                   </select>                  
               </td>
               <td align="center" *ngIf="symbol">
-                  <input type="text" style="width:50px;" [(ngModel)]="layer.THICKNESS" [disabled]="!studyModifiable()"> ({{symbol.packingThicknessSymbol}})
+                  <input type="text" style="width:50px;" [(ngModel)]="layer.THICKNESS" 
+                  [disabled]="((study.CHAINING_CONTROLS) && (study.HAS_CHILD || study.PARENT_ID === 0)) || disabledField()"> ({{symbol.packingThicknessSymbol}})
               </td>
             </tr>          
           </table>
@@ -84,17 +92,18 @@
                   <div class="col-sm-12" >
                     <div class="input-group" >
                       <div class="input-group-btn dropdown"  style="margin-left:50px;">
-                        <button type="button" [disabled]="!studyModifiable()" id="btnSpecificSide"
+                        <button type="button" [disabled]="((study.CHAINING_CONTROLS) && (study.HAS_CHILD || study.PARENT_ID === 0)) || disabledField()" id="btnSpecificSide"
                           class="btn btn-primary dropdown-toggle btn-sm dropdown-toggle-split " ngbDropdownToggle>
                           {{'Specific'|translate}}
                           <span class="caret"></span>
                             <span class="sr-only">Split button!</span>
                         </button>
                         <div class="dropdown-menu" aria-labelledby="btnSpecificSide" ngbDropdownMenu>
-                            <a class="dropdown-item" href="javascript:void(0)" (click)="onSideSameAsTop()"> {{'Same as' + getTopLabel(productShape)|translate}}</a>
-                            <a class="dropdown-item" href="javascript:void(0)" (click)="onSideSameAsBottom()">{{'Same as' + getBottomLabel(productShape)|translate}}</a>
+                            <a class="dropdown-item" href="javascript:void(0)" (click)="onSideSameAsTop()"> {{'Same as ' + getTopLabel(productShape)|translate}}</a>
+                            <a class="dropdown-item" href="javascript:void(0)" (click)="onSideSameAsBottom()">{{'Same as ' + getBottomLabel(productShape)|translate}}</a>
                         </div>
-                        <select name="sideLayersNr" [disabled]="!studyModifiable()" [(ngModel)]="sideNrLayer" id="sidlaynum" class="form-control" style="height:30px;" (change)="onSideNrLayerChanged()" >
+                        <select name="sideLayersNr" [disabled]="((study.CHAINING_CONTROLS) && (study.HAS_CHILD || study.PARENT_ID === 0)) || disabledField()"
+                         [(ngModel)]="sideNrLayer" id="sidlaynum" class="form-control" style="height:30px;" (change)="onSideNrLayerChanged()" >
                           <option value="0">0</option>
                           <option value="1">1</option>
                           <option value="2">2</option>
@@ -119,19 +128,23 @@
             <tr *ngFor="let layer of sideLayers; let idx = index">
               <td  align="center" colspan="2">
                   {{ idx + 1}}
-                  <select [(ngModel)]="layer.ID_PACKING_ELMT" style="width:200px;" [disabled]="!studyModifiable()">
-                    <option *ngFor="let element of packingElements" [value]="element.ID_PACKING_ELMT">{{'packings.'+element.ID_PACKING_ELMT|translate}}</option>
+                  <select [(ngModel)]="layer.ID_PACKING_ELMT" style="width:200px;" [disabled]="((study.CHAINING_CONTROLS) && (study.HAS_CHILD || study.PARENT_ID === 0)) || disabledField()">
+                    <option *ngFor="let element of packingElements" [value]="element.ID_PACKING_ELMT">
+                      {{'packings.'+element.ID_PACKING_ELMT|translate}}
+                      - v{{ element.PACKING_VERSION}}({{'active'|translate}})
+                    </option>
                   </select>
               </td>
               <td align="center" *ngIf="symbol">
-                  <input type="text" style="width:50px;" [(ngModel)]="layer.THICKNESS"  [disabled]="!studyModifiable()"> ({{symbol.packingThicknessSymbol}})
+                  <input type="text" style="width:50px;" [(ngModel)]="layer.THICKNESS"  
+                  [disabled]="((study.CHAINING_CONTROLS) && (study.HAS_CHILD || study.PARENT_ID === 0)) || disabledField()"> ({{symbol.packingThicknessSymbol}})
               </td>
             </tr>
            
           </table>
         </div>
       </div>
-      <div class="row" *ngIf="productShape != text.shapeNames.SPHERE" >
+      <div class="row" *ngIf="(productShape != text.shapeNames.SPHERE) || (productShape != text.shapeNames.D_SPHERE)" >
         <div class="col-md-6">
             <div style="width:400px;height:50px;margin-top:20px;" align="center">
               <i class="fa fa-long-arrow-up fa-lg mt6"></i>
@@ -145,12 +158,14 @@
                   <div class="col-sm-12" >
                     <div class="input-group" >
                       <div class="input-group-btn dropdown" style="margin-left:50px;" ngbDropdown>
-                        <button id="btnSpecificBottom" [disabled]="!studyModifiable()" class="btn btn-primary dropdown-toggle btn-sm dropdown-toggle-split" ngbDropdownToggle>{{'Specific'|translate}}
+                        <button id="btnSpecificBottom" [disabled]="((study.CHAINING_CONTROLS) && (study.HAS_CHILD || study.PARENT_ID === 0)) || disabledField()"
+                         class="btn btn-primary dropdown-toggle btn-sm dropdown-toggle-split" ngbDropdownToggle>{{'Specific'|translate}}
                         </button>
                         <div class="dropdown-menu" aria-labelledby="btnSpecificBottom" ngbDropdownMenu>
-                            <a class="dropdown-item" href="javascript:void(0)" (click)="onBottomSameAsTop()">{{'Same as' + getTopLabel(productShape)|translate}}</a>
+                            <a class="dropdown-item" href="javascript:void(0)" (click)="onBottomSameAsTop()">{{'Same as ' + getTopLabel(productShape)|translate}}</a>
                         </div>
-                        <select name="bottomLayersNr" [disabled]="!studyModifiable()" [disabled]="!studyModifiable()" [(ngModel)]="bottomNrLayer" id="botlaynum" class="form-control" style="height:30px;" (change)="onBottomNrLayerChanged()">
+                        <select name="bottomLayersNr" [disabled]="((study.CHAINING_CONTROLS) && (study.HAS_CHILD || study.PARENT_ID === 0)) || disabledField()"
+                         [disabled]="!disabledField()" [(ngModel)]="bottomNrLayer" id="botlaynum" class="form-control" style="height:30px;" (change)="onBottomNrLayerChanged()">
                           <option value="0">0</option>
                           <option value="1">1</option>
                           <option value="2">2</option>
@@ -175,12 +190,16 @@
             <tr *ngFor="let layer of bottomLayers; let idx = index">
               <td  align="center" colspan="2">
                   {{ idx + 1 }}
-                  <select [(ngModel)]="layer.ID_PACKING_ELMT" style="width:200px;" [disabled]="!studyModifiable()">
-                    <option *ngFor="let element of packingElements" [value]="element.ID_PACKING_ELMT">{{'packings.'+element.ID_PACKING_ELMT|translate}}</option>
+                  <select [(ngModel)]="layer.ID_PACKING_ELMT" style="width:200px;" [disabled]="((study.CHAINING_CONTROLS) && (study.HAS_CHILD || study.PARENT_ID === 0)) || disabledField()">
+                    <option *ngFor="let element of packingElements" [value]="element.ID_PACKING_ELMT">
+                      {{'packings.'+element.ID_PACKING_ELMT|translate}}
+                      - v{{ element.PACKING_VERSION}}({{'active'|translate}})
+                    </option>
                   </select>
               </td>
               <td align="center" *ngIf="symbol">
-                  <input type="text" style="width:50px;" [(ngModel)]="layer.THICKNESS" [disabled]="!studyModifiable()"> ({{symbol.packingThicknessSymbol}})
+                <input type="text" style="width:50px;" [(ngModel)]="layer.THICKNESS" 
+                [disabled]="((study.CHAINING_CONTROLS) && (study.HAS_CHILD || study.PARENT_ID === 0)) || disabledField()"> ({{symbol.packingThicknessSymbol}})
               </td>
             </tr>
           </table>       

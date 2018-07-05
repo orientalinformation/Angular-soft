@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-admin-layout',
@@ -8,28 +9,28 @@ import { Component, OnInit } from '@angular/core';
 export class AdminLayoutComponent implements OnInit {
   public nav = [
     {
-      name: 'Users',
+      name: this.translate.instant('Users'),
       url: '/admin/users',
       icon: 'fa fa-users',
     },
     {
-      name: 'Units',
+      name: this.translate.instant('Units'),
       url: '/admin/units',
       icon: 'fa fa-balance-scale',
     },
     {
-      name: 'Translations',
+      name: this.translate.instant('Translations'),
       url: '/admin/translations',
       icon: 'fa fa-language',
     },
     {
-      name: 'Back',
+      name: this.translate.instant('Back'),
       url: '/home',
       icon: 'icon-action-undo',
     }
   ];
 
-  constructor() { }
+  constructor(private translate: TranslateService) { }
 
   ngOnInit() {
   }

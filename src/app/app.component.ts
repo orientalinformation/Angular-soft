@@ -7,6 +7,7 @@ import { environment } from '../environments/environment.prod';
 import { ApiService } from './api/services/api.service';
 import { TextService } from './shared/text.service';
 import { NgxLocalizedNumbersService } from 'ngx-localized-numbers';
+import { User, Translation, Constructors, Units, MonetaryCurrency, Langue, DefaultEquipment, Profile } from './api/models';
 
 @Component({
   selector: 'app-root',
@@ -16,6 +17,8 @@ import { NgxLocalizedNumbersService } from 'ngx-localized-numbers';
 export class AppComponent implements OnInit, OnDestroy {
   title = 'app';
   private subscription: Subscription;
+  public userLogon: User;
+  public langname: string;
 
   constructor(public translate: TranslateService, private activatedRoute: ActivatedRoute,
     api: ApiService, text: TextService, private localizedNumbersService: NgxLocalizedNumbersService) {
@@ -24,7 +27,24 @@ export class AppComponent implements OnInit, OnDestroy {
     // this language will be used as a fallback when a translation isn't found in the current language
     translate.setDefaultLang('en');
     // the lang to use, if the lang isn't available, it will use the current loader to get them
-    translate.use('en');
+    this.userLogon = JSON.parse(localStorage.getItem('user'));
+    if (this.userLogon !== null ) {
+      if (this.userLogon.CODE_LANGUE == 1) {
+        this.langname = 'en';
+      } else if (this.userLogon.CODE_LANGUE == 2) {
+        this.langname = 'fr';
+      } else if (this.userLogon.CODE_LANGUE == 3) {
+        this.langname = 'it';
+      } else if (this.userLogon.CODE_LANGUE == 4) {
+        this.langname = 'de';
+      } else if (this.userLogon.CODE_LANGUE == 5) {
+        this.langname = 'es';
+      }
+      translate.use(this.langname);
+    } else {
+      translate.use('en');
+    }
+    console.log(this.userLogon);
     text.initialize();
   }
 
@@ -35,7 +55,7 @@ export class AppComponent implements OnInit, OnDestroy {
       (param: any) => {
         const locale = param['locale'];
         if (locale !== undefined) {
-          this.translate.use(locale);
+          this.translate.use('locale');
           console.log('change locale to: ' + locale);
         }
       });

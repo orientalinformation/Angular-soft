@@ -59,20 +59,12 @@
                       </select>
                   </div>
                 </div>
-                <div class="row">
-                  <div class="col-md-12">
-                    <div class="form-group pull-right">
-                      <button class="btn btn-flat btn-primary buttons"  (click)="loadEstimationAvailableChart()"> Refesh</button>
-                    </div>
-                  </div>
-                </div>
               </div>
 
-              <div *ngIf="estimationEquipBarChart" style="width:90%;margin:auto;margin-top:30px;margin-bottom:30px">
-                <div [chart]="estimationEquipBarChart"></div>
+              <div *ngIf="activeEquipment.length > 0 && estimationEquipBarImage.src != ''"> 
+                <img [src]="estimationEquipBarImage.src">
               </div>
-              
-
+            
               <div class="row">
                 <div class="col-md-3"></div>
                 <div class="col-md-6">
@@ -85,8 +77,8 @@
                 <div class="col-md-3"></div>
               </div>
               
-              <div *ngIf="estimationBarChart" style="width:90%;margin:auto;margin-top:10px">
-                <div [chart]="estimationBarChart"></div>
+              <div *ngIf="dataGraphChart.length > 0 && sizingEstimationImage.src != ''"> 
+                <img [src]="sizingEstimationImage.src">
               </div>
               
             </tab>
@@ -176,17 +168,17 @@
                       </select>
                   </div>
                 </div>
-                <div class="row">
+                <!--<div class="row">
                   <div class="col-md-12">
                     <div class="form-group pull-right">
-                      <button class="btn btn-flat btn-primary buttons" (click)="loadOptimumAvailableChart()"> Refesh</button>
+                      <button class="btn btn-flat btn-primary buttons" (click)="getSizingOptimumDraw()"> Refesh</button>
                     </div>
                   </div>
-                </div>
+                </div>-->
               </div>
               
-              <div style="width:90%;margin:auto;margin-top:30px" *ngIf="optimumBarChart"> 
-                <div [chart]="optimumBarChart"></div>
+              <div *ngIf="activeEquipment.length > 0 && sizingOptimumImage.src != ''"> 
+                <img [src]="sizingOptimumImage.src">
               </div>
             </tab>
             <tab>

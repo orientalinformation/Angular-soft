@@ -6,6 +6,7 @@ import { Router } from '@angular/router';
 import swal from 'sweetalert2';
 import { ToastrService } from 'ngx-toastr';
 import { TextService } from '../../shared/text.service';
+import { TranslateService } from '@ngx-translate/core';
 import { ApiService, MinmaxService, ProfileService } from '../../api/services';
 
 @Component({
@@ -15,10 +16,11 @@ import { ApiService, MinmaxService, ProfileService } from '../../api/services';
 })
 export class SigninComponent implements OnInit {
   user: Login = new Login();
+  private langname: string;
 
   constructor(private auth: AuthenticationService, private api: ApiService, private router: Router,
     private toastr: ToastrService, private text: TextService, private minmaxService: MinmaxService,
-    private profileService: ProfileService) { }
+    private profileService: ProfileService, private translate: TranslateService) { }
 
   ngOnInit() {
   }
@@ -35,6 +37,19 @@ export class SigninComponent implements OnInit {
             }
           );
           const userLogon = JSON.parse(localStorage.getItem('user'));
+           if (userLogon.CODE_LANGUE == 1) {
+            this.langname = 'en';
+            } else if (userLogon.CODE_LANGUE == 2) {
+              this.langname = 'fr';
+            } else if (userLogon.CODE_LANGUE == 3) {
+              this.langname = 'it';
+            } else if (userLogon.CODE_LANGUE == 4) {
+              this.langname = 'de';
+            } else if (userLogon.CODE_LANGUE == 5) {
+              this.langname = 'es';
+            }
+            this.translate.use(this.langname);
+            console.log(userLogon);
           this.profileService.getUnits(userLogon.ID_USER).subscribe(
             (res) => {
               localStorage.setItem('UnitUser', JSON.stringify(res));
@@ -50,8 +65,8 @@ export class SigninComponent implements OnInit {
           this.router.navigate(['/']);
         },
         error => {
-          console.log('login failed!');
-          swal('Oops...', 'Logged in failed', 'error');
+          // console.log('login failed!');
+          swal('Warning', 'Logged in failed', 'error');
         }
       );
   }

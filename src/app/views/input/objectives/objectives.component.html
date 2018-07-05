@@ -4,10 +4,11 @@
 
       <div class="card-header">
         <strong>{{'CALCULATION MODE'|translate}}</strong>
-        <button type="button" (click)="saveObjectiveView()" class="ml-2 btn btn-sm btn-success float-right">
+        <button type="button" (click)="saveObjectiveView()" class="ml-2 btn btn-sm btn-success float-right" [disabled]="disabledField1()">
           <i class="fa fa-floppy-o"></i> {{'SAVE'|translate}}
         </button>
-        <button class="btn btn-warning btn-sm text float-right" *ngIf="studyState.CHAINING_CONTROLS && study.CHAINING_CONTROLS" (click)="createChildStudyDialog()">
+        <button class="btn btn-warning btn-sm text float-right" *ngIf="studyState.CHAINING_CONTROLS && study.CHAINING_CONTROLS" 
+        (click)="createChildStudyDialog()" [disabled]="disabledField1()"> 
           <i class="fa fa-chain"></i> <span>{{'CREATE CHILD STUDY'|translate}}</span>
         </button>
         <!-- /.card-body -->
@@ -18,7 +19,7 @@
             <div class="form-check" [class.text-muted]="disabledField()">
               <label class="form-check-label">
                 <label class="switch switch-icon switch-pill switch-primary">
-                  <input type="radio" class="switch-input" [disabled]="disabledField()" [(ngModel)]="study.CALCULATION_MODE" value="1" [checked]="study.CALCULATION_MODE == 1">
+                  <input type="radio" class="switch-input" [disabled]="disabledField()" [(ngModel)]="study.CALCULATION_MODE" [value]="1">
                   <span class="switch-label" data-on="&#xf00c;" data-off="&#xf00d;"></span>
                   <span class="switch-handle"></span>
                 </label>
@@ -28,7 +29,7 @@
             <div class="form-check">
               <label class="form-check-label" [class.text-muted]="disabledField()">
                 <label class="switch switch-icon switch-pill switch-primary">
-                  <input type="radio" class="switch-input" [disabled]="disabledField()" [(ngModel)]="study.CALCULATION_MODE" value="3" [checked]="study.CALCULATION_MODE == 3">
+                  <input type="radio" class="switch-input" [disabled]="disabledField()" [(ngModel)]="study.CALCULATION_MODE" [value]="3">
                   <span class="switch-label" data-on="&#xf00c;" data-off="&#xf00d;"></span>
                   <span class="switch-handle"></span>
                 </label>
@@ -158,7 +159,7 @@
               <label class="col-md-7 col-form-label" for="text-input">{{'Required Average temperature'|translate}}</label>
               <div class="col-md-5">
                 <div class="input-group">
-                  <input type="text" id="text-input" name="text-input" class="form-control" [(ngModel)]="production.AVG_T_DESIRED" [disabled]="disabledField()">
+                  <input type="text" id="text-input" name="text-input" class="form-control" [(ngModel)]="production.AVG_T_DESIRED" [disabled]="disabledField1()">
                   <span class="input-group-addon" *ngIf="symbol">
                     <small>{{ symbol.temperatureSymbol }}</small>
                   </span>

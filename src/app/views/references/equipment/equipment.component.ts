@@ -13,6 +13,7 @@ import { RefEquipment, ViewEquipment, NewEquipment, EquipmentFamily, EquipCharac
 import { Equipment, EquipGeneration, EquipmentSeries, Ramps, Shelves, Consumptions, FilterEquipment } from '../../../api/models';
 import { SaveAsEquipment, ViewHighChart, ViewCurve, EquipGenZone, ViewTempSetPoint, Study, SVGChart } from '../../../api/models';
 import { ViewCapability } from '../../../api/models';
+import { TranslateService } from '@ngx-translate/core';
 
 import * as Highcharts from 'highcharts';
 import * as HC_draggablePoints from 'highcharts-draggable-points';
@@ -110,7 +111,7 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
       renderTo: 'container',
     },
     title: {
-      text: 'Highcharts line curves'
+      text: this.translate.instant('Highcharts line curves')
     },
     rangeSelector: {
       selected: 6
@@ -132,7 +133,7 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
     },
     yAxis: {
       title: {
-        text: 'Temperature (°C)'
+        text: this.translate.instant('Temperature (°C)')
       },
       plotLines: [{
         value: 0,
@@ -142,27 +143,27 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
     },
     series: [{
       data: [1, 2, 3, 4, 5, 6, 7, 7, 9],
-      name: 'Top'
+      name: this.translate.instant('Top')
     },
     {
       data: [5, 6, 7, 8, 8, 10, 11, 3, 13],
-      name: 'Bottom'
+      name: this.translate.instant('Bottom')
     },
     {
       data: [5, 6, 7, 8, 8, 10, 11, 3, 13],
-      name: 'Left'
+      name: this.translate.instant('Left')
     },
     {
       data: [5, 6, 7, 8, 8, 10, 11, 3, 13],
-      name: 'Right'
+      name: this.translate.instant('Right')
     },
     {
       data: [5, 6, 7, 8, 8, 10, 11, 3, 13],
-      name: 'Front'
+      name: this.translate.instant('Front')
     },
     {
       data: [9, 10, 11, 12, 5, 14, 15, 7, 17],
-      name: 'Rear'
+      name: this.translate.instant('Rear')
     }]
   };
   public chartConvecCurvesOptions = {
@@ -170,7 +171,7 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
       renderTo: 'container',
     },
     title: {
-      text: 'Highcharts line curves'
+      text: this.translate.instant('Highcharts line curves')
     },
     rangeSelector: {
       selected: 6
@@ -202,27 +203,27 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
     },
     series: [{
       data: [1, 2, 3, 4, 5, 6, 7, 7, 9],
-      name: 'Top'
+      name: this.translate.instant('Top')
     },
     {
       data: [5, 6, 7, 8, 8, 10, 11, 3, 13],
-      name: 'Bottom'
+      name: this.translate.instant('Bottom')
     },
     {
       data: [5, 6, 7, 8, 8, 10, 11, 3, 13],
-      name: 'Left'
+      name: this.translate.instant('Left')
     },
     {
       data: [5, 6, 7, 8, 8, 10, 11, 3, 13],
-      name: 'Right'
+      name: this.translate.instant('Right')
     },
     {
       data: [5, 6, 7, 8, 8, 10, 11, 3, 13],
-      name: 'Front'
+      name: this.translate.instant('Front')
     },
     {
       data: [9, 10, 11, 12, 5, 14, 15, 7, 17],
-      name: 'Rear'
+      name: this.translate.instant('Rear')
     }]
   };
   public Highcharts = Highcharts;
@@ -233,7 +234,7 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
       zoomType: 'x',
     },
     title: {
-      text: 'Highcharts draggable points Convection'
+      text: this.translate.instant('Highcharts draggable points Convection')
     },
     tooltip: {
       // enabled: false
@@ -299,8 +300,10 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
     profilFace?: number
   };
   public isLoadingChart = false;
-  public disabledConfirm = 0;
+  public disabledConfirm = 1;
   public capability: ViewCapability;
+  public disabledYvalue = true;
+  public circleValue = null;
   // add by haidt
   public equipDimensionSymbol = '';
   public listUnits: Array<Units>;
@@ -312,17 +315,17 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
   public convectionCoeffSymbol = '';
   public lengthSymbol = '';
   public conductivitySymbol = '';
+  public checkBackStudy = 0;
 
 
-  constructor(private referencedata: ReferencedataService, private toastr: ToastrService, private router: Router) {
+  constructor(private referencedata: ReferencedataService, private toastr: ToastrService,
+    private router: Router, private translate: TranslateService) {
     this.activePageEquipment = 'load';
     this.newEquipment = new NewEquipment();
     this.saveAsEquipment = new SaveAsEquipment();
     this.equipGenerationDefault = new EquipGeneration();
     this.newEquipCharact = new EquipCharact();
-
-    localStorage.setItem('equipCurr', ''); // add by haidt
-
+    localStorage.setItem('equipCurr', '');
   }
 
   ngOnInit() {
@@ -332,34 +335,63 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
     this.listUnits = JSON.parse(localStorage.getItem('UnitUser'));
 
     if (this.listUnits) {
-
       for (let i = 0; i < this.listUnits.length; i++) {
-
         if (Number(this.listUnits[i].TYPE_UNIT) === 21) {
           this.equipDimensionSymbol = this.listUnits[i].SYMBOL;
         }
+
         if (Number(this.listUnits[i].TYPE_UNIT) === 8) {
           this.temperatureSymbol = this.listUnits[i].SYMBOL;
         }
+
         if (Number(this.listUnits[i].TYPE_UNIT) === 23) {
           this.rampsPositionSymbol = this.listUnits[i].SYMBOL;
         }
+
         if (Number(this.listUnits[i].TYPE_UNIT) === 22) {
           this.shelvesWidthSymbol = this.listUnits[i].SYMBOL;
         }
+
         if (Number(this.listUnits[i].TYPE_UNIT) === 5) {
           this.timeSymbol = this.listUnits[i].SYMBOL;
         }
+
         if (Number(this.listUnits[i].TYPE_UNIT) === 14) {
           this.convectionCoeffSymbol = this.listUnits[i].SYMBOL;
         }
+
         if (Number(this.listUnits[i].TYPE_UNIT) === 3) {
           this.lengthSymbol = this.listUnits[i].SYMBOL;
         }
+
         if (Number(this.listUnits[i].TYPE_UNIT) === 10) {
           this.conductivitySymbol = this.listUnits[i].SYMBOL;
         }
       }
+    }
+
+    const idEquip = localStorage.getItem('inputIdEquip');
+    if (idEquip !== 'null') {
+      this.referencedata.getInputEquipment(Number(idEquip)).subscribe(
+        data => {
+          localStorage.setItem('equipCurr', JSON.stringify(data));
+          const equipCurr = JSON.parse(localStorage.getItem('equipCurr'));
+          if (equipCurr) {
+            this.checkActiveEquip = Number(equipCurr.ID_EQUIP);
+            this.selectEquipment = equipCurr;
+            this.getListRamps(equipCurr.ID_EQUIP);
+            this.getListConsumptions(equipCurr.ID_EQUIP);
+            this.getListShelves(equipCurr.ID_EQUIP);
+          }
+        },
+        err => {
+          console.log(err);
+        },
+        () => {
+          localStorage.setItem('inputIdEquip', null);
+          this.checkBackStudy = 1;
+        }
+      );
     }
   }
 
@@ -394,8 +426,13 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
         this.isLoading = false;
         if (localStorage.getItem('equipCurr') !== '') {
           const equipCurr = JSON.parse(localStorage.getItem('equipCurr'));
-          this.checkActiveEquip = Number(equipCurr.ID_EQUIP);
-          this.selectEquipment = equipCurr;
+          if (equipCurr) {
+            this.checkActiveEquip = Number(equipCurr.ID_EQUIP);
+            this.selectEquipment = equipCurr;
+            this.getListRamps(equipCurr.ID_EQUIP);
+            this.getListConsumptions(equipCurr.ID_EQUIP);
+            this.getListShelves(equipCurr.ID_EQUIP);
+          }
         }
       }
     );
@@ -405,7 +442,7 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
     for (const equip of this.listEquipGenerate) {
       if (Number(equip.ID_EQUIP) === Number(this.equipGenerate)) {
         this.selectEquipGener = equip;
-        console.log(this.selectEquipGener);
+        // console.log(this.selectEquipGener);
         break;
       }
     }
@@ -558,20 +595,23 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
         let success = true;
         if (response === -4) {
           this.laddaIsCalculating = false;
+          this.laddaIsSaveNew = false;
           success = false;
-          this.toastr.error('Name and version already in use!', 'Error');
+          this.toastr.error(this.translate.instant('Name and version already in use!'), 'Error');
           return;
         } else if (response === -5) {
           this.laddaIsCalculating = false;
+          this.laddaIsSaveNew = false;
           success = false;
-          this.toastr.error('Run calculate error', 'Error');
+          this.toastr.error(this.translate.instant('Run calculate error'), 'Error');
           return;
         } else if (success) {
           localStorage.setItem('equipCurr', JSON.stringify(response));
           this.checkHideInfo = false;
           this.selectEquipment = new RefEquipment();
           this.laddaIsCalculating = false;
-          this.toastr.success('Create equipment', 'successfully');
+          this.laddaIsSaveNew = false;
+          this.toastr.success(this.translate.instant('Create equipment'), 'successfully');
           this.modalAddEquipment.hide();
           this.refrestListEquipment();
           this.newEquipment = new NewEquipment();
@@ -581,34 +621,36 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
           this.equipMerge1 = 0;
           this.equipMerge2 = 0;
         } else {
-          this.toastr.error('Create equipment', 'ERROR');
+          this.toastr.error(this.translate.instant('Create equipment'), 'ERROR');
         }
       },
       err => {
         console.log(err);
         this.laddaIsCalculating = false;
+        this.laddaIsSaveNew = false;
       },
       () => {
         this.laddaIsCalculating = false;
+        this.laddaIsSaveNew = false;
       }
     );
   }
 
   newSaveAsEquipment(equipment) {
     if (!this.saveAsEquipment.nameEquipment || this.saveAsEquipment.nameEquipment === undefined) {
-      this.toastr.error('Please specify name!', 'Error');
+      this.toastr.error(this.translate.instant('Please specify name!'), 'Error');
       return;
     }
     if (isNumber(this.saveAsEquipment.nameEquipment)) {
-      this.toastr.error('Not a valid string in Name !', 'Error');
+      this.toastr.error(this.translate.instant('Not a valid string in Name !'), 'Error');
       return;
     }
     if (!this.saveAsEquipment.versionEquipment) {
-      this.toastr.error('Please specify version!', 'Error');
+      this.toastr.error(this.translate.instant('Please specify version!'), 'Error');
       return;
     }
     if (isNaN(this.saveAsEquipment.versionEquipment)) {
-      this.toastr.error('Not a valid number in Version !', 'Error');
+      this.toastr.error(this.translate.instant('Not a valid number in Version !'), 'Error');
       return;
     }
     this.referencedata.saveAsEquipment({
@@ -617,7 +659,7 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
       equipmentId: equipment.ID_EQUIP
     }).subscribe(
       response => {
-        console.log(response);
+        // console.log(response);
         let success = true;
 
         if (response === 1) {
@@ -626,18 +668,18 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
 
         if (response === -4) {
           success = false;
-          this.toastr.error('Save as equipment', 'Name and version already in use!');
+          this.toastr.error(this.translate.instant('Save as equipment'), this.translate.instant('Name and version already in use!'));
           return;
         }
 
         if (success) {
           this.laddaIsCalculating = false;
-          this.toastr.success('Save as equipment', 'successfully');
+          this.toastr.success(this.translate.instant('Save as equipment'), 'successfully');
           this.modalSaveAsEquipment.hide();
           this.refrestListEquipment();
           this.saveAsEquipment = new SaveAsEquipment();
         } else {
-          this.toastr.error('Save as equipment', 'ERROR');
+          this.toastr.error(this.translate.instant('Save as equipment'), 'ERROR');
         }
       },
       err => {
@@ -678,9 +720,9 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
         }
 
         if (success) {
-          this.toastr.success('Update equipment', 'successfully');
+          this.toastr.success(this.translate.instant('Update equipment'), 'successfully');
         } else {
-          this.toastr.error('Update equipment', 'ERROR');
+          this.toastr.error(this.translate.instant('Update equipment'), 'ERROR');
         }
       },
       err => {
@@ -694,24 +736,24 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
 
   deleteEquipment(equip) {
     swal({
-      title: 'Are you sure?',
-      text: 'You won`t be able to revert this!',
+      title: this.translate.instant('Are you sure?'),
+      text: this.translate.instant('You won`t be able to revert this!'),
       type: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, delete it!'
+      confirmButtonText: this.translate.instant('Yes, delete it!')
     }).then((result) => {
       if (result.value) {
         this.referencedata.deleteEquipment(equip.ID_EQUIP).subscribe(
           response => {
             if (response === 1) {
               this.refrestListEquipment();
-              this.toastr.success('Delete equipment', 'successfully');
+              this.toastr.success(this.translate.instant('Delete equipment'), 'successfully');
               this.selectEquipment = new RefEquipment();
               this.checkHideInfo = true;
             } else {
-              swal('Oops..', 'Delete equipment', 'error');
+              this.toastr.error(this.translate.instant('Delete equipment'), 'Error');
             }
           },
           err => {
@@ -738,9 +780,9 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
 
         if (success) {
           this.getEquipCharacts(selectEquipment.ID_EQUIP);
-          this.toastr.success('Run equipment calculate', 'successfully');
+          this.toastr.success(this.translate.instant('Run equipment calculate'), 'successfully');
         } else {
-          this.toastr.error('Run equipment calculate', 'ERROR');
+          this.toastr.error(this.translate.instant('Run equipment calculate'), 'ERROR');
         }
       },
       err => {
@@ -777,23 +819,23 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
 
   deleteEquipCharacts(equip) {
     swal({
-      title: 'Are you sure?',
-      text: 'You won`t be able to revert this!',
+      title: this.translate.instant('Are you sure?'),
+      text: this.translate.instant('You won`t be able to revert this!'),
       type: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, delete it!'
+      confirmButtonText: this.translate.instant('Yes, delete it!')
     }).then((result) => {
       if (result.value) {
         this.referencedata.deleteEquipCharacts(equip.ID_EQUIP).subscribe(
           response => {
-            console.log(response);
+            // console.log(response);
             if (response === 1) {
               this.getEquipCharacts(equip.ID_EQUIP);
-              this.toastr.success('Delete all point', 'successfully');
+              this.toastr.success(this.translate.instant('Delete all point'), 'successfully');
             } else {
-              swal('Oops..', 'Delete all point', 'error');
+              this.toastr.success(this.translate.instant('Delete all point'), 'Error');
             }
           },
           err => {
@@ -809,11 +851,11 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
   addOnePoint(idEquip) {
     if (isNullOrUndefined(this.newEquipCharact.X_POSITION) || String(this.newEquipCharact.X_POSITION) === ''
     || isNaN(this.newEquipCharact.X_POSITION)) {
-      this.toastr.error('Please specify Position', 'Error');
+      this.toastr.error(this.translate.instant('Please specify Position'), 'Error');
       return;
     }
     if (Number(this.newEquipCharact.X_POSITION) < 0 || Number(this.newEquipCharact.X_POSITION) > 100 ) {
-      this.toastr.error('Value out of range in Position (0 : 100)', 'Error');
+      this.toastr.error(this.translate.instant('Value out of range in Position (0 : 100)'), 'Error');
       return;
     }
 
@@ -823,16 +865,16 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
     }).subscribe(
       data => {
         if (data === -1) {
-          this.toastr.error('Point ready exist!', 'Error');
+          this.toastr.error(this.translate.instant('Point ready exist!'), 'Error');
           return;
         }
 
         if (data === -2) {
-          this.toastr.error('Can not add more than the max of the point', 'Error');
+          this.toastr.error(this.translate.instant('Can not add more than the max of the point'), 'Error');
           return;
         }
         this.equipCharacts.push(data);
-        this.toastr.success('Add one point', 'Successfully');
+        this.toastr.success(this.translate.instant('Add one point'), 'Successfully');
       },
       err => {
 
@@ -887,7 +929,7 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
           zoomType: 'x',
         },
         title: {
-          text: 'Highcharts draggable points convection'
+          text: this.translate.instant('Highcharts draggable points convection')
         },
         tooltip: {
           yDecimals: 2
@@ -900,7 +942,7 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
         },
         yAxis: {
           title: {
-            text: 'Convection (Kw/(m².°C)'
+            text: this.translate.instant('Convection (Kw/(m².°C)')
           },
           plotLines: [{
             value: 0,
@@ -928,7 +970,7 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
                   // this.getDataHighChartY(this.y);
                   // alert('Name: ' + this.category + ', Value: ' + Highcharts.numberFormat(this.y, 2) + ', Series :' + this.series.name);
                   this.dataHighChart = new ViewHighChart();
-                  console.log(this.dataHighChart);
+                  // console.log(this.dataHighChart);
                   this.dataHighChart.YAxis = this.y;
                 }
               }
@@ -990,7 +1032,7 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
           zoomType: 'x',
         },
         title: {
-          text: 'Highcharts draggable points temperature'
+          text: this.translate.instant('Highcharts draggable points temperature')
         },
         tooltip: {
           yDecimals: 2
@@ -1003,7 +1045,7 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
         },
         yAxis: {
           title: {
-            text: 'Temperature (°C)'
+            text: this.translate.instant('Temperature (' + this.temperatureSymbol + ')')
           },
           plotLines: [{
             value: 0,
@@ -1081,7 +1123,7 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
           renderTo: 'container',
         },
         title: {
-          text: 'Highcharts line temperature'
+          text: this.translate.instant('Highcharts line temperature')
         },
         rangeSelector: {
           selected: 6
@@ -1103,7 +1145,7 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
         },
         yAxis: {
           title: {
-            text: 'Temperature (' + this.temperatureSymbol + ')'
+            text: this.translate.instant('Temperature (' + this.temperatureSymbol + ')')
           },
           plotLines: [{
             value: 0,
@@ -1113,27 +1155,27 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
         },
         series: [{
           data: tempTop,
-          name: 'Top'
+          name: this.translate.instant('Top')
         },
         {
           data: tempBottom,
-          name: 'Bottom'
+          name: this.translate.instant('Bottom')
         },
         {
           data: tempLeft,
-          name: 'Left'
+          name: this.translate.instant('Left')
         },
         {
           data: tempRight,
-          name: 'Right'
+          name: this.translate.instant('Right')
         },
         {
           data: tempFront,
-          name: 'Front'
+          name: this.translate.instant('Front')
         },
         {
           data: tempRear,
-          name: 'Rear'
+          name: this.translate.instant('Rear')
         }]
       };
 
@@ -1142,7 +1184,7 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
           renderTo: 'container',
         },
         title: {
-          text: 'Highcharts line convection'
+          text: this.translate.instant('Highcharts line convection')
         },
         rangeSelector: {
           selected: 6
@@ -1174,27 +1216,27 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
         },
         series: [{
           data: alphaTop,
-          name: 'Top'
+          name: this.translate.instant('Top')
         },
         {
           data: alphaBottom,
-          name: 'Bottom'
+          name: this.translate.instant('Bottom')
         },
         {
           data: alphaLeft,
-          name: 'Left'
+          name: this.translate.instant('Left')
         },
         {
           data: alphaRight,
-          name: 'Right'
+          name: this.translate.instant('Right')
         },
         {
           data: alphaFront,
-          name: 'Front'
+          name: this.translate.instant('Front')
         },
         {
           data: alphaRear,
-          name: 'Rear'
+          name: this.translate.instant('Rear')
         }]
       };
     }
@@ -1215,7 +1257,7 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
     }).subscribe(
       data => {
         this.dataHighChart = data;
-        console.log(this.dataHighChart);
+        // console.log(this.dataHighChart);
         if (profilType === 1) {
           this.onConvectionCharact(profilFace);
         } else {
@@ -1263,9 +1305,10 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
       tr_current: this.tempSetPoint.tr_current,
       tr_new: this.tempSetPoint.tr_new,
       ID_STUDY: (this.study !== null) ? this.study.ID_STUDY : 0,
+      isComefromStudy: this.checkBackStudy
     }).subscribe(
       response => {
-        console.log(response);
+        // console.log(response);
         let success = true;
 
         if (response.CheckKernel !== 0) {
@@ -1273,9 +1316,9 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
         }
 
         if (success) {
-          this.toastr.success('Update temperature', 'successfully');
+          this.toastr.success(this.translate.instant('Update temperature'), 'successfully');
         } else {
-          this.toastr.error('Update temperature', 'ERROR');
+          this.toastr.success(this.translate.instant('Update temperature'), 'successfully');
         }
         localStorage.setItem('equipCurr', JSON.stringify(response.RefEquipment));
         this.checkHideInfo = false;
@@ -1291,7 +1334,7 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
   checkBuildForNewTR(idEquip) {
     if (isNullOrUndefined(this.tempSetPoint.tr_new) || String(this.tempSetPoint.tr_new) === ''
       || isNaN(this.tempSetPoint.tr_new)) {
-        this.toastr.error('Please specify New temperature	', 'Error');
+        this.toastr.error(this.translate.instant('Please specify New temperature	'), 'Error');
         return;
     }
 
@@ -1305,7 +1348,7 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
         if (res === 1) {
           this.buildForNewTR(idEquip);
         } else {
-          this.toastr.error(res.Message, 'Error');
+          this.toastr.error(this.translate.instant(res.Message), 'Error');
         }
       },
       err => {
@@ -1327,9 +1370,9 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
 
         if (success) {
           // this.getEquipCharacts(this.selectEquipment);
-          this.toastr.success('Delete a point', 'successfully');
+          this.toastr.success(this.translate.instant('Delete a point'), 'successfully');
         } else {
-          this.toastr.error('Delete a point', 'ERROR');
+          this.toastr.error(this.translate.instant('Delete a point'), 'ERROR');
         }
       },
       err => {
@@ -1372,9 +1415,9 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
         }
 
         if (success) {
-          this.toastr.success('Update data', 'successfully');
+          this.toastr.success(this.translate.instant('Update data'), 'successfully');
         } else {
-          this.toastr.error('Update data', 'ERROR');
+          this.toastr.error(this.translate.instant('Update data'), 'ERROR');
         }
       },
       err => {
@@ -1460,9 +1503,9 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
         if (success) {
           this.modalReferentialEquip.hide();
           this.getEquipCharacts(this.equipCharact.ID_EQUIP);
-          this.toastr.success('Update EquipCharact', 'successfully');
+          this.toastr.success(this.translate.instant('Update EquipCharact'), 'successfully');
         } else {
-          this.toastr.error('Update EquipCharact', 'ERROR');
+          this.toastr.error(this.translate.instant('Update EquipCharact'), 'ERROR');
         }
       },
       err => {
@@ -1475,7 +1518,7 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
   }
 
   onSelectEquipment(equip) {
-    console.log(equip);
+    // console.log(equip);
     localStorage.setItem('equipCurr', '');
     this.checkActiveEquip = 0;
     this.checkHideInfo = false;
@@ -1546,18 +1589,20 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
 
   addRampValue() {
     if (!this.newRamp.POSITION) {
-      this.toastr.error('Enter a value in Position ramp', 'Error');
+      this.toastr.error(this.translate.instant('Enter a value in Position ramp'), 'Error');
       return;
     }
 
     if (!isNumber(this.newRamp.POSITION)) {
-      this.toastr.error('Not a valid number in Position ramp', 'Error');
+      this.toastr.error(this.translate.instant('Not a valid number in Position ramp'), 'Error');
       return;
     }
 
-    if (this.rampsArray.length >= 2) {
-      this.toastr.error('Can not add more than the max of the equipment', 'Error');
-      return;
+    if (this.selectEquipment) {
+      if (this.rampsArray.length >= Number(this.selectEquipment.MAX_RAMPS)) {
+        this.toastr.error(this.translate.instant('Can not add more than the max of the equipment'), 'Error');
+        return;
+      }
     }
 
     this.rampsArray.push(this.newRamp);
@@ -1584,22 +1629,22 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
 
   addShelveValue() {
     if (!this.newShelve.SPACE) {
-      this.toastr.error('Enter a value in Space', 'Error');
+      this.toastr.error(this.translate.instant('Enter a value in Space'), 'Error');
       return;
     }
 
     if (!this.newShelve.NB) {
-      this.toastr.error('Enter a value in Number', 'Error');
+      this.toastr.error(this.translate.instant('Enter a value in Number'), 'Error');
       return;
     }
 
     if (!isNumber(this.newShelve.SPACE)) {
-      this.toastr.error('Not a valid number in Space', 'Error');
+      this.toastr.error(this.translate.instant('Not a valid number in Space'), 'Error');
       return;
     }
 
     if (!isNumber(this.newShelve.NB)) {
-      this.toastr.error('Not a valid number in Number', 'Error');
+      this.toastr.error(this.translate.instant('Not a valid number in Number'), 'Error');
       return;
     }
 
@@ -1627,32 +1672,32 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
 
   addConsumptionValue() {
     if (!this.newConsumption.TEMPERATURE) {
-      this.toastr.error('Enter a value in Temperature', 'Error');
+      this.toastr.error(this.translate.instant('Enter a value in Temperature'), 'Error');
       return;
     }
 
     if (!this.newConsumption.CONSUMPTION_PERM) {
-      this.toastr.error('Enter a value in Consumption of maintains in cold', 'Error');
+      this.toastr.error(this.translate.instant('Enter a value in Consumption of maintains in cold'), 'Error');
       return;
     }
 
     if (!this.newConsumption.CONSUMPTION_GETCOLD) {
-      this.toastr.error('Enter a value in Consumption of stake in cold', 'Error');
+      this.toastr.error(this.translate.instant('Enter a value in Consumption of stake in cold'), 'Error');
       return;
     }
 
     if (!isNumber(this.newConsumption.TEMPERATURE)) {
-      this.toastr.error('Not a valid number in Temperature', 'Error');
+      this.toastr.error(this.translate.instant('Not a valid number in Temperature'), 'Error');
       return;
     }
 
     if (!isNumber(this.newConsumption.CONSUMPTION_PERM)) {
-      this.toastr.error('Not a valid number in Consumption of maintains in cold', 'Error');
+      this.toastr.error(this.translate.instant('Not a valid number in Consumption of maintains in cold'), 'Error');
       return;
     }
 
     if (!isNumber(this.newConsumption.CONSUMPTION_GETCOLD)) {
-      this.toastr.error('Not a valid number in Consumption of stake in cold', 'Error');
+      this.toastr.error(this.translate.instant('Not a valid number in Consumption of stake in cold'), 'Error');
       return;
     }
 
@@ -1679,9 +1724,7 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
           && (x >= cx - focusXZone) && (x <= cx + focusXZone)) {
             this.selectedPoint.setAttribute('cy', y);
             const value = this.getAxisYValue(y);
-            const circleValue = <HTMLElement>document.getElementById('circle_value');
-            circleValue.setAttribute('value', String(value));
-
+            this.circleValue = value;
             this.redrawPath();
 
             this.dataHighChart.valuesTabY[this.currentpos] = value;
@@ -1698,13 +1741,8 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
       const circlePosition = <HTMLElement>document.getElementById('circle_position');
       circlePosition.setAttribute('value', pos);
 
-      const circleValue = <HTMLElement>document.getElementById('circle_value');
       const value = this.getAxisYValue($event.offsetY);
-
-      // if (this.dataHighChart) {
-      //   value = this.dataHighChart.valuesTabY[pos];
-      // }
-      circleValue.setAttribute('value', String(value));
+      this.circleValue = value;
     }
   }
 
@@ -1716,15 +1754,13 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
       const circlePosition = <HTMLElement>document.getElementById('circle_position');
       circlePosition.setAttribute('value', '');
 
-      const circleValue = <HTMLElement>document.getElementById('circle_value');
-      circleValue.setAttribute('value', '');
+      this.circleValue = null;
     }
   }
 
   selectpoint($event, pos) {
     const currentCircle = <HTMLElement>document.getElementById('c' + pos);
     const circlePosition = <HTMLElement>document.getElementById('circle_position');
-    const circleValue = <HTMLElement>document.getElementById('circle_value');
     if (this.selectedPoint === null) {
       this.selectedPoint = currentCircle;
       this.currentpos = pos;
@@ -1738,14 +1774,16 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
 
         this.dataHighChart.selectedPoints[pos] = 1;
       }
-      circleValue.setAttribute('value', value);
+      this.circleValue = value;
+      this.disabledYvalue = false;
     } else {
       this.selectedPoint.setAttribute('stroke', '#000000');
       this.selectedPoint.setAttribute('fill', '#D5D5FF');
       this.selectedPoint = null;
       this.currentpos = -1;
       circlePosition.setAttribute('value', '');
-      circleValue.setAttribute('value', '');
+      this.circleValue = null;
+      this.disabledYvalue = true;
     }
   }
 
@@ -1781,37 +1819,44 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
     return lfVal;
   }
 
-  getAxisYPos(value) {
+  getAxisYPos(value: number) {
     let pos = 0;
     if (this.dataHighChart) {
-      if (value < this.dataHighChart.MiniMum) {
-        value = this.dataHighChart.MiniMum;
-      } else if (value > this.dataHighChart.MaxiMum) {
-        value = this.dataHighChart.MaxiMum;
+      if (Number(value) < Number(this.dataHighChart.MiniMum)) {
+        value = Number(this.dataHighChart.MiniMum);
+      } else if (Number(value) > Number(this.dataHighChart.MaxiMum)) {
+        value = Number(this.dataHighChart.MaxiMum);
       }
-      pos = this.dataHighChart.originY - Math.round((value - this.dataHighChart.MaxiMum) /
-      (this.dataHighChart.MaxiMum - this.dataHighChart.MiniMum) * this.dataHighChart.nbpixY);
+      const scaleY = Number(this.dataHighChart.MaxiMum) - Number(this.dataHighChart.MiniMum);
+      const tempValue = (Number(value) - Number(this.dataHighChart.MiniMum)) / scaleY;
+      const temp =  Number(this.dataHighChart.nbpixY);
+
+      pos = Number(this.dataHighChart.originY) - Math.round(tempValue * temp);
     }
     return pos;
   }
 
   setpoint() {
     if (this.selectedPoint != null) {
-      const circleValue = <HTMLElement>document.getElementById('circle_value');
       const circlePosition = <HTMLElement>document.getElementById('circle_position');
-      const value = circleValue.getAttribute('value');
+      const value = this.circleValue;
       if (this.dataHighChart) {
-        if (Number(value) >= this.dataHighChart.MiniMum) {
-          const cy = this.getAxisYPos(value);
+        if (Number(value) >= Number(this.dataHighChart.MiniMum) && Number(value) <= Number(this.dataHighChart.MaxiMum)) {
+          const cy = this.getAxisYPos(Number(value));
           this.selectedPoint.setAttribute('cy', cy);
           this.redrawPath();
+
+          this.dataHighChart.valuesTabY[this.currentpos] = Number(value);
 
           this.selectedPoint.setAttribute('stroke', '#000000');
           this.selectedPoint.setAttribute('fill', '#D5D5FF');
           this.selectedPoint = null;
+          this.currentpos = -1;
 
           circlePosition.setAttribute('value', '');
-          circleValue.setAttribute('value', '');
+          this.circleValue = null;
+
+          this.disabledYvalue = true;
         }
       }
     }
@@ -1860,8 +1905,8 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
     }).subscribe(
       data => {
         this.dataHighChart = data;
-        console.log(data);
-        this.toastr.success('Update scale chart', 'successfully');
+        // console.log(data);
+        this.toastr.success(this.translate.instant('Update scale chart'), 'successfully');
       },
       err => {
         console.log('err');
@@ -1871,10 +1916,7 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
   }
 
   clearSelectedPoints() {
-    const rescale = <HTMLElement>document.getElementById('rescale');
-    rescale.setAttribute('disabled', 'true');
-    const confirm = <HTMLElement>document.getElementById('confirmButton');
-    confirm.setAttribute('disabled', 'true');
+    this.disabledConfirm = 0;
     let idx = 0;
     let circle;
     this.selectedPoint = null;
@@ -1930,14 +1972,14 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
     }).subscribe(
       data => {
         this.dataHighChart = data;
-        this.toastr.success('Generate data chart', 'successfully');
+        this.toastr.success(this.translate.instant('Generate data chart'), 'successfully');
         this.disabledConfirm = 1;
       },
       err => {
-
+        console.log('err');
       },
       () => {
-
+        this.disabledConfirm = 1;
       }
     );
   }
@@ -1962,11 +2004,12 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
     }).subscribe(
       response => {
         if (response === 1) {
-          this.toastr.success('Update chart point', 'successfully');
+          this.toastr.success(this.translate.instant('Update chart point'), 'successfully');
+          this.modalEquipmentProfil.hide();
         }
       },
       err => {
-
+        console.log('err');
       },
       () => {}
     );
@@ -2022,7 +2065,7 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
   getEquipmentFilter(id) {
     this.referencedata.getEquipmentFilter(id).subscribe(
       data => {
-        console.log(data);
+        // console.log(data);
         this.filterEquipment = data;
 
         if (this.filterEquipment) {
@@ -2045,11 +2088,11 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
 
       if (isNullOrUndefined(equipZone[i].EQUIP_ZONE_LENGTH) || String(equipZone[i].EQUIP_ZONE_LENGTH) === ''
       || isNaN(equipZone[i].EQUIP_ZONE_LENGTH)) {
-        this.toastr.error('Please specify Length / Entry - Zone ' + (i + 1), 'Error');
+        this.toastr.error(this.translate.instant('Please specify Length / Entry - Zone ') + (i + 1), 'Error');
         return;
       }
       if (isNullOrUndefined(equipZone[i].EQUIP_ZONE_NAME) || String(equipZone[i].EQUIP_ZONE_NAME) === '') {
-        this.toastr.error('Please specify Zone name - Zone ' + (i + 1), 'Error');
+        this.toastr.error(this.translate.instant('Please specify Zone name - Zone ') + (i + 1), 'Error');
         return;
       }
     }
@@ -2059,42 +2102,42 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
       if (Number(listEquipGenZone[i].TOP_ADIABAT) === 0 && Number(listEquipGenZone[i].TOP_CHANGE) === 1) {
         if (isNullOrUndefined(listEquipGenZone[i].TOP_PRM1) || String(listEquipGenZone[i].TOP_PRM1) === ''
         || isNaN(listEquipGenZone[i].TOP_PRM1)) {
-          this.toastr.error('Please specify in Coefficient - Zone ' + (i + 1), 'Error');
+          this.toastr.error(this.translate.instant('Please specify in Coefficient - Zone ') + (i + 1), 'Error');
           return;
         }
       }
       if (Number(listEquipGenZone[i].BOTTOM_ADIABAT) === 0 && Number(listEquipGenZone[i].BOTTOM_CHANGE) === 1) {
         if (isNullOrUndefined(listEquipGenZone[i].BOTTOM_PRM1) || String(listEquipGenZone[i].BOTTOM_PRM1) === ''
         || isNaN(listEquipGenZone[i].BOTTOM_PRM1)) {
-          this.toastr.error('Please specify in Coefficient - Zone ' + (i + 1), 'Error');
+          this.toastr.error(this.translate.instant('Please specify in Coefficient - Zone ') + (i + 1), 'Error');
           return;
         }
       }
       if (Number(listEquipGenZone[i].LEFT_ADIABAT) === 0 && Number(listEquipGenZone[i].LEFT_CHANGE) === 1) {
         if (isNullOrUndefined(listEquipGenZone[i].LEFT_PRM1) || String(listEquipGenZone[i].LEFT_PRM1) === ''
         || isNaN(listEquipGenZone[i].LEFT_PRM1)) {
-          this.toastr.error('Please specify in Coefficient - Zone ' + (i + 1), 'Error');
+          this.toastr.error(this.translate.instant('Please specify in Coefficient - Zone ') + (i + 1), 'Error');
           return;
         }
       }
       if (Number(listEquipGenZone[i].RIGHT_ADIABAT) === 0 && Number(listEquipGenZone[i].RIGHT_CHANGE) === 1) {
         if (isNullOrUndefined(listEquipGenZone[i].RIGHT_PRM1) || String(listEquipGenZone[i].RIGHT_PRM1) === ''
         || isNaN(listEquipGenZone[i].RIGHT_PRM1)) {
-          this.toastr.error('Please specify in Coefficient - Zone ' + (i + 1), 'Error');
+          this.toastr.error(this.translate.instant('Please specify in Coefficient - Zone ') + (i + 1), 'Error');
           return;
         }
       }
       if (Number(listEquipGenZone[i].FRONT_ADIABAT) === 0 && Number(listEquipGenZone[i].FRONT_CHANGE) === 1) {
         if (isNullOrUndefined(listEquipGenZone[i].FRONT_PRM1) || String(listEquipGenZone[i].FRONT_PRM1) === ''
         || isNaN(listEquipGenZone[i].FRONT_PRM1)) {
-          this.toastr.error('Please specify in Coefficient - Zone ' + (i + 1), 'Error');
+          this.toastr.error(this.translate.instant('Please specify in Coefficient - Zone ') + (i + 1), 'Error');
           return;
         }
       }
       if (Number(listEquipGenZone[i].REAR_ADIABAT) === 0 && Number(listEquipGenZone[i].REAR_CHANGE) === 1) {
         if (isNullOrUndefined(listEquipGenZone[i].REAR_PRM1) || String(listEquipGenZone[i].REAR_PRM1) === ''
         || isNaN(listEquipGenZone[i].REAR_PRM1)) {
-          this.toastr.error('Please specify in Coefficient - Zone ' + (i + 1), 'Error');
+          this.toastr.error(this.translate.instant('Please specify in Coefficient - Zone ') + (i + 1), 'Error');
           return;
         }
       }
@@ -2102,42 +2145,42 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
       if (Number(listEquipGenZone[i].TOP_ADIABAT) === 0 && Number(listEquipGenZone[i].TOP_CHANGE) === 2) {
         if (isNullOrUndefined(listEquipGenZone[i].TOP_PRM1) || String(listEquipGenZone[i].TOP_PRM1) === ''
         || isNaN(listEquipGenZone[i].TOP_PRM1)) {
-          this.toastr.error('Please specify in AlphaI/Alpha in the mylar - Zone ' + (i + 1), 'Error');
+          this.toastr.error(this.translate.instant('Please specify in AlphaI/Alpha in the mylar - Zone ') + (i + 1), 'Error');
           return;
         }
       }
       if (Number(listEquipGenZone[i].BOTTOM_ADIABAT) === 0 && Number(listEquipGenZone[i].BOTTOM_CHANGE) === 2) {
         if (isNullOrUndefined(listEquipGenZone[i].BOTTOM_PRM1) || String(listEquipGenZone[i].BOTTOM_PRM1) === ''
         || isNaN(listEquipGenZone[i].BOTTOM_PRM1)) {
-          this.toastr.error('Please specify in AlphaI/Alpha in the mylar - Zone ' + (i + 1), 'Error');
+          this.toastr.error(this.translate.instant('Please specify in AlphaI/Alpha in the mylar - Zone ') + (i + 1), 'Error');
           return;
         }
       }
       if (Number(listEquipGenZone[i].LEFT_ADIABAT) === 0 && Number(listEquipGenZone[i].LEFT_CHANGE) === 2) {
         if (isNullOrUndefined(listEquipGenZone[i].LEFT_PRM1) || String(listEquipGenZone[i].LEFT_PRM1) === ''
         || isNaN(listEquipGenZone[i].LEFT_PRM1)) {
-          this.toastr.error('Please specify in AlphaI/Alpha in the mylar - Zone ' + (i + 1), 'Error');
+          this.toastr.error(this.translate.instant('Please specify in AlphaI/Alpha in the mylar - Zone ') + (i + 1), 'Error');
           return;
         }
       }
       if (Number(listEquipGenZone[i].RIGHT_ADIABAT) === 0 && Number(listEquipGenZone[i].RIGHT_CHANGE) === 2) {
         if (isNullOrUndefined(listEquipGenZone[i].RIGHT_PRM1) || String(listEquipGenZone[i].RIGHT_PRM1) === ''
         || isNaN(listEquipGenZone[i].RIGHT_PRM1)) {
-          this.toastr.error('Please specify in AlphaI/Alpha in the mylar - Zone ' + (i + 1), 'Error');
+          this.toastr.error(this.translate.instant('Please specify in AlphaI/Alpha in the mylar - Zone ') + (i + 1), 'Error');
           return;
         }
       }
       if (Number(listEquipGenZone[i].FRONT_ADIABAT) === 0 && Number(listEquipGenZone[i].FRONT_CHANGE) === 2) {
         if (isNullOrUndefined(listEquipGenZone[i].FRONT_PRM1) || String(listEquipGenZone[i].FRONT_PRM1) === ''
         || isNaN(listEquipGenZone[i].FRONT_PRM1)) {
-          this.toastr.error('Please specify in AlphaI/Alpha in the mylar - Zone ' + (i + 1), 'Error');
+          this.toastr.error(this.translate.instant('Please specify in AlphaI/Alpha in the mylar - Zone ') + (i + 1), 'Error');
           return;
         }
       }
       if (Number(listEquipGenZone[i].REAR_ADIABAT) === 0 && Number(listEquipGenZone[i].REAR_CHANGE) === 2) {
         if (isNullOrUndefined(listEquipGenZone[i].REAR_PRM1) || String(listEquipGenZone[i].REAR_PRM1) === ''
         || isNaN(listEquipGenZone[i].REAR_PRM1)) {
-          this.toastr.error('Please specify in AlphaI/Alpha in the mylar - Zone ' + (i + 1), 'Error');
+          this.toastr.error(this.translate.instant('Please specify in AlphaI/Alpha in the mylar - Zone ') + (i + 1), 'Error');
           return;
         }
       }
@@ -2145,42 +2188,42 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
       if (Number(listEquipGenZone[i].TOP_ADIABAT) === 0 && Number(listEquipGenZone[i].TOP_CHANGE) === 2) {
         if (isNullOrUndefined(listEquipGenZone[i].TOP_PRM2) || String(listEquipGenZone[i].TOP_PRM2) === ''
         || isNaN(listEquipGenZone[i].TOP_PRM2)) {
-          this.toastr.error('Please specify in Alpha spraying - Zone ' + (i + 1), 'Error');
+          this.toastr.error(this.translate.instant('Please specify in Alpha spraying - Zone ') + (i + 1), 'Error');
           return;
         }
       }
       if (Number(listEquipGenZone[i].BOTTOM_ADIABAT) === 0 && Number(listEquipGenZone[i].BOTTOM_CHANGE) === 2) {
         if (isNullOrUndefined(listEquipGenZone[i].BOTTOM_PRM2) || String(listEquipGenZone[i].BOTTOM_PRM2) === ''
         || isNaN(listEquipGenZone[i].BOTTOM_PRM2)) {
-          this.toastr.error('Please specify in Alpha spraying - Zone ' + (i + 1), 'Error');
+          this.toastr.error(this.translate.instant('Please specify in Alpha spraying - Zone ') + (i + 1), 'Error');
           return;
         }
       }
       if (Number(listEquipGenZone[i].LEFT_ADIABAT) === 0 && Number(listEquipGenZone[i].LEFT_CHANGE) === 2) {
         if (isNullOrUndefined(listEquipGenZone[i].LEFT_PRM2) || String(listEquipGenZone[i].LEFT_PRM2) === ''
         || isNaN(listEquipGenZone[i].LEFT_PRM2)) {
-          this.toastr.error('Please specify in Alpha spraying - Zone ' + (i + 1), 'Error');
+          this.toastr.error(this.translate.instant('Please specify in Alpha spraying - Zone ') + (i + 1), 'Error');
           return;
         }
       }
       if (Number(listEquipGenZone[i].RIGHT_ADIABAT) === 0 && Number(listEquipGenZone[i].RIGHT_CHANGE) === 2) {
         if (isNullOrUndefined(listEquipGenZone[i].RIGHT_PRM2) || String(listEquipGenZone[i].RIGHT_PRM2) === ''
         || isNaN(listEquipGenZone[i].RIGHT_PRM2)) {
-          this.toastr.error('Please specify in Alpha spraying - Zone ' + (i + 1), 'Error');
+          this.toastr.error(this.translate.instant('Please specify in Alpha spraying - Zone ') + (i + 1), 'Error');
           return;
         }
       }
       if (Number(listEquipGenZone[i].FRONT_ADIABAT) === 0 && Number(listEquipGenZone[i].FRONT_CHANGE) === 2) {
         if (isNullOrUndefined(listEquipGenZone[i].FRONT_PRM2) || String(listEquipGenZone[i].FRONT_PRM2) === ''
         || isNaN(listEquipGenZone[i].FRONT_PRM2)) {
-          this.toastr.error('Please specify in Alpha spraying - Zone ' + (i + 1), 'Error');
+          this.toastr.error(this.translate.instant('Please specify in Alpha spraying - Zone ') + (i + 1), 'Error');
           return;
         }
       }
       if (Number(listEquipGenZone[i].REAR_ADIABAT) === 0 && Number(listEquipGenZone[i].REAR_CHANGE) === 2) {
         if (isNullOrUndefined(listEquipGenZone[i].REAR_PRM2) || String(listEquipGenZone[i].REAR_PRM2) === ''
         || isNaN(listEquipGenZone[i].REAR_PRM2)) {
-          this.toastr.error('Please specify in Alpha spraying - Zone ' + (i + 1), 'Error');
+          this.toastr.error(this.translate.instant('Please specify in Alpha spraying - Zone ') + (i + 1), 'Error');
           return;
         }
       }
@@ -2188,42 +2231,42 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
       if (Number(listEquipGenZone[i].TOP_ADIABAT) === 0 && Number(listEquipGenZone[i].TOP_CHANGE) === 2) {
         if (isNullOrUndefined(listEquipGenZone[i].TOP_PRM3) || String(listEquipGenZone[i].TOP_PRM3) === ''
         || isNaN(listEquipGenZone[i].TOP_PRM3)) {
-          this.toastr.error('Please specify in Alpha stabilization - Zone ' + (i + 1), 'Error');
+          this.toastr.error(this.translate.instant('Please specify in Alpha stabilization - Zone ') + (i + 1), 'Error');
           return;
         }
       }
       if (Number(listEquipGenZone[i].BOTTOM_ADIABAT) === 0 && Number(listEquipGenZone[i].BOTTOM_CHANGE) === 2) {
         if (isNullOrUndefined(listEquipGenZone[i].BOTTOM_PRM3) || String(listEquipGenZone[i].BOTTOM_PRM3) === ''
         || isNaN(listEquipGenZone[i].BOTTOM_PRM3)) {
-          this.toastr.error('Please specify in Alpha stabilization - Zone ' + (i + 1), 'Error');
+          this.toastr.error(this.translate.instant('Please specify in Alpha stabilization - Zone ') + (i + 1), 'Error');
           return;
         }
       }
       if (Number(listEquipGenZone[i].LEFT_ADIABAT) === 0 && Number(listEquipGenZone[i].LEFT_CHANGE) === 2) {
         if (isNullOrUndefined(listEquipGenZone[i].LEFT_PRM3) || String(listEquipGenZone[i].LEFT_PRM3) === ''
         || isNaN(listEquipGenZone[i].LEFT_PRM3)) {
-          this.toastr.error('Please specify in Alpha stabilization - Zone ' + (i + 1), 'Error');
+          this.toastr.error(this.translate.instant('Please specify in Alpha stabilization - Zone ') + (i + 1), 'Error');
           return;
         }
       }
       if (Number(listEquipGenZone[i].RIGHT_ADIABAT) === 0 && Number(listEquipGenZone[i].RIGHT_CHANGE) === 2) {
         if (isNullOrUndefined(listEquipGenZone[i].RIGHT_PRM3) || String(listEquipGenZone[i].RIGHT_PRM3) === ''
         || isNaN(listEquipGenZone[i].RIGHT_PRM3)) {
-          this.toastr.error('Please specify in Alpha stabilization - Zone ' + (i + 1), 'Error');
+          this.toastr.error(this.translate.instant('Please specify in Alpha stabilization - Zone ') + (i + 1), 'Error');
           return;
         }
       }
       if (Number(listEquipGenZone[i].FRONT_ADIABAT) === 0 && Number(listEquipGenZone[i].FRONT_CHANGE) === 2) {
         if (isNullOrUndefined(listEquipGenZone[i].FRONT_PRM3) || String(listEquipGenZone[i].FRONT_PRM3) === ''
         || isNaN(listEquipGenZone[i].FRONT_PRM3)) {
-          this.toastr.error('Please specify in Alpha stabilization - Zone ' + (i + 1), 'Error');
+          this.toastr.error(this.translate.instant('Please specify in Alpha stabilization - Zone ') + (i + 1), 'Error');
           return;
         }
       }
       if (Number(listEquipGenZone[i].REAR_ADIABAT) === 0 && Number(listEquipGenZone[i].REAR_CHANGE) === 2) {
         if (isNullOrUndefined(listEquipGenZone[i].REAR_PRM3) || String(listEquipGenZone[i].REAR_PRM3) === ''
         || isNaN(listEquipGenZone[i].REAR_PRM3)) {
-          this.toastr.error('Please specify in Alpha stabilization - Zone ' + (i + 1), 'Error');
+          this.toastr.error(this.translate.instant('Please specify in Alpha stabilization - Zone ') + (i + 1), 'Error');
           return;
         }
       }
@@ -2231,42 +2274,42 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
       if (Number(listEquipGenZone[i].TOP_ADIABAT) === 0 && Number(listEquipGenZone[i].TOP_CHANGE) === 3) {
         if (isNullOrUndefined(listEquipGenZone[i].TOP_PRM1) || String(listEquipGenZone[i].TOP_PRM1) === ''
         || isNaN(listEquipGenZone[i].TOP_PRM1)) {
-          this.toastr.error('Please specify in Insulation tickness - Zone ' + (i + 1), 'Error');
+          this.toastr.error(this.translate.instant('Please specify in Insulation tickness - Zone ') + (i + 1), 'Error');
           return;
         }
       }
       if (Number(listEquipGenZone[i].BOTTOM_ADIABAT) === 0 && Number(listEquipGenZone[i].BOTTOM_CHANGE) === 3) {
         if (isNullOrUndefined(listEquipGenZone[i].BOTTOM_PRM1) || String(listEquipGenZone[i].BOTTOM_PRM1) === ''
         || isNaN(listEquipGenZone[i].BOTTOM_PRM1)) {
-          this.toastr.error('Please specify in Insulation tickness - Zone ' + (i + 1), 'Error');
+          this.toastr.error(this.translate.instant('Please specify in Insulation tickness - Zone ') + (i + 1), 'Error');
           return;
         }
       }
       if (Number(listEquipGenZone[i].LEFT_ADIABAT) === 0 && Number(listEquipGenZone[i].LEFT_CHANGE) === 3) {
         if (isNullOrUndefined(listEquipGenZone[i].LEFT_PRM1) || String(listEquipGenZone[i].LEFT_PRM1) === ''
         || isNaN(listEquipGenZone[i].LEFT_PRM1)) {
-          this.toastr.error('Please specify in Insulation tickness - Zone ' + (i + 1), 'Error');
+          this.toastr.error(this.translate.instant('Please specify in Insulation tickness - Zone ') + (i + 1), 'Error');
           return;
         }
       }
       if (Number(listEquipGenZone[i].RIGHT_ADIABAT) === 0 && Number(listEquipGenZone[i].RIGHT_CHANGE) === 3) {
         if (isNullOrUndefined(listEquipGenZone[i].RIGHT_PRM1) || String(listEquipGenZone[i].RIGHT_PRM1) === ''
         || isNaN(listEquipGenZone[i].RIGHT_PRM1)) {
-          this.toastr.error('Please specify in Insulation tickness - Zone ' + (i + 1), 'Error');
+          this.toastr.error(this.translate.instant('Please specify in Insulation tickness - Zone ') + (i + 1), 'Error');
           return;
         }
       }
       if (Number(listEquipGenZone[i].FRONT_ADIABAT) === 0 && Number(listEquipGenZone[i].FRONT_CHANGE) === 3) {
         if (isNullOrUndefined(listEquipGenZone[i].FRONT_PRM1) || String(listEquipGenZone[i].FRONT_PRM1) === ''
         || isNaN(listEquipGenZone[i].FRONT_PRM1)) {
-          this.toastr.error('Please specify in Insulation tickness - Zone ' + (i + 1), 'Error');
+          this.toastr.error(this.translate.instant('Please specify in Insulation tickness - Zone ') + (i + 1), 'Error');
           return;
         }
       }
       if (Number(listEquipGenZone[i].REAR_ADIABAT) === 0 && Number(listEquipGenZone[i].REAR_CHANGE) === 3) {
         if (isNullOrUndefined(listEquipGenZone[i].REAR_PRM1) || String(listEquipGenZone[i].REAR_PRM1) === ''
         || isNaN(listEquipGenZone[i].REAR_PRM1)) {
-          this.toastr.error('Please specify in Insulation tickness - Zone ' + (i + 1), 'Error');
+          this.toastr.error(this.translate.instant('Please specify in Insulation tickness - Zone ') + (i + 1), 'Error');
           return;
         }
       }
@@ -2274,42 +2317,42 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
       if (Number(listEquipGenZone[i].TOP_ADIABAT) === 0 && Number(listEquipGenZone[i].TOP_CHANGE) === 3) {
         if (isNullOrUndefined(listEquipGenZone[i].TOP_PRM2) || String(listEquipGenZone[i].TOP_PRM2) === ''
         || isNaN(listEquipGenZone[i].TOP_PRM2)) {
-          this.toastr.error('Please specify in Insulation conductivity - Zone ' + (i + 1), 'Error');
+          this.toastr.error(this.translate.instant('Please specify in Insulation conductivity - Zone ') + (i + 1), 'Error');
           return;
         }
       }
       if (Number(listEquipGenZone[i].BOTTOM_ADIABAT) === 0 && Number(listEquipGenZone[i].BOTTOM_CHANGE) === 3) {
         if (isNullOrUndefined(listEquipGenZone[i].BOTTOM_PRM2) || String(listEquipGenZone[i].BOTTOM_PRM2) === ''
         || isNaN(listEquipGenZone[i].BOTTOM_PRM2)) {
-          this.toastr.error('Please specify in Insulation conductivity - Zone ' + (i + 1), 'Error');
+          this.toastr.error(this.translate.instant('Please specify in Insulation conductivity - Zone ') + (i + 1), 'Error');
           return;
         }
       }
       if (Number(listEquipGenZone[i].LEFT_ADIABAT) === 0 && Number(listEquipGenZone[i].LEFT_CHANGE) === 3) {
         if (isNullOrUndefined(listEquipGenZone[i].LEFT_PRM2) || String(listEquipGenZone[i].LEFT_PRM2) === ''
         || isNaN(listEquipGenZone[i].LEFT_PRM2)) {
-          this.toastr.error('Please specify in Insulation conductivity - Zone ' + (i + 1), 'Error');
+          this.toastr.error(this.translate.instant('Please specify in Insulation conductivity - Zone ') + (i + 1), 'Error');
           return;
         }
       }
       if (Number(listEquipGenZone[i].RIGHT_ADIABAT) === 0 && Number(listEquipGenZone[i].RIGHT_CHANGE) === 3) {
         if (isNullOrUndefined(listEquipGenZone[i].RIGHT_PRM2) || String(listEquipGenZone[i].RIGHT_PRM2) === ''
         || isNaN(listEquipGenZone[i].RIGHT_PRM2)) {
-          this.toastr.error('Please specify in Insulation conductivity - Zone ' + (i + 1), 'Error');
+          this.toastr.error(this.translate.instant('Please specify in Insulation conductivity - Zone ') + (i + 1), 'Error');
           return;
         }
       }
       if (Number(listEquipGenZone[i].FRONT_ADIABAT) === 0 && Number(listEquipGenZone[i].FRONT_CHANGE) === 3) {
         if (isNullOrUndefined(listEquipGenZone[i].FRONT_PRM2) || String(listEquipGenZone[i].FRONT_PRM2) === ''
         || isNaN(listEquipGenZone[i].FRONT_PRM2)) {
-          this.toastr.error('Please specify in Insulation conductivity - Zone ' + (i + 1), 'Error');
+          this.toastr.error(this.translate.instant('Please specify in Insulation conductivity - Zone ') + (i + 1), 'Error');
           return;
         }
       }
       if (Number(listEquipGenZone[i].REAR_ADIABAT) === 0 && Number(listEquipGenZone[i].REAR_CHANGE) === 3) {
         if (isNullOrUndefined(listEquipGenZone[i].REAR_PRM2) || String(listEquipGenZone[i].REAR_PRM2) === ''
         || isNaN(listEquipGenZone[i].REAR_PRM2)) {
-          this.toastr.error('Please specify in Insulation conductivity - Zone ' + (i + 1), 'Error');
+          this.toastr.error(this.translate.instant('Please specify in Insulation conductivity - Zone ') + (i + 1), 'Error');
           return;
         }
       }
@@ -2327,7 +2370,7 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
   }
 
   onFilterLoad(equip) {
-    console.log(equip);
+    // console.log(equip);
     if (Number(equip.ID_EQUIPGENERATION) !== 0) {
       this.getEquipmentFilter(equip.ID_EQUIP);
     }
@@ -2337,29 +2380,29 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
   checkEquipment(equipment, check) {
     if (isNullOrUndefined(equipment.nameEquipment) || String(equipment.nameEquipment) === ''
     || isNumber(equipment.nameEquipment)) {
-      this.toastr.error('Please specify Equipment name', 'Error');
+      this.toastr.error(this.translate.instant('Please specify Equipment name'), 'Error');
       return;
     }
 
     if (isNullOrUndefined(equipment.versionEquipment) || String(equipment.versionEquipment) === ''
     || isNaN(equipment.versionEquipment)) {
-      this.toastr.error('Please specify Version', 'Error');
+      this.toastr.error(this.translate.instant('Please specify Version'), 'Error');
       return;
     }
 
     if (Number(this.statusEquip) === 0) {
       if (Number(this.equipGenerate) === 0) {
-        this.toastr.error('Please choose equipment', 'Error');
+        this.toastr.error(this.translate.instant('Please choose equipment'), 'Error');
         return;
       }
       if (!this.selectEquipGener.capabilitiesCalc) {
         if (isNullOrUndefined(equipment.tempSetPoint) || String(equipment.tempSetPoint) === '' || isNaN(equipment.tempSetPoint)) {
-          this.toastr.error('Please specify regulation temperature', 'Error');
+          this.toastr.error(this.translate.instant('Please specify regulation temperature'), 'Error');
           return;
         }
       } else {
         if (isNullOrUndefined(equipment.dwellingTime) || String(equipment.dwellingTime) === '' || isNaN(equipment.dwellingTime)) {
-          this.toastr.error('Please specify  dwelling time', 'Error');
+          this.toastr.error(this.translate.instant('Please specify  dwelling time'), 'Error');
           return;
         }
       }
@@ -2367,40 +2410,40 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
 
     if (Number(this.statusEquip) === 1) {
       if (Number(this.equipTranslation) === 0) {
-        this.toastr.error('Please choose equipment', 'Error');
+        this.toastr.error(this.translate.instant('Please choose equipment'), 'Error');
         return;
       }
       if (isNullOrUndefined(equipment.newPos) || String(equipment.newPos) === '' || isNaN(equipment.newPos)) {
-        this.toastr.error('Please specify New position', 'Error');
+        this.toastr.error(this.translate.instant('Please specify New position'), 'Error');
         return;
       }
       if (isNullOrUndefined(equipment.dwellingTime) || String(equipment.dwellingTime) === '' || isNaN(equipment.dwellingTime)) {
-        this.toastr.error('Please specify Dwelling time', 'Error');
+        this.toastr.error(this.translate.instant('Please specify Dwelling time'), 'Error');
         return;
       }
     }
 
     if (Number(this.statusEquip) === 2) {
       if (Number(this.equipRotate) === 0) {
-        this.toastr.error('Please choose equipment', 'Error');
+        this.toastr.error(this.translate.instant('Please choose equipment'), 'Error');
         return;
       }
     }
 
     if (Number(this.statusEquip) === 3) {
       if (Number(this.equipMerge1) === 0 || Number(this.equipMerge2) === 0) {
-        this.toastr.error('Please choose equipment', 'Error');
+        this.toastr.error(this.translate.instant('Please choose equipment'), 'Error');
         return;
       }
 
       if (this.selectEquipmentMerge1.capabilitiesCalc || this.selectEquipmentMerge2.capabilitiesCalc) {
         if (isNullOrUndefined(equipment.dwellingTime) || String(equipment.dwellingTime) === '' || isNaN(equipment.dwellingTime)) {
-          this.toastr.error('Please specify  dwelling time', 'Error');
+          this.toastr.error(this.translate.instant('Please specify  dwelling time'), 'Error');
           return;
         }
       } else {
         if (isNullOrUndefined(equipment.tempSetPoint) || String(equipment.tempSetPoint) === '' || isNaN(equipment.tempSetPoint)) {
-          this.toastr.error('Please specify regulation temperature', 'Error');
+          this.toastr.error(this.translate.instant('Please specify regulation temperature'), 'Error');
           return;
         }
       }
@@ -2430,6 +2473,7 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
     } else {
       equipment.equipGenZone = null;
     }
+
     this.referencedata.checkEquipment(equipment).subscribe(
       (res) => {
         if (res === 1) {
@@ -2441,7 +2485,7 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
             this.onSelectFilter();
           }
         } else {
-          this.toastr.error(res.Message, 'Error');
+          this.toastr.error(this.translate.instant(res.Message), 'Error');
         }
       },
       err => {
@@ -2455,73 +2499,84 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
   checkUpdateEquipment(equipment, check) {
     if (isNullOrUndefined(equipment.EQUIP_NAME) || String(equipment.EQUIP_NAME) === ''
     || isNumber(equipment.EQUIP_NAME)) {
-      this.toastr.error('Please specify Designation', 'Error');
+      this.toastr.error(this.translate.instant('Please specify Designation'), 'Error');
       return;
     }
 
     if (isNullOrUndefined(equipment.EQUIP_VERSION) || String(equipment.EQUIP_VERSION) === ''
     || isNaN(equipment.EQUIP_VERSION)) {
-      this.toastr.error('Please specify Version', 'Error');
+      this.toastr.error(this.translate.instant('Please specify Version'), 'Error');
       return;
     }
 
     if (isNullOrUndefined(equipment.EQP_LENGTH) || String(equipment.EQP_LENGTH) === ''
     || isNaN(equipment.EQP_LENGTH) || Number(equipment.EQP_LENGTH) < 0) {
-      this.toastr.error('Please specify Length', 'Error');
+      this.toastr.error(this.translate.instant('Please specify Length'), 'Error');
       return;
     }
 
     if (isNullOrUndefined(equipment.EQP_WIDTH) || String(equipment.EQP_WIDTH) === ''
     || isNaN(equipment.EQP_WIDTH) || Number(equipment.EQP_WIDTH) < 0) {
-      this.toastr.error('Please specify Width', 'Error');
+      this.toastr.error(this.translate.instant('Please specify Width'), 'Error');
       return;
     }
 
     if (isNullOrUndefined(equipment.EQP_HEIGHT) || String(equipment.EQP_HEIGHT) === ''
     || isNaN(equipment.EQP_HEIGHT) || Number(equipment.EQP_HEIGHT) < 0) {
-      this.toastr.error('Please specify Height', 'Error');
+      this.toastr.error(this.translate.instant('Please specify Height'), 'Error');
       return;
     }
 
     if (isNullOrUndefined(equipment.NB_TR) || String(equipment.NB_TR) === ''
     || isNaN(equipment.NB_TR) || Number(equipment.NB_TR) < 0 || !isInteger(Number(equipment.NB_TR))) {
-      this.toastr.error('Please specify TR number', 'Error');
+      this.toastr.error(this.translate.instant('Please specify TR number'), 'Error');
       return;
     }
 
     if (isNullOrUndefined(equipment.NB_TS) || String(equipment.NB_TS) === ''
     || isNaN(equipment.NB_TS) || Number(equipment.NB_TS) < 0 || !isInteger(Number(equipment.NB_TS))) {
-      this.toastr.error('Please specify Ts number', 'Error');
+      this.toastr.error(this.translate.instant('Please specify Ts number'), 'Error');
       return;
     }
 
     if (isNullOrUndefined(equipment.NB_VC) || String(equipment.NB_VC) === ''
     || isNaN(equipment.NB_VC) || Number(equipment.NB_VC) < 0 || !isInteger(Number(equipment.NB_VC))) {
-      this.toastr.error('Please specify VC number	', 'Error');
+      this.toastr.error(this.translate.instant('Please specify VC number	'), 'Error');
       return;
     }
 
     if (isNullOrUndefined(equipment.MAX_FLOW_RATE) || String(equipment.MAX_FLOW_RATE) === ''
     || isNaN(equipment.MAX_FLOW_RATE) || Number(equipment.MAX_FLOW_RATE) < 0) {
-      this.toastr.error('Please specify Max flow rate	', 'Error');
+      this.toastr.error(this.translate.instant('Please specify Max flow rate	'), 'Error');
       return;
     }
 
     if (isNullOrUndefined(equipment.TMP_REGUL_MIN) || String(equipment.TMP_REGUL_MIN) === ''
     || isNaN(equipment.TMP_REGUL_MIN)) {
-      this.toastr.error('Please specify Mimimum regulation temperature', 'Error');
+      this.toastr.error(this.translate.instant('Please specify Mimimum regulation temperature'), 'Error');
       return;
     }
 
     if (isNullOrUndefined(equipment.MAX_NOZZLES_BY_RAMP) || String(equipment.MAX_NOZZLES_BY_RAMP) === ''
     || isNaN(equipment.MAX_NOZZLES_BY_RAMP) || Number(equipment.MAX_NOZZLES_BY_RAMP || !isInteger(equipment.MAX_NOZZLES_BY_RAMP)) < 0) {
-      this.toastr.error('Please specify Nozzles/ramps number', 'Error');
+      this.toastr.error(this.translate.instant('Please specify Nozzles/ramps number'), 'Error');
+      return;
+    }
+
+    if (!isInteger(equipment.MAX_NOZZLES_BY_RAMP)) {
+      this.toastr.error('Not a valid number in Nozzles/ramps number !', 'Error');
       return;
     }
 
     if (isNullOrUndefined(equipment.MAX_RAMPS) || String(equipment.MAX_RAMPS) === ''
     || isNaN(equipment.MAX_RAMPS) || Number(equipment.MAX_RAMPS || !isInteger(equipment.MAX_RAMPS)) < 0) {
-      this.toastr.error('Please specify Ramp max number	', 'Error');
+      this.toastr.error(this.translate.instant('Please specify Ramp max number	'), 'Error');
+      return;
+    }
+
+    if (Number(equipment.MAX_NOZZLES_BY_RAMP) > 32767 || Number(equipment.NB_TR) > 32767
+      || Number(equipment.NB_TS) > 32767 || Number(equipment.NB_TR) > 32767 || Number(equipment.MAX_RAMPS) > 32767) {
+      this.toastr.error('Error of parameter format', 'Error');
       return;
     }
 
@@ -2532,24 +2587,24 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
     if (Number(this.dataCurve.isCapabilities) === 1) {
       if (isNullOrUndefined(this.dataCurve.DWELLING_TIME) || String(this.dataCurve.DWELLING_TIME) === ''
       || isNaN(this.dataCurve.DWELLING_TIME)) {
-        this.toastr.error('Please specify Dwelling Time', 'Error');
+        this.toastr.error(this.translate.instant('Please specify Dwelling Time'), 'Error');
         return;
       }
     } else {
       if (isNullOrUndefined(this.dataCurve.REGUL_TEMP) || String(this.dataCurve.REGUL_TEMP) === ''
       || isNaN(this.dataCurve.REGUL_TEMP)) {
-        this.toastr.error('Please specify Regulation temperature', 'Error');
+        this.toastr.error(this.translate.instant('Please specify Regulation temperature'), 'Error');
         return;
       }
     }
     if (isNullOrUndefined(this.dataCurve.PRODTEMP) || String(this.dataCurve.PRODTEMP) === ''
       || isNaN(this.dataCurve.PRODTEMP)) {
-        this.toastr.error('Please specify Initial temperature of the product', 'Error');
+        this.toastr.error(this.translate.instant('Please specify Initial temperature of the product'), 'Error');
         return;
     }
     if (isNullOrUndefined(this.dataCurve.LOADINGRATE) || String(this.dataCurve.LOADINGRATE) === ''
       || isNaN(this.dataCurve.LOADINGRATE)) {
-        this.toastr.error('Please specify Loading Rate', 'Error');
+        this.toastr.error(this.translate.instant('Please specify Loading Rate'), 'Error');
         return;
     }
 
@@ -2565,7 +2620,7 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
         if (res === 1) {
           this.updateCurves(idEquip);
         } else {
-          this.toastr.error(res.Message, 'Error');
+          this.toastr.error(this.translate.instant(res.Message), 'Error');
         }
       },
       err => {
@@ -2574,6 +2629,11 @@ export class EquipmentComponent implements OnInit, AfterViewInit {
       () => {
       }
     );
+  }
+
+  comeBackStudy() {
+    this.router.navigate(['input/equipment']);
+    this.checkBackStudy = 0;
   }
   // end HAIDT
 }

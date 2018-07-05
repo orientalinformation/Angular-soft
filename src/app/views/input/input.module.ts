@@ -16,10 +16,12 @@ import { ModalModule } from 'ngx-bootstrap';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { PerfectScrollbarModule, PerfectScrollbarConfigInterface } from 'ngx-perfect-scrollbar';
-import { SelectModule } from 'ng-select';
+import { SelectModule } from 'ng2-select';
 import { SharedModule } from '../../shared/shared.module';
 import { TabsModule } from 'ngx-bootstrap/tabs';
 import { ChainingComponent } from './chaining/chaining.component';
+import { ThreedviewComponent } from './threedview/threedview.component';
+import { BootstrapSwitchModule } from 'angular2-bootstrap-switch';
 
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   suppressScrollX: true
@@ -35,14 +37,16 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     PerfectScrollbarModule,
     ModalModule.forRoot(),
     TranslateModule.forChild(),
-    NgbModule.forRoot()
+    NgbModule.forRoot(),
+    BootstrapSwitchModule.forRoot()
   ],
   declarations: [
     ObjectivesComponent, ProductComponent, InitialComponent,
     PackingComponent, EquipmentComponent, LineComponent, LayoutComponent,
     CompFilterPipe,
     FilterPipe,
-    ChainingComponent
+    ChainingComponent,
+    ThreedviewComponent
   ],
   providers: [
     StudyRequiredGuard

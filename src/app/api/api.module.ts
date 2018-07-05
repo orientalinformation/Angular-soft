@@ -9,6 +9,8 @@ import { InputService } from './services/input.service';
 import { MinmaxService } from './services/minmax.service';
 import { ReferencedataService } from './services/referencedata.service';
 import { ProfileService } from './services/profile.service';
+import { New3dService } from './services/new-3d.service';
+import { WarningService } from './services/warning.service';
 
 /**
  * Module that provides instances for all API services
@@ -29,7 +31,9 @@ import { ProfileService } from './services/profile.service';
    InputService,
    MinmaxService,
    ReferencedataService,
-   ProfileService
+   ProfileService,
+   New3dService,
+   WarningService
   ],
 })
 export class ApiModule { }

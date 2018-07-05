@@ -6,6 +6,7 @@ import { ToastrService } from 'ngx-toastr';
 import swal from 'sweetalert2';
 import { Pipe } from '@angular/core';
 import { PipeTransform } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 
 import { ReferencedataService } from '../../../api/services/referencedata.service';
 import { ApiService } from '../../../api/services';
@@ -66,7 +67,7 @@ export class PipelineComponent implements OnInit, AfterViewInit {
   public lossesSymbol = '';
 
   constructor(private referencedata: ReferencedataService, private toastr: ToastrService,
-    private router: Router, private api: ApiService) {
+    private router: Router, private api: ApiService, private translate: TranslateService) {
     this.pipelineType = 1;
     this.newPipeLine = new PipeLineElmt();
     this.userLogon = JSON.parse(localStorage.getItem('user'));
@@ -149,7 +150,7 @@ export class PipelineComponent implements OnInit, AfterViewInit {
         this.isLoading = false;
       },
       err => {
-        console.log(err);
+        // console.log(err);
       },
       () => {
           if (localStorage.getItem('pipelineCurr') !== '') {
@@ -171,7 +172,7 @@ export class PipelineComponent implements OnInit, AfterViewInit {
         this.listLineType = data;
       },
       err => {
-        console.log(err);
+        // console.log(err);
       },
       () => {
 
@@ -186,7 +187,7 @@ export class PipelineComponent implements OnInit, AfterViewInit {
         this.listEnergies = data;
       },
       err => {
-        console.log(err);
+        // console.log(err);
       },
       () => {
 
@@ -219,30 +220,30 @@ export class PipelineComponent implements OnInit, AfterViewInit {
   checkPipeline(pipeLine, check) {
     if (isNullOrUndefined(pipeLine.LABEL) || String(pipeLine.LABEL) === ''
     || isNumber(pipeLine.LABEL)) {
-      this.toastr.error('Please specify Name	', 'Error');
+      this.toastr.error(this.translate.instant('Please specify Name	'), 'Error');
       return;
     }
 
     if (isNullOrUndefined(pipeLine.LINE_VERSION) || String(pipeLine.LINE_VERSION) === ''
     || isNaN(pipeLine.LINE_VERSION)) {
-      this.toastr.error('Please specify Version	', 'Error');
+      this.toastr.error(this.translate.instant('Please specify Version	'), 'Error');
       return;
     }
 
     if (isNullOrUndefined(pipeLine.ELMT_PRICE) || String(pipeLine.ELMT_PRICE) === ''
     || isNaN(pipeLine.ELMT_PRICE) || pipeLine.ELMT_PRICE < 0) {
-      this.toastr.error('Please specify Price', 'Error');
+      this.toastr.error(this.translate.instant('Please specify Price'), 'Error');
       return;
     }
 
     if (isNullOrUndefined(pipeLine.ELT_SIZE) || String(pipeLine.ELT_SIZE) === ''
     || isNaN(pipeLine.ELT_SIZE) || pipeLine.ELT_SIZE < 0) {
-      this.toastr.error('Please specify Size', 'Error');
+      this.toastr.error(this.translate.instant('Please specify Size'), 'Error');
       return;
     }
 
     if (!pipeLine.LINE_RELEASE) {
-      this.toastr.error('Please choose Status', 'Error');
+      this.toastr.error(this.translate.instant('Please choose Status'), 'Error');
       return;
     }
 
@@ -267,7 +268,7 @@ export class PipelineComponent implements OnInit, AfterViewInit {
       if (Number(pipeLine.ELT_TYPE) === 2) {
 
         if (isNaN(pipeLine.ELT_LOSSES_1)) {
-          this.toastr.error('Please specify Rate of evaporation', 'Error');
+          this.toastr.error(this.translate.instant('Please specify Rate of evaporation'), 'Error');
           return;
         }
       } else {
@@ -277,7 +278,7 @@ export class PipelineComponent implements OnInit, AfterViewInit {
         } else {
 
           if (isNaN(pipeLine.ELT_LOSSES_1) || pipeLine.ELT_LOSSES_1 < 0) {
-            this.toastr.error('Please specify Losses in get cold', 'Error');
+            this.toastr.error(this.translate.instant('Please specify Losses in get cold'), 'Error');
             return;
           }
         }
@@ -287,7 +288,7 @@ export class PipelineComponent implements OnInit, AfterViewInit {
           if (Number(pipeLine.ELT_TYPE) !== 2 && Number(pipeLine.ELT_TYPE) !== 3 && Number(pipeLine.ELT_TYPE) !== 4
           && Number(pipeLine.ELT_TYPE) !== 5) {
             if (isNaN(pipeLine.ELT_LOSSES_2) || pipeLine.ELT_LOSSES_2 < 0) {
-              this.toastr.error('Please specify Permanent losses', 'Error');
+              this.toastr.error(this.translate.instant('Please specify Permanent losses'), 'Error');
               return;
             }
           }
@@ -332,7 +333,7 @@ export class PipelineComponent implements OnInit, AfterViewInit {
         }
       },
       err => {
-        console.log(err);
+        // console.log(err);
       },
       () => {
       }
@@ -366,7 +367,7 @@ export class PipelineComponent implements OnInit, AfterViewInit {
         }
 
         if (response === 0) {
-          this.toastr.error('Name and version already in use', 'Error');
+          this.toastr.error(this.translate.instant('Name and version already in use'), 'Error');
         } else {
           if (success) {
             localStorage.setItem('pipelineCurr', JSON.stringify(response));
@@ -379,14 +380,14 @@ export class PipelineComponent implements OnInit, AfterViewInit {
             this.newPipeLine = new PipeLineElmt();
 
           } else {
-            this.toastr.error('Create pipeline error!', 'Error');
+            this.toastr.error(this.translate.instant('Create pipeline error!'), 'Error');
           }
         }
         this.isAddLine = false;
       },
       err => {
         this.isAddLine = false;
-        console.log(err);
+        // console.log(err);
       },
       () => {
         this.isAddLine = false;
@@ -397,34 +398,34 @@ export class PipelineComponent implements OnInit, AfterViewInit {
   deletePipeLine(pipeLineElmt) {
     this.isDeletePipeLine = true;
     swal({
-      title: 'Are you sure?',
-      text: 'You won`t be able to revert this!',
+      title: this.translate.instant('Are you sure?'),
+      text: this.translate.instant('You won`t be able to revert this!'),
       type: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, delete it!'
+      confirmButtonText: this.translate.instant('Yes, delete it!')
     }).then((result) => {
       if (result.value) {
         swal(
-          'Deleted!',
-          'Your file has been deleted.',
+          this.translate.instant('Deleted!'),
+          this.translate.instant('Your file has been deleted.'),
           'success'
         );
         this.referencedata.deletePipeLine(pipeLineElmt.ID_PIPELINE_ELMT)
         .subscribe(
         data => {
           if (data === 1) {
-            this.toastr.success('Delete pipe line', 'successfully');
+            this.toastr.success(this.translate.instant('Delete pipe line'), 'successfully');
             this.updatePipeLine = new PipeLineElmt();
             this.checkHideInfo = true;
           } else {
-            this.toastr.error('Delete pipe line error!', 'Error');
+            this.toastr.error(this.translate.instant('Delete pipe line error!'), 'Error');
           }
           this.isDeletePipeLine = false;
         },
         err => {
-          console.log(err);
+          // console.log(err);
           this.isDeletePipeLine = false;
         },
         () => {
@@ -478,23 +479,23 @@ export class PipelineComponent implements OnInit, AfterViewInit {
         }
 
         if (response === 0) {
-          this.toastr.error('Name and version already in use!', 'Error');
+          this.toastr.error(this.translate.instant('Name and version already in use!'), 'Error');
         } else {
           if (success) {
             localStorage.setItem('pipelineCurr', JSON.stringify(response));
             this.modalAddPipeLine.hide();
-            this.toastr.success('Update pipe line', 'successfully');
+            this.toastr.success(this.translate.instant('Update pipe line'), 'successfully');
             this.router.navigate(['/references/pipeline']);
             this.refrestListLineElmt();
           } else {
-            this.toastr.error('Update pipeline error!', 'Error');
+            this.toastr.error(this.translate.instant('Update pipeline error!'), 'Error');
           }
         }
         this.isUpdatePipeLine = false;
       },
       err => {
         this.isUpdatePipeLine = false;
-        console.log(err);
+        // console.log(err);
       },
       () => {
         this.isUpdatePipeLine = false;
@@ -504,12 +505,12 @@ export class PipelineComponent implements OnInit, AfterViewInit {
 
   saveAsPipeLine(oldPipeLine) {
     if (!this.pipeLineSaveAs.newName || this.pipeLineSaveAs.newName === undefined) {
-      this.toastr.error('Please specify name!', 'Error');
+      this.toastr.error(this.translate.instant('Please specify name!'), 'Error');
       return;
     }
 
     if (typeof this.pipeLineSaveAs.newName === 'number') {
-      this.toastr.error('Not a valid string in Name !', 'Error');
+      this.toastr.error(this.translate.instant('Not a valid string in Name !'), 'Error');
       return;
     }
 
@@ -526,25 +527,25 @@ export class PipelineComponent implements OnInit, AfterViewInit {
         }
 
         if (response === 0) {
-          this.toastr.error('Name and version already in use!', 'Error');
+          this.toastr.error(this.translate.instant('Name and version already in use!'), 'Error');
         } else {
           if (success) {
             localStorage.setItem('pipelineCurr', JSON.stringify(response));
             this.modalSaveAs.hide();
-            this.toastr.success('Save as success !', 'successfully');
+            this.toastr.success(this.translate.instant('Save as success !'), 'successfully');
             this.router.navigate(['/references/pipeline']);
             this.refrestListLineElmt();
             this.pipeLineSaveAs = {
               newName: ''
             };
           } else {
-            this.toastr.error('Save as pipe line error!', 'Error');
+            this.toastr.error(this.translate.instant('Save as pipe line error!'), 'Error');
           }
         }
         this.isSaveAs = false;
       },
       err => {
-        console.log(err);
+        // console.log(err);
         this.isSaveAs = false;
       },
       () => {
