@@ -215,7 +215,7 @@
                     <span class="custom-control-indicator"></span>
                   </label>
                 </div>
-                <div class="col-md-4 text-center" *ngIf="shape ==3 || shape == 2 || shape == 9">
+                <div class="col-md-4 text-center" *ngIf="shape ==3 || shape == 2 || shape == 9 || shape > 9">
                   <label class="custom-control custom-radio" style="margin:0">
                     <input type="radio" name="selectAxe" [value]= "3" (change)="changeAxePS()" class="custom-control-input" [(ngModel)]="selectedAxe" [disabled]="axis3Disable">{{'Axis 3'|translate}}
                     <span class="custom-control-indicator"></span>
@@ -231,19 +231,13 @@
             <tab>
               <ng-template tabHeading><i class="icon-graph"></i> {{'Curve'|translate}}</ng-template>
               <h6 class="text-danger text-center" *ngIf="symbol">{{'Graphic on the axis'|translate}} {{selectedAxe}} ({{productSectionAxisTemp}}) ({{symbol.prodchartDimensionSymbol}})</h6>            
-              <div class="chart-wrapper" *ngIf="productSectionChartData" style="width:90%;margin:auto">
-                <canvas #productSectionChart class="chart" baseChart
-                  [datasets]="productSectionChartData"
-                  [options]="productSectionChartOptions"
-                  [colors]= "productSectionColours"
-                  [legend]="productSectionChartLegend"
-                  [chartType]="productSectionChartType">
-                </canvas>
+              <div *ngIf="imageProductSection != ''">
+                <img [src]="imageProductSection">
               </div>
             </tab>
             <tab>
               <ng-template tabHeading><i class="icon-doc"></i> {{'Value'|translate}}</ng-template>
-              <div class="row form-group">
+              <div class="row form-group" *ngIf="shape < 10">
                 <div class="col-md-2">
                   <h5 class="text-danger" style="font-weight:600;margin-top:5px">{{'Curve number'|translate}}</h5>
                 </div>
@@ -286,14 +280,8 @@
             <ng-template tabHeading><i class="icon-graph"></i> {{'Curve'|translate}}</ng-template> 
             <h5 class="text-danger" style="font-weight:600">{{'Curve'|translate}}</h5>
             <div class="text-center" *ngIf="outputProductChart"><h4 style="color:#f00">{{outputProductChart.displayName}}</h4></div>
-            <div class="chart-wrapper" *ngIf="timeBasedChartData" style="width:90%;margin:auto">
-              <canvas class="chart" baseChart
-                [datasets]="timeBasedChartData"
-                [options]="timeBasedChartOptions"
-                [colors]= "timeBasedColours"
-                [legend]="timeBasedChartLegend"
-                [chartType]="timeBasedChartType">
-              </canvas>
+            <div *ngIf="imageTimeBased != ''">
+              <img [src]="imageTimeBased">
             </div>
           </tab>
           <tab>

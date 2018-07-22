@@ -29,7 +29,7 @@ export class SigninComponent implements OnInit {
     this.auth.login(this.user.username, this.user.password)
       .subscribe(
         data => {
-          console.log('User is logged in');
+          // console.log('User is logged in');
           this.toastr.success('Welcome back', 'Authenticated successfully');
           this.api.getColorDefs().subscribe(
             (resp) => {
@@ -49,7 +49,7 @@ export class SigninComponent implements OnInit {
               this.langname = 'es';
             }
             this.translate.use(this.langname);
-            console.log(userLogon);
+            // console.log(userLogon);
           this.profileService.getUnits(userLogon.ID_USER).subscribe(
             (res) => {
               localStorage.setItem('UnitUser', JSON.stringify(res));

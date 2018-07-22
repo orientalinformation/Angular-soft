@@ -29,22 +29,21 @@ export class AppComponent implements OnInit, OnDestroy {
     // the lang to use, if the lang isn't available, it will use the current loader to get them
     this.userLogon = JSON.parse(localStorage.getItem('user'));
     if (this.userLogon !== null ) {
-      if (this.userLogon.CODE_LANGUE == 1) {
+      if (Number(this.userLogon.CODE_LANGUE) === 1) {
         this.langname = 'en';
-      } else if (this.userLogon.CODE_LANGUE == 2) {
+      } else if (Number(this.userLogon.CODE_LANGUE) === 2) {
         this.langname = 'fr';
-      } else if (this.userLogon.CODE_LANGUE == 3) {
+      } else if (Number(this.userLogon.CODE_LANGUE) === 3) {
         this.langname = 'it';
-      } else if (this.userLogon.CODE_LANGUE == 4) {
+      } else if (Number(this.userLogon.CODE_LANGUE) === 4) {
         this.langname = 'de';
-      } else if (this.userLogon.CODE_LANGUE == 5) {
+      } else if (Number(this.userLogon.CODE_LANGUE) === 5) {
         this.langname = 'es';
       }
       translate.use(this.langname);
     } else {
       translate.use('en');
     }
-    console.log(this.userLogon);
     text.initialize();
   }
 
@@ -65,5 +64,4 @@ export class AppComponent implements OnInit, OnDestroy {
     // prevent memory leak by unsubscribing
     this.subscription.unsubscribe();
   }
-
 }

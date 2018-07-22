@@ -3,6 +3,7 @@ import { TextService } from '../../../shared/text.service';
 import * as THREE from 'three';
 import * as OrbitControls from 'three-orbitcontrols';
 import { ViewProduct, ProdcharColor } from '../../../api/models';
+import { forEach } from '@angular/router/src/utils/collection';
 
 @Component({
   selector: 'app-threedview',
@@ -388,37 +389,203 @@ export class ThreedviewComponent implements OnInit, AfterViewInit, OnChanges {
     this.cameraTarget = new THREE.Vector3(0, height / 2, 0);
   }
 
+  drawStandOVal() {
+    let length = 0;
+    let height = 0;
+    for (let index = 0; index < this.model.elements.length; index++) {
+      let geometry = null;
+      const element = this.model.elements[index];
+      if (length === 0) {
+        height = element.SHAPE_PARAM1;
+      }
+      length += Number(element.SHAPE_PARAM2) * 1;
+      const curve = new THREE.EllipseCurve(
+        0,  0,            // ax, aY
+        element.SHAPE_PARAM1, element.SHAPE_PARAM3,           // xRadius, yRadius
+        0,  2 * Math.PI,  // aStartAngle, aEndAngle
+        false,            // aClockwise
+        0                 // aRotation
+      );
+      const points = curve.getPoints( 50 );
+      const pointVector3 = [];
+      points.forEach(function(e) {
+        pointVector3.push(new THREE.Vector3(e.x, e.y, 0));
+      });
+      geometry = new THREE.BufferGeometry().setFromPoints( pointVector3 );
+      let color = parseInt(this.defaultColors[index].CODE_HEXA.replace('#', '0x'), 16);
+      if (element.prodcharColor) {
+        color = parseInt(element.prodcharColor.CODE_HEXA.replace('#', '0x'), 16);
+      }
+      const materials = new THREE.MeshBasicMaterial({
+        color: color,
+        wireframe: false,
+        transparent: true,
+        opacity: 1,
+        depthWrite: true
+      });
+      const material = new THREE.LineBasicMaterial({
+        color: color,
+        linewidth: 10,
+        linecap: 'round',
+        linejoin:  'round'
+      });
+
+      const ellipse = new THREE.Line( geometry, material );
+      const mesh = new THREE.Mesh(geometry, materials);
+      ellipse.rotateZ(Math.PI / 2.0);
+      ellipse.position.set(length, 0, 0);
+      this.scene.add(ellipse);
+      length += Number(element.SHAPE_PARAM2) * 0.5;
+    }
+    this.boundingRadius = Math.max(height, length);
+    this.cameraTarget = new THREE.Vector3(length / 2, 0, 0);
+  }
+
+  drawLyingOVal() {
+    let length = 0;
+    let height = 0;
+    for (let index = 0; index < this.model.elements.length; index++) {
+      let geometry = null;
+      const element = this.model.elements[index];
+      if (length === 0) {
+        height = element.SHAPE_PARAM1;
+      }
+      length += Number(element.SHAPE_PARAM2) * 1;
+      const curve = new THREE.EllipseCurve(
+        0,  0,            // ax, aY
+        element.SHAPE_PARAM3, element.SHAPE_PARAM1,           // xRadius, yRadius
+        0,  2 * Math.PI,  // aStartAngle, aEndAngle
+        false,            // aClockwise
+        0                 // aRotation
+      );
+      const points = curve.getPoints( 50 );
+      const pointVector3 = [];
+      points.forEach(function(e) {
+        pointVector3.push(new THREE.Vector3(e.x, e.y, 0));
+      });
+      geometry = new THREE.BufferGeometry().setFromPoints( pointVector3 );
+      let color = parseInt(this.defaultColors[index].CODE_HEXA.replace('#', '0x'), 16);
+      if (element.prodcharColor) {
+        color = parseInt(element.prodcharColor.CODE_HEXA.replace('#', '0x'), 16);
+      }
+      const materials = new THREE.MeshBasicMaterial({
+        color: color,
+        wireframe: true,
+        transparent: true,
+        opacity: 0.7,
+        depthWrite: true,
+        depthTest: true
+      });
+      const material = new THREE.LineBasicMaterial({
+        color: color,
+        linewidth: 10,
+        linecap: 'round',
+        linejoin:  'round'
+      });
+
+      const ellipse = new THREE.Line( geometry, material );
+      const mesh = new THREE.Mesh(geometry, materials);
+      ellipse.rotateZ(Math.PI / 2.0);
+      ellipse.position.set(length, 0, 0);
+      this.scene.add(ellipse);
+      length += Number(element.SHAPE_PARAM2) * 0.5;
+    }
+    this.boundingRadius = Math.max(height, length);
+    this.cameraTarget = new THREE.Vector3(length / 2, 0, 0);
+  }
+
+  drawTrapezoid() {
+    let height = 0;
+    let width = 0;
+    let length = 0;
+    for (let index = this.model.elements.length; index > 0; index--) {
+      let geometry = null;
+      const element = this.model.elements[index - 1];
+      if (height === 0) {
+        width = Number(element.SHAPE_PARAM1);
+        height = Number(element.SHAPE_PARAM2);
+        length = Number(element.SHAPE_PARAM3);
+      } else {
+        width += Number(element.SHAPE_PARAM2) * 2;
+        height += Number(element.SHAPE_PARAM2) * 2;
+        length += Number(element.SHAPE_PARAM2) * 2;
+      }
+      geometry = new THREE.BoxGeometry(
+        width,
+        height,
+        length
+      );
+      const opacity = 1 * Math.pow(0.5, this.model.elements.length - index);
+      let color = parseInt(this.defaultColors[index].CODE_HEXA.replace('#', '0x'), 16);
+      if (element.prodcharColor) {
+        color = parseInt(element.prodcharColor.CODE_HEXA.replace('#', '0x'), 16);
+      }
+      const materials = new THREE.MeshBasicMaterial({
+        color: color,
+        wireframe: false,
+        transparent: true,
+        opacity: opacity,
+        depthWrite: true,
+        depthTest: true
+        // , clippingPlanes: [
+        //   new THREE.Plane(new THREE.Vector3(-1, 0, 0), 0)
+        // ]
+        // , side: THREE.DoubleSide
+      });
+      const mesh = new THREE.Mesh(geometry, materials);
+      this.scene.add(mesh);
+    }
+    this.boundingRadius = Math.max(width, height, length) / 2;
+  }
+
   private createScene() {
     this.scene = new THREE.Scene();
     this.scene.add(new THREE.AxesHelper(150));
 
     switch (Number(this.shape)) {
       case this.text.shapeNames.BREAD:
+      case this.text.shapeNames.D_REC_BLOCK:
         this.drawBread();
         break;
       case this.text.shapeNames.REC_LAY:
+      case this.text.shapeNames.D_REC_BLOCK_H:
         this.drawHorizontalRect();
         break;
       case this.text.shapeNames.REC_STAND:
+      case this.text.shapeNames.D_REC_BLOCK_V:
         this.drawVerticalRect();
         break;
       case this.text.shapeNames.SLAB:
         this.drawSlab();
         break;
       case this.text.shapeNames.SPHERE:
+      case this.text.shapeNames.D_SPHERE:
         this.drawSphere();
         break;
       case this.text.shapeNames.CON_CYL_LAY:
+      case this.text.shapeNames.D_LYN_CON_CYL:
         this.drawSymmetricCylinderHorizonal();
         break;
       case this.text.shapeNames.CON_CYL_STAND:
+      case this.text.shapeNames.D_STAND_CON_CYL:
         this.drawSymmetricCylinderVertical();
         break;
       case this.text.shapeNames.CYL_LAY:
+      case this.text.shapeNames.D_LYI_CYL:
         this.drawCylinderHorizontal();
         break;
       case this.text.shapeNames.CYL_STAND:
+      case this.text.shapeNames.D_STAND_CYL:
         this.drawCylinderVertical();
+        break;
+      case this.text.shapeNames.D_TRAP_3D:
+        this.drawTrapezoid();
+        break;
+      case this.text.shapeNames.D_STAND_OVAL:
+        this.drawStandOVal();
+        break;
+      case this.text.shapeNames.D_LYN_OVAL:
+        this.drawLyingOVal();
         break;
       default:
         break;

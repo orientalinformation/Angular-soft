@@ -9,4 +9,5 @@ export class ViewProductSection {
     dataChart?: Coordinates[];
     resultLabel?: number[];
     result?: ViewProductSection_result;
+    imageProductSection?: string;
 }

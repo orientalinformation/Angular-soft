@@ -231,7 +231,7 @@ export class ReportConfigComponent implements OnInit, AfterViewInit {
   }
 
   saveContentReport() {
-    console.log(this.report);
+    // console.log(this.report);
     if (Number(this.user.ID_USER) === Number(this.study.ID_USER)) {
       this.isSaveReport = true;
       this.api.saveReport({
@@ -317,6 +317,9 @@ export class ReportConfigComponent implements OnInit, AfterViewInit {
         ISOVALUE_SAMPLE: this.report.ISOVALUE_SAMPLE,
         // Contour
         CONTOUR2D_G: this.report.CONTOUR2D_G,
+        CONTOUR2D_TEMP_STEP: this.report.CONTOUR2D_TEMP_STEP,
+        CONTOUR2D_TEMP_MIN: this.report.CONTOUR2D_TEMP_MIN,
+        CONTOUR2D_TEMP_MAX: this.report.CONTOUR2D_TEMP_MAX,
       },
     };
     this.api.downLoadPDF(reportParam).subscribe(
@@ -397,6 +400,9 @@ export class ReportConfigComponent implements OnInit, AfterViewInit {
         ISOVALUE_SAMPLE: this.report.ISOVALUE_SAMPLE,
         // Contour
         CONTOUR2D_G: this.report.CONTOUR2D_G,
+        CONTOUR2D_TEMP_STEP: this.report.CONTOUR2D_TEMP_STEP,
+        CONTOUR2D_TEMP_MIN: this.report.CONTOUR2D_TEMP_MIN,
+        CONTOUR2D_TEMP_MAX: this.report.CONTOUR2D_TEMP_MAX,
       },
     };
     this.api.downLoadHtmlToPDF(reportParam).subscribe(

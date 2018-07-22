@@ -1,5 +1,5 @@
 <div class="modal-header modal-primary comment-study">
-  <h4 class="modal-title pull-left">{{study.STUDY_NAME}}</h4>
+  <h4 class="modal-title pull-left">{{ study.STUDY_NAME }}</h4>
   <button type="button" class="close pull-right" aria-label="Close" (click)="bsModalRef.hide()">
     <span aria-hidden="true">&times;</span>
   </button>
@@ -11,6 +11,6 @@
 </div>
 <div class="modal-footer">
   <button type="button" class="btn btn-success" (click)="updateStudy();bsModalRef.hide()">
-    <i class="fa fa-floppy-o"></i> {{ 'Save' }}</button>
-  <button type="button" class="btn btn-default" (click)="bsModalRef.hide()">{{ 'Close'}}</button>
+    <i class="fa fa-floppy-o"></i> {{ 'Save'|translate }}</button>
+<button type="button" class="btn btn-default" (click)="bsModalRef.hide()">{{ 'Close'|translate }}</button>
 </div>

@@ -60,6 +60,8 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
   public radioChecked = 0;
   public chart2D;
   public disableChange = false;
+  public imageTimeBased = '';
+  public imageProductSection = '';
 
   public imgPoint = {
     top: 'point_top.png',
@@ -442,16 +444,80 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
               z: true,
             }
           };
-        } else if (this.shape == 2) {
+        } else if (this.shape == 2 || this.shape == 10 || this.shape == 18) {
           if (this.outputProductChart.ORIENTATION == 1) {
             this.folderImg = 'STANDING_PLPD/parallel';
-            this.axis1Disable = true;
+            if (this.shape < 10) {
+              this.axis1Disable = true;
+            }
             this.axis2Disable = false;
             this.axis3Disable = false;
           } else {
             this.folderImg = 'STANDING_PLPD/perpendicular';
             this.axis1Disable = false;
             this.axis2Disable = false;
+            if (this.shape < 10) {
+              this.axis3Disable = true;
+            }
+          }
+          this.selectedMeshPoint = {
+            obj1: {
+              x: false,
+              y: false,
+              z: false,
+            },
+            obj2: {
+              x: false,
+              y: false,
+              z: false,
+            },
+            obj3: {
+              x: false,
+              y: false,
+              z: false,
+            }
+          };
+          this.selectedMeshAxis = {
+            obj1: {
+              x: true,
+              y: false,
+              z: false,
+            },
+            obj2: {
+              x: false,
+              y: true,
+              z: false,
+            },
+            obj3: {
+              x: false,
+              y: false,
+              z: true,
+            }
+          };
+          this.selectedMeshPlan = {
+            obj1: {
+              x: false,
+              y: true,
+              z: true,
+            },
+            obj2: {
+              x: true,
+              y: false,
+              z: true,
+            },
+            obj3: {
+              x: true,
+              y: true,
+              z: false,
+            }
+          };
+        } else if (this.shape == 3 || this.shape == 11) {
+          if (this.outputProductChart.ORIENTATION == 1) {
+            this.folderImg = 'LAYING_PLPD/parallel';
+          } else {
+            this.folderImg = 'LAYING_PLPD/perpendicular';
+          }
+          if (this.shape < 10) {
             this.axis3Disable = true;
           }
           this.selectedMeshPoint = {
@@ -505,69 +571,13 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
               z: false,
             }
           };
-        } else if (this.shape == 3) {
-          if (this.outputProductChart.ORIENTATION == 1) {
-            this.folderImg = 'LAYING_PLPD/parallel';
-          } else {
-            this.folderImg = 'LAYING_PLPD/perpendicular';
-          }
-          this.axis3Disable = true;
-          this.selectedMeshPoint = {
-            obj1: {
-              x: false,
-              y: false,
-              z: false,
-            },
-            obj2: {
-              x: false,
-              y: false,
-              z: false,
-            },
-            obj3: {
-              x: false,
-              y: false,
-              z: false,
-            }
-          };
-          this.selectedMeshAxis = {
-            obj1: {
-              x: true,
-              y: false,
-              z: false,
-            },
-            obj2: {
-              x: false,
-              y: true,
-              z: false,
-            },
-            obj3: {
-              x: false,
-              y: false,
-              z: true,
-            }
-          };
-          this.selectedMeshPlan = {
-            obj1: {
-              x: false,
-              y: true,
-              z: true,
-            },
-            obj2: {
-              x: true,
-              y: false,
-              z: true,
-            },
-            obj3: {
-              x: true,
-              y: true,
-              z: false,
-            }
-          };
-        } else if (this.shape == 4) {
+        } else if (this.shape == 4 || this.shape == 12 || this.shape == 19) {
           this.folderImg = 'STANDING_CYL';
           this.axis1Disable = false;
           this.axis2Disable = false;
-          this.axis3Disable = true;
+          if (this.shape < 10) {
+            this.axis3Disable = true;
+          }
           this.radioMeshAxis.obj3 = true;
           this.radioMeshPlan.obj1 = true;
           this.radioMeshPlan.obj2 = true;
@@ -605,7 +615,7 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
               z: true,
             }
           };
-        } else if (this.shape == 5) {
+        } else if (this.shape == 5 || this.shape == 13 || this.shape == 20) {
           if (this.outputProductChart.ORIENTATION == 1) {
             this.folderImg = 'LAYING_CYL/parallel';
           } else {
@@ -613,7 +623,9 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
           }
           this.axis1Disable = false;
           this.axis2Disable = false;
-          this.axis3Disable = true;
+          if (this.shape < 10) {
+            this.axis3Disable = true;
+          }
           this.radioMeshAxis.obj3 = true;
           this.radioMeshPlan.obj1 = true;
           this.radioMeshPlan.obj2 = true;
@@ -651,11 +663,15 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
               z: true,
             }
           };
-        } else if (this.shape == 6) {
+        } else if (this.shape == 6 || this.shape == 14) {
           this.folderImg = 'SPHERE';
-          this.axis1Disable = true;
+          if (this.shape < 10) {
+            this.axis1Disable = true;
+          }
           this.axis2Disable = false;
-          this.axis3Disable = true;
+          if (this.shape < 10) {
+            this.axis3Disable = true;
+          }
           this.radioMeshAxis.obj1 = true;
           this.radioMeshAxis.obj3 = true;
           this.selectedMeshPoint = {
@@ -675,9 +691,11 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
               z: true,
             }
           };
-        } else if (this.shape == 7) {
+        } else if (this.shape == 7 || this.shape == 15) {
           this.folderImg = 'STANDING_CYL_C';
-          this.axis3Disable = true;
+          if (this.shape < 10) {
+            this.axis3Disable = true;
+          }
           this.radioMeshAxis.obj3 = true;
           this.radioMeshPlan.obj1 = true;
           this.radioMeshPlan.obj2 = true;
@@ -715,13 +733,15 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
               z: true,
             }
           };
-        } else if (this.shape == 8) {
+        } else if (this.shape == 8 || this.shape == 16) {
           if (this.outputProductChart.ORIENTATION == 1) {
             this.folderImg = 'LAYING_CYL_C/parallel';
           } else {
             this.folderImg = 'LAYING_CYL_C/perpendicular';
           }
-          this.axis3Disable = true;
+          if (this.shape < 10) {
+            this.axis3Disable = true;
+          }
           this.radioMeshAxis.obj3 = true;
           this.radioMeshPlan.obj1 = true;
           this.radioMeshPlan.obj2 = true;
@@ -759,15 +779,19 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
               z: true,
             }
           };
-        } else if (this.shape == 9) {
+        } else if (this.shape == 9 || this.shape == 17) {
           if (this.outputProductChart.ORIENTATION == 1) {
             this.folderImg = 'BREADED/parallel';
-            this.axis1Disable = true;
+            if (this.shape < 10) {
+              this.axis1Disable = true;
+            }
             this.axis2Disable = false;
             this.axis3Disable = false;
           } else {
             this.folderImg = 'BREADED/perpendicular';
-            this.axis3Disable = true;
+            if (this.shape < 10) {
+              this.axis1Disable = true;
+            }
             this.axis2Disable = false;
             this.axis3Disable = false;
           }
@@ -2608,6 +2632,7 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
     this.api.productSection(params).subscribe(
       data => {
         // console.log(data);
+        this.imageProductSection = data.imageProductSection;
         this.productSectionDataChart = data.dataChart;
         this.productSectionResult = data.resultLabel;
         this.productSectionValue = data.result.resultValue;
@@ -2620,7 +2645,6 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
         } else if (this.selectedAxe == 3) {
           this.productSectionAxisTemp = data.axeTemp[0] + ',' + data.axeTemp[1] + ',*';
         }
-        this.loadChartProductSection(this.productSectionDataChart, this.productSectionResult);
         this.loadProductSectionData = true;
       }
     );
@@ -2649,67 +2673,12 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
         };
         this.api.timeBased(params).subscribe(
           dataTimeBased => {
-            // console.log(dataTimeBased);
+            console.log(dataTimeBased);
+            this.imageTimeBased = dataTimeBased.imageTimebased;
             this.timeBasedResult = dataTimeBased.result;
             this.timeBasedCurve = dataTimeBased.curve;
             this.timeBasedLabel = dataTimeBased.label;
             const chartDataObj =  this.timeBasedCurve;
-            const chartData = [
-              {data: JSON.parse(JSON.stringify(chartDataObj.top)), label: this.translate.instant('Top(' + this.timeBasedLabel.top + ')'),
-              type: 'line', radius: 0, fill: false, borderColor: 'rgb(0,0,255)', backgroundColor: 'rgb(0,0,255)', borderWidth: 2},
-              {data: JSON.parse(JSON.stringify(chartDataObj.int)),
-                      label: this.translate.instant('Internal(' + this.timeBasedLabel.int + ')'),
-              type: 'line', radius: 0, fill: false, borderColor: 'rgb(0,192,192)', backgroundColor: 'rgb(0,192,192)', borderWidth: 2},
-              {data: JSON.parse(JSON.stringify(chartDataObj.bot)), label: this.translate.instant('Bottom(' + this.timeBasedLabel.bot + ')'),
-              type: 'line', radius: 0, fill: false, borderColor: 'rgb(0,255,255)', backgroundColor: 'rgb(0,255,255)', borderWidth: 2},
-              {data: JSON.parse(JSON.stringify(chartDataObj.average)),
-                      label: this.translate.instant('Average temperature'),
-              type: 'line', radius: 0, fill: false, borderColor: 'rgb(0,255,0)', backgroundColor: 'rgb(0,255,0)', borderWidth: 2}
-            ];
-            this.timeBasedChartData =  chartData;
-            // console.log(this.timeBasedChartData);
-            this.timeBasedChartOptions = {
-              animation: false,
-              responsive: false,
-              legend: {
-                onClick: (e) => e.stopPropagation(),
-                position: 'right',
-                labels: {
-                  padding: 20
-                }
-              },
-              hoverMode: 'index',
-              stacked: false,
-              title: {
-                  display: false,
-                  text: this.outputProductChart.EQUIP_NAME,
-                  fontColor: '#f00',
-                  fontSize: 16
-              },
-              scales: {
-                  xAxes: [{
-                      type: 'linear',
-                      display: true,
-                      scaleLabel: {
-                          display: true,
-                          labelString: this.translate.instant(this.symbol.timeSymbol),
-                          fontColor: '#f00',
-                          fontSize: 20
-                      },
-                  }],
-                  yAxes: [{
-                      type: 'linear',
-                      display: true,
-                      id: 'y-axis-1',
-                      scaleLabel: {
-                          display: true,
-                          labelString: this.translate.instant(this.symbol.temperatureSymbol),
-                          fontColor: '#f00',
-                          fontSize: 20
-                      }
-                  }],
-              }
-            };
             this.loadTimeBaseData = true;
           }
         );
@@ -2788,6 +2757,7 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
     this.api.productSection(params).subscribe(
       data => {
         // console.log(data);
+        this.imageProductSection = data.imageProductSection;
         this.productSectionResult = data.resultLabel;
         this.productSectionValue = data.result.resultValue;
         this.productSectionRecAxis = data.result.recAxis;
@@ -2800,7 +2770,6 @@ export class OutputChartsComponent implements OnInit, AfterViewInit {
           this.productSectionAxisTemp = data.axeTemp[0] + ',' + data.axeTemp[1] + ',*';
         }
         this.productSectionDataChart = data.dataChart;
-        this.loadChartProductSection(this.productSectionDataChart, this.productSectionResult);
         this.loadProductSectionData = true;
       }
     );

@@ -143,7 +143,7 @@
             {{'CHANGE'|translate}}
           </button>
           <button type="button" class="btn btn-sm btn-success"
-            (click)="initTemperature()" [disabled]="(study.CHAINING_CONTROLS && (study.HAS_CHILD || study.PARENT_ID == 0)) || disabledField()" 
+            (click)="initTemperature()" [disabled]="(study.CHAINING_CONTROLS && (study.HAS_CHILD || study.PARENT_ID != 0)) || disabledField()" 
             [ladda]="laddaInitializingTemp">
             {{'INITIALIZE TEMPERATURE'|translate}}
           </button>

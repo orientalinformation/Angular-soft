@@ -3,7 +3,7 @@
     <div *ngIf="loading == true" class="text-center" id="showLoader"></div>
     <div class="card product-container">
         <div class="card-header">
-          <strong>{{ 'HEAT BANLANCE' | translate }}</strong>
+          <strong>{{ 'HEAT BALANCE' | translate }}</strong>
         </div>
         <div class="card-body" *ngIf="report">
           <strong style="padding:10px;">{{ 'Customisation' | translate }}</strong>
@@ -336,7 +336,7 @@
                       <div class="col-md-4">
                         <label class="form-checkbox-label"style="margin-left:20px;">
                           <label class="switch switch-icon switch-primary-outline-alt">
-                            <input type="checkbox" class="switch-input" [disabled]="ischeckUser"  name="refContRepSizingGraphe" [(ngModel)]="report.SIZING_GRAPHE" [checked]="report.SIZING_GRAPHE == 1" value="1">
+                            <input type="checkbox" class="switch-input" [disabled]="ischeckUser" name="refContRepSizingGraphe" [(ngModel)]="report.SIZING_GRAPHE" [checked]="report.SIZING_GRAPHE == 1" value="1">
                             <span class="switch-label" data-on="&#xf00c;" data-off="&#xf00d;"></span>
                             <span class="switch-handle"></span>
                           </label>

@@ -552,6 +552,7 @@ export class ProductComponent implements OnInit, AfterViewInit {
             this.getShapesMode(this.calMode);
             this.availShapes = JSON.parse(localStorage.getItem('shapes'));
             this.previewImgSrc = this.shapeImgShim(this.availShapes[this.productForm.shape - 10].SHAPEPICT);
+            console.log(this.previewImgSrc);
           } else {
             this.calMode = 0;
             this.dText = 'Advanced';

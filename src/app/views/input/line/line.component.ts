@@ -282,7 +282,7 @@ export class LineComponent implements OnInit, AfterContentChecked, AfterViewInit
             } else if (i == 2) {
               this.insulationName = this.translate.instant('Super Insulation');
             } else if (i == 3) {
-              if (this.dataResult[i][i].insulationType == 3 && this.dataResult[i][i].idcooling == 3) {
+              if (this.dataResult[i][i].idcooling == 3) {
                 this.insulationName = this.translate.instant('Armaflex');
               }
             }

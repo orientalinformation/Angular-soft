@@ -13,11 +13,14 @@ import { AppSpinnerComponent, HighchartsChartComponent } from '../components';
 import { TempProfileEditorComponent } from '../components';
 import { CommentComponent } from './comment/comment.component';
 import { TranslateModule } from '@ngx-translate/core';
+import { OverviewComponent } from './overview/overview.component';
+
 // import { CodemirrorModule } from 'codemirror';
 
 @NgModule({
   entryComponents: [
-    CommentComponent
+    CommentComponent,
+    OverviewComponent
   ],
   imports: [
     CommonModule,
@@ -29,13 +32,15 @@ import { TranslateModule } from '@ngx-translate/core';
     FormsModule,
     ReactiveFormsModule,
     NgxLocalizedNumbers.forRoot(),
+    TranslateModule.forChild(),
     // CodemirrorModule
   ],
   declarations: [
     AppSpinnerComponent,
     CommentComponent,
     HighchartsChartComponent,
-    TempProfileEditorComponent
+    TempProfileEditorComponent,
+    OverviewComponent
   ],
   providers: [
     StatusService,
@@ -55,7 +60,8 @@ import { TranslateModule } from '@ngx-translate/core';
     AppSpinnerComponent,
     TempProfileEditorComponent,
     CommentComponent,
-    HighchartsChartComponent
+    HighchartsChartComponent,
+    OverviewComponent
   ]
 })
 export class SharedModule {

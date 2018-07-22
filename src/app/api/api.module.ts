@@ -5,6 +5,7 @@ import { ApiConfiguration } from './api-configuration';
 import { ApiService } from './services/api.service';
 import { AdminService } from './services/admin.service';
 import { CalculatorService } from './services/calculator.service';
+import { ChainingService } from './services/chaining.service';
 import { InputService } from './services/input.service';
 import { MinmaxService } from './services/minmax.service';
 import { ReferencedataService } from './services/referencedata.service';
@@ -28,6 +29,7 @@ import { WarningService } from './services/warning.service';
    ApiService,
    AdminService,
    CalculatorService,
+   ChainingService,
    InputService,
    MinmaxService,
    ReferencedataService,
