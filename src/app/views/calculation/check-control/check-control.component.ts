@@ -36,7 +36,7 @@ export class CheckControlComponent implements OnInit, AfterViewInit {
     this.api.checkControlView(params).subscribe(
       data => {
         this.checkcontrolview = data;
-        console.log(data);
+        // console.log(data);
         this.isLoading = false;
       }
     );
@@ -44,7 +44,7 @@ export class CheckControlComponent implements OnInit, AfterViewInit {
     this.api.checkControl(params).subscribe(
       data => {
         this.checkcontrol = data;
-        console.log(this.checkcontrol);
+        // console.log(this.checkcontrol);
         this.isLoading = false;
 
         if (this.checkcontrol.checkcontrol) {

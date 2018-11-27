@@ -25,6 +25,7 @@ export class TempProfileEditorComponent implements OnInit {
   public size = null;
   public tempDiffInit = false;
   public oyTemp = [this.getOInit()];
+  public selectedPoints = [];
   public tempInitCoeff = this.tempMax - this.tempMin;
   @Input() lines: Array<Point> = [];
   @Input() xValues: Array<number> = [];
@@ -73,6 +74,7 @@ export class TempProfileEditorComponent implements OnInit {
       this.size = this.svgData.size;
     }
     this.oTemp = [this.getOInit()];
+    this.selectedPoints = this.initSelectPoint();
     this.reScaleFromTempY();
   }
 
@@ -85,7 +87,7 @@ export class TempProfileEditorComponent implements OnInit {
       } else {
         this.oyTemp[idx] = String(-1e20);
       }
-      // document.form1.inputValue[idx].value = yTemp[idx];
+
       this.oTemp[idx] = this.oyTemp[idx];
     }
   }
@@ -107,6 +109,7 @@ export class TempProfileEditorComponent implements OnInit {
       const value = this.getAxisXPos(event.offsetX, this.legends);
       const self = this;
       this.change.emit({ index: self.currentpos, value: value });
+      this.selectedPoints[id] = 1;
     }
   }
 
@@ -203,34 +206,29 @@ export class TempProfileEditorComponent implements OnInit {
       let pathStr;
       for (idx = 0; idx < this.svgData.size; idx++) {
         if (this.oTemp[idx] !== '-1e20') {
-          gradobjCercle = <HTMLElement>document.getElementById('c' + idx);
-          const x = this.oTemp[idx];
-          const y = gradobjCercle.getAttribute('cy');
+          if (this.selectedPoints[idx] === 1) {
+            gradobjCercle = <HTMLElement>document.getElementById('c' + idx);
+            const x = this.oTemp[idx];
+            // const x = gradobjCercle.getAttribute('cx');
+            const y = gradobjCercle.getAttribute('cy');
 
-          if (nbPoints === 0) {
-            pathStr = 'M' + x + ',' + y + ' L';
-          } else {
-            pathStr = pathStr + x + ',' + y + ' ';
+            if (nbPoints === 0) {
+              pathStr = 'M' + x + ',' + y + ' L';
+            } else {
+              pathStr = pathStr + x + ',' + y + ' ';
+            }
+
+            nbPoints = nbPoints + 1;
+
+            const cx = (this.oTemp[idx]);
+            if (!isNaN(cx)) {
+              gradobjCercle.setAttribute('cx', cx);
+            }
           }
-
-          nbPoints = nbPoints + 1;
-
-          const cx = (this.oTemp[idx]);
-          if (!isNaN(cx)) {
-            gradobjCercle.setAttribute('cx', cx);
-          }
-        } else {
-          gradobjCercle = <HTMLElement>document.getElementById('c' + idx);
-          gradobjCercle.setAttribute('cx', ((this.svgx / 2) + this.x0));
-          this.nbValid--;
         }
       }
-
-      if (this.nbValid > 1) {
-        gradobj.setAttribute('d', pathStr);
-      } else {
-        gradobj.setAttribute('d', '');
-      }
+      gradobj.setAttribute('d', pathStr);
+      // Fix error here
     }
   }
 
@@ -239,30 +237,19 @@ export class TempProfileEditorComponent implements OnInit {
   }
 
   clearAll() {
-    console.log('clear', this.size);
-    this.svgData = JSON.parse(localStorage.getItem('svgData'));
-    if (this.svgData) {
-      this.oTemp = [this.getOInit()];
-      this.tempDiffInit = false;
-      for (let idx = 0; idx < this.size; idx = idx + 1) {
-        const idTempPoint = <HTMLElement>document.getElementById('tempPoint' + idx);
-        if ((idx === 0) || (idx === this.size - 1)) {
-          idTempPoint.setAttribute('value', String(this.defZero));
-        } else {
-          idTempPoint.setAttribute('value', '');
-        }
-        const value = idTempPoint.getAttribute('value');
-        this.yTemp[idx] = value;
-      }
-    }
+    let idx = 0;
     // this.redrawPath();
+    for (idx = 1; idx < Number(this.size) - 1; idx++) {
+      this.selectedPoints[idx] = 0;
+    }
+
     const gradobj = <HTMLElement>document.getElementById('testPath');
     gradobj.setAttribute('d', '');
   }
 
   generatePoints() {
-    console.log('Generate point');
-    console.log(this.size);
+    this.selectedPoints = this.initSelectPoint();
+    this.redrawPath();
   }
 
   getOInit() {
@@ -274,5 +261,13 @@ export class TempProfileEditorComponent implements OnInit {
       tmp = tmp + '-1e20';
     }
     return tmp;
+  }
+
+  initSelectPoint() {
+    const selected = [];
+    for (let i = 0; i < Number(this.size); i++) {
+      selected.push(1);
+    }
+    return selected;
   }
 }

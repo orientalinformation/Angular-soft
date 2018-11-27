@@ -3,13 +3,15 @@
 /**
  */
 export class SizingResultEStimation {
+    conso?: string;
     id?: number;
-    equipName?: string;
     viewEquip?: boolean;
     tr?: string;
-    conso?: string;
+    ts?: string;
+    equipName?: string;
     toc?: string;
     dhpMax?: string;
     consoMax?: string;
     tocMax?: string;
+    capabilitie?: number;
 }

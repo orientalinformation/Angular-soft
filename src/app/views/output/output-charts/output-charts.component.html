@@ -59,7 +59,7 @@
                     <button class="btn btn-block btn-outline-primary" [class.active]="activeBtn == 'axis'" (click)="selectAxis()">Axis</button>
                   </div>
                   <div class="col-md-4 text-center">
-                    <button class="btn btn-block btn-outline-primary" [class.active]="activeBtn == 'plans'" (click)="selectPlans()">Plans</button>
+                    <button class="btn btn-block btn-outline-primary" [disabled]="planDisabled" [class.active]="activeBtn == 'plans'" (click)="selectPlans()">Plans</button>
                   </div>
                 </div>
                 <div class="row form-group" style="margin-top:30px;height:30px">
@@ -82,14 +82,14 @@
                     </label>
                   </div>
                 </div>
-                <div class="row">
+                <div class="row" *ngIf="shape <= 9;else shapePointNew">
                   <ng-container *ngIf="shape != 5 && shape != 8; else shapeFull">
                       <div class="col-md-4">
                         <div class="row">
                             <label class="col-md-3 col-form-label text-success">X</label>
                             <div class="col-md-9">
                               <select class="form-control" (change)="changeX()" [(ngModel)]="mesAxisXSelected" [disabled]="select1Disable">
-                                <option *ngFor="let axis of mesAxisX" [value]="axis.name">{{ axis.name }}</option>
+                                <option *ngFor="let axis of mesAxisX" [value]="axis.value">{{ axis.name }}</option>
                               </select>
                             </div>
                         </div>
@@ -99,7 +99,7 @@
                             <label class="col-md-3 col-form-label text-primary">Y</label>
                             <div class="col-md-9">
                               <select class="form-control" (change)="changeY()" [(ngModel)]="mesAxisYSelected" [disabled]="select2Disable">
-                                <option *ngFor="let axis of mesAxisY" [value]="axis.name">{{ axis.name }}</option>
+                                <option *ngFor="let axis of mesAxisY" [value]="axis.value">{{ axis.name }}</option>
                               </select>
                             </div>
                         </div>
@@ -111,7 +111,7 @@
                             <strong class="col-md-3 col-form-label text-success">X</strong>
                             <div class="col-md-9">
                               <select class="form-control" (change)="changeY()" [(ngModel)]="mesAxisYSelected" [disabled]="select2Disable">
-                                <option *ngFor="let axis of mesAxisY" [value]="axis.name">{{ axis.name }}</option>
+                                <option *ngFor="let axis of mesAxisY" [value]="axis.value">{{ axis.name }}</option>
                               </select>
                             </div>
                         </div>
@@ -121,7 +121,7 @@
                             <label class="col-md-3 col-form-label text-primary">Y</label>
                             <div class="col-md-9">
                               <select class="form-control"  (change)="changeX()" [(ngModel)]="mesAxisXSelected" [disabled]="select1Disable">
-                                <option *ngFor="let axis of mesAxisX" [value]="axis.name">{{ axis.name }}</option>
+                                <option *ngFor="let axis of mesAxisX" [value]="axis.value">{{ axis.name }}</option>
                               </select>
                             </div>
                         </div>
@@ -131,19 +131,56 @@
                       <div class="row">
                           <label class="col-md-3 col-form-label text-warning">Z</label>
                           <div class="col-md-9">
-                            <select class="form-control"  (change)="changeZ()" [(ngModel)]="mesAxisZSelected" [disabled]="select3Disable">
-                              <option *ngFor="let axis of mesAxisZ" [value]="axis.name">{{ axis.name }}</option>
+                            <select class="form-control" (change)="changeZ()" [(ngModel)]="mesAxisZSelected" [disabled]="select3Disable">
+                              <option *ngFor="let axis of mesAxisZ" [value]="axis.value">{{ axis.name }}</option>
                             </select>
                           </div>
                       </div>
                     </div>
                 </div>
+                <ng-template #shapePointNew>
+                  <div class="row">
+                    <div class="col-md-4">
+                      <div class="row">
+                          <label class="col-md-3 col-form-label text-success">X</label>
+                          <div class="col-md-9">
+                            <select class="form-control" [disabled]="select1Disable">
+                              <option *ngIf="pointSelectedUnitX != ''" [value]="pointSelectedValueX">{{ pointSelectedValueX }}</option>
+                            </select>
+                          </div>
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="row">
+                          <label class="col-md-3 col-form-label text-primary">Y</label>
+                          <div class="col-md-9">
+                            <select class="form-control" [disabled]="select2Disable">
+                              <option *ngIf="pointSelectedUnitY != ''" [value]="pointSelectedValueY">{{ pointSelectedValueY }}</option>
+                            </select>
+                          </div>
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="row">
+                          <label class="col-md-3 col-form-label text-primary">Z</label>
+                          <div class="col-md-9">
+                            <select class="form-control" [disabled]="select3Disable">
+                              <option  [value]="pointSelectedValueZ">{{ pointSelectedValueZ }}</option>
+                            </select>
+                          </div>
+                      </div>
+                    </div>
+                  </div>
+                </ng-template>
               </div>
               <div class="col-md-2" *ngIf="symbol" style="margin-top:116px">
-                <strong class="text-danger">{{symbol.meshesSymbol}}</strong>
+                <strong class="text-danger" *ngIf="shape <= 9;else meshSymbol3d">{{symbol.meshesSymbol}}</strong>
+                <ng-template #meshSymbol3d>
+                <strong class="text-danger">m</strong>                
+                </ng-template>
               </div>
             </div>
-            <div class="row form-group">
+            <div class="row form-group" *ngIf="shape < 10">
               <div class="col-md-12 text-center">
                 <button class="btn btn-success" (click)="saveAll()" [disabled]="disableChange">Save</button>
               </div>
@@ -162,34 +199,30 @@
             <ng-template tabHeading><i class="icon-graph"></i> {{'Curve'|translate}}</ng-template>
             <h5 class="text-danger" style="font-weight:600">{{'Curve'|translate}}</h5>
             <div class="text-center" *ngIf="outputProductChart"><h4 style="color:#f00">{{outputProductChart.displayName}}</h4></div>
-            <div class="chart-wrapper" *ngIf="heatExchangeChartData" style="width:70%;margin:auto">
-              <canvas #heatExchangeChart class="chart" baseChart
-                [datasets]="heatExchangeChartData"
-                [options]="heatExchangeChartOptions"
-                [colors]= "heatExchangeColours"
-                [legend]="heatExchangeChartLegend"
-                [chartType]="heatExchangeChartType">
-              </canvas>
+            <div *ngIf="imageHeatExchange != ''">
+              <img [src]="imageHeatExchange">
             </div>
           </tab>
           <tab>
             <ng-template tabHeading><i class="icon-doc"></i> {{'Value'|translate}}</ng-template>
             <h5 class="text-danger" style="font-weight:600">{{'Value'|translate}}</h5>
             <h6 class="text-primary text-center" *ngIf="symbol">{{'Enthalpy'|translate}} ({{symbol.enthalpySymbol}}) vs {{'Time'|translate}} ({{symbol.timeSymbol}})</h6>
-            <table class="table table-bordered table-sm">
-              <tr>
-                  <th>{{'Equipment'|translate}}</th>
+            <div class="table-responsive">
+              <table class="table table-bordered table-sm">
+                <tr>
+                    <th>{{'Equipment'|translate}}</th>
+                    <ng-container *ngFor="let result of headExchangeResult">
+                    <th class="text-center">{{result.x}}</th>
+                    </ng-container>
+                </tr>
+                <tr>
+                  <td *ngIf="outputProductChart">{{outputProductChart.displayName}}</td>
                   <ng-container *ngFor="let result of headExchangeResult">
-                  <th class="text-center">{{result.x}}</th>
+                  <td class="text-center">{{result.y}}</td>
                   </ng-container>
-              </tr>
-              <tr>
-                <td *ngIf="outputProductChart">{{outputProductChart.displayName}}</td>
-                <ng-container *ngFor="let result of headExchangeResult">
-                <td class="text-center">{{result.y}}</td>
-                </ng-container>
-              </tr>
-            </table>
+                </tr>
+              </table>
+            </div>
           </tab>
         </tabset>
       </div>
@@ -213,7 +246,7 @@
                     <span class="custom-control-indicator"></span>
                   </label>
                 </div>
-                <div class="col-md-4 text-center" *ngIf="shape ==3 || shape == 2 || shape == 9">
+                <div class="col-md-4 text-center" *ngIf="shape ==3 || shape == 2 || shape == 9 || shape > 9">
                   <label class="custom-control custom-radio" style="margin:0">
                     <input type="radio" name="selectAxe" [value]= "3" (change)="changeAxePS()" class="custom-control-input" [(ngModel)]="selectedAxe" [disabled]="axis3Disable">{{'Axis 3'|translate}}
                     <span class="custom-control-indicator"></span>
@@ -228,20 +261,15 @@
           <tabset>
             <tab>
               <ng-template tabHeading><i class="icon-graph"></i> {{'Curve'|translate}}</ng-template>
-              <h6 class="text-danger text-center" *ngIf="symbol">{{'Graphic on the axis'|translate}} {{selectedAxe}} ({{productSectionAxisTemp}}) ({{symbol.prodchartDimensionSymbol}})</h6>            
-              <div class="chart-wrapper" *ngIf="productSectionChartData" style="width:90%;margin:auto">
-                <canvas #productSectionChart class="chart" baseChart
-                  [datasets]="productSectionChartData"
-                  [options]="productSectionChartOptions"
-                  [colors]= "productSectionColours"
-                  [legend]="productSectionChartLegend"
-                  [chartType]="productSectionChartType">
-                </canvas>
+              <h6 class="text-danger text-center" *ngIf="symbol && shape <= 9">{{'Graphic on the axis'|translate}} {{selectedAxe}} ({{productSectionAxisTemp}}) ({{symbol.prodchartDimensionSymbol}})</h6>            
+              <h6 class="text-danger text-center" *ngIf="symbol && shape > 9">{{'Graphic on the axis'|translate}} {{selectedAxe}} ({{productSectionAxisTemp}}) (m)</h6>            
+              <div *ngIf="imageProductSection != ''">
+                <img [src]="imageProductSection">
               </div>
             </tab>
             <tab>
               <ng-template tabHeading><i class="icon-doc"></i> {{'Value'|translate}}</ng-template>
-              <div class="row form-group">
+              <div class="row form-group" *ngIf="shape < 10">
                 <div class="col-md-2">
                   <h5 class="text-danger" style="font-weight:600;margin-top:5px">{{'Curve number'|translate}}</h5>
                 </div>
@@ -249,7 +277,7 @@
                   <input type="text" value="{{nbSteps}}" [(ngModel)]="NB_STEPS" class="form-control" [disabled]="disableChange">
                 </div>
                 <div class="col-md-2 text-center">
-                  <button class="btn btn-primary" (click)="saveNbStep()" [disabled]="disableChange">{{'Refesh'|translate}}</button>
+                  <button class="btn btn-primary" (click)="saveNbStep()" [disabled]="disableChange">{{'Refresh'|translate}}</button>
                 </div>
               </div>
               <h6 class="text-danger text-center" *ngIf="symbol">{{'Table on the axis'|translate}} {{selectedAxe}} ({{productSectionAxisTemp}}) ({{symbol.prodchartDimensionSymbol}})</h6>
@@ -261,16 +289,25 @@
                       <ng-container *ngFor="let result of productSectionResult">
                         <th *ngIf="result" class="text-center">{{'Temperature at'|translate}}<br>{{result}} {{symbol.timeSymbol}}<br>({{symbol.temperatureSymbol}})</th>
                       </ng-container>
+                      <th style="display:block;width:16px;height:93px"></th>
                     </tr>
-                    <ng-container *ngFor="let items of productSectionValue, let i = index">
-                      <tr>
-                        <td class="text-center">{{i}}</td>
-                        <td class="text-center">{{productSectionMesAxis[i]}}</td>
-                        <ng-container *ngFor="let item of items">
-                        <td class="text-center">{{item}}</td>
-                      </ng-container>
-                      </tr>
-                    </ng-container>
+                    <tr>
+                      <td *ngIf="productSectionValueLength > 0" [colSpan]="productSectionValueLength" style="padding:0;border:none">
+                        <div class="table-responsive" style="height:150px">
+                          <table class="table table-bordered table-sm" style="background:none;border:none">
+                            <ng-container *ngFor="let items of productSectionValue, let i = index">
+                              <tr>
+                                <td class="text-center" [width]="60" style="border-left:0">{{i}}</td>
+                                <td class="text-center" [width]="66">{{productSectionMesAxis[i]}}</td>
+                                <ng-container *ngFor="let item of items">
+                                <td class="text-center" [width]="94">{{item}}</td>
+                              </ng-container>
+                              </tr>
+                            </ng-container>
+                          </table>
+                          </div>
+                        </td>
+                    </tr>
                   </table>
               </div>
             </tab>
@@ -284,14 +321,8 @@
             <ng-template tabHeading><i class="icon-graph"></i> {{'Curve'|translate}}</ng-template> 
             <h5 class="text-danger" style="font-weight:600">{{'Curve'|translate}}</h5>
             <div class="text-center" *ngIf="outputProductChart"><h4 style="color:#f00">{{outputProductChart.displayName}}</h4></div>
-            <div class="chart-wrapper" *ngIf="timeBasedChartData" style="width:90%;margin:auto">
-              <canvas class="chart" baseChart
-                [datasets]="timeBasedChartData"
-                [options]="timeBasedChartOptions"
-                [colors]= "timeBasedColours"
-                [legend]="timeBasedChartLegend"
-                [chartType]="timeBasedChartType">
-              </canvas>
+            <div *ngIf="imageTimeBased != ''">
+              <img [src]="imageTimeBased">
             </div>
           </tab>
           <tab>
@@ -299,6 +330,7 @@
             <h5 class="text-danger" style="font-weight:600">{{'Value'|translate}}</h5>
             <div class="text-center" *ngIf="outputProductChart"><h4 style="color:#f00">{{outputProductChart.displayName}}</h4></div>
             <h6 class="text-primary text-center" *ngIf="symbol">{{'Temperature'|translate}} ({{symbol.temperatureSymbol}}) vs {{'Time'|translate}} ({{symbol.timeSymbol}})</h6>
+            <div class="table-responsive">
             <table class="table table-bordered table-sm">
                 <tr>
                     <th class="text-center">{{'Points'|translate}}</th>
@@ -331,6 +363,7 @@
                   </ng-container>
                 </tr>
               </table>
+            </div>
           </tab>
         </tabset>
       </div>
@@ -345,7 +378,7 @@
                   {{'Temperature Step'|translate}}
                 </label>
                 <div class="col-md-4">
-                  <input type="text" class="form-control" id="temperatureStep" [(ngModel)]="temperatureStep">
+                  <input type="text" class="form-control" id="temperatureStep" [(ngModel)]="temperatureStep" [disabled]="shape > 9">
                 </div>
                 <label class="col-md-2 col-form-label">({{symbol.temperatureSymbol}})</label>
               </div>
@@ -356,7 +389,7 @@
                   {{'Temperature Min'|translate}}
                 </label>
                 <div class="col-md-4">
-                  <input type="text" class="form-control" id="temperatureMin" [(ngModel)]="temperatureMin">
+                  <input type="text" class="form-control" id="temperatureMin" [(ngModel)]="temperatureMin" [disabled]="shape > 9">
                 </div>
                 <label class="col-md-2 col-form-label">({{symbol.temperatureSymbol}})</label>
               </div>
@@ -367,33 +400,33 @@
                   {{'Temperature Max'|translate}}
                 </label>
                 <div class="col-md-4">
-                  <input type="text" class="form-control" id="temperatureMax" [(ngModel)]="temperatureMax">
+                  <input type="text" class="form-control" id="temperatureMax" [(ngModel)]="temperatureMax" [disabled]="shape > 9">
                 </div>
                 <label class="col-md-2 col-form-label">({{symbol.temperatureSymbol}})</label>
               </div>
             </div>
           </div>
           <p class="text-primary">{{'The bounds of the interval temperature must be outside the minimum and maximum temperatures reached by the product. Each of these bounds must be a multiple of the temperature step'|translate}}</p>
-          <div class="clearfix form-group">
-            <button class="btn btn-primary pull-right" (click)="refreshStaticTemp()">{{'Refesh'|translate}}</button>
+          <div class="clearfix form-group" *ngIf="shape < 10">
+            <button class="btn btn-primary pull-right" (click)="refreshStaticTemp()">{{'Refresh'|translate}}</button>
           </div>
           <div class="row">
             <div class="col-md-4 text-center">
               <label class="custom-control custom-radio" style="margin:0" *ngIf="outline2Ddata">
-                <input type="radio" name="selectPlan" [value]= "3" [(ngModel)]="selectedPlan" [disabled]="plan3Disable" class="custom-control-input">{{'Slice 12'|translate}} (*,*,{{outline2Ddata.z}})
+                <input type="radio" name="selectPlan" [value]= "3" [(ngModel)]="selectedPlan" [disabled]="plan3Disable" (change)="changeSelectedPlan()" class="custom-control-input">{{'Slice 12'|translate}} (*,*,{{outline2Ddata.z}})
                 <span class="custom-control-indicator"></span>
               </label>
             </div>
             <ng-container *ngIf="shape != 5 && shape != 4 && shape != 7 && shape != 8">
             <div class="col-md-4 text-center">
               <label class="custom-control custom-radio" style="margin:0" *ngIf="outline2Ddata">
-                <input type="radio" name="selectPlan" [value]= "2" [(ngModel)]="selectedPlan" [disabled]="plan2Disable" class="custom-control-input">{{'Slice 13'|translate}} (*,{{outline2Ddata.y}},*)
+                <input type="radio" name="selectPlan" [value]= "2" [(ngModel)]="selectedPlan" [disabled]="plan2Disable" (change)="changeSelectedPlan()" class="custom-control-input">{{'Slice 13'|translate}} (*,{{outline2Ddata.y}},*)
                 <span class="custom-control-indicator"></span>
               </label>
             </div>
             <div class="col-md-4 text-center">
               <label class="custom-control custom-radio" style="margin:0" *ngIf="outline2Ddata">
-                <input type="radio" name="selectPlan" [value]= "1" [(ngModel)]="selectedPlan" [disabled]="plan1Disable" class="custom-control-input">{{'Slice 23'|translate}} (*,*,{{outline2Ddata.x}})
+                <input type="radio" name="selectPlan" [value]= "1" [(ngModel)]="selectedPlan" [disabled]="plan1Disable" (change)="changeSelectedPlan()" class="custom-control-input">{{'Slice 23'|translate}} ({{outline2Ddata.x}},*,*)
                 <span class="custom-control-indicator"></span>
               </label>
             </div>
@@ -417,10 +450,10 @@
                 </div>
                 <div class="clearfix">
                   <div class="form-group pull-right" style="padding-top:10px">
-                    <button type="button" class="btn btn-primary" (click)="refreshStatic()">{{'Refesh'|translate}}</button>
+                    <button type="button" class="btn btn-primary" (click)="refreshStatic()">{{'Refresh'|translate}}</button>
                     <button type="button" class="btn btn-primary" (click)="rewindForwardStatic(0)">{{'Rewind'|translate}}</button>
                     <button type="button" class="btn btn-primary" (click)="rewindForwardStatic(1)">{{'Forward'|translate}}</button>
-                    <button type="button" class="btn btn-primary" (click)="getValueContour()">{{'Values'|translate}}</button>
+                    <button type="button" class="btn btn-primary" (click)="getValueContour()" [ladda]="laddaViewContourValue">{{'Values'|translate}}</button>
                   </div>
                 </div>
                 
@@ -446,7 +479,7 @@
                   </div>
                 </div>
                 <div class="form-group text-right" style="padding-top:10px">
-                  <button type="button" class="btn btn-primary" (click)="refreshAnim()">{{'Refesh'|translate}}</button>
+                  <button type="button" class="btn btn-primary" (click)="refreshAnim()">{{'Refresh'|translate}}</button>
                   <button type="button" class="btn btn-primary" (click)="stopAnimationContour()">{{'Stop'|translate}}</button>
                 </div>
               </div>

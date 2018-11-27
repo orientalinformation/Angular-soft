@@ -17,4 +17,5 @@ export class HeadBalanceMaxResult {
     conso_warning?: string;
     toc?: string;
     precision?: number;
+    background?: string;
 }

@@ -27,7 +27,8 @@ const routes: Routes = [
       {
         path: 'equipment',
         component: EquipmentComponent
-      },{
+      },
+      {
         path: 'pipeline',
         component: PipelineComponent
       }

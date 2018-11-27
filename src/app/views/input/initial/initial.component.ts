@@ -2,13 +2,12 @@ import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { AfterViewInit, AfterContentChecked, AfterContentInit } from '@angular/core/src/metadata/lifecycle_hooks';
 import { ApiService } from '../../../api/services/api.service';
 import { InputService } from '../../../api/services/input.service';
+import { New3dService } from '../../../api/services/new-3d.service';
 import { Study, Product, ViewProduct, ViewMesh, ProductElmt, TemperatureDrawing } from '../../../api/models';
-import { ElmtEditForm, TempPoint } from '../../../api/models';
+import { ElmtEditForm, TempPoint, Mesh3dInfo, PlotPoints } from '../../../api/models';
 import { Point } from '../../../api/models';
 import { Router } from '@angular/router';
 import swal from 'sweetalert2';
-import * as THREE from 'three';
-import { OrbitControls } from 'three-orbitcontrols-ts';
 import { TextService } from '../../../shared/text.service';
 import { ModalDirective } from 'ngx-bootstrap';
 import { ValuesListService } from '../../../shared/values-list.service';
@@ -70,13 +69,6 @@ export class InitialComponent implements OnInit, AfterContentInit, AfterViewInit
   };
 
   public isLoadingView = true;
-
-  // renderer = new THREE.WebGLRenderer({ alpha: true });
-  // scene = null;
-  // camera = null;
-  // mesh = null;
-  // materials = null;
-  // orbit = null;
   public lines: Array<Point> = [];
   public xValues: Array<number> = [];
   public point: Point;
@@ -125,9 +117,15 @@ export class InitialComponent implements OnInit, AfterContentInit, AfterViewInit
     xValue?: Array<number>;
   };
 
+  public meshSize1Disable = false;
+  public meshSize3Disable = false;
+
+  public mesh3dinfo: Mesh3dInfo;
+  public pointsTemp: Array<PlotPoints>;
+
   constructor(private api: ApiService, private router: Router, public text: TextService,
     private valuesList: ValuesListService, private inputApi: InputService, private toastr: ToastrService,
-    private translate: TranslateService) {
+    private translate: TranslateService, private new3d: New3dService) {
     this.elmtEditForm = {
       elementId: null,
       isoThermal: true,
@@ -137,10 +135,14 @@ export class InitialComponent implements OnInit, AfterContentInit, AfterViewInit
       tempPositions: [],
       index: 0
     };
+
+    this.mesh3dinfo = {
+      nb_points: null,
+    };
   }
 
   updateTempPoint(event, index) {
-    console.log(index, event.target.value);
+    // console.log(index, event.target.value);
     this.dataDrawing.xValues[index] = Number(event.target.value);
     this.tempProfileChart.reScale();
   }
@@ -152,15 +154,17 @@ export class InitialComponent implements OnInit, AfterContentInit, AfterViewInit
   generateMeshWithParameters() {
     if (!(Number(this.productShape) === Number(this.text.shapeNames.SLAB)
     || Number(this.productShape) === Number(this.text.shapeNames.SPHERE))) {
-      console.log(this.meshParamsForm);
-      if (!this.meshParamsForm.size1) {
-        this.toastr.error(this.translate.instant('Enter a value in  Mesh size 1 !'), 'Error');
-        return;
-      } else if (!this.isNumberic(this.meshParamsForm.size1)) {
-        this.toastr.error(this.translate.instant('Not a valid number in  Mesh size 1 !'), 'Error');
-        return;
+      if (!this.meshSize1Disable) {
+        if (!this.meshParamsForm.size1) {
+          this.toastr.error(this.translate.instant('Enter a value in  Mesh size 1 !'), 'Error');
+          return;
+        } else if (!this.isNumberic(this.meshParamsForm.size1)) {
+          this.toastr.error(this.translate.instant('Not a valid number in  Mesh size 1 !'), 'Error');
+          return;
+        }
       }
     }
+
     if (!this.meshParamsForm.size2) {
       this.toastr.error(this.translate.instant('Enter a value in  Mesh size 2 !'), 'Error');
       return;
@@ -168,17 +172,21 @@ export class InitialComponent implements OnInit, AfterContentInit, AfterViewInit
       this.toastr.error(this.translate.instant('Not a valid number in  Mesh size 2 !'), 'Error');
       return;
     }
+
     if ((Number(this.productShape) === Number(this.text.shapeNames.REC_STAND) ||
         Number(this.productShape) === Number(this.text.shapeNames.REC_LAY) ||
-      Number(this.productShape) === Number(this.text.shapeNames.BREAD))) {
-      if (!this.meshParamsForm.size3) {
-        this.toastr.error(this.translate.instant('Enter a value in  Mesh size 3 !'), 'Error');
-        return;
-      } else if (!this.isNumberic(this.meshParamsForm.size3)) {
-        this.toastr.error(this.translate.instant('Not a valid number in  Mesh size 3 !'), 'Error');
-        return;
+        Number(this.productShape) === Number(this.text.shapeNames.BREAD))) {
+      if (!this.meshSize3Disable) {
+        if (!this.meshParamsForm.size3) {
+          this.toastr.error(this.translate.instant('Enter a value in  Mesh size 3 !'), 'Error');
+          return;
+        } else if (!this.isNumberic(this.meshParamsForm.size3)) {
+          this.toastr.error(this.translate.instant('Not a valid number in  Mesh size 3 !'), 'Error');
+          return;
+        }
       }
     }
+
     this.api.generateMesh({
       idProd: this.productView.product.ID_PROD,
       body: {
@@ -189,7 +197,10 @@ export class InitialComponent implements OnInit, AfterContentInit, AfterViewInit
       }
     }).subscribe(
       (resp) => {
-        console.log(resp);
+        if (resp !== 0) {
+          swal('Warning', this.translate.instant('Error with the Meshbuilder mesh size is too small'
+          + '. Check your input data and start calculation again!'), 'error');
+        }
       },
       (err) => {
         console.log(err);
@@ -206,6 +217,7 @@ export class InitialComponent implements OnInit, AfterContentInit, AfterViewInit
     this.elmtEditForm.elmt = element;
     this.elmtEditForm.elementId = element.ID_PRODUCT_ELMT;
     this.elmtEditForm.isoThermal = (Number(element.PROD_ELMT_ISO) === Number(this.valuesList.PRODELT_ISOTHERM));
+
     this.elmtEditForm.tempPoints = new Array<number>(this.meshView.nbMeshPointElmt[index]);
     this.elmtEditForm.tempPositions = new Array<number>(this.meshView.nbMeshPointElmt[index]);
     if (this.meshView.productElmtInitTemp[index] != null && this.meshView.productElmtInitTemp[index].length > 0) {
@@ -241,11 +253,11 @@ export class InitialComponent implements OnInit, AfterContentInit, AfterViewInit
   }
 
   prodElmtIsoTempChanged() {
+    // change isoTemp
     this.elmtEditForm.tempPoints.fill(this.elmtEditForm.isoTemp);
   }
 
   saveElementInitTemp() {
-    // console.log(this.elmtEditForm.index);
     if (this.elmtEditForm.isoThermal) {
       if (!this.elmtEditForm.isoTemp) {
         this.toastr.error(this.translate.instant('Enter a value in Initial temperature !'), 'Error');
@@ -260,14 +272,17 @@ export class InitialComponent implements OnInit, AfterContentInit, AfterViewInit
           return;
       }
     }
-    this.meshView.elements[this.elmtEditForm.index].PROD_ELMT_ISO = this.elmtEditForm.isoThermal ? 1 : 2;
 
+    this.meshView.elements[this.elmtEditForm.index].PROD_ELMT_ISO = this.elmtEditForm.isoThermal ? 1 : 2;
     if (this.meshView.elements[this.elmtEditForm.index].PROD_ELMT_ISO === 2) {
       const temp = [];
       if (this.tempPointNewForm) {
         for (let i = 0; i < this.tempPointNewForm.tempPoints.length; i++) {
           const element = this.tempPointNewForm.tempPoints[i];
-          console.log(element.value, Number(this.drawingTemperature.getTempMax)); // check if minmax 100
+          if (element.value == null) {
+            element.value = 0;
+          }
+
           if (this.drawingTemperature) {
             const maxTemp = Number(this.drawingTemperature.getTempMax);
             if (Number(maxTemp) === Number(373.2)) {
@@ -302,29 +317,14 @@ export class InitialComponent implements OnInit, AfterContentInit, AfterViewInit
       }
     }
 
+    // some code here
     this.meshView.productElmtInitTemp[this.elmtEditForm.index] = this.elmtEditForm.tempPoints;
     this.productView.elements = this.meshView.elements;
     this.editElmtInitTempModal.hide();
-
-    // this.api.initProdElmtTemp({
-    //   id: this.elmtEditForm.elementId,
-    //   body: {
-    //     isoThermal: this.elmtEditForm.isoThermal,
-    //     tempPoints: this.elmtEditForm.tempPoints
-    //   }
-    // }).subscribe(
-    //   resp => {
-    //     console.log(resp);
-    //     this.editElmtInitTempModal.hide();
-    //   },
-    //   err => {
-    //     console.log(err);
-    //   }
-    // );
   }
 
   changeTempPoint(event) {
-    console.log(event);
+    // console.log(event);
     if (event.index !== null) {
       this.tempPointNewForm.tempPoints[event.index].value = event.value;
       this.dataDrawing.xValues[event.index] = event.value;
@@ -341,8 +341,6 @@ export class InitialComponent implements OnInit, AfterContentInit, AfterViewInit
       elements: []
     };
     this.meshView = new ViewMesh();
-
-    this.initTempRecordPts();
   }
 
   isRendering(): boolean {
@@ -389,16 +387,25 @@ export class InitialComponent implements OnInit, AfterContentInit, AfterViewInit
       return;
     }
     this.isLoadingView = true;
+
+    if (this.productShape < 10) {
+      this.initTempRecordPts();
+    } else {
+      this.initTempRecordPts3D();
+    }
+
     this.api.getSymbol(this.study.ID_STUDY).subscribe(
       data => {
         this.symbol = data;
-        this.api.getMeshView(this.productView.product.ID_PROD).subscribe(
+        this.api.getMeshView({
+          id: this.productView.product.ID_PROD,
+          IDSTUDY: this.study.ID_STUDY
+        }).subscribe(
           (resp: ViewMesh) => {
             this.initMeshView(resp);
           },
           (err) => {
             console.log(err);
-            // swal('Oops..', 'Error getting mesh view', 'error');
           }
         );
 
@@ -411,12 +418,51 @@ export class InitialComponent implements OnInit, AfterContentInit, AfterViewInit
     );
   }
 
+  getData3D() {
+    // Get mesh 3d info
+    if (this.productShape > 9) {
+      this.new3d.getMesh3DInfo(this.productView.product.ID_PROD).subscribe(
+        mesh3d => {
+          this.mesh3dinfo = mesh3d;
+        },
+        err => {
+          console.log('err');
+        },
+        () => {
+          if (this.mesh3dinfo == null) {
+            swal('Warning', this.translate.instant('Mesh size is too small'), 'error');
+          }
+        }
+      );
+    }
+  }
+
   ngAfterContentInit() {
     this.productShape = Number(localStorage.getItem('productShape'));
     this.study = JSON.parse(localStorage.getItem('study'));
     this.productView = JSON.parse(localStorage.getItem('productView'));
+
+    if (Number(this.productShape) === Number(this.text.shapeNames.SLAB)
+      || Number(this.productShape) === Number(this.text.shapeNames.SPHERE)
+      || Number(this.productShape) === Number(this.text.shapeNames.D_SPHERE)) {
+        this.meshSize1Disable = true;
+    }
+
+    if (Number(this.productShape) === Number(this.text.shapeNames.SLAB)
+      || Number(this.productShape) === Number(this.text.shapeNames.CYL_STAND)
+      || Number(this.productShape) === Number(this.text.shapeNames.CYL_LAY)
+      || Number(this.productShape) === Number(this.text.shapeNames.SPHERE)
+      || Number(this.productShape) === Number(this.text.shapeNames.D_STAND_CYL)
+      || Number(this.productShape) === Number(this.text.shapeNames.D_LYI_CYL)
+      || Number(this.productShape) === Number(this.text.shapeNames.D_SPHERE)
+      || Number(this.productShape) === Number(this.text.shapeNames.D_STAND_CON_CYL)
+      || Number(this.productShape) === Number(this.text.shapeNames.D_LYN_CON_CYL)
+      || Number(this.productShape) === Number(this.text.shapeNames.D_SEMI_CYL)) {
+        this.meshSize3Disable = true;
+    }
+
     if (Number(this.productShape) === 0 || !this.productView.elements || Number(this.productView.elements.length) === 0) {
-      swal('Oops..', 'Please define product along with elements first', 'error');
+      swal('Warning', this.translate.instant('Please define product along with elements first'), 'error');
       this.router.navigate(['/input/product']);
       return false;
     }
@@ -436,7 +482,6 @@ export class InitialComponent implements OnInit, AfterContentInit, AfterViewInit
 
   initMeshView(resp: ViewMesh) {
     this.meshView = resp;
-    console.log(resp);
     if (!this.meshView.meshGeneration) {
       return this.resetDefaultMesh();
     } else {
@@ -458,6 +503,8 @@ export class InitialComponent implements OnInit, AfterContentInit, AfterViewInit
       this.meshParamsForm.size2 = this.meshView.meshGeneration.MESH_2_INT;
       this.meshParamsForm.size3 = this.meshView.meshGeneration.MESH_3_INT;
     }
+    // Get data mesh 3d
+    this.getData3D();
   }
 
   resetDefaultMesh() {
@@ -472,7 +519,6 @@ export class InitialComponent implements OnInit, AfterContentInit, AfterViewInit
             console.log(err);
           },
           () => {
-
           }
         );
       },
@@ -487,7 +533,7 @@ export class InitialComponent implements OnInit, AfterContentInit, AfterViewInit
 
   initIsoTemperature() {
     if (isNaN(this.productTempForm.initTemp)) {
-      swal('Error', 'Please correctly define initial product temperature!', 'error');
+      swal('Error', this.translate.instant('Please correctly define initial product temperature!'), 'error');
       return false;
     }
 
@@ -510,7 +556,52 @@ export class InitialComponent implements OnInit, AfterContentInit, AfterViewInit
       }
     );
   }
+  // 3D initial temperature
+  initIso3DTemperature() {
+    if (isNaN(this.productTempForm.initTemp)) {
+      swal('Error', this.translate.instant('Please correctly define initial product temperature!'), 'error');
+      return false;
+    }
 
+    this.laddaInitializingTemp = true;
+    this.initTempWaitingModal.show();
+    this.new3d.initIso3DTemperature({
+      idProd: this.productView.product.ID_PROD,
+      initTemp: this.meshView.productIsoTemp
+    }).subscribe(
+      (resp) => {
+        this.laddaInitializingTemp = false;
+      },
+      (err) => {
+        this.laddaInitializingTemp = false;
+        this.initTempWaitingModal.hide();
+      },
+      () => {
+        this.laddaInitializingTemp = false;
+        this.initTempWaitingModal.hide();
+      }
+    );
+  }
+
+  initNonIso3DTemperature() {
+    // console.log('Non iso 3D initial temperature');
+    this.initTempWaitingModal.show();
+    this.new3d.initNonIso3DTemperature({
+      idProd: this.study.ID_PROD,
+      body: this.meshView
+    }).subscribe(
+      res => {
+      },
+      err => {
+        this.initTempWaitingModal.hide();
+        console.log(err);
+      },
+      () => {
+        this.initTempWaitingModal.hide();
+      }
+    );
+  }
+  // End 3D initial temperature
   initNonIsoTemperature() {
     this.initTempWaitingModal.show();
     this.api.initNonIsoTemperature({
@@ -518,7 +609,7 @@ export class InitialComponent implements OnInit, AfterContentInit, AfterViewInit
       body: this.meshView
     }).subscribe(
       resp => {
-        console.log(resp);
+        // console.log(resp);
       },
       err => {
         console.log(err);
@@ -536,9 +627,17 @@ export class InitialComponent implements OnInit, AfterContentInit, AfterViewInit
 
   initTemperature() {
     if (Number(this.productView.product.PROD_ISO) === 1) {
-      this.initIsoTemperature();
+      if (this.productShape < 10) {
+        this.initIsoTemperature();
+      } else {
+        this.initIso3DTemperature();
+      }
     } else {
-      this.initNonIsoTemperature();
+      if (this.productShape < 10) {
+        this.initNonIsoTemperature();
+      } else {
+        this.initNonIso3DTemperature();
+      }
     }
   }
 
@@ -566,7 +665,11 @@ export class InitialComponent implements OnInit, AfterContentInit, AfterViewInit
     } else {
       this.meshView.productIsoTemp = this.productTempForm.initTemp;
       this.productView.product.PROD_ISO = 1;
-      this.initIsoTemperature();
+      if (this.productShape < 10) {
+        this.initIsoTemperature();
+      } else {
+        this.initIso3DTemperature();
+      }
     }
   }
 
@@ -579,10 +682,21 @@ export class InitialComponent implements OnInit, AfterContentInit, AfterViewInit
     this.study = JSON.parse(localStorage.getItem('study'));
     this.inputApi.initTempRecordPts(this.study.ID_STUDY).subscribe(
       response => {
-        console.log('ok');
+        // console.log('ok');
       },
       err => {},
       () =>  {}
+    );
+  }
+
+  // Initial 3D
+  initTempRecordPts3D() {
+    this.study = JSON.parse(localStorage.getItem('study'));
+    this.new3d.initTempRecordPts3D(this.study.ID_STUDY).subscribe(
+      resp => {
+
+      },
+      err => {}
     );
   }
 
@@ -616,10 +730,13 @@ export class InitialComponent implements OnInit, AfterContentInit, AfterViewInit
         listofPoints = this.meshView.nbMeshPointElmt[index];
         xValue = this.meshView.productElmtInitTemp[index];
         _height = this.meshView.heights[index];
-
-        if (xValue.length === 0) {
-          for (let i = 0; i < listofPoints; i++) {
-            xValue.push(0);
+        if (!isUndefined(xValue)) {
+          if (xValue != null) {
+            if (xValue.length === 0) {
+              for (let i = 0; i < listofPoints; i++) {
+                xValue.push(0);
+              }
+            }
           }
         }
 
@@ -628,7 +745,7 @@ export class InitialComponent implements OnInit, AfterContentInit, AfterViewInit
       }
 
       this.xValues = xValue;
-      console.log(this.xValues);
+      // console.log(this.xValues);
       this.lines = [];
       if (listofPoints > 0) {
         for (idx = 0; idx < listofPoints; idx++) {
@@ -732,6 +849,20 @@ export class InitialComponent implements OnInit, AfterContentInit, AfterViewInit
         } else {
           this.tempPointNewForm = this.tempPointOldForm;
         }
+
+        // new fix load tempPoint
+        this.tempPointNewForm = data;
+        if (this.tempPointNewForm.tempPoints.length === this.tempPointOldForm.tempPoints.length) {
+          for (let i = 0; i < this.tempPointNewForm.tempPoints.length; i++) {
+            this.tempPointNewForm.tempPoints[i].value = this.tempPointOldForm.tempPoints[i].value;
+          }
+        }
+      },
+      err => {
+        console.log('err');
+      },
+      () => {
+        // this.tempPointNewForm = this.tempPointOldForm;
       }
     );
   }
@@ -749,7 +880,6 @@ export class InitialComponent implements OnInit, AfterContentInit, AfterViewInit
   }
 
   showTempProfile() {
-    console.log(this.tempProfileChart);
     this.tempProfileChart.show();
   }
 
@@ -797,6 +927,23 @@ export class InitialComponent implements OnInit, AfterContentInit, AfterViewInit
   }
 
   clearAll() {
+    if (this.tempPointNewForm) {
+      for (let i = 0; i < this.tempPointNewForm.tempPoints.length; i++) {
+        if ((i === 0) || (i === this.tempPointNewForm.tempPoints.length - 1)) {
+          this.tempPointNewForm.tempPoints[i].value = 0;
+        } else {
+          this.tempPointNewForm.tempPoints[i].value = null;
+        }
+      }
+    }
+
+    if (this.dataDrawing) {
+      for (let i = 0; i < this.dataDrawing.xValues.length; i++) {
+        this.dataDrawing.xValues[i] = 0;
+        this.dataDrawing.lines[i].X_POSITION = this.getAxisXPos(0, Number(this.dataDrawing.legends.getTempMax));
+      }
+    }
+
     this.tempProfileChart.clearAll();
   }
 
@@ -813,6 +960,37 @@ export class InitialComponent implements OnInit, AfterContentInit, AfterViewInit
         this.elmtEditForm.tempPoints = temp;
       }
     }
+    // some code here
+
+    this.inputApi.getPlotPoints({
+      xPositions: this.elmtEditForm.tempPositions,
+      tempPoints: this.tempPointNewForm.tempPoints
+    }).subscribe(
+      data => {
+        this.pointsTemp = data;
+      },
+      err => {
+        console.log('err');
+      },
+      () => {
+        let _path = null;
+        if (this.dataDrawing) {
+          for (let i = 0; i < this.dataDrawing.xValues.length; i++) {
+            this.dataDrawing.lines[i].X_POSITION = this.getAxisXPos(this.pointsTemp[i].temperature,
+              Number(this.dataDrawing.legends.getTempMax));
+            if (i === 0) {
+              _path = 'M' + this.dataDrawing.lines[i].X_POSITION + ',' + this.dataDrawing.lines[i].Y_POINT + ' L';
+            } else {
+              _path = _path + this.dataDrawing.lines[i].X_POSITION + ',' + this.dataDrawing.lines[i].Y_POINT + ' ';
+            }
+
+            this.tempPointNewForm.tempPoints[i].value = this.pointsTemp[i].temperature;
+          }
+          this.dataDrawing.drawing.path = _path;
+        }
+      }
+    );
+
     this.tempProfileChart.generatePoints();
 
     this.toastr.success(this.translate.instant('Generate point'), 'Successfully');
@@ -820,6 +998,28 @@ export class InitialComponent implements OnInit, AfterContentInit, AfterViewInit
 
   disabledField() {
     return !(Number(this.study.ID_USER) === Number(this.user.ID_USER));
+  }
+
+  disabledChaining() {
+    if (this.study) {
+      if (this.study.CHAINING_CONTROLS) {
+        if (this.study.PARENT_ID === 0) {
+          if (this.study.HAS_CHILD) {
+            return true;
+          } else {
+            return false;
+          }
+        } else {
+          if (this.study.HAS_CHILD) {
+            return true;
+          } else {
+            return false;
+          }
+        }
+      } else {
+        return false;
+      }
+    }
   }
   // end add by oriental
 }

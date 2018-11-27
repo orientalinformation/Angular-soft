@@ -13,6 +13,7 @@ import { ToastrService } from 'ngx-toastr';
 import { Math } from 'three';
 import { isNullOrUndefined } from 'util';
 import { User } from '../../../api/models/user';
+import { TranslateService } from '@ngx-translate/core';
 
 @Pipe({ name: 'ComponentFilter' })
 export class ComponentFilterPipe implements PipeTransform {
@@ -75,15 +76,15 @@ export class ComponentComponent implements OnInit {
   public userLogon: User;
   public idCompInput = 0;
   public params: ApiService.AppendElementsToProductParams;
+  public checkCalculate = false;
 
   constructor(private api: ApiService, private apiReference: ReferencedataService,
-    private router: Router, private toastr: ToastrService) {
+    private router: Router, private toastr: ToastrService, private translate: TranslateService) {
       localStorage.setItem('CompCurr', '');
       this.userLogon = JSON.parse(localStorage.getItem('user'));
   }
 
   ngOnInit() {
-    // by haidt
     const idCompInput2 = localStorage.getItem('IdCompInput');
     if (idCompInput2 !== 'null') {
       this.params = JSON.parse(localStorage.getItem('paramsCompInput'));
@@ -216,7 +217,7 @@ export class ComponentComponent implements OnInit {
           const compCurr = JSON.parse(localStorage.getItem('CompCurr'));
           this.checkActiveComp = Number(compCurr.ID_COMP);
           this.selectComponent = compCurr;
-          console.log(this.selectComponent);
+          // console.log(this.selectComponent);
         }
       }
     );
@@ -244,22 +245,22 @@ export class ComponentComponent implements OnInit {
 
   deleteComponent(comp) {
     swal({
-      title: 'Are you sure?',
-      text: 'You won`t be able to revert this!',
+      title: this.translate.instant('Are you sure?'),
+      text: this.translate.instant('You won`t be able to revert this!'),
       type: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, delete it!'
+      confirmButtonText: this.translate.instant('Yes, delete it!')
     }).then((result) => {
       if (result.value) {
         this.apiReference.deleteComponent(comp.ID_COMP).subscribe(
           response => {
             if (response === 1) {
-              this.toastr.success('Delete component', 'successfully');
+              this.toastr.success(this.translate.instant('Delete component'), 'successfully');
               this.checkHideInfo = true;
             } else {
-              swal('Oops..', 'Delete component', 'error');
+              this.toastr.error(this.translate.instant('Delete component'), 'Error');
             }
           },
           err => {
@@ -280,14 +281,14 @@ export class ComponentComponent implements OnInit {
   addFieldValue() {
     if (isNullOrUndefined(this.newAttribute.temperature) || String(this.newAttribute.temperature) === ''
     || isNaN(this.newAttribute.temperature)) {
-      this.toastr.error('Please specify Temperature', 'Error');
+      this.toastr.error(this.translate.instant('Please specify Temperature'), 'Error');
       return;
     }
 
     for (let i = 0; i < this.fieldArray.length; i++) {
       const element = this.fieldArray[i].temperature;
       if (Number(element) === Number(this.newAttribute.temperature)) {
-        swal('Oops..', 'Temperature already exists !', 'error');
+        this.toastr.error(this.translate.instant('Temperature already exists !'), 'Error');
         return;
       }
     }
@@ -299,7 +300,7 @@ export class ComponentComponent implements OnInit {
           this.fieldArray.push(this.newAttribute);
           this.newAttribute = {};
         } else {
-          this.toastr.error(res.Message, 'Error');
+          this.toastr.error(this.translate.instant(res.Message), 'Error');
         }
       },
       err => {
@@ -319,72 +320,72 @@ export class ComponentComponent implements OnInit {
 
     if (isNullOrUndefined(comp.COMP_NAME) || String(comp.COMP_NAME) === ''
     || isNumber(comp.COMP_NAME)) {
-      this.toastr.error('Please specify Component name', 'Error');
+      this.toastr.error(this.translate.instant('Please specify Component name'), 'Error');
       return;
     }
 
     if (isNullOrUndefined(comp.COMP_VERSION) || String(comp.COMP_VERSION) === ''
     || isNaN(comp.COMP_VERSION)) {
-      this.toastr.error('Please specify Version', 'Error');
+      this.toastr.error(this.translate.instant('Please specify Version'), 'Error');
       return;
     }
 
     if (Number(comp.PRODUCT_TYPE) === 0) {
-      this.toastr.error('Please select the component`s family', 'Error');
+      this.toastr.error(this.translate.instant('Please select the component`s family'), 'Error');
       return;
     }
 
     if (isNullOrUndefined(comp.FREEZE_TEMP) || String(comp.FREEZE_TEMP) === ''
     || isNaN(comp.FREEZE_TEMP)) {
-      this.toastr.error('Please specify Freeze temperature', 'Error');
+      this.toastr.error(this.translate.instant('Please specify Freeze temperature'), 'Error');
       return;
     }
 
     if (isNullOrUndefined(comp.WATER) || String(comp.WATER) === ''
     || isNaN(comp.WATER)) {
-      this.toastr.error('Please specify Water', 'Error');
+      this.toastr.error(this.translate.instant('Please specify Water'), 'Error');
       return;
     }
 
     if (isNullOrUndefined(comp.PROTID) || String(comp.PROTID) === ''
     || isNaN(comp.PROTID)) {
-      this.toastr.error('Please specify Protein & dry material	', 'Error');
+      this.toastr.error(this.translate.instant('Please specify Protein & dry material	'), 'Error');
       return;
     }
 
     if (isNullOrUndefined(comp.LIPID) || String(comp.LIPID) === ''
     || isNaN(comp.LIPID)) {
-      this.toastr.error('Please specify Lipid	', 'Error');
+      this.toastr.error(this.translate.instant('Please specify Lipid	'), 'Error');
       return;
     }
 
     if (isNullOrUndefined(comp.GLUCID) || String(comp.GLUCID) === ''
     || isNaN(comp.GLUCID)) {
-      this.toastr.error('Please specify Glucid	', 'Error');
+      this.toastr.error(this.translate.instant('Please specify Glucid	'), 'Error');
       return;
     }
 
     if (isNullOrUndefined(comp.SALT) || String(comp.SALT) === ''
     || isNaN(comp.SALT)) {
-      this.toastr.error('Please specify Salt	', 'Error');
+      this.toastr.error(this.translate.instant('Please specify Salt	'), 'Error');
       return;
     }
 
     if (isNullOrUndefined(comp.AIR) || String(comp.AIR) === ''
     || isNaN(comp.AIR)) {
-      this.toastr.error('Please specify Air (volume)	', 'Error');
+      this.toastr.error(this.translate.instant('Please specify Air (volume)	'), 'Error');
       return;
     }
 
     if (isNullOrUndefined(comp.NON_FROZEN_WATER) || String(comp.NON_FROZEN_WATER) === ''
     || isNaN(comp.NON_FROZEN_WATER)) {
-      this.toastr.error('Please specify Unfreezable water	', 'Error');
+      this.toastr.error(this.translate.instant('Please specify Unfreezable water	'), 'Error');
       return;
     }
 
     if (check === 3) {
       if (this.fieldArray.length <= 0) {
-        this.toastr.error('Please enter some temperature	', 'Error');
+        this.toastr.error(this.translate.instant('Please enter some temperature	'), 'Error');
         return;
       }
     }
@@ -413,23 +414,17 @@ export class ComponentComponent implements OnInit {
           }
 
           if (check === 2) {
+            if (Number(this.selectComponent.COMP_RELEASE) === 6) {
+              this.toastr.error(this.translate.instant('Please awake component!'), 'Error');
+              return;
+            }
             this.runSelectCalculateFreeze(this.selectComponent);
           }
           if (check === 3) {
             this.runCalculate(this.selectComponent);
-
-            if (this.checkBackStudy === 1) {
-
-              if (this.idCompInput !== 0) {
-                this.api.appendElementsToProduct(this.params).subscribe( data => {
-                  // code
-                });
-              }
-            }
           }
-
         } else {
-          this.toastr.error(res.Message, 'Error');
+          this.toastr.error(this.translate.instant(res.Message), 'Error');
         }
       },
       err => {
@@ -439,6 +434,7 @@ export class ComponentComponent implements OnInit {
       }
     );
   }
+
   saveDataComponent() {
     this.apiReference.saveDataComponent({
       PRODUCT_TYPE: this.dataComponent.PRODUCT_TYPE,
@@ -457,6 +453,7 @@ export class ComponentComponent implements OnInit {
       LIPID: this.dataComponent.LIPID,
       GLUCID: this.dataComponent.GLUCID,
       SALT: this.dataComponent.SALT,
+      ID_COMP: this.dataComponent.ID_COMP,
       NON_FROZEN_WATER: this.dataComponent.NON_FROZEN_WATER,
       release: this.dataComponent.release,
       Temperatures: this.fieldArray,
@@ -467,31 +464,31 @@ export class ComponentComponent implements OnInit {
 
         if (response === -2) {
           success = false;
-          this.toastr.error('Create component', 'Please, select the components family!');
+          this.toastr.error(this.translate.instant('Create component'), this.translate.instant('Please, select the components family!'));
           return;
         }
 
         if (response === -3) {
           success = false;
-          this.toastr.error('Create component', 'Component name can not be null!');
+          this.toastr.error(this.translate.instant('Create component'), this.translate.instant('Component name can not be null!'));
           return;
         }
 
         if (response === -4) {
           success = false;
-          this.toastr.error('Create component', 'Name and version already in use!');
+          this.toastr.error(this.translate.instant('Create component'), this.translate.instant('Name and version already in use!'));
           return;
         }
 
         if (success) {
           localStorage.setItem('CompCurr', JSON.stringify(response));
-          this.toastr.success('Create component', 'successfully');
+          this.toastr.success(this.translate.instant('Create component'), 'successfully');
           this.modalAddComponent.hide();
           this.refrestComponent();
           this.checkHideInfo = false;
           this.getDataComponent(0);
         } else {
-          this.toastr.error('Create component', 'Error');
+          this.toastr.error(this.translate.instant('Create component'), 'Error');
         }
       },
       err => {
@@ -519,6 +516,7 @@ export class ComponentComponent implements OnInit {
       COMP_VERSION: comp.COMP_VERSION,
       FREEZE_TEMP: comp.FREEZE_TEMP,
       PROTID: comp.PROTID,
+      ID_COMP: comp.ID_COMP,
       LIPID: comp.LIPID,
       GLUCID: comp.GLUCID,
       SALT: comp.SALT,
@@ -532,32 +530,32 @@ export class ComponentComponent implements OnInit {
 
         if (response === -2) {
           success = false;
-          this.toastr.error('Save as', 'Please, select the components family!');
+          this.toastr.error(this.translate.instant('Save as'), this.translate.instant('Please, select the components family!'));
           return;
         }
 
         if (response === -3) {
           success = false;
-          this.toastr.error('Save as', 'Component name can not be null!');
+          this.toastr.error(this.translate.instant('Save as'), this.translate.instant('Component name can not be null!'));
           return;
         }
 
         if (response === -4) {
           success = false;
-          this.toastr.error('Save as', 'Name and version already in use!');
+          this.toastr.error(this.translate.instant('Save as'), this.translate.instant('Name and version already in use!'));
           return;
         }
 
         if (success) {
           localStorage.setItem('CompCurr', JSON.stringify(response));
-          this.toastr.success('Save as component', 'successfully');
+          this.toastr.success(this.translate.instant('Save as component'), 'successfully');
           this.modalSaveAsComponent.hide();
           this.refrestComponent();
           this.checkHideInfo = false;
           this.dataComponent.COMP_NAME_NEW = '';
           this.dataComponent.COMP_VERSION_NEW = 0;
         } else {
-          this.toastr.error('Save as component', 'Error');
+          this.toastr.error(this.translate.instant('Save as component'), 'Error');
         }
       },
       err => {
@@ -608,17 +606,19 @@ export class ComponentComponent implements OnInit {
   updateCompenth(compenth) {
     if (isNullOrUndefined(this.dataCompenth.COMPENTH) || String(this.dataCompenth.COMPENTH) === ''
     || isNaN(this.dataCompenth.COMPENTH)) {
-      this.toastr.error('Please specify Enthalpy	', 'Error');
+      this.toastr.error(this.translate.instant('Please specify Enthalpy	'), 'Error');
       return;
     }
+
     if (isNullOrUndefined(this.dataCompenth.COMPCOND) || String(this.dataCompenth.COMPCOND) === ''
     || isNaN(this.dataCompenth.COMPCOND)) {
-      this.toastr.error('Please specify Conductivity	', 'Error');
+      this.toastr.error(this.translate.instant('Please specify Conductivity	'), 'Error');
       return;
     }
+
     if (isNullOrUndefined(this.dataCompenth.COMPDENS) || String(this.dataCompenth.COMPDENS) === ''
     || isNaN(this.dataCompenth.COMPDENS)) {
-      this.toastr.error('Please specify Density	', 'Error');
+      this.toastr.error(this.translate.instant('Please specify Density	'), 'Error');
       return;
     }
 
@@ -636,7 +636,7 @@ export class ComponentComponent implements OnInit {
           this.refreshCompenth(Number(this.dataCompenth.ID_COMP));
           this.displayCTComponent.hide();
         } else {
-          this.toastr.error('update compenth', 'ERROR');
+          this.toastr.error(this.translate.instant('update compenth'), 'ERROR');
         }
       }
     );
@@ -661,6 +661,7 @@ export class ComponentComponent implements OnInit {
       PROTID: comp.PROTID,
       LIPID: comp.LIPID,
       GLUCID: comp.GLUCID,
+      ID_COMP: comp.ID_COMP,
       SALT: comp.SALT,
       NON_FROZEN_WATER: comp.NON_FROZEN_WATER,
       release: this.dataComponent.release,
@@ -672,30 +673,33 @@ export class ComponentComponent implements OnInit {
 
         if (response === -2) {
           success = false;
-          this.toastr.error('Awake', 'Please, select the components family!');
+          this.toastr.error(this.translate.instant('Awake'), this.translate.instant('Please, select the components family!'));
           return;
         }
 
         if (response === -3) {
           success = false;
-          this.toastr.error('Awake', 'Component name can not be null!');
+          this.toastr.error(this.translate.instant('Awake'), this.translate.instant('Component name can not be null!'));
           return;
         }
 
         if (response === -4) {
           success = false;
-          this.toastr.error('Awake', 'Name and version already in use!');
+          this.toastr.error(this.translate.instant('Awake'), this.translate.instant('Name and version already in use!'));
           return;
         }
 
         if (success) {
-          this.params.componentId = response.ID_COMP;
+          if (this.params) {
+            this.params.componentId = response.ID_COMP;
+          }
+
           localStorage.setItem('CompCurr', JSON.stringify(response));
-          this.toastr.success('Awake component', 'successfully');
+          this.toastr.success(this.translate.instant('Awake component'), 'successfully');
           this.refrestComponent();
           this.checkHideInfo = false;
         } else {
-          this.toastr.error('Awake component', 'Error');
+          this.toastr.error(this.translate.instant('Awake component'), 'Error');
         }
       },
       err => {
@@ -737,23 +741,22 @@ export class ComponentComponent implements OnInit {
         this.laddaIsFreeze = false;
         let success = true;
 
-        console.log(response);
-
         if (response.CheckCalculate === -2) {
           success = false;
-          this.toastr.error('Freeze temperature', 'Please, select the components family!');
+          this.toastr.error(this.translate.instant('Freeze temperature'), this.translate.instant('Please, select the components family!'));
           return;
         }
 
         if (response.CheckCalculate === -3) {
           success = false;
-          this.toastr.error('Freeze temperature', 'Component name can not be null!');
+          this.toastr.error(this.translate.instant('Freeze temperature'), this.translate.instant('Component name can not be null!'));
           return;
         }
 
         if (response.CheckCalculate === -5) {
           success = false;
-          this.toastr.error('Freeze temperature', 'Value out of range in Composition total (90 : 110) !');
+          this.toastr.error(this.translate.instant('Freeze temperature'), this.translate.instant('Value out of range in' +
+          'Composition total (90 : 110) !'));
           return;
         }
 
@@ -764,8 +767,9 @@ export class ComponentComponent implements OnInit {
         if (success) {
           this.toastr.success('Freeze temperature', 'successfully');
         } else {
-          this.toastr.error('Freeze temperature', 'Run freeze temperature false');
+          this.toastr.error(this.translate.instant('Freeze temperature'), this.translate.instant('Run freeze temperature false'));
         }
+
         if (response.VComponent) {
           localStorage.setItem('CompCurr', JSON.stringify(response.VComponent));
           this.checkHideInfo = false;
@@ -779,6 +783,7 @@ export class ComponentComponent implements OnInit {
       },
       () => {
         this.laddaIsFreeze = false;
+        this.checkCalculate = true;
       }
     );
   }
@@ -809,25 +814,26 @@ export class ComponentComponent implements OnInit {
       COMP_VERSION_NEW: -2
     }).subscribe(
       response => {
-        console.log(response);
+        // console.log(response);
         this.laddaIsFreeze = false;
         let success = true;
 
         if (response.CheckCalculate === -2) {
           success = false;
-          this.toastr.error('Freeze temperature', 'Please, select the components family!');
+          this.toastr.error(this.translate.instant('Freeze temperature'), this.translate.instant('Please, select the components family!'));
           return;
         }
 
         if (response.CheckCalculate === -3) {
           success = false;
-          this.toastr.error('Freeze temperature', 'Component name can not be null!');
+          this.toastr.error(this.translate.instant('Freeze temperature'), this.translate.instant('Component name can not be null!'));
           return;
         }
 
         if (response.CheckCalculate === -5) {
           success = false;
-          this.toastr.error('Freeze temperature', 'Value out of range in Composition total (90 : 110) !');
+          this.toastr.error(this.translate.instant('Freeze temperature'), this.translate.instant('Value out of range in '
+          + 'Composition total (90 : 110) !'));
           return;
         }
 
@@ -836,9 +842,9 @@ export class ComponentComponent implements OnInit {
         }
 
         if (success) {
-          this.toastr.success('Freeze temperature', 'successfully');
+          this.toastr.success(this.translate.instant('Freeze temperature'), 'successfully');
         } else {
-          this.toastr.error('Freeze temperature', 'Run freeze temperature false');
+          this.toastr.error(this.translate.instant('Freeze temperature'), this.translate.instant('Run freeze temperature false'));
         }
         if (response.VComponent) {
           localStorage.setItem('CompCurr', JSON.stringify(response.VComponent));
@@ -884,9 +890,10 @@ export class ComponentComponent implements OnInit {
         this.laddaIsCalculating = false;
         if (response === 0) {
           // localStorage.setItem('generatedData', JSON.stringify({ isCalculated: true, idComp: comp.ID_COMP}));
-          this.toastr.success('Calculation', 'successfully');
+          this.checkCalculate = true;
+          this.toastr.success(this.translate.instant('Calculation'), 'successfully');
         } else {
-          this.toastr.error('Calculation', 'ERROR!');
+          this.toastr.error(this.translate.instant('Calculation'), 'ERROR!');
         }
       },
       err => {
@@ -894,13 +901,50 @@ export class ComponentComponent implements OnInit {
       },
       () => {
         this.laddaIsCalculating = false;
+        this.checkCalculate = true;
       }
     );
   }
 
   // by haidt
   comeBackStudy () {
+    if (this.checkBackStudy === 1) {
+      if (this.idCompInput !== 0) {
+        this.api.appendElementsToProduct(this.params).subscribe(
+          data => {
+            // code
+          },
+          err => {
+
+          },
+          () => {}
+        );
+      }
+    }
     this.checkBackStudy = 0;
     this.router.navigate(['/input/product']);
+  }
+
+  comBackStudyNoAdd () {
+    swal({
+      title: this.translate.instant('Are you sure?'),
+      text: this.translate.instant('Component was not generated, study calculation will not be possible.'),
+      type: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: this.translate.instant('Yes')
+    }).then((result) => {
+      if (result.value) {
+        // swal(
+        //   'Deleted!',
+        //   'Your file has been deleted.',
+        //   'success'
+        // );
+
+        this.checkBackStudy = 0;
+        this.router.navigate(['/input/product']);
+      }
+    });
   }
 }

@@ -1,0 +1,34 @@
+<div class="modal-header modal-primary comment-study">
+<h4 class="modal-title pull-left">{{ 'CREATE CHILD STUDY'|translate }}</h4>
+<button type="button" class="close pull-right" aria-label="Close" (click)="newModalRef.hide()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body" *ngIf="equipmentsLoaded">
+  <div class="row">
+    <div class="col-sm-12">
+      <div class="form-group">
+        <label for="name">{{'New child study name'|translate}}</label>
+        <input type="text" class="form-control" id="studyName" [(ngModel)]="childStudyName">
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-12">
+      <div class="form-group">
+        <label for="name">{{'Select equipment for chaining'|translate}}</label>
+        <select  [(ngModel)]="selectedEquipmentId" id="studyEquipment" class="form-control">
+          <option *ngFor="let eqp of equipments" value="{{eqp.ID_STUDY_EQUIPMENTS}}">{{eqp.displayName}}</option>
+        </select>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-body" *ngIf="!equipmentsLoaded">
+  <app-spinner #spinner></app-spinner>
+</div>
+<div class="modal-footer">
+<button type="button" class="btn btn-success"  [disabled]="!equipmentsLoaded" [ladda]="laddaConfirm"
+ (click)="onConfirmCreateChildStudy()">{{ 'Confirm'|translate }}</button>
+  <button type="button" class="btn btn-default" (click)="newModalRef.hide()">{{ 'Close'|translate }}</button>
+</div>

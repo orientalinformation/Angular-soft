@@ -4,7 +4,7 @@ import { EquipGeneration } from './equip-generation';
 /**
  */
 export class RefEquipment {
-    NUMBER_OF_ZONES?: number;
+    TMP_REGUL_MIN?: number;
     ID_EQUIP?: number;
     ID_COOLING_FAMILY?: number;
     ID_USER?: number;
@@ -30,8 +30,8 @@ export class RefEquipment {
     MAX_FLOW_RATE?: number;
     MAX_NOZZLES_BY_RAMP?: number;
     MAX_RAMPS?: number;
+    NUMBER_OF_ZONES?: number;
     ID_EQUIPSERIES?: number;
-    TMP_REGUL_MIN?: number;
     CAPABILITIES?: number;
     ITEM_TR?: number;
     ITEM_TS?: number;
@@ -56,4 +56,6 @@ export class RefEquipment {
     consumptionSymbol3?: string;
     shelvesWidthSymbol?: string;
     rampsPositionSymbol?: string;
+    FAN_FREQUENCY?: number;
+    checkFanFrequency?: boolean;
 }

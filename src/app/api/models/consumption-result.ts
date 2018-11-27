@@ -3,7 +3,7 @@
 /**
  */
 export class ConsumptionResult {
-    year?: number;
+    eqptPerm?: number;
     id?: number;
     tc?: number;
     kgProduct?: number;
@@ -12,8 +12,8 @@ export class ConsumptionResult {
     week?: number;
     hour?: number;
     month?: number;
+    year?: number;
     equipName?: string;
-    eqptPerm?: number;
     eqptCold?: number;
     lineCold?: number;
     linePerm?: number;
@@ -22,4 +22,5 @@ export class ConsumptionResult {
     percentEquipmentPerm?: number;
     percentEquipmentDown?: number;
     percentLine?: number;
+    ENABLE_CONS_PIE?: number;
 }

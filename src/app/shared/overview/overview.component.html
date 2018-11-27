@@ -1,0 +1,50 @@
+<div class="modal-header modal-primary comment-study">
+  <h4 class="modal-title pull-left">{{ 'Chaining Overview'|translate }}</h4>
+  <button type="button" class="close pull-right" aria-label="Close" (click)="bsModalRef.hide()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <div class="chaining-group text-center">
+    <div class="row" *ngIf="chainings">
+      <div class="col-sm-4" *ngFor="let chain of chainings; let i = index">
+        <div class="card">
+          <div class="card-header text-center">
+            <button class="btn btn-primary" (click)="closeAndOpenStudy(chain.ID_STUDY)" 
+            [disabled]="(this.study.ID_STUDY == chain.ID_STUDY) || (chain.ID_STUDY == null)">{{ 'Phase ' + (i + 1)|translate }}</button>
+          </div>
+          <img class="card-img-chain" [src]="'assets/img/chaining/'+chain.shape+'/'+chain.layer+'.png'" alt="Card image cap">
+          <div class="card-body">
+            <div class="row">
+              <table class="table table-bordered">
+                <tbody *ngIf="chain.hasSEquipment; else noequipdata">
+                  <tr *ngFor="let sequip of chain.StudyEquipment">
+                    <td><span class="chaining-break">{{ sequip.name }} <i *ngIf="sequip.isChaining == 1" class="fa fa-check-square" aria-hidden="true"></i></span> 
+                    </td>
+                  </tr>
+                </tbody>
+                <ng-template #noequipdata>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <button type="button" class="btn btn-warning btn-sm" (click)="createChildStudyDialog();bsModalRef.hide()" ngbTooltip="Select study equipment">
+                          <i class="fa fa-plus-circle"></i>
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </ng-template>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-success" (click)="addNewPhase()" [disabled]="disabledFiled() || userLogin()">
+    <i class="fa fa-plus-circle"></i> {{ 'Add'|translate }}
+  </button>
+  <button type="button" class="btn btn-default" (click)="bsModalRef.hide()">{{ 'Close'|translate }}</button>
+</div>

@@ -29,4 +29,5 @@ export class Component {
     SUB_FAMILY?: number;
     WATER?: number;
     displayName?: string;
+    class?: string;
 }

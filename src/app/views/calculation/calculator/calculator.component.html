@@ -27,13 +27,16 @@
                 </label>
               </td>
               <td align="center">
-                <input type="text" class="form-control form-control-sm" name="epsilonTemp" id="epsilonTemp" style="width:80px;" [(ngModel)]="calculate.epsilonTemp" [disabled]="calculate.sdisableOptim == 1">
+                <input type="text" class="form-control form-control-sm" name="epsilonTemp" id="epsilonTemp" style="width:80px;" 
+                [(ngModel)]="calculate.epsilonTemp" [disabled]="calculate.sdisableOptim == 1 || calculate.checkOptim != 1">
               </td>
               <td align="center">
-                <input type="text" class="form-control form-control-sm" name="epsilonEnth" id="epsilonEnth" style="width:80px;" [(ngModel)]="calculate.epsilonEnth" [disabled]="calculate.sdisableOptim == 1">
+                <input type="text" class="form-control form-control-sm" name="epsilonEnth" id="epsilonEnth" style="width:80px;" 
+                [(ngModel)]="calculate.epsilonEnth" [disabled]="calculate.sdisableOptim == 1 || calculate.checkOptim != 1">
               </td>
               <td align="center">
-                <input type="text" class="form-control form-control-sm" name="nbOptimIter" id="nbOptimIter" style="width:80px;" [(ngModel)]="calculate.nbOptimIter" [disabled]="calculate.sdisableNbOptim == 1">
+                <input type="text" class="form-control form-control-sm" name="nbOptimIter" id="nbOptimIter" style="width:80px;" 
+                [(ngModel)]="calculate.nbOptimIter" [disabled]="calculate.sdisableNbOptim == 1 || calculate.checkOptim != 1">
               </td>
             </tr>
           </table>
@@ -311,15 +314,15 @@
             </td>
             <td align="center">
               <input type="text" class="form-control form-control-sm" style="width:80px;" name="epsilonTemp" id="epsilonTemp"
-               [disabled]="brainCalculator.checkOptim != 1 || brainCalculator.sdisableOptim == 1" [(ngModel)]="brainCalculator.epsilonTemp">
+               [disabled]="brainCalculator.scheckOptim != 1 || brainCalculator.sdisableOptim == 1" [(ngModel)]="brainCalculator.epsilonTemp">
             </td>
             <td align="center">
               <input type="text" class="form-control form-control-sm" style="width:80px;" name="epsilonEnth" id="epsilonEnth"
-                [disabled]="brainCalculator.checkOptim != 1 || brainCalculator.sdisableOptim == 1" [(ngModel)]="brainCalculator.epsilonEnth">
+                [disabled]="brainCalculator.scheckOptim != 1 || brainCalculator.sdisableOptim == 1" [(ngModel)]="brainCalculator.epsilonEnth">
             </td>
             <td align="center">
               <input type="text" class="form-control form-control-sm" style="width:80px;" name="nbOptimIter" id="nbOptimIter"
-               [disabled]="brainCalculator.checkOptim != 1 || brainCalculator.typeCalculate == 3 || brainCalculator.sdisableNbOptim == 1" 
+               [disabled]="brainCalculator.scheckOptim != 1 || brainCalculator.typeCalculate == 3 || brainCalculator.sdisableNbOptim == 1" 
               [(ngModel)]="brainCalculator.nbOptimIter">
             </td>
           </tr>
@@ -943,7 +946,7 @@
           <div class="progress-calculate" *ngFor="let progress of progressbar.studyEquipments">
             <div class="progress-name">{{progress.EQUIP_NAME}}</div>
             <div class="progress-study">
-              <progress-bar [progress]="100" [color]="'#488aff'"></progress-bar>
+              <progress-bar [progress]="progress.BRAIN_PROCESS" [color]="'#488aff'"></progress-bar>
             </div>
           </div>
         </div>

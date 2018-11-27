@@ -3,7 +3,7 @@
 /**
  */
 export class Equipment {
-    NB_VC?: number;
+    BUYING_COST?: number;
     ID_EQUIP?: number;
     ID_COOLING_FAMILY?: number;
     ID_USER?: number;
@@ -22,8 +22,8 @@ export class Equipment {
     NB_MAX_MODUL?: number;
     NB_TR?: number;
     NB_TS?: number;
+    NB_VC?: number;
     ID_EQUIPSERIES?: number;
-    BUYING_COST?: number;
     RENTAL_COST?: number;
     INSTALL_COST?: number;
     MAX_FLOW_RATE?: number;
@@ -41,4 +41,6 @@ export class Equipment {
     OPEN_BY_OWNER?: number;
     SERIES_NAME?: string;
     BATCH_PROCESS?: boolean;
+    displayName?: string;
+    class?: string;
 }

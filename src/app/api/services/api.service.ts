@@ -34,6 +34,8 @@ import { ViewResponseUrl } from '../models/view-response-url';
 import { Report } from '../models/report';
 import { ViewProcessingReport } from '../models/view-processing-report';
 import { DisplayAllLangs } from '../models/display-all-langs';
+import { ChangeLabel } from '../models/change-label';
+import { LoadTransLang } from '../models/load-trans-lang';
 import { Symbol } from '../models/symbol';
 import { OptimumResultAna } from '../models/optimum-result-ana';
 import { HeadBalanceResult } from '../models/head-balance-result';
@@ -50,6 +52,8 @@ import { RecordPosition } from '../models/record-position';
 import { ViewOperatingSetting } from '../models/view-operating-setting';
 import { EquipSizingParam } from '../models/equip-sizing-param';
 import { OperatingSettingParam } from '../models/operating-setting-param';
+import { ConsPieToReportParam } from '../models/cons-pie-to-report-param';
+import { DuplicateEltNewSizeParam } from '../models/duplicate-elt-new-size-param';
 import { TempRecordPts } from '../models/temp-record-pts';
 import { ProductElmt } from '../models/product-elmt';
 import { PointValue } from '../models/point-value';
@@ -60,7 +64,10 @@ import { ViewFamily } from '../models/view-family';
 import { ViewMinMaxProduction } from '../models/view-min-max-production';
 import { ViewMinMaxProductMeshPacking } from '../models/view-min-max-product-mesh-packing';
 import { ViewMinMaxEquipment } from '../models/view-min-max-equipment';
+import { Color } from '../models/color';
+import { ProductCharColorParam } from '../models/product-char-color-param';
 import { ViewSizingResultOptimum } from '../models/view-sizing-result-optimum';
+import { SizingOptimumData } from '../models/sizing-optimum-data';
 import { ViewSizingEstimationResult } from '../models/view-sizing-estimation-result';
 import { ViewTemperatureProfile } from '../models/view-temperature-profile';
 import { ViewHeatExchange } from '../models/view-heat-exchange';
@@ -70,6 +77,10 @@ import { saveTempRecordPts } from '../models/save-temp-record-pts';
 import { ViewProductchart2D } from '../models/view-productchart-2d';
 import { productChart2DStatic } from '../models/product-chart-2dstatic';
 import { inline_response_200 } from '../models/inline-_response-_200';
+import { dataContourParam } from '../models/data-contour-param';
+import { OutputComputeTrTsParam } from '../models/output-compute-tr-ts-param';
+import { ConsumptionPieParam } from '../models/consumption-pie-param';
+import { SelectedMeshPoint } from '../models/selected-mesh-point';
 import { Translation } from '../models/translation';
 import { ViewMeshPosition } from '../models/view-mesh-position';
 import { ViewOpenStudy } from '../models/view-open-study';
@@ -90,7 +101,6 @@ import { ViewPackingLayer } from '../models/view-packing-layer';
 import { SavePackingLayer } from '../models/save-packing-layer';
 import { ViewMesh } from '../models/view-mesh';
 import { GenMeshParams } from '../models/gen-mesh-params';
-import { Color } from '../models/color';
 import { Users } from '../models/users';
 import { User } from '../models/user';
 
@@ -1181,18 +1191,14 @@ export class ApiService extends BaseService {
     );
   }
   /**
-   * @param id_trans - undefined
-   * @param id_ref - undefined
    */
-  filterTransResponse(params: ApiService.FilterTransParams): Observable<HttpResponse<DisplayAllLangs>> {
+  getDefaultLanguageResponse(): Observable<HttpResponse<DisplayAllLangs>> {
     let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
-    if (params.idTrans != null) __params = __params.set("id_trans", params.idTrans.toString());
-    if (params.idRef != null) __params = __params.set("id_ref", params.idRef.toString());
     let req = new HttpRequest<any>(
       "GET",
-      this.rootUrl + `/translations`,
+      this.rootUrl + `/translations/getDefaultLanguage`,
       __body,
       {
         headers: __headers,
@@ -1212,10 +1218,85 @@ export class ApiService extends BaseService {
   }
 
   /**
-   * @param id_trans - undefined
-   * @param id_ref - undefined
    */
-  filterTrans(params: ApiService.FilterTransParams): Observable<DisplayAllLangs> {
+  getDefaultLanguage(): Observable<DisplayAllLangs> {
+    return this.getDefaultLanguageResponse().pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * @param body - change label of compponent!!
+   */
+  changeLabelsResponse(body: ChangeLabel[]): Observable<HttpResponse<void>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    __body = body;
+    let req = new HttpRequest<any>(
+      "POST",
+      this.rootUrl + `/translations/update`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'text'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: void = null;
+        
+        return _resp.clone({body: _body}) as HttpResponse<void>;
+      })
+    );
+  }
+
+  /**
+   * @param body - change label of compponent!!
+   */
+  changeLabels(body: ChangeLabel[]): Observable<void> {
+    return this.changeLabelsResponse(body).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * @param idtrans - undefined
+   * @param id - undefined
+   */
+  filterTransResponse(params: ApiService.FilterTransParams): Observable<HttpResponse<LoadTransLang>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    if (params.idtrans != null) __params = __params.set("idtrans", params.idtrans.toString());
+    if (params.id != null) __params = __params.set("id", params.id.toString());
+    let req = new HttpRequest<any>(
+      "GET",
+      this.rootUrl + `/translations/filterTrans`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: LoadTransLang = null;
+        _body = _resp.body as LoadTransLang
+        return _resp.clone({body: _body}) as HttpResponse<LoadTransLang>;
+      })
+    );
+  }
+
+  /**
+   * @param idtrans - undefined
+   * @param id - undefined
+   */
+  filterTrans(params: ApiService.FilterTransParams): Observable<LoadTransLang> {
     return this.filterTransResponse(params).pipe(
       map(_r => _r.body)
     );
@@ -1851,6 +1932,165 @@ export class ApiService extends BaseService {
   }
   /**
    * @param id - undefined
+   * @param body - undefined
+   */
+  computeTrTsConfigResponse(params: ApiService.ComputeTrTsConfigParams): Observable<HttpResponse<ViewStudyEquipment>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    
+    __body = params.body;
+    let req = new HttpRequest<any>(
+      "POST",
+      this.rootUrl + `/studyEquipment/${params.id}/computeTrTsConfig`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: ViewStudyEquipment = null;
+        _body = _resp.body as ViewStudyEquipment
+        return _resp.clone({body: _body}) as HttpResponse<ViewStudyEquipment>;
+      })
+    );
+  }
+
+  /**
+   * @param id - undefined
+   * @param body - undefined
+   */
+  computeTrTsConfig(params: ApiService.ComputeTrTsConfigParams): Observable<ViewStudyEquipment> {
+    return this.computeTrTsConfigResponse(params).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * @param id - undefined
+   * @param body - undefined
+   */
+  addConsPieToReportResponse(params: ApiService.AddConsPieToReportParams): Observable<HttpResponse<void>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    
+    __body = params.body;
+    let req = new HttpRequest<any>(
+      "POST",
+      this.rootUrl + `/studyEquipment/${params.id}/addConsPieToReport`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'text'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: void = null;
+        
+        return _resp.clone({body: _body}) as HttpResponse<void>;
+      })
+    );
+  }
+
+  /**
+   * @param id - undefined
+   * @param body - undefined
+   */
+  addConsPieToReport(params: ApiService.AddConsPieToReportParams): Observable<void> {
+    return this.addConsPieToReportResponse(params).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * get Special Length
+   * @param id - StudyEquipment ID
+   */
+  getSpecialLengthResponse(id: number): Observable<HttpResponse<string[]>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    
+    let req = new HttpRequest<any>(
+      "GET",
+      this.rootUrl + `/studyEquipment/${id}/getSpecialLength`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: string[] = null;
+        _body = _resp.body as string[]
+        return _resp.clone({body: _body}) as HttpResponse<string[]>;
+      })
+    );
+  }
+
+  /**
+   * get Special Length
+   * @param id - StudyEquipment ID
+   */
+  getSpecialLength(id: number): Observable<string[]> {
+    return this.getSpecialLengthResponse(id).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * @param id - undefined
+   * @param body - undefined
+   */
+  duplicateEltNewSizeResponse(params: ApiService.DuplicateEltNewSizeParams): Observable<HttpResponse<void>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    
+    __body = params.body;
+    let req = new HttpRequest<any>(
+      "POST",
+      this.rootUrl + `/studyEquipment/${params.id}/duplicateEltNewSize`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'text'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: void = null;
+        
+        return _resp.clone({body: _body}) as HttpResponse<void>;
+      })
+    );
+  }
+
+  /**
+   * @param id - undefined
+   * @param body - undefined
+   */
+  duplicateEltNewSize(params: ApiService.DuplicateEltNewSizeParams): Observable<void> {
+    return this.duplicateEltNewSizeResponse(params).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * @param id - undefined
    */
   getTempRecordPtsResponse(id: number): Observable<HttpResponse<TempRecordPts>> {
     let __params = this.newParams();
@@ -2313,7 +2553,85 @@ export class ApiService extends BaseService {
     );
   }
   /**
-   * get sizng result optimum
+   * get color palletes
+   */
+  findColorPalettesResponse(): Observable<HttpResponse<Color[]>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    let req = new HttpRequest<any>(
+      "GET",
+      this.rootUrl + `/colorPalettes`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: Color[] = null;
+        _body = _resp.body as Color[]
+        return _resp.clone({body: _body}) as HttpResponse<Color[]>;
+      })
+    );
+  }
+
+  /**
+   * get color palletes
+   */
+  findColorPalettes(): Observable<Color[]> {
+    return this.findColorPalettesResponse().pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * update product chart color
+   * @param id - Product ID
+   * @param body - body
+   */
+  updateProductCharColorResponse(params: ApiService.UpdateProductCharColorParams): Observable<HttpResponse<void>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    
+    __body = params.body;
+    let req = new HttpRequest<any>(
+      "POST",
+      this.rootUrl + `/products/${params.id}/productCharColor`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'text'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: void = null;
+        
+        return _resp.clone({body: _body}) as HttpResponse<void>;
+      })
+    );
+  }
+
+  /**
+   * update product chart color
+   * @param id - Product ID
+   * @param body - body
+   */
+  updateProductCharColor(params: ApiService.UpdateProductCharColorParams): Observable<void> {
+    return this.updateProductCharColorResponse(params).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * get sizing result optimum
    * @param idStudy - Study ID
    */
   sizingOptimumResultResponse(idStudy: number): Observable<HttpResponse<ViewSizingResultOptimum>> {
@@ -2343,11 +2661,53 @@ export class ApiService extends BaseService {
   }
 
   /**
-   * get sizng result optimum
+   * get sizing result optimum
    * @param idStudy - Study ID
    */
   sizingOptimumResult(idStudy: number): Observable<ViewSizingResultOptimum> {
     return this.sizingOptimumResultResponse(idStudy).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * draw singzing optimum chart
+   * @param idStudy - Study ID
+   * @param body - body
+   */
+  sizingOptimumDrawResponse(params: ApiService.SizingOptimumDrawParams): Observable<HttpResponse<string>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    
+    __body = params.body;
+    let req = new HttpRequest<any>(
+      "POST",
+      this.rootUrl + `/output/sizingresult/${params.idStudy}/optimum`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'text'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: string = null;
+        _body = _resp.body as string
+        return _resp.clone({body: _body}) as HttpResponse<string>;
+      })
+    );
+  }
+
+  /**
+   * draw singzing optimum chart
+   * @param idStudy - Study ID
+   * @param body - body
+   */
+  sizingOptimumDraw(params: ApiService.SizingOptimumDrawParams): Observable<string> {
+    return this.sizingOptimumDrawResponse(params).pipe(
       map(_r => _r.body)
     );
   }
@@ -2727,15 +3087,17 @@ export class ApiService extends BaseService {
   /**
    * get value contour data
    * @param idStudyEquipment - StudyEquipment ID
+   * @param body - undefined
    */
-  readDataContourResponse(idStudyEquipment: number): Observable<HttpResponse<inline_response_200>> {
+  readDataContourResponse(params: ApiService.ReadDataContourParams): Observable<HttpResponse<inline_response_200>> {
     let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
     
+    __body = params.body;
     let req = new HttpRequest<any>(
-      "GET",
-      this.rootUrl + `/output/readDataContour/${idStudyEquipment}`,
+      "POST",
+      this.rootUrl + `/output/readDataContour/${params.idStudyEquipment}`,
       __body,
       {
         headers: __headers,
@@ -2757,9 +3119,167 @@ export class ApiService extends BaseService {
   /**
    * get value contour data
    * @param idStudyEquipment - StudyEquipment ID
+   * @param body - undefined
    */
-  readDataContour(idStudyEquipment: number): Observable<inline_response_200> {
-    return this.readDataContourResponse(idStudyEquipment).pipe(
+  readDataContour(params: ApiService.ReadDataContourParams): Observable<inline_response_200> {
+    return this.readDataContourResponse(params).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * @param idStudyEquipment - undefined
+   * @param body - undefined
+   */
+  computeTrTsResponse(params: ApiService.ComputeTrTsParams): Observable<HttpResponse<ViewStudyEquipment>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    
+    __body = params.body;
+    let req = new HttpRequest<any>(
+      "POST",
+      this.rootUrl + `/output/${params.idStudyEquipment}/computeTrTs`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: ViewStudyEquipment = null;
+        _body = _resp.body as ViewStudyEquipment
+        return _resp.clone({body: _body}) as HttpResponse<ViewStudyEquipment>;
+      })
+    );
+  }
+
+  /**
+   * @param idStudyEquipment - undefined
+   * @param body - undefined
+   */
+  computeTrTs(params: ApiService.ComputeTrTsParams): Observable<ViewStudyEquipment> {
+    return this.computeTrTsResponse(params).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * @param idStudyEquipment - undefined
+   * @param body - undefined
+   */
+  runSequenceCalculationResponse(params: ApiService.RunSequenceCalculationParams): Observable<HttpResponse<void>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    
+    __body = params.body;
+    let req = new HttpRequest<any>(
+      "POST",
+      this.rootUrl + `/output/${params.idStudyEquipment}/runSequenceCalculation`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'text'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: void = null;
+        
+        return _resp.clone({body: _body}) as HttpResponse<void>;
+      })
+    );
+  }
+
+  /**
+   * @param idStudyEquipment - undefined
+   * @param body - undefined
+   */
+  runSequenceCalculation(params: ApiService.RunSequenceCalculationParams): Observable<void> {
+    return this.runSequenceCalculationResponse(params).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * @param idStudyEquipment - undefined
+   * @param body - undefined
+   */
+  drawConsumptionPieResponse(params: ApiService.DrawConsumptionPieParams): Observable<HttpResponse<string>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    
+    __body = params.body;
+    let req = new HttpRequest<any>(
+      "POST",
+      this.rootUrl + `/output/${params.idStudyEquipment}/drawConsumptionPie`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'text'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: string = null;
+        _body = _resp.body as string
+        return _resp.clone({body: _body}) as HttpResponse<string>;
+      })
+    );
+  }
+
+  /**
+   * @param idStudyEquipment - undefined
+   * @param body - undefined
+   */
+  drawConsumptionPie(params: ApiService.DrawConsumptionPieParams): Observable<string> {
+    return this.drawConsumptionPieResponse(params).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * @param id - undefined
+   */
+  getSelectedMeshPointsResponse(id: number): Observable<HttpResponse<SelectedMeshPoint>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    
+    let req = new HttpRequest<any>(
+      "GET",
+      this.rootUrl + `/study/${id}/getSelectedMeshPoints`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: SelectedMeshPoint = null;
+        _body = _resp.body as SelectedMeshPoint
+        return _resp.clone({body: _body}) as HttpResponse<SelectedMeshPoint>;
+      })
+    );
+  }
+
+  /**
+   * @param id - undefined
+   */
+  getSelectedMeshPoints(id: number): Observable<SelectedMeshPoint> {
+    return this.getSelectedMeshPointsResponse(id).pipe(
       map(_r => _r.body)
     );
   }
@@ -3505,7 +4025,7 @@ export class ApiService extends BaseService {
    * get study equipment layout image by id
    * @param id - StudyEquipment ID
    */
-  getStudyEquipmentLayoutByIdResponse(id: number): Observable<HttpResponse<string>> {
+  getStudyEquipmentLayoutResponse(id: number): Observable<HttpResponse<string>> {
     let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
@@ -3535,8 +4055,8 @@ export class ApiService extends BaseService {
    * get study equipment layout image by id
    * @param id - StudyEquipment ID
    */
-  getStudyEquipmentLayoutById(id: number): Observable<string> {
-    return this.getStudyEquipmentLayoutByIdResponse(id).pipe(
+  getStudyEquipmentLayout(id: number): Observable<string> {
+    return this.getStudyEquipmentLayoutResponse(id).pipe(
       map(_r => _r.body)
     );
   }
@@ -3621,7 +4141,7 @@ export class ApiService extends BaseService {
    * @param idEquip - undefined
    * @param id - undefined
    */
-  addEquipmentResponse(params: ApiService.AddEquipmentParams): Observable<HttpResponse<void>> {
+  addEquipmentResponse(params: ApiService.AddEquipmentParams): Observable<HttpResponse<StudyEquipment>> {
     let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
@@ -3634,16 +4154,16 @@ export class ApiService extends BaseService {
       {
         headers: __headers,
         params: __params,
-        responseType: 'text'
+        responseType: 'json'
       });
 
     return this.http.request<any>(req).pipe(
       filter(_r => _r instanceof HttpResponse),
       map(_r => {
         let _resp = _r as HttpResponse<any>;
-        let _body: void = null;
-        
-        return _resp.clone({body: _body}) as HttpResponse<void>;
+        let _body: StudyEquipment = null;
+        _body = _resp.body as StudyEquipment
+        return _resp.clone({body: _body}) as HttpResponse<StudyEquipment>;
       })
     );
   }
@@ -3652,7 +4172,7 @@ export class ApiService extends BaseService {
    * @param idEquip - undefined
    * @param id - undefined
    */
-  addEquipment(params: ApiService.AddEquipmentParams): Observable<void> {
+  addEquipment(params: ApiService.AddEquipmentParams): Observable<StudyEquipment> {
     return this.addEquipmentResponse(params).pipe(
       map(_r => _r.body)
     );
@@ -4113,6 +4633,8 @@ export class ApiService extends BaseService {
    * @param id - Product ID
    * @param elementId - undefined
    * @param realmass - undefined
+   * @param dim5 - undefined
+   * @param dim4 - undefined
    * @param dim2 - undefined
    * @param description - undefined
    * @param computedmass - undefined
@@ -4124,6 +4646,8 @@ export class ApiService extends BaseService {
     
     if (params.elementId != null) __params = __params.set("elementId", params.elementId.toString());
     if (params.realmass != null) __params = __params.set("realmass", params.realmass.toString());
+    if (params.dim5 != null) __params = __params.set("dim5", params.dim5.toString());
+    if (params.dim4 != null) __params = __params.set("dim4", params.dim4.toString());
     if (params.dim2 != null) __params = __params.set("dim2", params.dim2.toString());
     if (params.description != null) __params = __params.set("description", params.description.toString());
     if (params.computedmass != null) __params = __params.set("computedmass", params.computedmass.toString());
@@ -4153,6 +4677,8 @@ export class ApiService extends BaseService {
    * @param id - Product ID
    * @param elementId - undefined
    * @param realmass - undefined
+   * @param dim5 - undefined
+   * @param dim4 - undefined
    * @param dim2 - undefined
    * @param description - undefined
    * @param computedmass - undefined
@@ -4425,11 +4951,13 @@ export class ApiService extends BaseService {
   }
   /**
    * get available shapes
+   * @param calMode - undefined
    */
-  getShapesResponse(): Observable<HttpResponse<Shape[]>> {
+  getShapesResponse(calMode?: number): Observable<HttpResponse<Shape[]>> {
     let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
+    if (calMode != null) __params = __params.set("calMode", calMode.toString());
     let req = new HttpRequest<any>(
       "GET",
       this.rootUrl + `/shapes`,
@@ -4453,9 +4981,10 @@ export class ApiService extends BaseService {
 
   /**
    * get available shapes
+   * @param calMode - undefined
    */
-  getShapes(): Observable<Shape[]> {
-    return this.getShapesResponse().pipe(
+  getShapes(calMode?: number): Observable<Shape[]> {
+    return this.getShapesResponse(calMode).pipe(
       map(_r => _r.body)
     );
   }
@@ -4615,15 +5144,17 @@ export class ApiService extends BaseService {
   /**
    * get mesh view of product
    * @param id - id of product
+   * @param ID_STUDY - undefined
    */
-  getMeshViewResponse(id: number): Observable<HttpResponse<ViewMesh>> {
+  getMeshViewResponse(params: ApiService.GetMeshViewParams): Observable<HttpResponse<ViewMesh>> {
     let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
     
+    if (params.IDSTUDY != null) __params = __params.set("ID_STUDY", params.IDSTUDY.toString());
     let req = new HttpRequest<any>(
       "GET",
-      this.rootUrl + `/products/${id}/meshView`,
+      this.rootUrl + `/products/${params.id}/meshView`,
       __body,
       {
         headers: __headers,
@@ -4645,9 +5176,10 @@ export class ApiService extends BaseService {
   /**
    * get mesh view of product
    * @param id - id of product
+   * @param ID_STUDY - undefined
    */
-  getMeshView(id: number): Observable<ViewMesh> {
-    return this.getMeshViewResponse(id).pipe(
+  getMeshView(params: ApiService.GetMeshViewParams): Observable<ViewMesh> {
+    return this.getMeshViewResponse(params).pipe(
       map(_r => _r.body)
     );
   }
@@ -4698,7 +5230,7 @@ export class ApiService extends BaseService {
    * @param idProd - undefined
    * @param body - undefined
    */
-  generateMeshResponse(params: ApiService.GenerateMeshParams): Observable<HttpResponse<void>> {
+  generateMeshResponse(params: ApiService.GenerateMeshParams): Observable<HttpResponse<number>> {
     let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
@@ -4718,9 +5250,9 @@ export class ApiService extends BaseService {
       filter(_r => _r instanceof HttpResponse),
       map(_r => {
         let _resp = _r as HttpResponse<any>;
-        let _body: void = null;
-        
-        return _resp.clone({body: _body}) as HttpResponse<void>;
+        let _body: number = null;
+        _body = parseFloat(_resp.body as string)
+        return _resp.clone({body: _body}) as HttpResponse<number>;
       })
     );
   }
@@ -4730,7 +5262,7 @@ export class ApiService extends BaseService {
    * @param idProd - undefined
    * @param body - undefined
    */
-  generateMesh(params: ApiService.GenerateMeshParams): Observable<void> {
+  generateMesh(params: ApiService.GenerateMeshParams): Observable<number> {
     return this.generateMeshResponse(params).pipe(
       map(_r => _r.body)
     );
@@ -5001,8 +5533,8 @@ export module ApiService {
     id: number;
   }
   export interface FilterTransParams {
-    idTrans?: number;
-    idRef?: number;
+    idtrans: number;
+    id: number;
   }
   export interface GetEstimationHeadBalanceParams {
     idStudy: number;
@@ -5016,6 +5548,18 @@ export module ApiService {
     id: number;
     body: OperatingSettingParam;
   }
+  export interface ComputeTrTsConfigParams {
+    id: number;
+    body: OperatingSettingParam;
+  }
+  export interface AddConsPieToReportParams {
+    id: number;
+    body: ConsPieToReportParam;
+  }
+  export interface DuplicateEltNewSizeParams {
+    id: number;
+    body: DuplicateEltNewSizeParam;
+  }
   export interface SaveLocationAxisParams {
     id: number;
     body: LocationAxisParams;
@@ -5027,6 +5571,14 @@ export module ApiService {
     model?: number;
     manufacturer?: string;
     energy?: number;
+  }
+  export interface UpdateProductCharColorParams {
+    id: number;
+    body: ProductCharColorParam;
+  }
+  export interface SizingOptimumDrawParams {
+    idStudy: number;
+    body: SizingOptimumData[];
   }
   export interface SizingEstimationResultParams {
     idStudy: number;
@@ -5050,6 +5602,22 @@ export module ApiService {
     idStudyEquipment: number;
     idStudy: number;
     dimension: string;
+  }
+  export interface ReadDataContourParams {
+    idStudyEquipment: number;
+    body: dataContourParam;
+  }
+  export interface ComputeTrTsParams {
+    idStudyEquipment: number;
+    body: OutputComputeTrTsParam;
+  }
+  export interface RunSequenceCalculationParams {
+    idStudyEquipment: number;
+    body: OutputComputeTrTsParam;
+  }
+  export interface DrawConsumptionPieParams {
+    idStudyEquipment: number;
+    body: ConsumptionPieParam;
   }
   export interface SaveReportParams {
     id: number;
@@ -5112,6 +5680,8 @@ export module ApiService {
     id: number;
     elementId: number;
     realmass?: number;
+    dim5?: number;
+    dim4?: number;
     dim2?: number;
     description?: string;
     computedmass?: number;
@@ -5140,6 +5710,10 @@ export module ApiService {
   export interface SavePackingParams {
     id: number;
     body: SavePackingLayer;
+  }
+  export interface GetMeshViewParams {
+    id: number;
+    IDSTUDY: number;
   }
   export interface InitNonIsoTemperatureParams {
     idProd: number;

@@ -12,4 +12,5 @@ export class ViewProduct {
     compFamily?: ViewFamily;
     subFamily?: ViewFamily;
     waterPercentList?: number[];
+    isAddComponentAllowed?: boolean;
 }

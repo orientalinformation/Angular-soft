@@ -5,6 +5,7 @@ import { User } from '../../../api/models/user';
 import { ViewUsers } from '../../../api/models';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
+import { TranslateService } from '@ngx-translate/core';
 import swal from 'sweetalert2';
 import { AdminService } from '../../../api/services/admin.service';
 
@@ -68,7 +69,7 @@ export class UsersComponent implements OnInit, AfterViewInit {
   public listConnections: Object;
   public listUsers: Array<ViewUsers>;
 
-  constructor(private admin: AdminService, private router: Router, private toastr: ToastrService) {
+  constructor(private admin: AdminService, private router: Router, private toastr: ToastrService, private translate: TranslateService) {
     this.user = new NewUser();
   }
 
@@ -96,42 +97,42 @@ export class UsersComponent implements OnInit, AfterViewInit {
 
   newUser() {
     if (!this.user.username) {
-      swal('Oops..', 'Please specify username!', 'warning');
+      swal('Warning', this.translate.instant('Please specify username!'), 'warning');
       return;
     }
 
     if (this.user.username.length < 5 || this.user.username.length > 30) {
-      swal('Oops..', 'Please username ( 5 : 30 )', 'warning');
+      swal('Warning', this.translate.instant('Please username ( 5 : 30 )'), 'warning');
       return;
     }
 
     if (!this.user.email) {
-      swal('Oops..', 'Please specify email!', 'warning');
+      swal('Warning', this.translate.instant('Please specify email!'), 'warning');
       return;
     }
 
     if (!this.emailPattern.test(this.user.email)) {
-      swal('Oops..', ' Email is incorrect!', 'warning');
+      swal('Warning', this.translate.instant(' Email is incorrect!'), 'warning');
       return;
     }
 
     if (!this.user.password) {
-      swal('Oops..', 'Please specify password!', 'warning');
+      swal('Warning', this.translate.instant('Please specify password!'), 'warning');
       return;
     }
 
     if (this.user.password.length < 5 || this.user.password.length > 30) {
-      swal('Oops..', 'Please password ( 5 : 30 )', 'warning');
+      swal('Warning', this.translate.instant('Please password ( 5 : 30 )'), 'warning');
       return;
     }
 
     if (!this.user.confirmpassword) {
-      swal('Oops..', 'Please specify confirm password!', 'warning');
+      swal('Warning', this.translate.instant('Please specify confirm password!'), 'warning');
       return;
     }
 
     if (this.user.password !== this.user.confirmpassword) {
-      swal('Oops..', 'Password was different to the confirm password!', 'warning');
+      swal('Warning', this.translate.instant('Password was different to the confirm password!'), 'warning');
       return;
     }
 
@@ -151,10 +152,10 @@ export class UsersComponent implements OnInit, AfterViewInit {
         if (success) {
           this.modalAddUser.hide();
           this.user = new NewUser();
-          this.toastr.success('Create user', 'successfully');
+          this.toastr.success(this.translate.instant('Create user'), 'successfully');
           this.router.navigate(['/admin']);
         } else {
-          swal('Oops..', 'Create user error!', 'error');
+          swal('Warning', this.translate.instant('Create user error!'), 'error');
         }
         this.isSavingUser = false;
       },
@@ -188,28 +189,28 @@ export class UsersComponent implements OnInit, AfterViewInit {
         }
       },
       err => {
-        console.log(err);
+        // console.log(err);
       },
       () => {
         // console.log('find completed');
       }
-      );
+    );
   }
 
   delUser(user) {
     swal({
-      title: 'Are you sure?',
-      text: 'You won`t be able to revert this!',
+      title: this.translate.instant('Are you sure?'),
+      text: this.translate.instant('You won`t be able to revert this!'),
       type: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, delete it!'
+      confirmButtonText: this.translate.instant('Yes, delete it!')
     }).then((result) => {
       if (result.value) {
         swal(
-          'Deleted!',
-          'Your file has been deleted.',
+          this.translate.instant('Deleted!'),
+          this.translate.instant('Your file has been deleted.'),
           'success'
         );
         this.isDeleteUser = true;
@@ -217,11 +218,11 @@ export class UsersComponent implements OnInit, AfterViewInit {
           .subscribe(
             data => {
               this.isDeleteUser = false;
-              this.toastr.success('Update user', 'successfully');
+              this.toastr.success(this.translate.instant('Update user'), 'successfully');
             },
             err => {
               this.isDeleteUser = false;
-              console.log(err);
+              // console.log(err);
             },
             () => {
               this.isDeleteUser = false;
@@ -235,37 +236,37 @@ export class UsersComponent implements OnInit, AfterViewInit {
 
   updateUser(userUpdate) {
     if (!this.user.username) {
-      swal('Oops..', 'Please specify username!', 'warning');
+      swal('Warning', this.translate.instant('Please specify username!'), 'warning');
       return;
     }
 
     if (this.user.username.length < 5 || this.user.username.length > 30) {
-      swal('Oops..', 'Please username ( 5 : 30 )', 'warning');
+      swal('Warning', this.translate.instant('Please username ( 5 : 30 )'), 'warning');
       return;
     }
 
     if (!this.user.email) {
-      swal('Oops..', 'Please specify email!', 'warning');
+      swal('Warning', this.translate.instant('Please specify email!'), 'warning');
       return;
     }
 
     if (!this.emailPattern.test(this.user.email)) {
-      swal('Oops..', ' Email is incorrect!', 'warning');
+      swal('Warning', this.translate.instant(' Email is incorrect!'), 'warning');
       return;
     }
 
     if (this.user.password.length < 5 || this.user.password.length > 30) {
-      swal('Oops..', 'Please password ( 5 : 30 )', 'warning');
+      swal('Warning', this.translate.instant('Please password ( 5 : 30 )'), 'warning');
       return;
     }
 
     if (!this.user.confirmpassword) {
-      swal('Oops..', 'Please specify confirm password!', 'warning');
+      swal('Warning', this.translate.instant('Please specify confirm password!'), 'warning');
       return;
     }
 
     if (this.user.password !== this.user.confirmpassword) {
-      swal('Oops..', 'Password was different to the confirm password!', 'warning');
+      swal('Warning', this.translate.instant('Password was different to the confirm password!'), 'warning');
       return;
     }
 
@@ -290,10 +291,10 @@ export class UsersComponent implements OnInit, AfterViewInit {
           }
         }
         if (success) {
-          this.toastr.success('Update user', 'successfully');
+          this.toastr.success(this.translate.instant('Update user'), 'successfully');
           this.router.navigate(['/admin']);
         } else {
-          swal('Oops..', 'Update user error!', 'error');
+          swal('Warning', this.translate.instant('Update user error!'), 'error');
         }
         this.isUpdateUser = false;
       },
@@ -313,24 +314,24 @@ export class UsersComponent implements OnInit, AfterViewInit {
   disconnectUser(userCurr) {
     const idUser = userCurr.ID_USER;
     swal({
-      title: 'Are you sure?',
-      text: 'Confirm logout',
+      title: this.translate.instant('Are you sure?'),
+      text: this.translate.instant('Confirm logout'),
       type: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
-      confirmButtonText: 'OK !'
+      confirmButtonText: this.translate.instant('OK !')
     }).then((result) => {
       this.isDisconnectUser = true;
       if (result.value) {
         swal({
-          title: 'Are you sure?',
-          text: 'Reset the status of the studies?',
+          title: this.translate.instant('Are you sure?'),
+          text: this.translate.instant('Reset the status of the studies?'),
           type: 'warning',
           showCancelButton: true,
           confirmButtonColor: '#3085d6',
           cancelButtonColor: '#d33',
-          confirmButtonText: 'OK !'
+          confirmButtonText: this.translate.instant('OK !')
         }).then((res) => {
           if (res.value) {
             this.admin.disconnectUser({
@@ -338,38 +339,38 @@ export class UsersComponent implements OnInit, AfterViewInit {
               reset: 1
             }).subscribe(
               data => {
-                this.toastr.success('Disconnect complete', 'successfully');
+                this.toastr.success(this.translate.instant('Disconnect complete'), 'successfully');
                 this.isDisconnectUser = false;
                 this.user =  new NewUser();
               },
               err => {
-                console.log(err);
+                // console.log(err);
                 this.isDisconnectUser = false;
               },
               () => {
                 this.isDisconnectUser = false;
                 this.refrestListUsers();
               }
-              );
+            );
           } else {
             this.admin.disconnectUser({
               id: idUser,
               reset: 1
             }).subscribe(
               data => {
-                this.toastr.success('Disconnect complete', 'successfully');
+                this.toastr.success(this.translate.instant('Disconnect complete'), 'successfully');
                 this.isDisconnectUser = false;
                 this.user =  new NewUser();
               },
               err => {
-                console.log(err);
+                // console.log(err);
                 this.isDisconnectUser = false;
               },
               () => {
                 this.isDisconnectUser = false;
                 this.refrestListUsers();
               }
-              );
+            );
           }
         });
       }
@@ -410,12 +411,12 @@ export class UsersComponent implements OnInit, AfterViewInit {
         }
       },
       err => {
-        console.log(err);
+        // console.log(err);
       },
       () => {
 
       }
-      );
+    );
   }
 
   msToHMS( ms ) {

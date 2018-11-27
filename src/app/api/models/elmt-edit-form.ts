@@ -11,5 +11,6 @@ export class ElmtEditForm {
     elmt?: ProductElmt;
     tempPoints?: TempPoint[];
     tempPositions?: TempPoint[];
+    xPositions?: number[];
     index?: number;
 }

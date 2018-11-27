@@ -17,6 +17,7 @@ import { OptimumCalculator } from '../models/optimum-calculator';
 import { ViewStudyCalculator } from '../models/view-study-calculator';
 import { ViewMinMax } from '../models/view-min-max';
 import { BrainCalculator } from '../models/brain-calculator';
+import { ProgressBar } from '../models/progress-bar';
 
 
 @Injectable()
@@ -460,6 +461,45 @@ export class CalculatorService extends BaseService {
    */
   checkStartCalculationParameters(body: BrainCalculator): Observable<ViewMinMax> {
     return this.checkStartCalculationParametersResponse(body).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * get study equipment
+   * @param idStudy - undefined
+   */
+  getValueProgressStudyEquipmentResponse(idStudy?: number): Observable<HttpResponse<ProgressBar>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    if (idStudy != null) __params = __params.set("idStudy", idStudy.toString());
+    let req = new HttpRequest<any>(
+      "GET",
+      this.rootUrl + `/calculator/study/progressbar`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: ProgressBar = null;
+        _body = _resp.body as ProgressBar
+        return _resp.clone({body: _body}) as HttpResponse<ProgressBar>;
+      })
+    );
+  }
+
+  /**
+   * get study equipment
+   * @param idStudy - undefined
+   */
+  getValueProgressStudyEquipment(idStudy?: number): Observable<ProgressBar> {
+    return this.getValueProgressStudyEquipmentResponse(idStudy).pipe(
       map(_r => _r.body)
     );
   }}

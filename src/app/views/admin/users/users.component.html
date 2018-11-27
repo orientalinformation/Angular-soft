@@ -16,7 +16,7 @@
             <div class="col-md-6">
               <div class="card">
                 <div class="card-header">
-                  <strong>{{ 'USER SELECTTION'|translate }}</strong>
+                  <strong>{{ 'USER SELECTION'|translate }}</strong>
                   <div class="study-search-box-container">
                     <div class="input-group input-group-sm study-search-box">
                       <input type="text" class="form-control" [(ngModel)]="filterString" placeholder="{{'Search'|translate}}" />
@@ -45,7 +45,7 @@
                   </div>
                 </perfect-scrollbar>
                 <div class="card-footer text-center">
-                  <button type="button" class="btn btn-success btn-sm" (click)="modalAddUser.show()"><i class="fa fa-plus"></i> {{ 'Add'|translate }}</button>
+                  <button type="button" class="btn btn-success btn-sm" (click)="modalAddUser.show()"><i class="fa fa-plus"></i> {{ 'Create new user'|translate }}</button>
                   <button type="button" class="btn btn-primary btn-sm" (click)="refrestListUsers()"><i class="fa fa-refresh"></i> {{ 'Refresh'|translate }}</button>
                 </div>
               </div>
@@ -64,7 +64,7 @@
                       <div class="form-group row">
                         <label class="col-md-4 col-form-label" for="username">{{ 'Login'|translate }}</label>
                         <div class="col-md-8">
-                          <input type="text" [(ngModel)]="user.username" id="username" name="username" class="form-control">
+                          <input type="text" [(ngModel)]="user.username" id="username" name="username" class="form-control" disabled>
                         </div>
                       </div>
                       <div class="form-group row">
@@ -152,7 +152,7 @@
   <div class="modal-dialog modal-lg modal-primary" role="document">
         <div class="modal-content">
             <div class="modal-header ">
-              {{ 'LOGIN'|translate }}
+              <strong>{{ 'CREATE NEW USER'|translate }}</strong>
               <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="modalAddUser.hide()">
                 <span aria-hidden="true">×</span>
               </button>
@@ -189,13 +189,13 @@
                 </div>
               </div>
             </div>
-      
+
             <div class="modal-footer">
               <button class="btn btn-secondary" data-dismiss="modal" (click)="modalAddUser.hide()">{{ 'Cancel'|translate }}</button>
               <button class="btn btn-success" (click)="newUser()" [ladda]="isSavingUser"><i class="fa fa-floppy-o"></i> {{ 'Save'|translate }}</button>
             </div>
           </div>
-    
-    
+
+
   </div>
 </div>

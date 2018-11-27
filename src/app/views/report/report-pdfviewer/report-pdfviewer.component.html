@@ -1,8 +1,10 @@
 <div class="container">
     <div class="card card-body">
-      <ng-container *ngIf="progressFileHtml != ''">
+        <ng-container *ngIf="progressFileHtml !== ''">
           <iframe class="embed-responsive-item" width="100%" height="800" frameborder="0" [src]="iframeReport" allowfullscreen></iframe>
         </ng-container>
+
+        <!-- <iframe *ngIf="iframeReport != ''" class="embed-responsive-item" width="100%" height="800" frameborder="0" [src]="iframeReport" allowfullscreen></iframe> -->
     </div>
 </div>
 

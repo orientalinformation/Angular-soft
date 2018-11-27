@@ -15,6 +15,7 @@ import { MembersLayoutComponent } from './layouts/members-layout/members-layout.
 import { AuthLayoutComponent } from './layouts/auth-layout/auth-layout.component';
 import { AuthGuard } from './guards/auth.guard';
 import { NoStudyGuard } from './guards/no-study.guard';
+import { AdminGuard } from './guards/admin.guard';
 import { SweetAlert2Module } from '@toverux/ngx-sweetalert2';
 
 import { SharedModule } from './shared/shared.module';
@@ -146,7 +147,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     NoStudyGuard,
     StatusService,
     HttpClientModule,
-    ToastrService
+    ToastrService,
+    AdminGuard
   ],
   bootstrap: [AppComponent]
 })

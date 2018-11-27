@@ -34,45 +34,45 @@
           <div class="form-group row">
               <label class="col-md-4 col-form-label" for="text-input">{{ 'Type of Refrigeration	'|translate }}</label>
               <div class="col-md-8" *ngIf="listEnergies">
-                  <select class="form-control form-control-sm" [(ngModel)]="defaultEquip.energyId">
-                    <option value="-1">All</option>
-                    <option *ngFor="let ener of listEnergies" [value]="ener.ID_TRANSLATION">{{ ener.LABEL }}</option>
+                  <select class="form-control form-control-sm" [(ngModel)]="defaultEquip.energyId" (change)="select_energy()">
+                    <option value="-1">{{ 'All'|translate }}</option>
+                    <option *ngFor="let ener of listEnergies" [value]="ener.ID_COOLING_FAMILY">{{ ener.LABEL }}</option>
                   </select>
               </div>
           </div>
           <div class="form-group row">
               <label class="col-md-4 col-form-label" for="text-input">{{ 'Manufacturer'|translate }}</label>
               <div class="col-md-8" *ngIf="listConstructors">
-                <select class="form-control form-control-sm" [(ngModel)]="defaultEquip.construct">
-                  <option value="">All</option>
+                <select class="form-control form-control-sm" [(ngModel)]="defaultEquip.construct" (change)="select_manufacturer()">
+                  <option value="">{{ 'All'|translate }}</option>
                   <option *ngFor="let cons of listConstructors" [value]="cons.CONSTRUCTOR">{{ cons.CONSTRUCTOR }}</option>
                 </select>
               </div>
           </div>
           <div class="form-group row">
-              <label class="col-md-4 col-form-label" for="text-input">{{ 'Equipment Series	'|translate }}</label>
+              <label class="col-md-4 col-form-label" for="text-input">{{ 'Equipment Series'|translate }}</label>
               <div class="col-md-8" *ngIf="listFamilies">
-                <select class="form-control form-control-sm" [(ngModel)]="defaultEquip.familyId">
-                  <option value="-1">All</option>
-                  <option *ngFor="let fam of listFamilies" [value]="fam.ID_TRANSLATION">{{ fam.LABEL }}</option>
+                <select class="form-control form-control-sm" [(ngModel)]="defaultEquip.familyId" (change)="select_family()">
+                  <option value="-1">{{ 'All'|translate }}</option>
+                  <option *ngFor="let fam of listFamilies" [value]="fam.ID_FAMILY">{{ fam.LABEL }}</option>
                 </select>
               </div>
           </div>
           <div class="form-group row">
-              <label class="col-md-4 col-form-label" for="text-input">{{ 'Equipment origin	'|translate }}</label>
+              <label class="col-md-4 col-form-label" for="text-input">{{ 'Equipment origin'|translate }}</label>
               <div class="col-md-8" *ngIf="listOrigines">
-                <select class="form-control form-control-sm" [(ngModel)]="defaultEquip.stdId">
-                    <option value="-1">All</option>
-                    <option *ngFor="let ori of listOrigines" [value]="ori.ID_TRANSLATION">{{ ori.LABEL }}</option>
+                <select class="form-control form-control-sm" [(ngModel)]="defaultEquip.stdId" (change)="select_origin()">
+                    <option value="-1">{{ 'All'|translate }}</option>
+                    <option *ngFor="let ori of listOrigines" [value]="ori.STD">{{ ori.LABEL }}</option>
                 </select>
               </div>
           </div>
           <div class="form-group row">
-              <label class="col-md-4 col-form-label" for="text-input">{{ 'Process type	'|translate }}</label>
+              <label class="col-md-4 col-form-label" for="text-input">{{ 'Process type'|translate }}</label>
               <div class="col-md-8" *ngIf="listProcess">
-                <select class="form-control form-control-sm" [(ngModel)]="defaultEquip.batchProcess">
-                    <option value="-1">All</option>
-                    <option *ngFor="let pro of listProcess" [value]="pro.ID_TRANSLATION">{{ pro.LABEL }}</option>
+                <select class="form-control form-control-sm" [(ngModel)]="defaultEquip.batchProcess" (change)="select_process_type()">
+                    <option value="-1">{{ 'All'|translate }}</option>
+                    <option *ngFor="let pro of listProcess" [value]="pro.BATCH_PROCESS">{{ pro.LABEL }}</option>
                 </select>
               </div>
           </div>
@@ -80,8 +80,8 @@
               <label class="col-md-4 col-form-label" for="text-input">{{ 'Model'|translate }}</label>
               <div class="col-md-8" *ngIf="listModels">
                 <select class="form-control form-control-sm" [(ngModel)]="defaultEquip.equipseriesId">
-                    <option value="-1">All</option>
-                    <option *ngFor="let model of listModels" [value]="model.ID_TRANSLATION">{{ model.LABEL }}</option>
+                    <option value="-1">{{ 'All'|translate }}</option>
+                    <option *ngFor="let model of listModels" [value]="model.ID_EQUIPSERIES">{{ model.LABEL }}</option>
                 </select>
               </div>
           </div>

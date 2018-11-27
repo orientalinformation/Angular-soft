@@ -1,0 +1,20 @@
+.comment-study {
+  background-color: rgb(23, 186, 251);
+}
+
+.chaining-group > .row {
+  overflow-x: auto;
+  white-space: nowrap;
+  display: inherit;
+}
+
+.chaining-group > .row > .col-sm-4 {
+  display: inline-block;
+  float: none;
+}
+
+.chaining-break {
+  word-wrap: break-word;
+  white-space: -moz-pre-wrap;
+  white-space: pre-wrap;
+}

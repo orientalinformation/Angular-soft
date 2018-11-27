@@ -4,6 +4,7 @@ import { ViewChaining, Study, ViewProduct, ViewStudyEquipment } from '../../../a
 import { ApiService } from '../../../api/services';
 import { Router } from '@angular/router';
 import swal from 'sweetalert2';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-chaining',
@@ -27,7 +28,7 @@ export class ChainingComponent implements OnInit, AfterViewInit, AfterContentIni
   public selectedEquipmentId = 0;
   public childStudyName = '';
 
-  constructor(private api: ApiService, private router: Router) { }
+  constructor(private api: ApiService, private router: Router, private translate: TranslateService) { }
 
   ngOnInit() {
     this.model = null;
@@ -70,7 +71,7 @@ export class ChainingComponent implements OnInit, AfterViewInit, AfterContentIni
       (resp: ViewChaining) => {
         this.setModel(resp);
         this.loaded.emit();
-        console.log('chaining controls init');
+        // console.log('chaining controls init');
       },
       (err) => {}
     );
@@ -98,27 +99,49 @@ export class ChainingComponent implements OnInit, AfterViewInit, AfterContentIni
 
   openCreateModal() {
     this.equipmentsLoaded = false;
-    this.chainingModal.show();
     this.api.getStudyEquipments(this.study.ID_STUDY).subscribe(
       (resp: ViewStudyEquipment[]) => {
         this.equipments = resp;
         this.equipmentsLoaded = true;
       },
       err => {
-        console.log(err);
+        // console.log(err);
+      },
+      () => {
+        if (this.equipments && this.equipments.length > 0) {
+          this.chainingModal.show();
+        } else {
+          swal('Error', this.translate.instant('The study is not completely defined!'), 'error');
+          return;
+        }
       }
     );
   }
 
   onConfirmCreateChildStudy() {
     if (this.childStudyName.length === 0) {
-      swal('Error', 'Please input child study name!', 'error');
+      swal('Error', this.translate.instant('Please input child study name!'), 'error');
       return;
     }
 
-    if (this.selectedEquipmentId == 0) {
-      swal('Error', 'Please select an equipment!', 'error');
+    if (Number(this.selectedEquipmentId) === 0) {
+      swal('Error', this.translate.instant('Please select an equipment!'), 'error');
       return;
+    }
+
+    if (this.equipments && this.equipments.length > 0) {
+      if (this.equipments) {
+        for (let i = 0; i < this.equipments.length; i++) {
+          const element = this.equipments[i];
+          if (Number(this.equipments[i].ID_STUDY_EQUIPMENTS) === Number(this.selectedEquipmentId)) {
+            if (Number(element.BRAIN_TYPE) === 0) {
+              swal('Error', this.translate.instant('"There is no results for this equipment" ' +
+              'if the equipment has not been calculated'), 'error');
+              return;
+            }
+          }
+        }
+      }
     }
 
     this.laddaConfirm = true;
@@ -132,8 +155,8 @@ export class ChainingComponent implements OnInit, AfterViewInit, AfterContentIni
         this.closeAndOpenStudy(resp.ID_STUDY);
       },
       err => {
-        console.log(err);
-        swal('Error', 'There is no results for this equipment.', 'error');
+        // console.log(err);
+        swal('Error', this.translate.instant('There is no results for this equipment.'), 'error');
         this.laddaConfirm = false;
       }
     );
@@ -164,7 +187,7 @@ export class ChainingComponent implements OnInit, AfterViewInit, AfterContentIni
                   }
                 },
                 err => {
-                  console.log(err);
+                  // console.log(err);
                 },
                 () => {
                   this.router.navigate(['/input']);
@@ -172,19 +195,18 @@ export class ChainingComponent implements OnInit, AfterViewInit, AfterContentIni
               );
             },
             err => {
-              console.log(err);
+              // console.log(err);
             },
             () => {
             }
           );
       },
       (err) => {
-        console.log(err);
+        // console.log(err);
       },
       () => {
 
       }
     );
   }
-
 }

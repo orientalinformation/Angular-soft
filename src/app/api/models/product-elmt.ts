@@ -1,9 +1,10 @@
 /* tslint:disable */
+import { ProdcharColor } from './prodchar-color';
 
 /**
  */
 export class ProductElmt {
-    SHAPE_POS2?: number;
+    SHAPE_POS1?: number;
     ID_PRODUCT_ELMT?: number;
     ID_SHAPE?: number;
     ID_COMP?: number;
@@ -11,10 +12,12 @@ export class ProductElmt {
     SHAPE_PARAM1?: number;
     SHAPE_PARAM2?: number;
     SHAPE_PARAM3?: number;
+    SHAPE_PARAM4?: number;
+    SHAPE_PARAM5?: number;
     PROD_DEHYD?: number;
     PROD_DEHYD_COST?: number;
-    SHAPE_POS1?: number;
     ID_PROD?: number;
+    SHAPE_POS2?: number;
     SHAPE_POS3?: number;
     PROD_ELMT_ISO?: number;
     ORIGINAL_THICK?: number;
@@ -25,4 +28,5 @@ export class ProductElmt {
     ID_STUDY?: number;
     SHAPECODE?: number;
     componentName?: string;
+    prodcharColor?: ProdcharColor;
 }

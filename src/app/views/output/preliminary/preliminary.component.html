@@ -5,37 +5,40 @@
       <div class="btn-group" role="group">
         <button class="btn btn-outline-primary btn-sm" (click)="openPageHeat()" [class.active]="activePage == 'heat'">{{'Heat Balance'|translate}}</button>
         <button class="btn btn-outline-primary btn-sm" (click)="openPageCon()"  [class.active]="activePage == 'consumpt'">{{'Consumptions'|translate}}</button>
-        <button class="btn btn-outline-primary btn-sm" (click)="openPageEco()"  [class.active]="activePage == 'economic'" *ngIf="study.OPTION_ECO == 1">{{'Economics'|translate}}</button>
+        <button class="btn btn-outline-primary btn-sm" (click)="openPageEco()"  [class.active]="activePage == 'economic'" *ngIf="study.OPTION_ECO">{{'Economics'|translate}}</button>
       </div>
     </div>
     <div class="card-body">
       <div style="margin-top:10px;display:block" id="pageHeat" *ngIf="study">
-        <div class="text-center" id="showLoaderChange"></div>
-        <ng-template #showLoader>
-          <div class="text-center" id="showLoader"></div>
+        <ng-template #showLoadingOptimum>
+          <div class="text-center" *ngIf="study.CALCULATION_MODE == 2 || study.CALCULATION_MODE == 3" id="showLoaderChange"></div>
+        </ng-template>
+        <ng-template #showLoading>
+            <div class="text-center" *ngIf="study.CALCULATION_MODE == 1" id="showLoader"></div>
         </ng-template>
         <h5 class="text-danger" style="font-weight:600">{{'Heat Balance'|translate}}</h5>
-        <div id="pageHeadBalaceEstimation" *ngIf="study.CALCULATION_MODE == 1">
-            <div class="row" *ngIf="headBalanceResultsTr; else showLoader">
-                <div class="col-md-4" align="center" >
-                    <label class="custom-control custom-radio" >
-                      <input type="radio" class="custom-control-input" name="TR" (change)="openTrPage(2)">{{'Control Temperature 10°C (18°F) colder.'|translate}}
-                      <span class="custom-control-indicator"></span>
-                    </label>
-                </div>
-                <div class="col-md-4" align="center" >
-                    <label class="custom-control custom-radio" >
-                      <input type="radio" class="custom-control-input" name="TR" (change)="openTrPage(1)" checked>{{'Control Temperature'|translate}}
-                      <span class="custom-control-indicator"></span>
-                    </label>
-                </div>
-                <div class="col-md-4" align="center" >
-                    <label class="custom-control custom-radio" >
-                      <input type="radio" class="custom-control-input" name="TR" (change)="openTrPage(0)">{{'Control Temperature 10°C (18°F) warmer.'|translate}}
-                      <span class="custom-control-indicator"></span>
-                    </label>
-                </div>
-            </div>
+        <div id="pageHeadBalaceEstimation" *ngIf="study.CALCULATION_MODE == 1 && headBalanceResultsTr && showLoader == false;else showLoading">
+          <div class="row">
+              <div class="col-md-4" align="center" >
+                  <label class="custom-control custom-radio" >
+                    <input type="radio" class="custom-control-input" [(ngModel)]="trSelect" (change)="openTrPage(2)" [value]="2">{{'Control Temperature 10°C (18°F) colder.'|translate}}
+                    <span class="custom-control-indicator"></span>
+                  </label>
+              </div>
+              <div class="col-md-4" align="center" >
+                  <label class="custom-control custom-radio" >
+                    <input type="radio" class="custom-control-input" [(ngModel)]="trSelect" (change)="openTrPage(1)" [value]="1">{{'Control Temperature'|translate}}
+                    <span class="custom-control-indicator"></span>
+                  </label>
+              </div>
+              <div class="col-md-4" align="center" >
+                  <label class="custom-control custom-radio" >
+                    <input type="radio" class="custom-control-input"  [(ngModel)]="trSelect" (change)="openTrPage(0)" [value]="0">{{'Control Temperature 10°C (18°F) warmer.'|translate}}
+                    <span class="custom-control-indicator"></span>
+                  </label>
+              </div>
+          </div>
+          <div class="table-responsive">
             <table class="table table-bordered table-sm" *ngIf="resultAna">
               <tr *ngIf="symbol && resultAna">
                 <td align="center" style="vertical-align: middle">{{'Required Production Rate'|translate}}</td>
@@ -46,7 +49,8 @@
                 <td align="center" style="vertical-align: middle">{{resultAna.avgTInitial}} ({{symbol.temperatureSymbol}})</td>
               </tr>
             </table>
-
+          </div>
+          <div class="table-responsive">
             <table class="table table-bordered table-sm" *ngIf="symbol">
               <tr>
                 <td rowspan="2" align="center" style="vertical-align:middle;width:19%">{{'Calculate'|translate}}</td>
@@ -64,7 +68,7 @@
                 <td align="center" style="vertical-align:middle">{{'Cryogen consumption (product + equipment heat load)'|translate}} ({{symbol.consumSymbol}}/{{symbol.perUnitOfMassSymbol}})</td>
                 <td align="center" style="vertical-align:middle">{{'Conveyor coverage or quantity of product per batch'|translate}}</td>
               </tr>
-              <tr *ngFor="let result of headBalanceResultsTr">
+              <tr *ngFor="let result of headBalanceResultsTr" [style.background-color]="result.background">
                 <td align="center" class="tdResultLink"style="vertical-align:middle">
                   <a href="javascript:;" class="tdResultLink" (click)="calculator.openBrain(result.id)">{{result.equipName}}</a>
                   <div *ngIf="result.specificSize != ''">
@@ -72,7 +76,7 @@
                   </div>
                 </td>
                 <td align="center" class="tdResultAna" style="vertical-align:middle" *ngIf="isNumberic(result.tr) == true;else noTooltip">
-                    <a href="javascript:;" placement="right" [ngbTooltip]="tipContent">{{result.tr}}</a>
+                    <a href="javascript:;" placement="right" [ngbTooltip]="tipContent" (click)="viewEquipTr(result)">{{result.tr}}</a>
                     <ng-template #tipContent>
                       <div class="text-left" style="padding: 3px 0;font-size:13px">
                         <div style="white-space:nowrap">{{'Control temperature'|translate}}: <b>{{result.tr}}</b> ({{symbol.temperatureSymbol}})</div>
@@ -92,12 +96,13 @@
                 <td align="center" class="tdResultAna"style="vertical-align:middle">{{result.dhp}}</td>
                 <td align="center" class="tdResultAna"style="vertical-align:middle">{{result.consoMax}}</td>
                 <td align="center" class="tdResultAna"style="vertical-align:middle">{{result.tocMax}}</td>
-                <td align="center" class="tdResultAna"style="vertical-align:middle"><div *ngIf="result.vc != 'null'">{{result.vc}}</div></td>
+                <td align="center" class="tdResultAna"style="vertical-align:middle">{{result.precision}}</td>
               </tr>
             </table>
+          </div>
         </div>
-        <div id="pageHeadBalaceOptimum" *ngIf="study.CALCULATION_MODE == 2 || study.CALCULATION_MODE == 3">
-            <div class="row" *ngIf="headBalanceResults; else showLoader">
+        <div id="pageHeadBalaceOptimum" *ngIf="(study.CALCULATION_MODE == 2 || study.CALCULATION_MODE == 3) && headBalanceResults;else showLoadingOptimum">
+            <div class="row">
                 <div class="col-md-6" align="center" >
                   <label class="custom-control custom-radio" >
                     <input type="radio" class="custom-control-input" name="DHP" (change)="openHeadBalacePage()" checked>{{'Chosen product flowrate'|translate}}
@@ -111,54 +116,58 @@
                   </label>
                 </div>
               </div>
-              <table class="table table-bordered table-sm" *ngIf="resultAna">
-                <tr *ngIf="symbol && resultAna">
-                  <td align="center" style="vertical-align: middle">{{'Required Production Rate'|translate}}</td>
-                  <td align="center" style="vertical-align: middle">{{resultAna.prodFlowRate}} ({{symbol.productFlowSymbol}})</td>
-                  <td align="center" style="vertical-align: middle">{{'Real product mass per unit'|translate}}</td>
-                  <td align="center" style="vertical-align: middle">{{ resultAna.prodElmtRealweight }}({{symbol.massSymbol}})</td>
-                  <td align="center" style="vertical-align: middle">{{'Initial Average Product temperature'|translate}}</td>
-                  <td align="center" style="vertical-align: middle">{{resultAna.avgTInitial}} ({{symbol.temperatureSymbol}})</td>
-                </tr>
-              </table>
+              
+              <div class="table-responsive">
+                <table class="table table-bordered table-sm" *ngIf="resultAna">
+                  <tr *ngIf="symbol && resultAna">
+                    <td align="center" style="vertical-align: middle">{{'Required Production Rate'|translate}}</td>
+                    <td align="center" style="vertical-align: middle">{{resultAna.prodFlowRate}} ({{symbol.productFlowSymbol}})</td>
+                    <td align="center" style="vertical-align: middle">{{'Real product mass per unit'|translate}}</td>
+                    <td align="center" style="vertical-align: middle">{{ resultAna.prodElmtRealweight }}({{symbol.massSymbol}})</td>
+                    <td align="center" style="vertical-align: middle">{{'Initial Average Product temperature'|translate}}</td>
+                    <td align="center" style="vertical-align: middle">{{resultAna.avgTInitial}} ({{symbol.temperatureSymbol}})</td>
+                  </tr>
+                </table>
+              </div>
 
               <div id="headBalacePage">
-                <table class="table table-bordered table-sm" *ngIf="symbol">
-                  <tr>
-                    <td rowspan="2" align="center" style="vertical-align:middle">{{'Calculate'|translate}}</td>
-                    <td rowspan="2" align="center" style="vertical-align:middle;width:19%">{{'Equipment'|translate}}</td>
-                    <td rowspan="2" align="center" style="vertical-align:middle">{{'Refine'|translate}}</td>
-                    <td rowspan="2" align="center" style="vertical-align:middle">{{'Control temperature'|translate}} ({{symbol.temperatureSymbol}})</td>
-                    <td rowspan="2" align="center" style="vertical-align:middle">{{'Residence / Dwell time'|translate}} ({{symbol.timeSymbol}})</td>
-                    <td rowspan="2" align="center" style="vertical-align:middle">{{'Product Heat Load'|translate}} ({{symbol.enthalpySymbol}})</td>
-                    <td rowspan="2" align="center" style="vertical-align:middle">{{'Final Average Product temperature'|translate}} ({{symbol.temperatureSymbol}})</td>
-                    <td colspan="3" align="center" style="vertical-align:middle">{{'Chosen product flowrate'|translate}}</td>
-                    <td rowspan="2" align="center" style="vertical-align:middle">{{'Precision of the high level calculation'|translate}}. ({{symbol.percentSymbol}})</td>
-                  </tr>
-                  <tr>
-                    <td align="center" style="vertical-align:middle">{{'Hourly production capacity'|translate}} ({{symbol.productFlowSymbol}})</td>
-                    <td align="center" style="vertical-align:middle">{{'Cryogen consumption (product + equipment heat load)'|translate}} ({{symbol.consumSymbol}}/{{symbol.perUnitOfMassSymbol}})</td>
-                    <td align="center" style="vertical-align:middle">{{'Conveyor coverage or quantity of product per batch'|translate}}</td>
-                  </tr>
-                  <tr *ngFor="let result of headBalanceResults, let i = index">
-                    <td align="center" class="tdResultAna" >
-                      <label class="custom-control custom-checkbox" style="margin-left:1.5em;margin-top:0.7em;">
-                        <input type="checkbox" name="cb{{result.id}}" class="custom-control-input" [disabled]="result.calculate == false">
-                        <span class="custom-control-indicator"></span>
-                      </label>
-                    </td>
-                    <td align="center" class="tdResultLink"style="vertical-align:middle">
-                      <a href="javascript:;" class="tdResultLink" (click)="calculator.openRefine(result.id, false, 1)">{{result.equipName}}</a>
-                      <div *ngIf="result.specificSize != ''">
-                        <div><a href="javascript:;" (click)="onEquipSizing(result.id)" style="color:#f00">{{'Specific equipment'|translate}}<br>{{result.specificSize}}</a></div>
-                      </div>
-                    </td>
-                    <td align="center" class="tdResultLink"style="vertical-align:middle">
-                      <button class="btn btn-outline-success" (click)="calculator.openRefine(result.id, true, 2)">
-                        <i class="fa fa-recycle"></i>
-                      </button>
-                    </td>
-                    <td align="center" class="tdResultAna" style="vertical-align:middle" *ngIf="isNumberic(result.tr) == true;else noTooltip">
+                <div class="table-responsive">
+                  <table class="table table-bordered table-sm" *ngIf="symbol">
+                    <tr>
+                      <td rowspan="2" align="center" style="vertical-align:middle">{{'Calculate'|translate}}</td>
+                      <td rowspan="2" align="center" style="vertical-align:middle;width:19%">{{'Equipment'|translate}}</td>
+                      <td rowspan="2" align="center" style="vertical-align:middle">{{'Refine'|translate}}</td>
+                      <td rowspan="2" align="center" style="vertical-align:middle">{{'Control temperature'|translate}} ({{symbol.temperatureSymbol}})</td>
+                      <td rowspan="2" align="center" style="vertical-align:middle">{{'Residence / Dwell time'|translate}} ({{symbol.timeSymbol}})</td>
+                      <td rowspan="2" align="center" style="vertical-align:middle">{{'Product Heat Load'|translate}} ({{symbol.enthalpySymbol}})</td>
+                      <td rowspan="2" align="center" style="vertical-align:middle">{{'Final Average Product temperature'|translate}} ({{symbol.temperatureSymbol}})</td>
+                      <td colspan="3" align="center" style="vertical-align:middle">{{'Chosen product flowrate'|translate}}</td>
+                      <td rowspan="2" align="center" style="vertical-align:middle">{{'Precision of the high level calculation'|translate}}. ({{symbol.percentSymbol}})</td>
+                    </tr>
+                    <tr>
+                      <td align="center" style="vertical-align:middle">{{'Hourly production capacity'|translate}} ({{symbol.productFlowSymbol}})</td>
+                      <td align="center" style="vertical-align:middle">{{'Cryogen consumption (product + equipment heat load)'|translate}} ({{symbol.consumSymbol}}/{{symbol.perUnitOfMassSymbol}})</td>
+                      <td align="center" style="vertical-align:middle">{{'Conveyor coverage or quantity of product per batch'|translate}}</td>
+                    </tr>
+                    <tr *ngFor="let result of headBalanceResults, let i = index" [style.background-color]="result.background">
+                      <td align="center" class="tdResultAna" >
+                        <label class="custom-control custom-checkbox" style="margin-left:1.5em;margin-top:0.7em;">
+                          <input type="checkbox" name="cb{{result.id}}" class="custom-control-input" [disabled]="result.calculate">
+                          <span class="custom-control-indicator"></span>
+                        </label>
+                      </td>
+                      <td align="center" class="tdResultLink"style="vertical-align:middle">
+                        <a href="javascript:;" class="tdResultLink" (click)="calculator.openRefine(result.id, false, 1)">{{result.equipName}}</a>
+                        <div *ngIf="result.specificSize != ''">
+                          <div><a href="javascript:;" (click)="onEquipSizing(result.id)" style="color:#f00">{{'Specific equipment'|translate}}<br>{{result.specificSize}}</a></div>
+                        </div>
+                      </td>
+                      <td align="center" class="tdResultLink"style="vertical-align:middle">
+                        <button class="btn btn-outline-success" (click)="calculator.openRefine(result.id, true, 2)">
+                          <i class="fa fa-recycle"></i>
+                        </button>
+                      </td>
+                      <td align="center" class="tdResultAna" style="vertical-align:middle" *ngIf="isNumberic(result.tr) == true;else noTooltip">
                         <a href="javascript:;" placement="right" [ngbTooltip]="tipContent">{{result.tr}}</a>
                         <ng-template #tipContent>
                           <div class="text-left" style="padding: 3px 0;font-size:13px">
@@ -173,23 +182,24 @@
                         <a href="javascript:;">{{result.tr}}</a>
                       </td>  
                       </ng-template>
-                    <td align="center" class="tdResultAna"style="vertical-align:middle">{{result.ts}}</td>
-                    <td align="center" class="tdResultAna"style="vertical-align:middle">{{result.vep}}</td>
-                    <td align="center" class="tdResultAna"style="vertical-align:middle">{{result.tfp}}</td>
-                    <td align="center" class="tdResultAna"style="vertical-align:middle">{{result.dhp}}</td>
-                    <td align="center" class="tdResultAna"style="vertical-align:middle">
-                        <div *ngIf="result.conso_warning == 'warning_fluid'"><img src="assets/img/output/warning_fluid_overflow.gif" width="30"></div>
-                        <div *ngIf="result.conso_warning == 'warning_dhp'"><img src="assets/img/output/warning_dhp_overflow.gif" width="30"></div>
-                        <div *ngIf="result.conso_warning == 'warning_dhp_value'"><div>{{result.conso}}</div><img src="assets/img/output/warning_dhp_overflow.gif" width="30"></div>
-                        <div *ngIf="result.conso_warning != 'warning_fluid' && result.conso_warning != 'warning_dhp' && result.conso_warning != 'warning_dhp_value'">{{result.conso}}</div>
-                    </td>
-                    <td align="center" class="tdResultAna"style="vertical-align:middle">
-                      <a href="javascript:;" *ngIf="result.toc != '' && result.toc != '****';else txtToc" (click)="equipEditLayout(result.id, i)">{{result.toc}}</a>
-                      <ng-template #txtToc>{{result.toc}}</ng-template>
-                    </td>
-                    <td align="center" class="tdResultAna"style="vertical-align:middle">{{result.precision}}</td>
-                  </tr>
-                </table>
+                      <td align="center" class="tdResultAna"style="vertical-align:middle">{{result.ts}}</td>
+                      <td align="center" class="tdResultAna"style="vertical-align:middle">{{result.vep}}</td>
+                      <td align="center" class="tdResultAna"style="vertical-align:middle">{{result.tfp}}</td>
+                      <td align="center" class="tdResultAna"style="vertical-align:middle">{{result.dhp}}</td>
+                      <td align="center" class="tdResultAna"style="vertical-align:middle">
+                          <div *ngIf="result.conso_warning == 'warning_fluid'"><img src="assets/img/output/warning_fluid_overflow.gif" width="30"></div>
+                          <div *ngIf="result.conso_warning == 'warning_dhp'"><img src="assets/img/output/warning_fluid_overflow.gif" width="30"><img src="assets/img/output/warning_dhp_overflow.gif" width="30"></div>
+                          <div *ngIf="result.conso_warning == 'warning_dhp_value'"><div>{{result.conso}}</div><img src="assets/img/output/warning_dhp_overflow.gif" width="30"></div>
+                          <div *ngIf="result.conso_warning != 'warning_fluid' && result.conso_warning != 'warning_dhp' && result.conso_warning != 'warning_dhp_value'">{{result.conso}}</div>
+                      </td>
+                      <td align="center" class="tdResultAna"style="vertical-align:middle">
+                        <a href="javascript:;" *ngIf="result.toc != '' && result.toc != '****';else txtToc" (click)="equipEditLayout(result.id, i)">{{result.toc}}</a>
+                        <ng-template #txtToc>{{result.toc}}</ng-template>
+                      </td>
+                      <td align="center" class="tdResultAna"style="vertical-align:middle">{{result.precision}}</td>
+                    </tr>
+                  </table>
+                </div>
               </div>
               <div id="headBalaceMaxPage" style=display:none>
                 <table class="table table-bordered table-sm" *ngIf="symbol">
@@ -207,23 +217,37 @@
                     <td align="center" style="vertical-align:middle">{{'Cryogen consumption (product + equipment heat load)'|translate}} ({{symbol.consumSymbol}}/{{symbol.perUnitOfMassSymbol}})</td>
                     <td align="center" style="vertical-align:middle">{{'Conveyor coverage or quantity of product per batch'|translate}}</td>
                   </tr>
-                  <tr *ngFor="let result of headBalanceMaxResults">
+                  <tr *ngFor="let result of headBalanceMaxResults" [style.background-color]="result.background">
                     <td align="center" class="tdResultLink"style="vertical-align:middle;width:19%">
                       <a href="javascript:;" class="tdResultLink" (click)="calculator.openRefine(result.id, true, 3)">{{result.equipName}}</a>
                       <div *ngIf="result.specificSize != ''">
                         <div><a href="javascript:;">{{'Specific equipment'|translate}}<br>{{result.specificSize}}</a></div>
                       </div>
                     </td>
-                    <td align="center" class="tdResultAna"style="vertical-align:middle">{{result.tr}}</td>
+                    <td align="center" class="tdResultAna" style="vertical-align:middle" *ngIf="isNumberic(result.tr) == true;else noTooltip">
+                      <a href="javascript:;" placement="right" [ngbTooltip]="tipContent">{{result.tr}}</a>
+                      <ng-template #tipContent>
+                        <div class="text-left" style="padding: 3px 0;font-size:13px">
+                          <div style="white-space:nowrap">{{'Control temperature'|translate}}: <b>{{result.tr}}</b> ({{symbol.temperatureSymbol}})</div>
+                          <div style="white-space:nowrap">{{'Residence/Dwell time'|translate}}: <b>{{result.ts}}</b> ({{symbol.timeSymbol}})</div>
+                          <div style="white-space:nowrap">{{'Convection Setting'|translate}}: <b>{{result.vc}}</b> ({{symbol.convectionSpeedSymbol}})</div>
+                        </div>
+                      </ng-template>
+                    </td>
+                    <ng-template #noTooltip>
+                    <td align="center" class="tdResultAna" style="vertical-align:middle">
+                      <a href="javascript:;">{{result.tr}}</a>
+                    </td>  
+                    </ng-template>
                     <td align="center" class="tdResultAna"style="vertical-align:middle">{{result.ts}}</td>
                     <td align="center" class="tdResultAna"style="vertical-align:middle">{{result.vep}}</td>
                     <td align="center" class="tdResultAna"style="vertical-align:middle">{{result.tfp}}</td>
                     <td align="center" class="tdResultAna"style="vertical-align:middle">{{result.dhp}}</td>
                     <td align="center" class="tdResultAna"style="vertical-align:middle">
-                      <div *ngIf="result.conso == 'warning_fluid'"><img src="assets/img/output/warning_fluid_overflow.gif" width="30"></div>
-                      <div *ngIf="result.conso == 'warning_dhp'"><img src="assets/img/output/warning_dhp_overflow.gif" width="30"></div>
-                      <div *ngIf="result.conso == 'warning_dhp_value'"><div>{{result.conso}}</div><img src="assets/img/output/warning_dhp_overflow.gif" width="30"></div>
-                      <div *ngIf="result.conso != 'warning_fluid' && result.conso != 'warning_dhp' && result.conso != 'warning_dhp_value'">{{result.conso}}</div>
+                      <div *ngIf="result.conso_warning == 'warning_fluid'"><img src="assets/img/output/warning_fluid_overflow.gif" width="30"></div>
+                      <div *ngIf="result.conso_warning == 'warning_dhp'"><img src="assets/img/output/warning_fluid_overflow.gif" width="30"><img src="assets/img/output/warning_dhp_overflow.gif" width="30"></div>
+                      <div *ngIf="result.conso_warning == 'warning_dhp_value'"><div>{{result.conso}}</div><img src="assets/img/output/warning_dhp_overflow.gif" width="30"></div>
+                      <div *ngIf="result.conso_warning != 'warning_fluid' && result.conso_warning != 'warning_dhp' && result.conso_warning != 'warning_dhp_value'">{{result.conso}}</div>
                     </td>
                     <td align="center" class="tdResultAna"style="vertical-align:middle">{{result.toc}}</td>
                     <td align="center" class="tdResultAna"style="vertical-align:middle">{{result.precision}}</td>
@@ -234,63 +258,69 @@
       </div>
       <div style="display:none;margin-top:10px;" id="pageConsumption">
         <h5 class="text-danger" style="font-weight:600">{{'Consumptions'|translate}}</h5>
-        <table class="table table-bordered table-sm" style="margin-top:10px;" *ngIf="symbol">
-          <tr>
-            <td rowspan="2" align="center"style="vertical-align:middle;font-size:12px;width:19%">{{'Equipment'|translate}}</td>
-            <td rowspan="2"style="vertical-align:middle;font-size:12px;" align="center">
-              {{'Overall Cryogen Consumption Ratio (product + equipment and pipeline losses) Unit of Cryogen, per piece of product.'|translate}} ({{symbol.consumSymbol}})
-            </td>
-            <td rowspan="2" style="vertical-align:middle;font-size:12px;"  align="center">
-              {{'Total Cryogen Consumption (product + equipment and pipeline losses).'|translate}} ({{symbol.consumSymbol}} /{{symbol.perUnitOfMassSymbol}})
-            </td>
-            <td rowspan="2" style="vertical-align:middle;font-size:12px;"  align="center">
-              {{'Specific Cryogen Consumption Ratio (product only) Unit of Cryogen, per unit weight of product.'|translate}} ({{symbol.consumSymbol}} /{{symbol.perUnitOfMassSymbol}})
-            </td>
-            <td colspan="4" style="vertical-align:middle;font-size:12px;" align="center">{{'Total Cryogen Consumption'|translate}}</td>
-            <td colspan="2" style="vertical-align:middle;font-size:12px;" align="center">{{'Equipment Cryogen Consumption'|translate}}</td>
-            <td colspan="2" style="vertical-align:middle;font-size:12px;" align="center">{{'Pipeline consumption'|translate}}</td>
-            <td rowspan="2" style="vertical-align:middle;font-size:12px;" align="center">{{'Tank losses'|translate}} ({{symbol.consumSymbol}})</td>
-          </tr>
-          <tr>
-            <td style="vertical-align:middle;font-size:12px;" align="center">{{'Total Cryogen Consumption per year'|translate}} ({{symbol.consumSymbol}})</td>
-            <td style="vertical-align:middle;font-size:12px;" align="center">{{'Total Cryogen Consumption per week'|translate}} ({{symbol.consumSymbol}})</td>
-            <td style="vertical-align:middle;font-size:12px;" align="center">{{'Total Cryogen Consumption per day'|translate}} ({{symbol.consumSymbol}})</td>
-            <td style="vertical-align:middle;font-size:12px;" align="center">{{'Total Cryogen Consumption per hour'|translate}} ({{symbol.consumSymbol}})</td>
-            <td style="vertical-align:middle;font-size:12px;" align="center">{{'Heat losses per hour'|translate}} ({{symbol.consumMaintienSymbol}})</td>
-            <td style="vertical-align:middle;font-size:12px;" align="center">{{'Cooldown'|translate}} ({{symbol.mefSymbol}})</td>
-            <td style="vertical-align:middle;font-size:12px;"  align="center">{{'Heat losses per hour'|translate}} ({{symbol.consumMaintienSymbol}})</td>
-            <td style="vertical-align:middle;font-size:12px;" align="center">{{'Cooldown'|translate}} ({{symbol.mefSymbol}})</td>
-          </tr>
-          <tr *ngFor="let result of commonResults">
-              <td align="center" class="tdResultLink"style="vertical-align:middle">
-                  <a href="javascript:;" placement="right" [ngbTooltip]="tipContent" class="tdResultLink" (click)="onConsumptionPie(result)">{{result.equipName}}</a>
-                  <ng-template #tipContent>
-                    <div class="text-left" style="padding: 3px 0;font-size:13px">
-                      <div style="white-space:nowrap">{{'Product'|translate}}: <b class="pull-right">{{result.percentProduct}}%</b></div>
-                      <div style="white-space:nowrap">{{'Equipment(permanent'|translate}}: <b class="pull-right">{{result.percentEquipmentPerm}}%</b></div>
-                      <div style="white-space:nowrap">{{'Equipment(cool down)'|translate}}: <b class="pull-right">{{result.percentEquipmentDown}}%</b></div>
-                      <div style="white-space:nowrap">{{'Line'|translate}}: <b class="pull-right">{{result.percentLine}}%</b></div>
-                    </div>
-                  </ng-template>
+        <div class="table-responsive">
+          <table class="table table-bordered table-sm" style="margin-top:10px;" *ngIf="symbol">
+            <tr>
+              <td rowspan="2" align="center"style="vertical-align:middle;font-size:12px;width:19%">{{'Equipment'|translate}}</td>
+              <td rowspan="2"style="vertical-align:middle;font-size:12px;" align="center">
+                {{'Overall Cryogen Consumption Ratio (product + equipment and pipeline losses) Unit of Cryogen, per piece of product.'|translate}} ({{symbol.consumSymbol}})
               </td>
-              <td align="center" class="tdResultAna"style="vertical-align:middle">{{result.tc}}</td>
-              <td align="center" class="tdResultAna"style="vertical-align:middle">{{result.kgProduct}}</td>
-              <td align="center" class="tdResultAna"style="vertical-align:middle">{{result.product}}</td>
-              <td align="center" class="tdResultAna"style="vertical-align:middle">{{result.year}}</td>
-              <td align="center" class="tdResultAna"style="vertical-align:middle">{{result.week}}</td>
-              <td align="center" class="tdResultAna"style="vertical-align:middle">{{result.day}}</td>
-              <td align="center" class="tdResultAna"style="vertical-align:middle">{{result.hour}}</td>
-              <td align="center" class="tdResultAna"style="vertical-align:middle">{{result.eqptPerm}}</td>
-              <td align="center" class="tdResultAna"style="vertical-align:middle">{{result.eqptCold}}</td>
-              <td align="center" class="tdResultAna"style="vertical-align:middle">{{result.linePerm}}</td>
-              <td align="center" class="tdResultAna"style="vertical-align:middle">{{result.lineCold}}</td>
-              <td align="center" class="tdResultAna"style="vertical-align:middle">{{result.tank}}</td>
-          </tr>
-        </table>
+              <td rowspan="2" style="vertical-align:middle;font-size:12px;"  align="center">
+                {{'Total Cryogen Consumption (product + equipment and pipeline losses).'|translate}} ({{symbol.consumSymbol}} /{{symbol.perUnitOfMassSymbol}})
+              </td>
+              <td rowspan="2" style="vertical-align:middle;font-size:12px;"  align="center">
+                {{'Specific Cryogen Consumption Ratio (product only) Unit of Cryogen, per unit weight of product.'|translate}} ({{symbol.consumSymbol}} /{{symbol.perUnitOfMassSymbol}})
+              </td>
+              <td colspan="4" style="vertical-align:middle;font-size:12px;" align="center">{{'Total Cryogen Consumption'|translate}}</td>
+              <td colspan="2" style="vertical-align:middle;font-size:12px;" align="center">{{'Equipment Cryogen Consumption'|translate}}</td>
+              <td colspan="2" style="vertical-align:middle;font-size:12px;" align="center">{{'Pipeline consumption'|translate}}</td>
+              <td rowspan="2" style="vertical-align:middle;font-size:12px;" align="center">{{'Tank losses'|translate}} ({{symbol.consumSymbol}})</td>
+            </tr>
+            <tr>
+              <td style="vertical-align:middle;font-size:12px;" align="center">{{'Total Cryogen Consumption per year'|translate}} ({{symbol.consumSymbol}})</td>
+              <td style="vertical-align:middle;font-size:12px;" align="center">{{'Total Cryogen Consumption per week'|translate}} ({{symbol.consumSymbol}})</td>
+              <td style="vertical-align:middle;font-size:12px;" align="center">{{'Total Cryogen Consumption per day'|translate}} ({{symbol.consumSymbol}})</td>
+              <td style="vertical-align:middle;font-size:12px;" align="center">{{'Total Cryogen Consumption per hour'|translate}} ({{symbol.consumSymbol}})</td>
+              <td style="vertical-align:middle;font-size:12px;" align="center">{{'Heat losses per hour'|translate}} ({{symbol.consumMaintienSymbol}})</td>
+              <td style="vertical-align:middle;font-size:12px;" align="center">{{'Cooldown'|translate}} ({{symbol.mefSymbol}})</td>
+              <td style="vertical-align:middle;font-size:12px;"  align="center">{{'Heat losses per hour'|translate}} ({{symbol.consumMaintienSymbol}})</td>
+              <td style="vertical-align:middle;font-size:12px;" align="center">{{'Cooldown'|translate}} ({{symbol.mefSymbol}})</td>
+            </tr>
+            <tr *ngFor="let result of commonResults">
+                <td align="center" class="tdResultLink"style="vertical-align:middle" *ngIf="result.percentProduct != 0 && result.percentEquipmentPerm != 0  && result.percentEquipmentDown != 0;else noPieChart">
+                    <a href="javascript:;" placement="right" [ngbTooltip]="tipContent" class="tdResultLink" (click)="onConsumptionPie(result)">{{result.equipName}}</a>
+                    <ng-template #tipContent>
+                      <div class="text-left" style="padding: 3px 0;font-size:13px">
+                        <div style="white-space:nowrap">{{'Product'|translate}}: <b class="pull-right">{{result.percentProduct}}%</b></div>
+                        <div style="white-space:nowrap">{{'Equipment(permanent'|translate}}: <b class="pull-right">{{result.percentEquipmentPerm}}%</b></div>
+                        <div style="white-space:nowrap">{{'Equipment(cool down)'|translate}}: <b class="pull-right">{{result.percentEquipmentDown}}%</b></div>
+                        <div style="white-space:nowrap">{{'Line'|translate}}: <b class="pull-right">{{result.percentLine}}%</b></div>
+                      </div>
+                    </ng-template>
+                </td>
+                <ng-template #noPieChart>
+                  <td align="center">{{result.equipName}}</td>
+                </ng-template>
+                <td align="center" class="tdResultAna"style="vertical-align:middle">{{result.tc}}</td>
+                <td align="center" class="tdResultAna"style="vertical-align:middle">{{result.kgProduct}}</td>
+                <td align="center" class="tdResultAna"style="vertical-align:middle">{{result.product}}</td>
+                <td align="center" class="tdResultAna"style="vertical-align:middle">{{result.year}}</td>
+                <td align="center" class="tdResultAna"style="vertical-align:middle">{{result.week}}</td>
+                <td align="center" class="tdResultAna"style="vertical-align:middle">{{result.day}}</td>
+                <td align="center" class="tdResultAna"style="vertical-align:middle">{{result.hour}}</td>
+                <td align="center" class="tdResultAna"style="vertical-align:middle">{{result.eqptPerm}}</td>
+                <td align="center" class="tdResultAna"style="vertical-align:middle">{{result.eqptCold}}</td>
+                <td align="center" class="tdResultAna"style="vertical-align:middle">{{result.linePerm}}</td>
+                <td align="center" class="tdResultAna"style="vertical-align:middle">{{result.lineCold}}</td>
+                <td align="center" class="tdResultAna"style="vertical-align:middle">{{result.tank}}</td>
+            </tr>
+          </table>
+        </div>
       </div>
       <div style="display:none;margin-top:10px;" id="pageEconomics">
         <h5 class="text-danger" style="font-weight:600">{{'Economic results'|translate}}</h5>
-        <table class="table table-bordered table-sm" style="margin-top:10px;" *ngIf="symbol">
+        <div class="table-responsive">
+          <table class="table table-bordered table-sm" style="margin-top:10px;" *ngIf="symbol">
             <tr>
               <td rowspan="2" align="center"style="vertical-align:middle;font-size:12px;width:19%">{{'Equipment'|translate}}</td>
               <td rowspan="2"style="vertical-align:middle;font-size:12px;" align="center">
@@ -335,6 +365,7 @@
                 <td align="center" class="tdResultAna"style="vertical-align:middle">{{result.tank}}</td>
             </tr>
           </table>
+        </div>
       </div>
     </div>
   </div>
@@ -374,7 +405,7 @@
         </button>
       </div>
       <div class="modal-body">
-        <div class="chart-wrapper" *ngIf="pieData && displayPie == true">
+        <!-- <div class="chart-wrapper" *ngIf="pieData && displayPie == true">
           <canvas #myChart baseChart class="chart"
           [datasets]="pieData"
           [labels]="pieLabels"
@@ -383,15 +414,18 @@
           [chartType]="pieChartType"></canvas>
         </div>
         <div class="chart-wrapper" *ngIf="pieDataNone && displayPie == false">
-            <canvas baseChart class="chart"
-            [datasets]="pieDataNone"
-            [labels]="pieLabelsNone"
-            [colors]="pieColoursNone"
-            [options]="pieOptionsNone"
-            [chartType]="pieChartTypeNone"></canvas>
-          </div>
+          <canvas baseChart class="chart"
+          [datasets]="pieDataNone"
+          [labels]="pieLabelsNone"
+          [colors]="pieColoursNone"
+          [options]="pieOptionsNone"
+          [chartType]="pieChartTypeNone"></canvas>
+        </div> -->
+        <div class="text-center" *ngIf="imageConsumptionPie != ''">
+          <img [src]="imageConsumptionPie">
+        </div>
         <div class="text-center" style="margin-top: 25px;margin-bottom:10px">
-            <input type="checkbox" name="report_pie" value="1" style="margin:0;margin-right: 5px;vertical-align: middle"><span style="vertical-align: middle">Add this graph to the report</span>
+            <input type="checkbox" [(ngModel)]="ENABLE_CONS_PIE" [disabled]="!studyModifiable()" (change)="addConsPieToReport()" style="margin:0;margin-right: 5px;vertical-align: middle"><span style="vertical-align: middle">{{'Add this graph to the report'|translate}}</span>
         </div>
         <div class="text-center">
             <button class="btn btn-secondary btn-sm" (click)="closePie()">{{'Close'|translate}}</button>
@@ -431,13 +465,13 @@
             <tr>
               <ng-container *ngIf="study.CALCULATION_MODE == 1;else equipSizingOptimum">
                   <td align="center" style="vertical-align:middle">
-                      <input *ngIf="equipSizingDisable == false;else equipSizingWidthOther" type="text" [(ngModel)]="equipSizingWidth" class="form-control">
+                      <input *ngIf="equipSizingDisable == false;else equipSizingWidthOther" type="text" [(ngModel)]="equipSizingWidth" (change)="calculateLength()" class="form-control">
                       <ng-template #equipSizingWidthOther>
                         <span style="display:inline-block;line-height:35px">{{equipSizingWidth}}</span>
                       </ng-template>
                   </td>
                   <td align="center" style="vertical-align:middle">
-                      <input *ngIf="equipSizingDisable == false;else equipSizingLengthOther" type="text" [(ngModel)]="equipSizingLength" class="form-control">
+                      <input *ngIf="equipSizingDisable == false;else equipSizingLengthOther" type="text" [(ngModel)]="equipSizingLength" (change)="calculateWidth()" class="form-control">
                       <ng-template #equipSizingLengthOther>
                         <span style="display:inline-block;line-height:35px">{{equipSizingLength}}</span>
                       </ng-template>
@@ -445,20 +479,20 @@
               </ng-container>
               <ng-template #equipSizingOptimum>
                   <td align="center" style="vertical-align:middle">
-                      <input *ngIf="equipSizingDisable == false;else equipSizingLengthOther" type="text" [(ngModel)]="equipSizingLength" class="form-control">
+                      <input *ngIf="equipSizingDisable == false;else equipSizingLengthOther" type="text" [(ngModel)]="equipSizingLength" (change)="calculateWidth()" class="form-control">
                       <ng-template #equipSizingLengthOther>
                         <span style="display:inline-block;line-height:35px">{{equipSizingLength}}</span>
                       </ng-template>
                     </td>
                     <td align="center" style="vertical-align:middle">
-                        <input *ngIf="equipSizingDisable == false;else equipSizingWidthOther" type="text" [(ngModel)]="equipSizingWidth" class="form-control">
+                        <input *ngIf="equipSizingDisable == false;else equipSizingWidthOther" type="text" [(ngModel)]="equipSizingWidth" (change)="calculateLength()" class="form-control">
                         <ng-template #equipSizingWidthOther>
                           <span style="display:inline-block;line-height:35px">{{equipSizingWidth}}</span>
                         </ng-template>
                     </td>
               </ng-template>
               <td align="center" style="vertical-align:middle">
-                  <input *ngIf="equipSizingDisable == false;else equipSizingSurfaceOther" type="text" [(ngModel)]="equipSizingSurface" class="form-control">
+                  <input *ngIf="equipSizingDisable == false;else equipSizingSurfaceOther" type="text" [(ngModel)]="equipSizingSurface" (change)="calculateLength()" class="form-control">
                   <ng-template #equipSizingSurfaceOther>
                     <span style="display:inline-block;line-height:35px">{{equipSizingSurface}}</span>
                   </ng-template>
@@ -480,6 +514,101 @@
   </div>
 </div>
 
+<div bsModal class="modal modal-primary fade" #viewEquipTrModal="bs-modal" role="dialog" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="text-center" style="width:100%">
+            <h5 *ngIf="viewEquipTrData">{{viewEquipTrData.equipName}} <span *ngIf="viewEquipTrData.specificSize != ''">- {{viewEquipTrData.specificSize}}</span></h5>
+        </div>
+        <button class="close" arria-label="Close" data-dismiss="modal" (click)="viewEquipTrModal.hide()">
+          <span aria-hidden="true">×</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <table class="table table-bordered table-sm mb-0 text-center" *ngIf="symbol">
+          <thead>
+            <tr>
+              <th>{{ 'Control temperature'|translate }} ({{ symbol.temperatureSymbol }})</th>
+              <th>{{ 'Residence / Dwell time'|translate }} ({{ symbol.timeSymbol }})</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngIf="viewEquipTrData">
+              <td>{{viewEquipTrData.tr}}</td>
+              <td>{{viewEquipTrData.ts}}</td>
+            </tr>
+          </tbody>
+        </table>
+        <p></p>
+        <div class="text-center">
+          <button class="btn btn-secondary" (click)="viewEquipTrModal.hide()">{{'Close'|translate}}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div bsModal class="modal modal-primary fade bd-example-modal-lg" #editEquipTrModal="bs-modal" role="dialog" aria-hidden="true"  >
+  <div class="modal-dialog" role="document" style="max-width:50%;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="text-center" style="width:100%">
+          <h5 *ngIf="viewEquipTrData">{{viewEquipTrData.equipName}} <span *ngIf="viewEquipTrData.specificSize != ''">- {{viewEquipTrData.specificSize}}</span></h5>
+        </div>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="closeEditEquipTrModal()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="table-responsive">
+          <table class="table table-bordered table-sm"  >
+            <thead>
+              <tr *ngIf="symbol">
+                <td align="center"><strong>{{'Residence / Dwell time'|translate}} ({{symbol.timeSymbol}})</strong></td>
+                <td align="center"><strong>{{'Control temperature '|translate}} ({{symbol.temperatureSymbol}})</strong></td>
+                <td align="center"><strong>{{'Convection Setting '|translate}} ({{symbol.convectionSpeedSymbol}})</strong></td>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngIf="operatingSetting">
+                <td align="center">
+                  <div class="form-group" *ngFor="let item of studyEquipment.ts, let i = index">
+                    <input type="text" class="form-control" [(ngModel)]="tsValue[i]" style="width:80px">
+                  </div>
+                  <button class="btn btn-md btn-primary" [ladda]="laddaCalTr" (click)="calcTr()">{{'Compute Control Temperature'|translate}}</button>
+                </td>
+                <td align="center">
+                  <div class="form-group" *ngFor="let item of studyEquipment.tr, let i = index">
+                    <input type="text" class="form-control" [(ngModel)]="trValue[i]" [disabled]="disabledTr" style="width:80px">
+                  </div>
+                  <button class="btn btn-md btn-primary" [ladda]="laddaCalTs" (click)="calcTs()">{{'Compute Residence/Dwell Time'|translate}}</button>
+                </td>
+                <td align="center">
+                  <div *ngFor="let item of studyEquipment.vc, let i = index">
+                    <input type="text" class="form-control" [(ngModel)]="vcValue[i]" disabled style="width:80px">
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        
+        <div style="padding: 5px 0"><strong *ngIf="symbol">{{'Gas Temperature'|translate}} ({{symbol.temperatureSymbol}}):</strong></div>
+        <div class="row">
+          <div class="col-md-2" *ngIf="operatingSetting">
+            <input type="text" class="form-control" [(ngModel)]="studyEquipment.TExt" style="width:80px">
+          </div>
+        </div>
+        <div style="float:right;margin-right:20px;" >
+          <button class="btn btn-md btn-secondary" (click)="closeEditEquipTrModal()">{{'Cancel'|translate}}</button>
+          <button class="btn btn-md btn-primary" [ladda]="laddaCalculationEquip" (click)="submitCalculate()">{{'Calculation'|translate}}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div bsModal class="modal fade bd-example-modal-lg" #editModal="bs-modal" role="dialog" aria-hidden="true"  >
   <div class="modal-dialog modal-primary" role="document" style="max-width:60%;" *ngIf="editLayoutForm">
     <div class="modal-content">
@@ -495,30 +624,36 @@
         <div class="col-md-8">
           <div class="form-group row">
             <div class="col-md-6" *ngIf="symbol">{{'Spaces (length x width)'|translate}} ({{symbol.equipDimensionSymbol}})</div>
-            <input type="text" class="col-md-2" style="height:30px;" [(ngModel)]="editLayoutForm.lengthInterval">
+            <input type="text" class="col-md-2" style="height:30px;" [disabled]="!studyModifiable()" [(ngModel)]="editLayoutForm.lengthInterval">
             <div class="col-md-2"></div>
-            <input type="text"class="col-md-2" style="height:30px;" [(ngModel)]="editLayoutForm.widthInterval">
+            <input type="text"class="col-md-2" style="height:30px;" [disabled]="!studyModifiable()" [(ngModel)]="editLayoutForm.widthInterval">
           </div>
           <div class="form-group row">
             <div class="col-md-6">{{'Orientation'|translate}}</div>
-            <select class="form-control col-md-6" [(ngModel)]="editLayoutForm.orientation">
+            <select class="form-control col-md-6" [disabled]="!studyModifiable()" [(ngModel)]="editLayoutForm.orientation">
                 <option value="1">{{'Parallel'|translate}}</option>
                 <option value="0">{{'Perpendicular'|translate}}</option>
             </select>
           </div>
-          <div class="form-group row" *ngIf="1==0">
-            <div class="col-md-6">{{'Shelves'|translate}}</div>
-            <select class="form-control col-md-6"></select>
-          </div>
-          <div class="form-group row" *ngIf="1==0">
-            <div class="col-md-6" *ngIf="symbol">{{'Dimensions'|translate}} ({{'length'|translate}} x {{'width'|translate}}) ({{symbol.prodDimensionSymbol}})</div>
-            <input type="text" class="col-md-2" style="height:30px;" >
-            <div class="col-md-2"></div>
-            <input type="text"class="col-md-2" style="height:30px;">
-          </div>
-          <div class="form-group row" *ngIf="1==0">
-            <div class="col-md-6">{{'Number of shelves'|translate}}</div>
-            <input type="text" class="col-md-3" style="height:30px;" >
+          <div *ngIf="equipment.BATCH_PROCESS == 1">
+            <div class="form-group row">
+              <div class="col-md-6">{{'Shelves'|translate}}</div>
+              <select class="form-control col-md-6" (change)="showDims()" [(ngModel)]="editLayoutForm.crate">
+                <option value="0">{{'Euronorm'|translate}}</option>
+                <option value="1">{{'Gastronorm'|translate}}</option>
+                <option value="2">{{'UserDefined'|translate}}</option>
+              </select>
+            </div>
+            <div class="form-group row">
+              <div class="col-md-6" *ngIf="symbol">{{'Dimensions'|translate}} ({{'length'|translate}} x {{'width'|translate}}) ({{symbol.shelvesWidthSymbol}})</div>
+              <input type="text" class="col-md-2" style="height:30px;" [(ngModel)]="editLayoutForm.shelvesLength" [disabled]="shelvesLengthDisable">
+              <div class="col-md-2"></div>
+              <input type="text"class="col-md-2" style="height:30px;" [(ngModel)]="editLayoutForm.shelvesWidth" [disabled]="shelvesWidthDisable">
+            </div>
+            <div class="form-group row">
+              <div class="col-md-6">{{'Number of shelves'|translate}}</div>
+              <input type="text" class="col-md-3" style="height:30px;" [(ngModel)]="editLayoutForm.nbShelves">
+            </div>
           </div>
         </div>
         <div class="col-md-4">
@@ -551,10 +686,10 @@
         </tbody>
       </table>
       <div>
-        <strong style="padding:15px;" *ngIf="equipment.layoutResults != ''">{{'Belt coverage'|translate}} <input type="text" value="{{equipment.layoutResults.LOADING_RATE}}" style="heigth:30px;width:60px;" disabled="true"> (%)</strong>
+        <strong style="padding:15px;" *ngIf="equipment.layoutResults != ''">{{'Belt coverage'|translate}} <input type="text" value="{{equipment.layoutResults.LOADING_RATE}}" style="heigth:30px;width:60px;"> (%)</strong>
         <div style="float:right;margin-right:20px;" >
           <button class="btn btn-md btn-secondary" (click)="closeEditModal()">{{'Close'|translate}}</button>
-          <button class="btn btn-md btn-primary" [ladda]="laddaUpdateLayout" (click)="updateStdEquipLayout()">{{'Apply'|translate}}</button>
+          <button class="btn btn-md btn-primary" [disabled]="!studyModifiable()" [ladda]="laddaUpdateLayout" (click)="updateStdEquipLayout()">{{'Apply'|translate}}</button>
         </div>
       </div>
     </div>

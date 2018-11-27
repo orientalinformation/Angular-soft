@@ -9,4 +9,5 @@ export class ViewTimeBased {
     label?: TimeBasedLabel;
     result?: TimeBasedResult;
     curve?: TimeBasedCurve;
+    imageTimebased?: string;
 }

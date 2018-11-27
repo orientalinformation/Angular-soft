@@ -4,7 +4,7 @@ import { ProductElmt } from './product-elmt';
 /**
  */
 export class Report {
-    PLAN_X?: number;
+    PLAN_Y?: number;
     ID_REPORT?: number;
     REP_CUSTOMER?: number;
     PROD_LIST?: number;
@@ -49,8 +49,8 @@ export class Report {
     ISOVALUE_G?: number;
     ISOVALUE_V?: number;
     ISOVALUE_SAMPLE?: number;
+    PLAN_X?: number;
     ID_STUDY?: number;
-    PLAN_Y?: number;
     PLAN_Z?: number;
     CONTOUR2D_G?: number;
     CONTOUR2D_SAMPLE?: number;
@@ -95,4 +95,5 @@ export class Report {
     refContRep2DTempMaxRef?: number;
     refContRep2DTempStepRef?: number;
     ip?: string;
+    countRunInterval?: number;
 }

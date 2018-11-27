@@ -4,6 +4,8 @@ import { ApiService } from '../../../api/services';
 import { Nl2BrPipe } from 'nl2br-pipe';
 import { Router } from '@angular/router';
 import swal from 'sweetalert2';
+import { ToastrService } from 'ngx-toastr';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-new-study',
@@ -14,7 +16,8 @@ export class NewStudyComponent implements OnInit {
   public study: Study;
   public laddaSavingStudy = false;
 
-  constructor(private api: ApiService, private router: Router) {
+  constructor(private api: ApiService, private router: Router, private toastr: ToastrService
+  , private translate: TranslateService) {
     this.study = new Study();
     this.study.CALCULATION_MODE = 3;
   }
@@ -32,7 +35,7 @@ export class NewStudyComponent implements OnInit {
 
   saveStudy() {
     if (!this.study.STUDY_NAME) {
-      swal('Error', 'Please specify study name!', 'error');
+      swal('Error', this.translate.instant('Please specify study name!'), 'error');
       return false;
     }
 
@@ -53,6 +56,7 @@ export class NewStudyComponent implements OnInit {
           );
       },
       (err) => {
+        this.toastr.error(this.translate.instant(err.error.message), 'Error');
         this.laddaSavingStudy = false;
       },
       () => {

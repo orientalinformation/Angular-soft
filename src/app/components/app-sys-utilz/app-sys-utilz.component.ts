@@ -1,15 +1,22 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, AfterContentChecked } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-sys-utilz',
   templateUrl: './app-sys-utilz.component.html',
   styleUrls: ['./app-sys-utilz.component.scss']
 })
-export class AppSysUtilzComponent implements OnInit {
+export class AppSysUtilzComponent implements OnInit, AfterContentChecked {
+  public isRefDbActivated: boolean;
 
-  constructor() { }
+  constructor(private router: Router) {
+    this.isRefDbActivated = false;
+  }
 
-  ngOnInit() {
+  ngOnInit() {}
+
+  ngAfterContentChecked() {
+    this.isRefDbActivated = this.router.url.startsWith('/references');
   }
 
 }

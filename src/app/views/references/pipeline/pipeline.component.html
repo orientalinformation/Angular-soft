@@ -97,7 +97,7 @@
                     <tr>
                       <th>{{ 'Insulation'|translate }}</th>
                       <td>
-                        <select [(ngModel)]="updatePipeLine.INSULATION_TYPE" class="form-control form-control-sm" [disabled]="newPipeLine.ELT_TYPE == 2">
+                        <select [(ngModel)]="updatePipeLine.INSULATION_TYPE" class="form-control form-control-sm" [disabled]="updatePipeLine.ELT_TYPE == 2">
                           <option value="1">Polyrethane</option>
                           <option value="2">Super Insulation</option>
                           <option value="3" [hidden]="newPipeLine.ID_COOLING_FAMILY != 3">Armaflex</option>

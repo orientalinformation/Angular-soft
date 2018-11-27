@@ -15,6 +15,7 @@ import { ChainingComponent } from '../chaining/chaining.component';
 import { AuthenticationService } from '../../../authentication/authentication.service';
 import * as Models from '../../../api/models';
 import { TranslateService } from '@ngx-translate/core';
+import { isNullOrUndefined } from 'util';
 
 @Component({
   selector: 'app-packing',
@@ -28,6 +29,7 @@ export class PackingComponent implements OnInit, AfterContentChecked, AfterViewI
   public bottomNrLayer: number;
 
   public packingName: string;
+  public packingData: PackingLayer;
 
   public topLayers: PackingLayer[] = [];
   public sideLayers: PackingLayer[] = [];
@@ -39,15 +41,14 @@ export class PackingComponent implements OnInit, AfterContentChecked, AfterViewI
   public study: Study;
 
   public packingElements: PackingElement[];
-
   public packingView: ViewPackingLayer;
   public productView: ViewProduct;
 
   public laddaSavingPacking = false;
-
   public isLoading = true;
   public symbol: Symbol;
   public minmaxProductMeshPacking: Models.ViewMinMaxProductMeshPacking;
+  public disabledFieldForm = false;
 
   @ViewChild('chainingControls') chainingControls: ChainingComponent;
 
@@ -56,12 +57,18 @@ export class PackingComponent implements OnInit, AfterContentChecked, AfterViewI
     this.topNrLayer = 0;
     this.sideNrLayer = 0;
     this.bottomNrLayer = 0;
+    this.packingData = {
+      ID_PACKING_ELMT: 0,
+      THICKNESS: '',
+    };
   }
 
   ngOnInit() {
   }
 
   ngAfterViewInit() {
+    localStorage.setItem('productWarning', 'Y');
+    localStorage.setItem('productDeleteWarning', 'Y');
     this.study = JSON.parse(localStorage.getItem('study'));
     this.api.getSymbol(this.study.ID_STUDY).subscribe(
       data => {
@@ -115,11 +122,16 @@ export class PackingComponent implements OnInit, AfterContentChecked, AfterViewI
     this.productView = JSON.parse(localStorage.getItem('productView'));
 
     if (this.productShape === 0 || !this.productView.elements || this.productView.elements.length === 0) {
-      swal('Oops..', 'Please define product first', 'error');
+      swal('Warning', this.translate.instant('Please define product first'), 'error');
       this.router.navigate(['/input/product']);
       return;
     }
-    this.imgSrc = this.shapeImgShim(JSON.parse(localStorage.getItem('shapes'))[this.productShape - 1].SHAPEPICT);
+
+    if (this.productShape >= 10) {
+      this.imgSrc = this.shapeImgShim(JSON.parse(localStorage.getItem('shapes'))[this.productShape - 10].SHAPEPICT);
+    } else {
+      this.imgSrc = this.shapeImgShim(JSON.parse(localStorage.getItem('shapes'))[this.productShape - 1].SHAPEPICT);
+    }
   }
 
   private shapeImgShim(shapePict: string) {
@@ -129,6 +141,7 @@ export class PackingComponent implements OnInit, AfterContentChecked, AfterViewI
   private getTopLabel(shapeCode: number) {
     switch (shapeCode) {
       case this.text.shapeNames.SPHERE:
+      case this.text.shapeNames.D_SPHERE:
         return 'All around';
       case this.text.shapeNames.CYL_LAY:
       case this.text.shapeNames.CON_CYL_LAY:
@@ -140,13 +153,20 @@ export class PackingComponent implements OnInit, AfterContentChecked, AfterViewI
   private getSideLabel(shapeCode: number) {
     switch (shapeCode) {
       case this.text.shapeNames.REC_LAY:
+      case this.text.shapeNames.D_REC_BLOCK_H:
       case this.text.shapeNames.REC_STAND:
+      case this.text.shapeNames.D_REC_BLOCK_V:
+      case this.text.shapeNames.D_TRAP_3D:
       case this.text.shapeNames.BREAD:
+      case this.text.shapeNames.D_REC_BLOCK:
         return '4 Sides';
 
       case this.text.shapeNames.CYL_LAY:
+      case this.text.shapeNames.D_LYI_CYL:
       case this.text.shapeNames.CON_CYL_LAY:
-        return 'Rear';
+      case this.text.shapeNames.D_LYN_CON_CYL:
+      case this.text.shapeNames.D_LYN_OVAL:
+        return 'Front';
     }
 
     return 'Side';
@@ -155,23 +175,23 @@ export class PackingComponent implements OnInit, AfterContentChecked, AfterViewI
   private getBottomLabel(shapeCode: number) {
     switch (shapeCode) {
       case this.text.shapeNames.CYL_LAY:
+      case this.text.shapeNames.D_LYI_CYL:
       case this.text.shapeNames.CON_CYL_LAY:
+      case this.text.shapeNames.D_LYN_CON_CYL:
         return 'Rear';
     }
     return 'Bottom';
   }
 
   savePacking() {
-    if (!this.packingName) {
-      swal('Oops', 'Please input packing name', 'error');
-      return;
-    }
     for (let i = 0; i < this.topLayers.length; i++) {
+      if (isNullOrUndefined(this.topLayers[i]['THICKNESS']) || String(this.topLayers[i]['THICKNESS']) === '') {
+        this.toastr.error(this.translate.instant('Enter a value in Thickne !'), 'Error');
+        return;
+      }
+
       const thikness = Number(this.topLayers[i]['THICKNESS']);
-      if (!thikness) {
-        this.toastr.error(this.translate.instant('Enter a value in Thickne !'), 'Error');
-        return false;
-      } else if (!this.isNumberic(thikness)) {
+      if (!this.isNumberic(thikness)) {
         this.toastr.error(this.translate.instant('Not a valid number in Thickne !'), 'Error');
         return false;
       } else if (i < 8 && !this.isInRangeOutput(thikness, this.minmaxProductMeshPacking.mmThickness.LIMIT_MIN,
@@ -182,12 +202,15 @@ export class PackingComponent implements OnInit, AfterContentChecked, AfterViewI
           return false;
       }
     }
+
     for (let i = 0; i < this.sideLayers.length; i++) {
+      if (isNullOrUndefined(this.sideLayers[i]['THICKNESS']) || String(this.sideLayers[i]['THICKNESS']) === '') {
+        this.toastr.error(this.translate.instant('Enter a value in Thickne !'), 'Error');
+        return;
+      }
+
       const thikness = Number(this.sideLayers[i]['THICKNESS']);
-      if (!thikness) {
-        this.toastr.error(this.translate.instant('Enter a value in Thickne !'), 'Error');
-        return false;
-      } else if (!this.isNumberic(thikness)) {
+      if (!this.isNumberic(thikness)) {
         this.toastr.error(this.translate.instant('Not a valid number in Thickne !'), 'Error');
         return false;
       } else if (i < 8 && !this.isInRangeOutput(thikness, this.minmaxProductMeshPacking.mmThickness.LIMIT_MIN,
@@ -198,12 +221,15 @@ export class PackingComponent implements OnInit, AfterContentChecked, AfterViewI
           return false;
       }
     }
+
     for (let i = 0; i < this.bottomLayers.length; i++) {
-      const thikness = Number(this.bottomLayers[i]['THICKNESS']);
-      if (!thikness) {
+      if (isNullOrUndefined(this.bottomLayers[i]['THICKNESS']) || String(this.bottomLayers[i]['THICKNESS']) === '') {
         this.toastr.error(this.translate.instant('Enter a value in Thickne !'), 'Error');
-        return false;
-      } else if (!this.isNumberic(thikness)) {
+        return;
+      }
+
+      const thikness = Number(this.bottomLayers[i]['THICKNESS']);
+      if (!this.isNumberic(thikness)) {
         this.toastr.error(this.translate.instant('Not a valid number in Thickne !'), 'Error');
         return false;
       } else if (i < 8 && !this.isInRangeOutput(thikness, this.minmaxProductMeshPacking.mmThickness.LIMIT_MIN,
@@ -214,6 +240,7 @@ export class PackingComponent implements OnInit, AfterContentChecked, AfterViewI
           return false;
       }
     }
+
     this.laddaSavingPacking = true;
     const updateParams = {
       id: this.study.ID_STUDY,
@@ -255,10 +282,21 @@ export class PackingComponent implements OnInit, AfterContentChecked, AfterViewI
       });
     });
 
+    if (this.packingView) {
+      if (this.study.CHAINING_CONTROLS &&
+        ((this.topNrLayer > 0) ||
+          ((Number(this.packingView.packing.ID_SHAPE) === 9) && ((this.bottomNrLayer + this.sideNrLayer) > 0)))) {
+        swal('Warning',
+        this.translate.instant('Packing data changed.' +
+          'The equipment parameters(Control temperature, dwelling time...)' +
+          ' are not valid any more.Please return on equipment page to validate these data.'), 'warning');
+      }
+    }
+
     this.api.savePacking(updateParams).subscribe(
       response => {
         this.laddaSavingPacking = false;
-        this.toastr.success('Product packing specification saved.', 'Success');
+        this.toastr.success(this.translate.instant('Product packing specification saved.'), 'Success');
       },
       err => {
 
@@ -267,11 +305,20 @@ export class PackingComponent implements OnInit, AfterContentChecked, AfterViewI
   }
 
   onTopNrLayerChanged() {
+    if (this.packingView) {
+      if (this.study.CHAINING_CONTROLS &&
+        ((this.topNrLayer > 0) ||
+          ((Number(this.packingView.packing.ID_SHAPE) === 9) && ((this.bottomNrLayer + this.sideNrLayer) > 0)))) {
+        swal('Warning', this.translate.instant('No component addition will be allowed in next studies'), 'warning');
+      }
+    }
+
     this.topLayers = [];
 
     for (let index = 0; index < this.topNrLayer; index++) {
       const p = new PackingLayer();
       p.THICKNESS = this.defaultThickness;
+      p.ID_PACKING_ELMT = 1;
       p.PACKING_LAYER_ORDER = index;
       p.PACKING_SIDE_NUMBER = 1;
       this.topLayers.push( p );
@@ -279,10 +326,19 @@ export class PackingComponent implements OnInit, AfterContentChecked, AfterViewI
   }
 
   onSideNrLayerChanged() {
+    if (this.packingView) {
+      if (this.study.CHAINING_CONTROLS &&
+        ((this.topNrLayer > 0) ||
+          ((Number(this.packingView.packing.ID_SHAPE) === 9) && ((this.bottomNrLayer + this.sideNrLayer) > 0)))) {
+        swal('Warning', this.translate.instant('No component addition will be allowed in next studies'), 'warning');
+      }
+    }
+
     this.sideLayers = [];
     for (let index = 0; index < this.sideNrLayer; index++) {
       const p = new PackingLayer();
       p.THICKNESS = this.defaultThickness;
+      p.ID_PACKING_ELMT = 1;
       p.PACKING_LAYER_ORDER = index;
       p.PACKING_SIDE_NUMBER = 2;
       this.sideLayers.push(p);
@@ -290,10 +346,19 @@ export class PackingComponent implements OnInit, AfterContentChecked, AfterViewI
   }
 
   onBottomNrLayerChanged() {
+    if (this.packingView) {
+      if (this.study.CHAINING_CONTROLS &&
+        ((this.topNrLayer > 0) ||
+          ((Number(this.packingView.packing.ID_SHAPE) === 9) && ((this.bottomNrLayer + this.sideNrLayer) > 0)))) {
+        swal('Warning', this.translate.instant('No component addition will be allowed in next studies'), 'warning');
+      }
+    }
+
     this.bottomLayers = [];
     for (let index = 0; index < this.bottomNrLayer; index++) {
       const p = new PackingLayer();
       p.THICKNESS = this.defaultThickness;
+      p.ID_PACKING_ELMT = 1;
       p.PACKING_LAYER_ORDER = index;
       p.PACKING_SIDE_NUMBER = 3;
       this.bottomLayers.push(p);
@@ -304,31 +369,29 @@ export class PackingComponent implements OnInit, AfterContentChecked, AfterViewI
     this.sideNrLayer = this.topNrLayer;
 
     this.onSideNrLayerChanged();
-    this.sideLayers = this.topLayers;
+    // this.sideLayers = this.topLayers;
   }
 
   onSideSameAsBottom() {
     this.sideNrLayer = this.bottomNrLayer;
 
     this.onSideNrLayerChanged();
-    this.sideLayers = this.bottomLayers;
+    // this.sideLayers = this.bottomLayers;
   }
 
   onBottomSameAsTop() {
     this.bottomNrLayer = this.topNrLayer;
 
     this.onBottomNrLayerChanged();
-    this.bottomLayers = this.topLayers;
+    // this.bottomLayers = this.topLayers;
   }
 
   onChainingControlsLoaded() {
     this.chainingControls.showPacking();
   }
 
-  studyModifiable() {
-    if (!this.study) { return false; }
-    const owned = this.auth.user().ID_USER === this.study.ID_USER;
-    return owned && ((!this.study.CHAINING_CONTROLS) || (!this.study.HAS_CHILD && this.study.PARENT_ID === 0));
+  disabledField() {
+    return !(Number(this.study.ID_USER) === Number(this.auth.user().ID_USER));
   }
 
   isNumberic(number) {
@@ -343,4 +406,13 @@ export class PackingComponent implements OnInit, AfterContentChecked, AfterViewI
     }
   }
 
+  checkEnabledField() {
+    if (Number(this.productShape) === Number(this.text.shapeNames.D_SPHERE)
+      || Number(this.productShape) === Number(this.text.shapeNames.SPHERE)
+      || Number(this.productShape) === Number(this.text.shapeNames.SLAB)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 }

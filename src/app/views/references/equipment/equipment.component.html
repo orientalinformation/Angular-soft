@@ -9,7 +9,7 @@
     </div>
     <div class="card-body">
       <!--Start load equipment -->
-      <div style="margin-top:10px;" id="page-load-equipment"> 
+      <div style="margin-top:10px;" id="page-load-equipment">
         <div class="row">
           <div class="col-md-5">
             <div class="card" *ngIf="listEquipment">
@@ -17,15 +17,16 @@
                     <div class="input-group input-group-sm study-search-box">
                         <input type="text" class="form-control" [(ngModel)]="filterString" placeholder="{{'Search'|translate}}" />
                         <span>
-                        <i class="fa fa-search" aria-hidden="true"></i>
+                            <i class="fa fa-search" aria-hidden="true"></i>
                         </span>
                     </div>
                 </div>
                 <perfect-scrollbar style="max-height: 400px;">
                     <div class="list-group">
                         <h6 class="dropdown-header">MINE</h6>
-                        <a *ngFor="let equip of (listEquipment.mine | equipFilter: filterString)" [ngClass]="checkActiveEquip == equip.ID_EQUIP 
-                        || equip == selectEquipment? 'active' : ''" class="list-group-item list-group-item-action" (click)="onSelectEquipment(equip)">
+                        <a *ngFor="let equip of (listEquipment.mine | equipFilter: filterString)"
+                        [ngClass]="checkActiveEquip == equip.ID_EQUIP || equip == selectEquipment || checkActive == equip.ID_EQUIP ? 'active' : ''"
+                        class="list-group-item list-group-item-action" (click)="onSelectEquipment(equip)">
                             <div class="d-flex w-100 justify-content-between">
                                 {{ equip.EQUIP_NAME }} - (v{{ equip.EQUIP_VERSION }})
                                 <i *ngIf="equip.EQUIP_RELEASE == 3" class="fa fa-check text-success"></i>
@@ -35,8 +36,9 @@
                             </div>
                         </a>
                         <h6 class="dropdown-header">OTHERS</h6>
-                        <a *ngFor="let equip of (listEquipment.others | equipFilter: filterString)" [ngClass]="checkActiveEquip == equip.ID_EQUIP 
-                        || equip == selectEquipment? 'active' : ''" class="list-group-item list-group-item-action" (click)="onSelectEquipment(equip)">
+                        <a *ngFor="let equip of (listEquipment.others | equipFilter: filterString)"
+                        [ngClass]="checkActiveEquip == equip.ID_EQUIP || equip == selectEquipment || checkActive == equip.ID_EQUIP ? 'active' : ''"
+                        class="list-group-item list-group-item-action" (click)="onSelectEquipment(equip)">
                             <div class="d-flex w-100 justify-content-between">
                                 {{ equip.EQUIP_NAME }} - (v{{ equip.EQUIP_VERSION }})
                                 <i *ngIf="equip.EQUIP_RELEASE == 3" class="fa fa-check text-success"></i>
@@ -48,12 +50,18 @@
                     </div>
                 </perfect-scrollbar>
                 <div class="card-footer text-center">
-                    <button type="button" class="btn btn-success btn-sm" (click)="modalAddEquipment.show(); disableFilter = false;"><i class="fa fa-plus"></i> {{ 'Add'|translate }}</button>
+                    <button type="button" class="btn btn-success btn-sm" (click)="modalAddEquipment.show(); disableFilter = false;">
+                        <i class="fa fa-plus"></i> {{ 'Add'|translate }}
+                    </button>
                     <button type="button" class="btn btn-danger btn-sm" *ngIf="selectEquipment && !checkHideInfo" [disabled]="selectEquipment.ID_USER != listEquipment.ID_USER" (click)="deleteEquipment(selectEquipment)" >
                         <i class="fa fa-trash-o"></i> {{ 'Delete'|translate }}
                     </button>
-                    <button class="btn btn-secondary btn-sm" type="button" *ngIf="selectEquipment && !checkHideInfo" (click)="modalSaveAsEquipment.show();"><i class="fa fa-copy"></i> {{ 'Save As'|translate }}</button>
-                    <button type="button" class="btn btn-primary btn-sm" (click)="refrestListEquipment();"><i class="fa fa-refresh"></i> {{ 'Refresh'|translate }}</button>
+                    <button class="btn btn-secondary btn-sm" type="button" *ngIf="selectEquipment && !checkHideInfo" (click)="modalSaveAsEquipment.show();">
+                        <i class="fa fa-copy"></i> {{ 'Save As'|translate }}
+                    </button>
+                    <button type="button" class="btn btn-primary btn-sm" (click)="refrestListEquipment();">
+                        <i class="fa fa-refresh"></i> {{ 'Refresh'|translate }}
+                    </button>
                 </div>
               </div>
               <div *ngIf="selectEquipment && !checkHideInfo">
@@ -81,7 +89,7 @@
                         <tfoot>
                             <tr>
                                 <td align="center" style="vertical-align:middle">
-                                    <input type="text" class="form-control form-control-sm col-md-6" placeholder="0.00" [(ngModel)]="this.newRamp.POSITION">
+                                    <input type="text" class="form-control form-control-sm col-md-6" placeholder="0.00" [(ngModel)]="this.newRamp.POSITION" maxlength="10">
                                 </td>
                                 <td align="center">
                                     <div>
@@ -118,14 +126,14 @@
                                 </div>
                                 </td>
                             </tr>
-                        </tbody>    
+                        </tbody>
                         <tfoot>
                             <tr>
                                 <td align="center" style="vertical-align:middle">
-                                    <input type="text" class="form-control form-control-sm" placeholder="0.00" [(ngModel)]="this.newShelve.SPACE">
+                                    <input type="text" class="form-control form-control-sm" placeholder="0.00" [(ngModel)]="this.newShelve.SPACE" maxlength="10">
                                 </td>
                                 <td align="center" style="vertical-align:middle">
-                                    <input type="text" class="form-control form-control-sm" placeholder="0.00" [(ngModel)]="this.newShelve.NB">
+                                    <input type="text" class="form-control form-control-sm" placeholder="0.00" [(ngModel)]="this.newShelve.NB" maxlength="10">
                                 </td>
                                 <td align="center">
                                     <div>
@@ -246,7 +254,7 @@
                             <th style="width: 50%">{{ 'Length'|translate }}</th>
                             <td>
                                 <div class="input-group">
-                                    <input type="text" class="form-control form-control-sm" [(ngModel)]="selectEquipment.EQP_LENGTH" placeholder="0.00">
+                                    <input type="text" class="form-control form-control-sm" [(ngModel)]="selectEquipment.EQP_LENGTH" placeholder="0.00" maxlength="10">
                                     <span class="input-group-addon">{{ equipDimensionSymbol }}</span>
                                 </div>
                             </td>
@@ -255,7 +263,7 @@
                             <th style="width: 50%">{{ 'Width'|translate }}</th>
                             <td>
                                 <div class="input-group">
-                                    <input type="text" class="form-control form-control-sm" [(ngModel)]="selectEquipment.EQP_WIDTH" placeholder="0.00">
+                                    <input type="text" class="form-control form-control-sm" [(ngModel)]="selectEquipment.EQP_WIDTH" placeholder="0.00" maxlength="10">
                                     <span class="input-group-addon">{{ equipDimensionSymbol }}</span>
                                 </div>
                             </td>
@@ -264,7 +272,7 @@
                             <th style="width: 50%">{{ 'Height'|translate }}</th>
                             <td>
                                 <div class="input-group">
-                                    <input type="text" class="form-control form-control-sm" [(ngModel)]="selectEquipment.EQP_HEIGHT" placeholder="0.00">
+                                    <input type="text" class="form-control form-control-sm" [(ngModel)]="selectEquipment.EQP_HEIGHT" placeholder="0.00" maxlength="10">
                                     <span class="input-group-addon">{{ equipDimensionSymbol }}</span>
                                 </div>
                             </td>
@@ -272,26 +280,26 @@
                         <tr>
                             <th style="width: 50%">{{ 'TR number'|translate }}</th>
                             <td>
-                                <input type="text" class="form-control form-control-sm" [(ngModel)]="selectEquipment.NB_TR" placeholder="0.00">
+                                <input type="text" class="form-control form-control-sm" [(ngModel)]="selectEquipment.NB_TR" placeholder="0.00" maxlength="5" size="5">
                             </td>
                         </tr>
                         <tr>
                             <th style="width: 50%">{{ 'TS number'|translate }}</th>
                             <td>
-                                <input type="text" class="form-control form-control-sm" [(ngModel)]="selectEquipment.NB_TS" placeholder="0.00">
+                                <input type="text" class="form-control form-control-sm" [(ngModel)]="selectEquipment.NB_TS" placeholder="0.00" maxlength="5">
                             </td>
                         </tr>
                         <tr>
                             <th style="width: 50%">{{ 'VC number'|translate }}</th>
                             <td>
-                                <input type="text" class="form-control form-control-sm" [(ngModel)]="selectEquipment.NB_VC"  placeholder="0.00">
+                                <input type="text" class="form-control form-control-sm" [(ngModel)]="selectEquipment.NB_VC"  placeholder="0.00" maxlength="5">
                             </td>
                         </tr>
                         <tr>
                             <th style="width: 50%">{{ 'Max flow rate'|translate }}</th>
                             <td>
                                 <div class="input-group">
-                                    <input type="text" class="form-control form-control-sm" [(ngModel)]="selectEquipment.MAX_FLOW_RATE" placeholder="0.00">
+                                    <input type="text" class="form-control form-control-sm" [(ngModel)]="selectEquipment.MAX_FLOW_RATE" placeholder="0.00" maxlength="10">
                                     <span class="input-group-addon" [innerHTML]="selectEquipment.consumptionSymbol1 + '/h'"></span>
                                 </div>
                             </td>
@@ -300,7 +308,7 @@
                             <th style="width: 50%">{{ 'Mimimum regulation temperature'|translate }}</th>
                             <td>
                                 <div class="input-group">
-                                    <input type="text" class="form-control form-control-sm" [(ngModel)]="selectEquipment.TMP_REGUL_MIN" placeholder="0.00">
+                                    <input type="text" class="form-control form-control-sm" [(ngModel)]="selectEquipment.TMP_REGUL_MIN" placeholder="0.00" maxlength="10">
                                     <span class="input-group-addon">{{ temperatureSymbol }}</span>
                                 </div>
                             </td>
@@ -308,13 +316,13 @@
                         <tr>
                             <th style="width: 50%">{{ 'Nozzles/ramps number'|translate }}</th>
                             <td>
-                                <input type="text" class="form-control form-control-sm" [(ngModel)]="selectEquipment.MAX_NOZZLES_BY_RAMP" placeholder="0.00">
+                                <input type="text" class="form-control form-control-sm" [(ngModel)]="selectEquipment.MAX_NOZZLES_BY_RAMP" placeholder="0.00" maxlength="10">
                             </td>
                         </tr>
                         <tr>
                             <th style="width: 50%">{{ 'Ramp max number'|translate }}</th>
                             <td>
-                                <input type="text" class="form-control form-control-sm" [(ngModel)]="selectEquipment.MAX_RAMPS" placeholder="0.00">
+                                <input type="text" class="form-control form-control-sm" [(ngModel)]="selectEquipment.MAX_RAMPS" placeholder="0.00" maxlength="10">
                             </td>
                         </tr>
                         <tr>
@@ -334,31 +342,31 @@
                     <div class="col-md-1"></div>
                     <div class="col-md-2" align="center" >
                         <label class="custom-control custom-radio" >
-                            <input type="radio" value="1" class="custom-control-input" name="statusEquip" [(ngModel)]="selectEquipment.EQUIP_RELEASE">{{ 'Draft'|translate }}
+                            <input type="radio" [value]="1" class="custom-control-input" name="statusEquip" [(ngModel)]="selectEquipment.EQUIP_RELEASE">{{ 'Draft'|translate }}
                             <span class="custom-control-indicator"></span>
                         </label>
                     </div>
                     <div class="col-md-2" align="center" >
                         <label class="custom-control custom-radio" >
-                            <input type="radio" value="2" class="custom-control-input" name="statusEquip" [(ngModel)]="selectEquipment.EQUIP_RELEASE">{{ 'Test'|translate }}
+                            <input type="radio" [value]="2" class="custom-control-input" name="statusEquip" [(ngModel)]="selectEquipment.EQUIP_RELEASE">{{ 'Test'|translate }}
                             <span class="custom-control-indicator"></span>
                         </label>
                     </div>
                     <div class="col-md-2" align="center" >
                         <label class="custom-control custom-radio" >
-                            <input type="radio" value="3" class="custom-control-input" name="statusEquip" [(ngModel)]="selectEquipment.EQUIP_RELEASE">{{ 'Active'|translate }}
+                            <input type="radio" [value]="3" class="custom-control-input" name="statusEquip" [(ngModel)]="selectEquipment.EQUIP_RELEASE">{{ 'Active'|translate }}
                             <span class="custom-control-indicator"></span>
                         </label>
                     </div>
                     <div class="col-md-2" align="center" >
                         <label class="custom-control custom-radio" >
-                            <input type="radio" value="4" class="custom-control-input" name="statusEquip" [(ngModel)]="selectEquipment.EQUIP_RELEASE">{{ 'Certified'|translate }}
+                            <input type="radio" [value]="4" class="custom-control-input" name="statusEquip" [(ngModel)]="selectEquipment.EQUIP_RELEASE">{{ 'Certified'|translate }}
                             <span class="custom-control-indicator"></span>
                         </label>
                     </div>
                     <div class="col-md-2" align="center" >
                         <label class="custom-control custom-radio" >
-                            <input type="radio" value="9" class="custom-control-input" name="statusEquip" [(ngModel)]="selectEquipment.EQUIP_RELEASE">{{ 'Obsolete'|translate }}
+                            <input type="radio" [value]="9" class="custom-control-input" name="statusEquip" [(ngModel)]="selectEquipment.EQUIP_RELEASE">{{ 'Obsolete'|translate }}
                             <span class="custom-control-indicator"></span>
                         </label>
                     </div>
@@ -384,7 +392,7 @@
                                     <th width="10%" style="vertical-align:middle;text-align:center">{{ 'Action'|translate }}</th>
                                 </tr>
                             </thead>
-                            
+
                             <tbody *ngIf="consumptionsArray">
                                 <tr>
                                   <td colspan="4">
@@ -405,20 +413,20 @@
                                                   </td>
                                               </tr>
                                           </table>
-                                      </perfect-scrollbar> 
-                                  </td> 
+                                      </perfect-scrollbar>
+                                  </td>
                                 </tr>
                             </tbody>
                             <tfoot>
                                 <tr>
                                   <td align="center" style="vertical-align:middle">
-                                      <input type="text" class="form-control form-control-sm" placeholder="0.00" [(ngModel)]="newConsumption.TEMPERATURE">
+                                      <input type="text" class="form-control form-control-sm" placeholder="0.00" [(ngModel)]="newConsumption.TEMPERATURE" maxlength="10">
                                   </td>
                                   <td align="center" style="vertical-align:middle">
-                                      <input type="text" class="form-control form-control-sm" placeholder="0.00" [(ngModel)]="newConsumption.CONSUMPTION_PERM">
+                                      <input type="text" class="form-control form-control-sm" placeholder="0.00" [(ngModel)]="newConsumption.CONSUMPTION_PERM" maxlength="10">
                                   </td>
                                   <td align="center" style="vertical-align:middle">
-                                      <input type="text" class="form-control form-control-sm" placeholder="0.00" [(ngModel)]="newConsumption.CONSUMPTION_GETCOLD">
+                                      <input type="text" class="form-control form-control-sm" placeholder="0.00" [(ngModel)]="newConsumption.CONSUMPTION_GETCOLD" maxlength="10">
                                   </td>
                                   <td align="center">
                                       <div>
@@ -441,13 +449,22 @@
                 </div>
               </ng-template>
               <div class="card-footer text-center" *ngIf="selectEquipment && !checkHideInfo">
-                <button type="button" (click)="onFilterLoad(selectEquipment)" class="btn btn-warning" *ngIf="selectEquipment" 
-                [disabled]="selectEquipment.ID_USER != listEquipment.ID_USER"><i class="fa fa-filter"></i> {{ 'Filter'|translate }}</button>
-                <button type="button" class="btn btn-primary" *ngIf="selectEquipment" [disabled]="selectEquipment.ID_USER != listEquipment.ID_USER" 
-                 (click)="startEquipmentCalculate(selectEquipment);" [ladda]="laddaIsEquipmentCalculating"><i class="icon-energy"></i> {{ 'Calculate'|translate }}
+                <button type="button" (click)="onFilterLoad(selectEquipment)" class="btn btn-warning" *ngIf="selectEquipment"
+                    [disabled]="selectEquipment.ID_USER != listEquipment.ID_USER"><i class="fa fa-filter"></i> {{ 'Filter'|translate }}
                 </button>
-                <button type="button" class="btn btn-success" *ngIf="selectEquipment" [disabled]="selectEquipment.ID_USER != listEquipment.ID_USER" 
-                (click)="checkUpdateEquipment(selectEquipment, 0);"><i class="fa fa-floppy-o" aria-hidden="true"></i> {{ 'Save'|translate }}</button>
+                <button type="button" class="btn btn-primary" *ngIf="selectEquipment" 
+                    [disabled]="(selectEquipment.ID_USER != listEquipment.ID_USER) || (selectEquipment.ID_EQUIPGENERATION == 0)"
+                    (click)="startEquipmentCalculate(selectEquipment);" [ladda]="laddaIsEquipmentCalculating">
+                    <i class="icon-energy"></i> {{ 'Calculate'|translate }}
+                </button>
+                <button type="button" class="btn btn-success" *ngIf="selectEquipment" 
+                    [disabled]="selectEquipment.ID_USER != listEquipment.ID_USER"
+                    (click)="checkUpdateEquipment(selectEquipment, 0);">
+                    <i class="fa fa-floppy-o" aria-hidden="true"></i> {{ 'Save'|translate }}
+                </button>
+                <button type="button" class="btn btn-secondary" *ngIf="checkBackStudy == 1" (click)="comeBackStudy();">
+                    <i class="fa fa-chevron-circle-left"></i>&nbsp; {{ 'Come back to study'|translate }}
+                </button>
               </div>
             </div>
           </div>
@@ -466,17 +483,17 @@
             <thead>
                 <tr>
                     <td align="center">{{ 'Position'|translate }}<br> (%)</td>
-                    <td align="center"><a href="javascript:;" (click)="getDataHighChart(selectEquipment.ID_EQUIP, 1, 0);" 
+                    <td align="center"><a href="javascript:;" (click)="getDataHighChart(selectEquipment.ID_EQUIP, 1, 0);"
                         ngbTooltip="Click here to edit the full profile">{{ 'Alpha top'|translate }}<br> ({{ convectionCoeffSymbol }})</a></td>
-                    <td align="center"><a href="javascript:;" (click)="getDataHighChart(selectEquipment.ID_EQUIP, 1, 1);" 
+                    <td align="center"><a href="javascript:;" (click)="getDataHighChart(selectEquipment.ID_EQUIP, 1, 1);"
                         ngbTooltip="Click here to edit the full profile">{{ 'Alpha bottom'|translate }}<br> ({{ convectionCoeffSymbol }})</a></td>
-                    <td align="center"><a href="javascript:;" (click)="getDataHighChart(selectEquipment.ID_EQUIP, 1, 2);" 
+                    <td align="center"><a href="javascript:;" (click)="getDataHighChart(selectEquipment.ID_EQUIP, 1, 2);"
                         ngbTooltip="Click here to edit the full profile">{{ 'Alpha left'|translate }}<br>({{ convectionCoeffSymbol }})</a></td>
-                    <td align="center"><a href="javascript:;" (click)="getDataHighChart(selectEquipment.ID_EQUIP, 1, 3);" 
+                    <td align="center"><a href="javascript:;" (click)="getDataHighChart(selectEquipment.ID_EQUIP, 1, 3);"
                         ngbTooltip="Click here to edit the full profile">{{ 'Alpha right'|translate }}<br> ({{ convectionCoeffSymbol }})</a></td>
-                    <td align="center"><a href="javascript:;" (click)="getDataHighChart(selectEquipment.ID_EQUIP, 1, 4);" 
+                    <td align="center"><a href="javascript:;" (click)="getDataHighChart(selectEquipment.ID_EQUIP, 1, 4);"
                         ngbTooltip="Click here to edit the full profile">{{ 'Alpha front'|translate }}<br> ({{ convectionCoeffSymbol }})</a></td>
-                    <td align="center"><a href="javascript:;" (click)="getDataHighChart(selectEquipment.ID_EQUIP, 1, 5);" 
+                    <td align="center"><a href="javascript:;" (click)="getDataHighChart(selectEquipment.ID_EQUIP, 1, 5);"
                         ngbTooltip="Click here to edit the full profile">{{ 'Alpha rear'|translate }}<br> ({{ convectionCoeffSymbol }})</a></td>
                     <td align="center">{{ 'Delete'|translate }}</td>
                 </tr>
@@ -486,7 +503,7 @@
                     <perfect-scrollbar style="max-height: 150px;">
                         <table>
                             <tr *ngFor="let equipCharact of equipCharacts;let i = index">
-                                <td width="9%"><a href="javascript:;" (click)="getEquipCharact(equipCharact.ID_EQUIPCHARAC);modalReferentialEquip.show();" 
+                                <td width="9%"><a href="javascript:;" (click)="getEquipCharact(equipCharact.ID_EQUIPCHARAC);modalReferentialEquip.show();"
                                     ngbTooltip="Click here to edit one point">{{ equipCharact.X_POSITION }}</a></td>
                                 <td width="14%">{{ equipCharact.ALPHA_TOP }}</td>
                                 <td width="15%">{{ equipCharact.ALPHA_BOTTOM }}</td>
@@ -498,9 +515,10 @@
                                 <td width="15%">{{ equipCharact.ALPHA_REAR }}</td>
                                 <td align="center" width="12%">
                                     <div style="margin-top:0.5em">
-                                        <button type="button" class="btn btn-danger btn-sm" (click)="deleteEquipCharactValue(i);deleteEquipCharact(equipCharact.ID_EQUIPCHARAC);" 
+                                        <button type="button" class="btn btn-danger btn-sm"
+                                        (click)="deleteEquipCharactValue(i);deleteEquipCharact(equipCharact.ID_EQUIPCHARAC);"
                                         ngbTooltip="Delete one point">
-                                            <i class="fa fa-minus-circle" aria-hidden="true"></i>
+                                        <i class="fa fa-minus-circle" aria-hidden="true"></i>
                                         </button>
                                     </div>
                                 </td>
@@ -516,24 +534,23 @@
         <!-- End table -->
         <div class="row col-md-12">
             <caption>{{ 'Temperature table'|translate }} </caption>
-
         </div>
 
         <table class="table table-bordered table-sm mb-0">
             <thead>
                 <tr>
                     <td align="center">{{ 'Position'|translate }}<br> (%)</td>
-                    <td align="center"><a href="javascript:;" (click)="getDataHighChart(selectEquipment.ID_EQUIP, 0, 0);" 
+                    <td align="center"><a href="javascript:;" (click)="getDataHighChart(selectEquipment.ID_EQUIP, 0, 0);"
                         ngbTooltip="Click here to edit the full profile">{{ 'Top temperature'|translate }}<br> ({{ temperatureSymbol }})</a></td>
-                    <td align="center"><a href="javascript:;" (click)="getDataHighChart(selectEquipment.ID_EQUIP, 0, 1);" 
+                    <td align="center"><a href="javascript:;" (click)="getDataHighChart(selectEquipment.ID_EQUIP, 0, 1);"
                         ngbTooltip="Click here to edit the full profile">{{ 'Temperature bottom'|translate }}<br>({{ temperatureSymbol }})</a></td>
-                    <td align="center"><a href="javascript:;" (click)="getDataHighChart(selectEquipment.ID_EQUIP, 0, 2);" 
+                    <td align="center"><a href="javascript:;" (click)="getDataHighChart(selectEquipment.ID_EQUIP, 0, 2);"
                         ngbTooltip="Click here to edit the full profile">{{ 'Temperature left'|translate }}<br>({{ temperatureSymbol }})</a></td>
-                    <td align="center"><a href="javascript:;" (click)="getDataHighChart(selectEquipment.ID_EQUIP, 0, 3);" 
+                    <td align="center"><a href="javascript:;" (click)="getDataHighChart(selectEquipment.ID_EQUIP, 0, 3);"
                         ngbTooltip="Click here to edit the full profile">{{ 'Temperature right'|translate }}<br>({{ temperatureSymbol }})</a></td>
-                    <td align="center"><a href="javascript:;" (click)="getDataHighChart(selectEquipment.ID_EQUIP, 0, 4);" 
+                    <td align="center"><a href="javascript:;" (click)="getDataHighChart(selectEquipment.ID_EQUIP, 0, 4);"
                         ngbTooltip="Click here to edit the full profile">{{ 'Temperature front'|translate }}<br> ({{ temperatureSymbol }})</a></td>
-                    <td align="center"><a href="javascript:;" (click)="getDataHighChart(selectEquipment.ID_EQUIP, 0, 5);" 
+                    <td align="center"><a href="javascript:;" (click)="getDataHighChart(selectEquipment.ID_EQUIP, 0, 5);"
                         ngbTooltip="Click here to edit the full profile">{{ 'Temperature rear'|translate }}<br>({{ temperatureSymbol }})</a></td>
                     <td align="center">{{ 'Delete'|translate }}</td>
                 </tr>
@@ -542,6 +559,7 @@
                 <td colspan="8" *ngIf="checkData == true; else noequipdata">
                     <perfect-scrollbar style="max-height: 150px;">
                         <table>
+                            <!-- ng-repeat="equipCharact in equipCharacts | orderBy:['X_POSITION']" -->
                             <tr *ngFor="let equipCharact of equipCharacts; let i = index">
                                 <td width="7%">
                                     <a href="javascript:;" (click)="getEquipCharact(equipCharact.ID_EQUIPCHARAC);modalReferentialEquip.show();" ngbTooltip="Click here to edit one point">{{ equipCharact.X_POSITION }}</a>
@@ -573,7 +591,7 @@
             <tr>
                 <td align="center">
                     <div style="margin-top:0.5em">
-                        <button type="button" class="btn btn-danger btn-sm" ngbTooltip="Delete all points" 
+                        <button type="button" class="btn btn-danger btn-sm" ngbTooltip="Delete all points"
                         (click)="deleteEquipCharacts(selectEquipment);" [disabled]="checkData == false">
                             <i class="fa fa fa-trash-o" aria-hidden="true"></i>
                         </button>
@@ -584,7 +602,8 @@
                 </td>
                 <td align="center">
                     <div style="margin-top:0.5em">
-                        <button type="button" class="btn btn-success btn-sm" ngbTooltip="Add one point" *ngIf="selectEquipment" (click)="addOnePoint(selectEquipment.ID_EQUIP);">
+                        <button type="button" class="btn btn-success btn-sm" ngbTooltip="Add one point"
+                        *ngIf="selectEquipment" (click)="addOnePoint(selectEquipment.ID_EQUIP);">
                             <i class="fa fa-plus-circle" aria-hidden="true"></i>
                         </button>
                     </div>
@@ -608,7 +627,7 @@
                             </ng-template>
                             <div class="col-md-6" *ngIf="dataCurve.isCapabilities == 1; else EQ_GEN_REGUL_TEMP">
                                 <div class="input-group" align="center">
-                                    <input type="text" id="text-input" name="text-input" class="form-control" placeholder="0.00" 
+                                    <input type="text" id="text-input" name="text-input" class="form-control" placeholder="0.00"
                                     [(ngModel)]="dataCurve.DWELLING_TIME" [disabled]="(selectEquipment.STD == 0)">
                                     <span class="input-group-addon"><small>{{ timeSymbol }}</small></span>
                                 </div>
@@ -616,7 +635,7 @@
                             <ng-template #EQ_GEN_REGUL_TEMP>
                                 <div class="col-md-6">
                                     <div class="input-group" align="center">
-                                        <input type="text" id="text-input" name="text-input" class="form-control" placeholder="0.00" 
+                                        <input type="text" id="text-input" name="text-input" class="form-control" placeholder="0.00"
                                         [(ngModel)]="dataCurve.REGUL_TEMP" [disabled]="(selectEquipment.STD == 0)">
                                         <span class="input-group-addon">
                                             <small>{{ temperatureSymbol }}</small>
@@ -631,7 +650,7 @@
                             <label class="col-md-6 col-form-label" for="text-input">{{ 'Initial temperature of the product'|translate }}</label>
                             <div class="col-md-6">
                                 <div class="input-group" align="center">
-                                    <input type="text" id="text-input" name="text-input" class="form-control" placeholder="0.00" 
+                                    <input type="text" id="text-input" name="text-input" class="form-control" placeholder="0.00"
                                     [(ngModel)]="dataCurve.PRODTEMP" [disabled]="(selectEquipment.STD == 0)">
                                     <span class="input-group-addon"><small>{{ temperatureSymbol }}</small></span>
                                 </div>
@@ -643,7 +662,7 @@
                             <label class="col-md-6 col-form-label" for="text-input">{{ 'Loading Rate'|translate }}</label>
                             <div class="col-md-6">
                                 <div class="input-group" align="center">
-                                    <input type="text" id="text-input" name="text-input" class="form-control" placeholder="0.00" 
+                                    <input type="text" id="text-input" name="text-input" class="form-control" placeholder="0.00"
                                     [(ngModel)]="dataCurve.LOADINGRATE" [disabled]="(selectEquipment.STD == 0)">
                                     <span class="input-group-addon"><small>%</small></span>
                                 </div>
@@ -652,7 +671,7 @@
                     </div>
                 </div>
                 <div class="row text-center" style="display: flex; align-items: center; justify-content: center;">
-                    <button type="button" class="btn btn-success" style="margin-bottom: 10px;" *ngIf="selectEquipment" 
+                    <button type="button" class="btn btn-success" style="margin-bottom: 10px;" *ngIf="selectEquipment"
                     (click)="checkRedrawCurves(selectEquipment.ID_EQUIP);" [disabled]="(selectEquipment.STD == 0)"> {{ 'Graphic'|translate }}</button>
                 </div>
                 <div class="row" *ngIf="checkData == true">
@@ -702,24 +721,24 @@
                       <span class="custom-control-indicator"></span>
                   </label>
                   </div>
-                  <div class="col-md-2" align="center" >
+                  <!-- <div class="col-md-2" align="center" >
                       <label class="custom-control custom-radio" >
                           <input type="radio" value="1" class="custom-control-input" (click)="chooseTranslate()" name="add-equip" [checked]="statusEquip == 1">{{ 'Translate'|translate }}
                           <span class="custom-control-indicator"></span>
                       </label>
-                  </div>
+                  </div> -->
                   <div class="col-md-2" align="center" >
                       <label class="custom-control custom-radio" >
                           <input type="radio" value="2" class="custom-control-input" (click)="chooseRotate()" name="add-equip" [checked]="statusEquip == 2">{{ 'Rotate'|translate }}
                           <span class="custom-control-indicator"></span>
                       </label>
                   </div>
-                  <div class="col-md-2" align="center" >
+                  <!-- <div class="col-md-2" align="center" >
                       <label class="custom-control custom-radio" >
                           <input type="radio" value="3" class="custom-control-input" (click)="chooseMerge()" name="add-equip" [checked]="statusEquip == 3">{{ 'Merge'|translate }}
                           <span class="custom-control-indicator"></span>
                       </label>
-                  </div>
+                  </div> -->
               </div>
               <!-- Display Generate -->
               <table class="table table-sm text-center" *ngIf="statusEquip == 0">
@@ -735,22 +754,32 @@
                       </td>
                   </tr>
                   <tr *ngIf="selectEquipGener && equipGenerate != 0">
-                      <th style="width: 40%" *ngIf="!selectEquipGener.capabilitiesCalc; else dwelling">{{ 'Regulation temperature'|translate }}</th>
-                      <ng-template #dwelling>
-                          <th style="width: 40%">{{ 'Dwelling Time'|translate }}</th>
-                      </ng-template>
-                      <td>
-                          <div class="input-group col-md-8" *ngIf="!selectEquipGener.capabilitiesCalc; else dwellingInput">
-                              <input type="text" class="form-control form-control-sm" [(ngModel)]="newEquipment.tempSetPoint" placeholder="0.00">
-                              <span class="input-group-addon"><small >{{ temperatureSymbol }}</small></span>
-                          </div>
-                          <ng-template #dwellingInput>
-                              <div class="input-group col-md-8" *ngIf="selectEquipGener.capabilitiesCalc; else dwellingInput">
-                                  <input type="text" class="form-control form-control-sm" [(ngModel)]="newEquipment.dwellingTime" placeholder="0.00">
-                                  <span class="input-group-addon"><small> {{ timeSymbol }}</small></span>
-                              </div>
-                          </ng-template>
-                      </td>
+                    <th style="width: 40%" *ngIf="!selectEquipGener.capabilitiesCalc; else dwelling">{{ 'Regulation temperature'|translate }}</th>
+                    <ng-template #dwelling>
+                        <th style="width: 40%">{{ 'Dwelling Time'|translate }}</th>
+                    </ng-template>
+                    <td>
+                        <div class="input-group col-md-8" *ngIf="!selectEquipGener.capabilitiesCalc; else dwellingInput">
+                            <input type="text" class="form-control form-control-sm" [(ngModel)]="newEquipment.tempSetPoint" placeholder="0.00">
+                            <span class="input-group-addon"><small >{{ temperatureSymbol }}</small></span>
+                        </div>
+                        <ng-template #dwellingInput>
+                            <div class="input-group col-md-8" *ngIf="selectEquipGener.capabilitiesCalc">
+                                <input type="text" class="form-control form-control-sm" [(ngModel)]="newEquipment.dwellingTime" placeholder="0.00">
+                                <span class="input-group-addon"><small> {{ timeSymbol }}</small></span>
+                            </div>
+                        </ng-template>
+                    </td>
+                  </tr>
+                  <!-- new fan frequency -->
+                  <tr *ngIf="selectEquipGener && selectEquipGener.checkFanFrequency">
+                    <th style="width: 40%">{{ 'Fan frequency' | translate }}</th>
+                    <td>
+                        <div class="input-group col-md-8">
+                            <input type="text" class="form-control form-control-sm" placeholder="0.00" [(ngModel)]="newEquipment.fanFrequency">
+                            <span class="input-group-addon"><small>{{ convectionSpeedSymbol }}</small></span>
+                        </div>
+                    </td>
                   </tr>
               </table>
               <!-- Display Translation -->
@@ -823,36 +852,37 @@
                           </div>
                       </td>
                   </tr>
-                  <tr *ngIf="equipMerge1 != 0 && equipMerge2 != 0">
-                      <th *ngIf="selectEquipmentMerge1.capabilitiesCalc && selectEquipmentMerge2.capabilitiesCalc; else labelTemperature">{{ 'Dwelling time' | translate }}</th>
-                      <ng-template #labelTemperature>
-                          <th>{{ 'Regulation temperature' | translate }}</th>
-                      </ng-template>
-                      <td *ngIf="selectEquipmentMerge1.capabilitiesCalc && selectEquipmentMerge2.capabilitiesCalc; else temperature">
-                          <div class="input-group col-md-8">
-                              <input type="text" class="form-control form-control-sm" [(ngModel)]="newEquipment.dwellingTime" placeholder="0.00">
-                              <span class="input-group-addon"><small>{{ timeSymbol }}</small></span>
-                          </div>
-                      </td>
-                      <ng-template #temperature>
-                          <td>
-                              <div class="input-group col-md-8">
-                                  <input type="text" class="form-control form-control-sm" [(ngModel)]="newEquipment.tempSetPoint" placeholder="0.00">
-                                  <span class="input-group-addon"><small>{{ temperatureSymbol }}</small></span>
-                              </div>
-                          </td>
-                      </ng-template>
-                  </tr>
+                    <tr *ngIf="equipMerge1 != 0 && equipMerge2 != 0">
+                        <th *ngIf="selectEquipmentMerge1.capabilitiesCalc && selectEquipmentMerge2.capabilitiesCalc; else labelTemperature">{{ 'Dwelling time' | translate }}</th>
+                        <ng-template #labelTemperature>
+                            <th>{{ 'Regulation temperature' | translate }}</th>
+                        </ng-template>
+                        <td *ngIf="selectEquipmentMerge1.capabilitiesCalc && selectEquipmentMerge2.capabilitiesCalc; else temperature">
+                            <div class="input-group col-md-8">
+                                <input type="text" class="form-control form-control-sm" [(ngModel)]="newEquipment.dwellingTime" placeholder="0.00">
+                                <span class="input-group-addon"><small>{{ timeSymbol }}</small></span>
+                            </div>
+                        </td>
+                        <ng-template #temperature>
+                            <td>
+                                <div class="input-group col-md-8">
+                                    <input type="text" class="form-control form-control-sm" [(ngModel)]="newEquipment.tempSetPoint" placeholder="0.00">
+                                    <span class="input-group-addon"><small>{{ temperatureSymbol }}</small></span>
+                                </div>
+                            </td>
+                        </ng-template>
+                    </tr>
               </table>
           </div>
       </div>
       <div class="modal-footer btn-equipment">
           <button class="btn btn-secondary" data-dismiss="modal" (click)="modalAddEquipment.hide()">{{ 'Cancel'|translate }}</button>
           <button class="btn btn-warning" (click)="checkEquipment(newEquipment, 2)"><i class="fa fa-filter"></i> Filter</button>
-          <button class="btn btn-primary" [disabled]="equipGenerate == 0 && equipRotate == 0 && equipTranslation == 0 
-          && (equipMerge1 == 0 || equipMerge2 == 0)" (click)="checkEquipment(newEquipment, 1)" [ladda]="laddaIsCalculating">
+          <button class="btn btn-primary" [disabled]="(equipGenerate == 0 && equipRotate == 0 && equipTranslation == 0
+          && (equipMerge1 == 0 || equipMerge2 == 0))" (click)="checkEquipment(newEquipment, 1)" [ladda]="laddaIsCalculating">
           <i class="icon-energy"></i>{{ 'Calculate'|translate }}</button>
-          <button class="btn btn-success" (click)="checkEquipment(newEquipment, 0)" [ladda]="laddaIsSaveNew" [disabled]="equipGenerate == 0 && equipRotate == 0 
+          <button class="btn btn-success" (click)="checkEquipment(newEquipment, 0)" 
+          [ladda]="laddaIsSaveNew" [disabled]="equipGenerate == 0 && equipRotate == 0
           && equipTranslation == 0 && (equipMerge1 == 0 || equipMerge2 == 0)"><i class="fa fa-floppy-o"></i> {{ 'Save'|translate }}</button>
       </div>
     </div>
@@ -951,9 +981,11 @@
                 </button>
             </div>
             <div class="modal-body row" *ngIf="equipCharact">
-                <div class="col-md-12" align="center">
+                <div  class="col-md-12" align="center">
+                    <div class="row col-md-12 equip-text">
+                        <span>{{ 'Convection table'|translate }} </span>
+                    </div>
                     <table class="table table-bordered table-sm mb-0">
-                        <caption>{{ 'Convection table'|translate }}</caption>
                         <tr>
                             <td align="center">{{ 'Position'|translate }} <br> (%)</td>
                             <td align="center">{{ 'Alpha top'|translate }} <br> ({{ convectionCoeffSymbol }})</td>
@@ -985,8 +1017,10 @@
                             </td>
                         </tr>
                     </table>
+                    <div class="row col-md-12 equip-text">
+                        <span>{{ 'Temperature table'|translate }}</span>
+                    </div>
                     <table class="table table-bordered table-sm mb-0">
-                        <caption>{{ 'Temperature table'|translate }}</caption>
                         <tr>
                             <td align="center">{{ 'Position'|translate }} <br> (%)</td>
                             <td align="center">{{ 'Top temperature'|translate }}<br> (°C)</td>
@@ -1074,9 +1108,10 @@
                         </div>
                         <div class="col-md-6">
                             <div class="form-group row" >
-                                <div class="col-md-5"></div>   
+                                <div class="col-md-5"></div>
                                 <div class="col-md-7">
-                                    <input type="text" id="circle_value" name="text-input" class="form-control" (change)="setpoint();" [value]="" (keypress)="setpointenter($event);" disabled>
+                                    <input type="text" id="circle_value" name="text-input" class="form-control" (change)="setpoint();"
+                                    [(ngModel)]="circleValue" (keypress)="setpointenter($event);" [disabled]="disabledYvalue == true">
                                 </div>
                             </div>
                         </div>
@@ -1085,7 +1120,7 @@
                 </div>
                 <div class="card-footer">
                     <div class="row text-center" style="display: flex; align-items: center; justify-content: center;">
-                        <button type="button" id="rescale" class="btn btn-success btn-sm" style="margin-right: 10px;" (click)="refreshScaleChart();"> {{ 'Apply'|translate }}</button>
+                        <button type="button" id="rescale" class="btn btn-success btn-sm" style="margin-right: 10px;" (click)="refreshScaleChart();" [disabled]="disabledConfirm == 0"> {{ 'Apply'|translate }}</button>
                         <button type="button" class="btn btn-primary btn-sm" style="margin-right: 10px;" (click)="clearSelectedPoints();" >{{ 'Initialize'|translate }}</button>
                         <button type="button" class="btn btn-warning btn-sm" style="margin-right: 10px;" (click)="submitGenerate();">{{ 'Generate'|translate }}</button>
                     </div>
@@ -1102,13 +1137,13 @@
                             <svg id="dropzone" [attr.width]="dataHighChart.imageWidth" [attr.height]="dataHighChart.imageHeight" (mousemove)="movepoint($event);">
                                 <!-- Background -->
                                 <rect x="0" y="0" [attr.width]="dataHighChart.imageWidth" [attr.height]="dataHighChart.imageHeight" fill="#CAE1F7" stroke="#CAE1F7" />
-                            
+
                                 <!-- Interactive zone -->
-                                <rect [attr.x]="dataHighChart.imageMargeWidth" [attr.y]="dataHighChart.imageMargeHeight" 
-                                      [attr.width]="(dataHighChart.imageWidth) - (2*dataHighChart.imageMargeWidth)" 
-                                      [attr.height]="(dataHighChart.imageHeight) - (2*dataHighChart.imageMargeHeight)" 
+                                <rect [attr.x]="dataHighChart.imageMargeWidth" [attr.y]="dataHighChart.imageMargeHeight"
+                                      [attr.width]="(dataHighChart.imageWidth) - (2*dataHighChart.imageMargeWidth)"
+                                      [attr.height]="(dataHighChart.imageHeight) - (2*dataHighChart.imageMargeHeight)"
                                         fill="#FFFFFF" stroke="#FFFFFF" />
-                            
+
                                 <!-- Axis X -->
                                 <line x1="75" y1="300" x2="895" y2="300" stroke="#000000" stroke-width="2" />
                                 <line x1="885" y1="295" x2="895" y2="300" stroke="#000000" stroke-width="2" />
@@ -1118,7 +1153,7 @@
                                 <!-- for -->
                                 <text *ngFor="let x of dataHighChart.X" [attr.x]="x.textX" y="320" text-anchor="middle" style="font-size:9pt">{{ x.position }}</text>
                                 <line *ngFor="let x of dataHighChart.X" [attr.x1]="x.textX" y1="300" [attr.x2]="x.textX" y2="310" stroke="#000000" stroke-width="2" />
-                            
+
                                 <!-- Axis Y -->
                                 <line x1="75" y1="300" x2="75" y2="30" stroke="#000000" stroke-width="2" />
                                 <line x1="75" y1="300" x2="75" y2="30" stroke="#000000" stroke-width="2" />
@@ -1142,9 +1177,9 @@
                                 <path id="profilLine" [attr.d]="dataHighChart.path" fill="none" stroke="#0000FF" stroke-width="2" />
 
                                 <!-- Points -->
-                                <circle *ngFor="let point of dataHighChart.ListOfPoints; let i = index" id="c{{i}}" [attr.cx]="point.X_POSITION" 
+                                <circle *ngFor="let point of dataHighChart.ListOfPoints; let i = index" id="c{{i}}" [attr.cx]="point.X_POSITION"
                                 [attr.cy]="point.Y_POINT" r="3" fill="#D5D5FF" stroke="#000000" stroke-width="1"
-                                (mouseover)="circleover($event, i);" (mouseout)="circleout($event, i);" (mousedown)="selectpoint($event, i);" 
+                                (mouseover)="circleover($event, i);" (mouseout)="circleout($event, i);" (mousedown)="selectpoint($event, i);"
                                 />
                             </svg>
                         </div>
@@ -1179,7 +1214,6 @@
                             <tr>
                                 <td align="center">
                                     <div style="margin-top:0.5em">
-                                        <!-- <input type="checkbox" class="form-control"> -->
                                         <label class="custom-control custom-checkbox">
                                             <input type="checkbox" class="custom-control-input" value="0" [(ngModel)]="dataHighChart.checkTop" [disabled]="isSelectChart == 0">
                                             <span class="custom-control-indicator"></span>
@@ -1443,7 +1477,7 @@
                             <td>
                                 <div *ngIf="filterEquipment.EquipGenZone[zoneNumber - 1].TOP_ADIABAT == 0">
                                     <div class="col-md-12" *ngIf="filterEquipment.EquipGenZone[zoneNumber - 1].TOP_CHANGE == 1">
-                                        <input [disabled]="disableFilter" type="text" class="form-control form-control-sm" 
+                                        <input [disabled]="disableFilter" type="text" class="form-control form-control-sm"
                                         [(ngModel)]="filterEquipment.EquipGenZone[zoneNumber - 1].TOP_PRM1">
                                     </div>
                                 </div>
@@ -1451,7 +1485,7 @@
                             <td>
                                 <div *ngIf="filterEquipment.EquipGenZone[zoneNumber - 1].BOTTOM_ADIABAT == 0">
                                     <div class="col-md-12" *ngIf="filterEquipment.EquipGenZone[zoneNumber - 1].BOTTOM_CHANGE == 1">
-                                        <input [disabled]="disableFilter" type="text" class="form-control form-control-sm" 
+                                        <input [disabled]="disableFilter" type="text" class="form-control form-control-sm"
                                         [(ngModel)]="filterEquipment.EquipGenZone[zoneNumber - 1].BOTTOM_PRM1">
                                     </div>
                                 </div>
@@ -1459,7 +1493,7 @@
                             <td>
                                 <div *ngIf="filterEquipment.EquipGenZone[zoneNumber - 1].LEFT_ADIABAT == 0">
                                     <div class="col-md-12" *ngIf="filterEquipment.EquipGenZone[zoneNumber - 1].LEFT_CHANGE == 1">
-                                        <input [disabled]="disableFilter" type="text" class="form-control form-control-sm" 
+                                        <input [disabled]="disableFilter" type="text" class="form-control form-control-sm"
                                         [(ngModel)]="filterEquipment.EquipGenZone[zoneNumber - 1].LEFT_PRM1">
                                     </div>
                                 </div>
@@ -1467,7 +1501,7 @@
                             <td>
                                 <div *ngIf="filterEquipment.EquipGenZone[zoneNumber - 1].RIGHT_ADIABAT == 0">
                                     <div class="col-md-12" *ngIf="filterEquipment.EquipGenZone[zoneNumber - 1].RIGHT_CHANGE == 1">
-                                        <input [disabled]="disableFilter" type="text" class="form-control form-control-sm" 
+                                        <input [disabled]="disableFilter" type="text" class="form-control form-control-sm"
                                         [(ngModel)]="filterEquipment.EquipGenZone[zoneNumber - 1].RIGHT_PRM1">
                                     </div>
                                 </div>
@@ -1475,7 +1509,7 @@
                             <td>
                                 <div *ngIf="filterEquipment.EquipGenZone[zoneNumber - 1].FRONT_ADIABAT == 0">
                                     <div class="col-md-12" *ngIf="filterEquipment.EquipGenZone[zoneNumber - 1].FRONT_CHANGE == 1">
-                                        <input [disabled]="disableFilter" type="text" class="form-control form-control-sm" 
+                                        <input [disabled]="disableFilter" type="text" class="form-control form-control-sm"
                                         [(ngModel)]="filterEquipment.EquipGenZone[zoneNumber - 1].FRONT_PRM1">
                                     </div>
                                 </div>
@@ -1483,7 +1517,7 @@
                             <td>
                                 <div *ngIf="filterEquipment.EquipGenZone[zoneNumber - 1].REAR_ADIABAT == 0">
                                     <div class="col-md-12" *ngIf="filterEquipment.EquipGenZone[zoneNumber - 1].REAR_CHANGE == 1">
-                                        <input [disabled]="disableFilter" type="text" class="form-control form-control-sm" 
+                                        <input [disabled]="disableFilter" type="text" class="form-control form-control-sm"
                                         [(ngModel)]="filterEquipment.EquipGenZone[zoneNumber - 1].REAR_PRM1">
                                     </div>
                                 </div>
@@ -1494,7 +1528,7 @@
                             <td>
                                 <div *ngIf="filterEquipment.EquipGenZone[zoneNumber - 1].TOP_ADIABAT == 0">
                                     <div class="col-md-12" *ngIf="filterEquipment.EquipGenZone[zoneNumber - 1].TOP_CHANGE == 2">
-                                        <input  [disabled]="disableFilter" type="text" class="form-control form-control-sm" 
+                                        <input  [disabled]="disableFilter" type="text" class="form-control form-control-sm"
                                         [(ngModel)]="filterEquipment.EquipGenZone[zoneNumber - 1].TOP_PRM1">
                                     </div>
                                 </div>
@@ -1502,7 +1536,7 @@
                             <td>
                                 <div *ngIf="filterEquipment.EquipGenZone[zoneNumber - 1].BOTTOM_ADIABAT == 0">
                                     <div class="col-md-12" *ngIf="filterEquipment.EquipGenZone[zoneNumber - 1].BOTTOM_CHANGE == 2">
-                                        <input [disabled]="disableFilter" type="text" class="form-control form-control-sm" 
+                                        <input [disabled]="disableFilter" type="text" class="form-control form-control-sm"
                                         [(ngModel)]="filterEquipment.EquipGenZone[zoneNumber - 1].BOTTOM_PRM1">
                                     </div>
                                 </div>
@@ -1510,7 +1544,7 @@
                             <td>
                                 <div *ngIf="filterEquipment.EquipGenZone[zoneNumber - 1].LEFT_ADIABAT == 0">
                                     <div class="col-md-12" *ngIf="filterEquipment.EquipGenZone[zoneNumber - 1].LEFT_CHANGE == 2">
-                                        <input [disabled]="disableFilter" type="text" class="form-control form-control-sm" 
+                                        <input [disabled]="disableFilter" type="text" class="form-control form-control-sm"
                                         [(ngModel)]="filterEquipment.EquipGenZone[zoneNumber - 1].LEFT_PRM1">
                                     </div>
                                 </div>
@@ -1518,7 +1552,7 @@
                             <td>
                                 <div *ngIf="filterEquipment.EquipGenZone[zoneNumber - 1].RIGHT_ADIABAT == 0">
                                     <div class="col-md-12" *ngIf="filterEquipment.EquipGenZone[zoneNumber - 1].RIGHT_CHANGE == 2">
-                                        <input [disabled]="disableFilter" type="text" class="form-control form-control-sm" 
+                                        <input [disabled]="disableFilter" type="text" class="form-control form-control-sm"
                                         [(ngModel)]="filterEquipment.EquipGenZone[zoneNumber - 1].RIGHT_PRM1">
                                     </div>
                                 </div>
@@ -1526,7 +1560,7 @@
                             <td>
                                 <div *ngIf="filterEquipment.EquipGenZone[zoneNumber - 1].FRONT_ADIABAT == 0">
                                     <div class="col-md-12" *ngIf="filterEquipment.EquipGenZone[zoneNumber - 1].FRONT_CHANGE == 2">
-                                        <input [disabled]="disableFilter" type="text" class="form-control form-control-sm" 
+                                        <input [disabled]="disableFilter" type="text" class="form-control form-control-sm"
                                         [(ngModel)]="filterEquipment.EquipGenZone[zoneNumber - 1].FRONT_PRM1">
                                     </div>
                                 </div>
@@ -1534,7 +1568,7 @@
                             <td>
                                 <div *ngIf="filterEquipment.EquipGenZone[zoneNumber - 1].REAR_ADIABAT == 0">
                                     <div class="col-md-12" *ngIf="filterEquipment.EquipGenZone[zoneNumber - 1].REAR_CHANGE == 2">
-                                        <input [disabled]="disableFilter" type="text" class="form-control form-control-sm" 
+                                        <input [disabled]="disableFilter" type="text" class="form-control form-control-sm"
                                         [(ngModel)]="filterEquipment.EquipGenZone[zoneNumber - 1].REAR_PRM1">
                                     </div>
                                 </div>
@@ -1545,7 +1579,7 @@
                             <td>
                                 <div *ngIf="filterEquipment.EquipGenZone[zoneNumber - 1].TOP_ADIABAT == 0">
                                     <div class="col-md-12" *ngIf="filterEquipment.EquipGenZone[zoneNumber - 1].TOP_CHANGE == 2">
-                                        <input [disabled]="disableFilter" type="text" class="form-control form-control-sm" 
+                                        <input [disabled]="disableFilter" type="text" class="form-control form-control-sm"
                                         [(ngModel)]="filterEquipment.EquipGenZone[zoneNumber - 1].TOP_PRM2">
                                     </div>
                                 </div>
@@ -1553,7 +1587,7 @@
                             <td>
                                 <div *ngIf="filterEquipment.EquipGenZone[zoneNumber - 1].BOTTOM_ADIABAT == 0">
                                     <div class="col-md-12" *ngIf="filterEquipment.EquipGenZone[zoneNumber - 1].BOTTOM_CHANGE == 2">
-                                        <input [disabled]="disableFilter" type="text" class="form-control form-control-sm" 
+                                        <input [disabled]="disableFilter" type="text" class="form-control form-control-sm"
                                         [(ngModel)]="filterEquipment.EquipGenZone[zoneNumber - 1].BOTTOM_PRM2">
                                     </div>
                                 </div>
@@ -1561,7 +1595,7 @@
                             <td>
                                 <div *ngIf="filterEquipment.EquipGenZone[zoneNumber - 1].LEFT_ADIABAT == 0">
                                     <div class="col-md-12" *ngIf="filterEquipment.EquipGenZone[zoneNumber - 1].LEFT_CHANGE == 2">
-                                        <input [disabled]="disableFilter" type="text" class="form-control form-control-sm" 
+                                        <input [disabled]="disableFilter" type="text" class="form-control form-control-sm"
                                         [(ngModel)]="filterEquipment.EquipGenZone[zoneNumber - 1].LEFT_PRM2">
                                     </div>
                                 </div>
@@ -1569,7 +1603,7 @@
                             <td>
                                 <div *ngIf="filterEquipment.EquipGenZone[zoneNumber - 1].RIGHT_ADIABAT == 0">
                                     <div class="col-md-12" *ngIf="filterEquipment.EquipGenZone[zoneNumber - 1].RIGHT_CHANGE == 2">
-                                        <input [disabled]="disableFilter" type="text" class="form-control form-control-sm" 
+                                        <input [disabled]="disableFilter" type="text" class="form-control form-control-sm"
                                         [(ngModel)]="filterEquipment.EquipGenZone[zoneNumber - 1].RIGHT_PRM2">
                                     </div>
                                 </div>
@@ -1577,7 +1611,7 @@
                             <td>
                                 <div *ngIf="filterEquipment.EquipGenZone[zoneNumber - 1].FRONT_ADIABAT == 0">
                                     <div class="col-md-12" *ngIf="filterEquipment.EquipGenZone[zoneNumber - 1].FRONT_CHANGE == 2">
-                                        <input [disabled]="disableFilter" type="text" class="form-control form-control-sm" 
+                                        <input [disabled]="disableFilter" type="text" class="form-control form-control-sm"
                                         [(ngModel)]="filterEquipment.EquipGenZone[zoneNumber - 1].FRONT_PRM2">
                                     </div>
                                 </div>
@@ -1585,7 +1619,7 @@
                             <td>
                                 <div *ngIf="filterEquipment.EquipGenZone[zoneNumber - 1].REAR_ADIABAT == 0">
                                     <div class="col-md-12" *ngIf="filterEquipment.EquipGenZone[zoneNumber - 1].REAR_CHANGE == 2">
-                                        <input [disabled]="disableFilter" type="text" class="form-control form-control-sm" 
+                                        <input [disabled]="disableFilter" type="text" class="form-control form-control-sm"
                                         [(ngModel)]="filterEquipment.EquipGenZone[zoneNumber - 1].REAR_PRM2">
                                     </div>
                                 </div>
@@ -1596,7 +1630,7 @@
                             <td>
                                 <div *ngIf="filterEquipment.EquipGenZone[zoneNumber - 1].TOP_ADIABAT == 0">
                                     <div class="col-md-12" *ngIf="filterEquipment.EquipGenZone[zoneNumber - 1].TOP_CHANGE == 2">
-                                        <input [disabled]="disableFilter" type="text" class="form-control form-control-sm" 
+                                        <input [disabled]="disableFilter" type="text" class="form-control form-control-sm"
                                         [(ngModel)]="filterEquipment.EquipGenZone[zoneNumber - 1].TOP_PRM3">
                                     </div>
                                 </div>
@@ -1604,7 +1638,7 @@
                             <td>
                                 <div *ngIf="filterEquipment.EquipGenZone[zoneNumber - 1].BOTTOM_ADIABAT == 0">
                                     <div class="col-md-12" *ngIf="filterEquipment.EquipGenZone[zoneNumber - 1].BOTTOM_CHANGE == 2">
-                                        <input [disabled]="disableFilter" type="text" class="form-control form-control-sm" 
+                                        <input [disabled]="disableFilter" type="text" class="form-control form-control-sm"
                                         [(ngModel)]="filterEquipment.EquipGenZone[zoneNumber - 1].BOTTOM_PRM3">
                                     </div>
                                 </div>
@@ -1612,7 +1646,7 @@
                             <td>
                                 <div *ngIf="filterEquipment.EquipGenZone[zoneNumber - 1].LEFT_ADIABAT == 0">
                                     <div class="col-md-12" *ngIf="filterEquipment.EquipGenZone[zoneNumber - 1].LEFT_CHANGE == 2">
-                                        <input [disabled]="disableFilter" type="text" class="form-control form-control-sm" 
+                                        <input [disabled]="disableFilter" type="text" class="form-control form-control-sm"
                                         [(ngModel)]="filterEquipment.EquipGenZone[zoneNumber - 1].LEFT_PRM3">
                                     </div>
                                 </div>
@@ -1620,7 +1654,7 @@
                             <td>
                                 <div *ngIf="filterEquipment.EquipGenZone[zoneNumber - 1].RIGHT_ADIABAT == 0">
                                     <div class="col-md-12" *ngIf="filterEquipment.EquipGenZone[zoneNumber - 1].RIGHT_CHANGE == 2">
-                                        <input [disabled]="disableFilter" type="text" class="form-control form-control-sm" 
+                                        <input [disabled]="disableFilter" type="text" class="form-control form-control-sm"
                                         [(ngModel)]="filterEquipment.EquipGenZone[zoneNumber - 1].RIGHT_PRM3">
                                     </div>
                                 </div>
@@ -1628,7 +1662,7 @@
                             <td>
                                 <div *ngIf="filterEquipment.EquipGenZone[zoneNumber - 1].FRONT_ADIABAT == 0">
                                     <div class="col-md-12" *ngIf="filterEquipment.EquipGenZone[zoneNumber - 1].FRONT_CHANGE == 2">
-                                        <input [disabled]="disableFilter" type="text" class="form-control form-control-sm" 
+                                        <input [disabled]="disableFilter" type="text" class="form-control form-control-sm"
                                         [(ngModel)]="filterEquipment.EquipGenZone[zoneNumber - 1].FRONT_PRM3">
                                     </div>
                                 </div>
@@ -1636,7 +1670,7 @@
                             <td>
                                 <div *ngIf="filterEquipment.EquipGenZone[zoneNumber - 1].REAR_ADIABAT == 0">
                                     <div class="col-md-12" *ngIf="filterEquipment.EquipGenZone[zoneNumber - 1].REAR_CHANGE == 2">
-                                        <input  [disabled]="disableFilter" type="text" class="form-control form-control-sm" 
+                                        <input  [disabled]="disableFilter" type="text" class="form-control form-control-sm"
                                         [(ngModel)]="filterEquipment.EquipGenZone[zoneNumber - 1].REAR_PRM3">
                                     </div>
                                 </div>
@@ -1647,7 +1681,7 @@
                             <td>
                                 <div *ngIf="filterEquipment.EquipGenZone[zoneNumber - 1].TOP_ADIABAT == 0">
                                     <div class="col-md-12" *ngIf="filterEquipment.EquipGenZone[zoneNumber - 1].TOP_CHANGE == 3">
-                                        <input [disabled]="disableFilter" type="text" class="form-control form-control-sm" 
+                                        <input [disabled]="disableFilter" type="text" class="form-control form-control-sm"
                                         [(ngModel)]="filterEquipment.EquipGenZone[zoneNumber - 1].TOP_PRM1">
                                     </div>
                                 </div>
@@ -1655,7 +1689,7 @@
                             <td>
                                 <div *ngIf="filterEquipment.EquipGenZone[zoneNumber - 1].BOTTOM_ADIABAT == 0">
                                     <div class="col-md-12" *ngIf="filterEquipment.EquipGenZone[zoneNumber - 1].BOTTOM_CHANGE == 3">
-                                        <input [disabled]="disableFilter" type="text" class="form-control form-control-sm" 
+                                        <input [disabled]="disableFilter" type="text" class="form-control form-control-sm"
                                         [(ngModel)]="filterEquipment.EquipGenZone[zoneNumber - 1].BOTTOM_PRM1">
                                     </div>
                                 </div>
@@ -1663,7 +1697,7 @@
                             <td>
                                 <div *ngIf="filterEquipment.EquipGenZone[zoneNumber - 1].LEFT_ADIABAT == 0">
                                     <div class="col-md-12" *ngIf="filterEquipment.EquipGenZone[zoneNumber - 1].LEFT_CHANGE == 3">
-                                        <input [disabled]="disableFilter" type="text" class="form-control form-control-sm" 
+                                        <input [disabled]="disableFilter" type="text" class="form-control form-control-sm"
                                         [(ngModel)]="filterEquipment.EquipGenZone[zoneNumber - 1].LEFT_PRM1">
                                     </div>
                                 </div>
@@ -1671,7 +1705,7 @@
                             <td>
                                 <div *ngIf="filterEquipment.EquipGenZone[zoneNumber - 1].RIGHT_ADIABAT == 0">
                                     <div class="col-md-12" *ngIf="filterEquipment.EquipGenZone[zoneNumber - 1].RIGHT_CHANGE == 3">
-                                        <input [disabled]="disableFilter" type="text" class="form-control form-control-sm" 
+                                        <input [disabled]="disableFilter" type="text" class="form-control form-control-sm"
                                         [(ngModel)]="filterEquipment.EquipGenZone[zoneNumber - 1].RIGHT_PRM1">
                                     </div>
                                 </div>
@@ -1679,7 +1713,7 @@
                             <td>
                                 <div *ngIf="filterEquipment.EquipGenZone[zoneNumber - 1].FRONT_ADIABAT == 0">
                                     <div class="col-md-12" *ngIf="filterEquipment.EquipGenZone[zoneNumber - 1].FRONT_CHANGE == 3">
-                                        <input [disabled]="disableFilter" type="text" class="form-control form-control-sm" 
+                                        <input [disabled]="disableFilter" type="text" class="form-control form-control-sm"
                                         [(ngModel)]="filterEquipment.EquipGenZone[zoneNumber - 1].FRONT_PRM1">
                                     </div>
                                 </div>
@@ -1687,7 +1721,7 @@
                             <td>
                                 <div *ngIf="filterEquipment.EquipGenZone[zoneNumber - 1].REAR_ADIABAT == 0">
                                     <div class="col-md-12" *ngIf="filterEquipment.EquipGenZone[zoneNumber - 1].REAR_CHANGE == 3">
-                                        <input [disabled]="disableFilter" type="text" class="form-control form-control-sm" 
+                                        <input [disabled]="disableFilter" type="text" class="form-control form-control-sm"
                                         [(ngModel)]="filterEquipment.EquipGenZone[zoneNumber - 1].REAR_PRM1">
                                     </div>
                                 </div>
@@ -1698,7 +1732,7 @@
                             <td>
                                 <div *ngIf="filterEquipment.EquipGenZone[zoneNumber - 1].TOP_ADIABAT == 0">
                                     <div class="col-md-12" *ngIf="filterEquipment.EquipGenZone[zoneNumber - 1].TOP_CHANGE == 3">
-                                        <input [disabled]="disableFilter" type="text" class="form-control form-control-sm" 
+                                        <input [disabled]="disableFilter" type="text" class="form-control form-control-sm"
                                         [(ngModel)]="filterEquipment.EquipGenZone[zoneNumber - 1].TOP_PRM2">
                                     </div>
                                 </div>
@@ -1706,7 +1740,7 @@
                             <td>
                                 <div *ngIf="filterEquipment.EquipGenZone[zoneNumber - 1].BOTTOM_ADIABAT == 0">
                                     <div class="col-md-12" *ngIf="filterEquipment.EquipGenZone[zoneNumber - 1].BOTTOM_CHANGE == 3">
-                                        <input [disabled]="disableFilter" type="text" class="form-control form-control-sm" 
+                                        <input [disabled]="disableFilter" type="text" class="form-control form-control-sm"
                                         [(ngModel)]="filterEquipment.EquipGenZone[zoneNumber - 1].BOTTOM_PRM2">
                                     </div>
                                 </div>
@@ -1714,7 +1748,7 @@
                             <td>
                                 <div *ngIf="filterEquipment.EquipGenZone[zoneNumber - 1].LEFT_ADIABAT == 0">
                                     <div class="col-md-12" *ngIf="filterEquipment.EquipGenZone[zoneNumber - 1].LEFT_CHANGE == 3">
-                                        <input [disabled]="disableFilter" type="text" class="form-control form-control-sm" 
+                                        <input [disabled]="disableFilter" type="text" class="form-control form-control-sm"
                                         [(ngModel)]="filterEquipment.EquipGenZone[zoneNumber - 1].LEFT_PRM2">
                                     </div>
                                 </div>
@@ -1722,7 +1756,7 @@
                             <td>
                                 <div *ngIf="filterEquipment.EquipGenZone[zoneNumber - 1].RIGHT_ADIABAT == 0">
                                     <div class="col-md-12" *ngIf="filterEquipment.EquipGenZone[zoneNumber - 1].RIGHT_CHANGE == 3">
-                                        <input [disabled]="disableFilter" type="text" class="form-control form-control-sm" 
+                                        <input [disabled]="disableFilter" type="text" class="form-control form-control-sm"
                                         [(ngModel)]="filterEquipment.EquipGenZone[zoneNumber - 1].RIGHT_PRM2">
                                     </div>
                                 </div>
@@ -1730,7 +1764,7 @@
                             <td>
                                 <div *ngIf="filterEquipment.EquipGenZone[zoneNumber - 1].FRONT_ADIABAT == 0">
                                     <div class="col-md-12" *ngIf="filterEquipment.EquipGenZone[zoneNumber - 1].FRONT_CHANGE == 3">
-                                        <input [disabled]="disableFilter" type="text" class="form-control form-control-sm" 
+                                        <input [disabled]="disableFilter" type="text" class="form-control form-control-sm"
                                         [(ngModel)]="filterEquipment.EquipGenZone[zoneNumber - 1].FRONT_PRM2">
                                     </div>
                                 </div>
@@ -1738,7 +1772,7 @@
                             <td>
                                 <div *ngIf="filterEquipment.EquipGenZone[zoneNumber - 1].REAR_ADIABAT == 0">
                                     <div class="col-md-12" *ngIf="filterEquipment.EquipGenZone[zoneNumber - 1].REAR_CHANGE == 3">
-                                        <input [disabled]="disableFilter" type="text" class="form-control form-control-sm" 
+                                        <input [disabled]="disableFilter" type="text" class="form-control form-control-sm"
                                         [(ngModel)]="filterEquipment.EquipGenZone[zoneNumber - 1].REAR_PRM2">
                                     </div>
                                 </div>

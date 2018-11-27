@@ -13,6 +13,7 @@ import { ViewSizingResultOptimum } from '../../../api/models/view-sizing-result-
 import { BaseChartDirective } from 'ng2-charts/ng2-charts';
 import { CheckControl } from '../../../api/models/check-control';
 import { Chart } from 'angular-highcharts';
+import * as Models from '../../../api/models';
 
 @Component({
   selector: 'app-sizing',
@@ -25,6 +26,8 @@ export class SizingComponent implements OnInit, AfterViewInit {
   @ViewChild(BaseChartDirective) myEstimationAvailableChart;
   @ViewChild(BaseChartDirective) myGraphOptimumData;
   @ViewChild(BaseChartDirective) myGraphOptimumData01;
+  @ViewChild('viewEquipTrModal') public viewEquipTrModal: ModalDirective;
+  @ViewChild('addEquipModal') public addEquipModal: ModalDirective;
 
   public checkcontrol: CheckControl;
 
@@ -55,7 +58,7 @@ export class SizingComponent implements OnInit, AfterViewInit {
   public convChartOptions;
   public convChartLegend = true;
   public convChartType = 'line';
-  public trGraph: number;
+  public trGraph = 1;
   public selectedEquip: number;
   public selectedEquipList = [];
   public selectedActiveEquip = [];
@@ -88,54 +91,51 @@ export class SizingComponent implements OnInit, AfterViewInit {
   public optimumBarChart;
   public estimationBarChart;
   public estimationEquipBarChart;
+  public sizingOptimumImage: HTMLImageElement = new Image();
+  public sizingEstimationImage: HTMLImageElement = new Image();
+  public estimationEquipBarImage: HTMLImageElement = new Image();
+  public imageTemp = '';
+  public imageConv = '';
+  public viewEquipTrData;
+  public specialLength: Array<any> = [];
+  public equipDuplicateId: number;
+  public nbModule: number;
+  public laddaAddEquip = false;
+  public displayResult = true;
+  public displayTemprature = false;
+  public loadResultData = true;
+  public loadTempData = false;
 
   ngOnInit() {
     if (localStorage.getItem('study')) {
       this.study = JSON.parse(localStorage.getItem('study'));
     }
     this.selectedEquip = 0;
-    this.trGraph = 1;
   }
 
   ngAfterViewInit() {
     const showLoaderChange = <HTMLElement>document.getElementById('showLoaderChange');
-    showLoaderChange.style.display = 'block';
     if (localStorage.getItem('study')) {
       this.study = JSON.parse(localStorage.getItem('study'));
       this.api.getSymbol(this.study.ID_STUDY).subscribe(
         data => {
-          console.log(data);
+          // console.log(data);
           this.activePage = 'result';
           this.symbol = data;
-          showLoaderChange.style.display = 'none';
           if (this.study.CALCULATION_MODE == 1) {
-            const paramsSizing: ApiService.SizingEstimationResultParams = {
-              idStudy: this.study.ID_STUDY
-            };
-            this.api.sizingEstimationResult(paramsSizing).subscribe(
-              (dataCh: ViewSizingEstimationResult) => {
-                this.sizingEstimationValue = dataCh.result;
-                this.dataGraphChart = dataCh.dataGraphChart;
-                this.selectedEquip = this.dataGraphChart[0].id;
-                this.productFlowRate = dataCh.productFlowRate;
-                for (let i = 0; i < Object.keys(dataCh.dataGraphChart).length; i++) {
-                  this.equipmentList.push(dataCh.dataGraphChart[i]);
-                }
-                // this.graphEstimationData = chartEstimationData;
-
-                this.loadEquipmentEstimationChart();
-              }
-            );
+            this.refreshSizingEstimationResult();
           } else {
             this.api.sizingOptimumResult(this.study.ID_STUDY).subscribe(
               (dataCh: ViewSizingResultOptimum) => {
+                // console.log(dataCh);
                 this.sizingOptimumValue = dataCh.result;
                 this.selectedEquipment = dataCh.selectedEquipment;
                 this.availableEquipment = dataCh.availableEquipment;
                 this.equipmentList = this.availableEquipment;
                 this.activeEquipment = this.selectedEquipment;
                 this.productFlowRate = dataCh.productFlowRate;
-                this.loadOptimumAvailableChart();
+                this.sizingOptimumImage.src = dataCh.imageSizing;
+                this.loadResultData = false;
               }
             );
           }
@@ -151,7 +151,25 @@ export class SizingComponent implements OnInit, AfterViewInit {
     this.api.checkControl(params).subscribe(
       data => {
         this.checkcontrol = data;
-        console.log(this.checkcontrol);
+        // console.log(this.checkcontrol);
+      }
+    );
+  }
+  refreshSizingEstimationResult() {
+    const paramsSizing: ApiService.SizingEstimationResultParams = {
+      idStudy: this.study.ID_STUDY
+    };
+    this.api.sizingEstimationResult(paramsSizing).subscribe(
+      (dataCh: ViewSizingEstimationResult) => {
+        // console.log(dataCh);
+        this.sizingEstimationValue = dataCh.result;
+        this.dataGraphChart = dataCh.dataGraphChart;
+        this.selectedEquip = this.dataGraphChart[0].id;
+        this.productFlowRate = dataCh.productFlowRate;
+        for (let i = 0; i < Object.keys(dataCh.dataGraphChart).length; i++) {
+          this.equipmentList.push(dataCh.dataGraphChart[i]);
+        }
+        this.sizingEstimationImage.src = this.dataGraphChart[0].image;
       }
     );
   }
@@ -162,6 +180,7 @@ export class SizingComponent implements OnInit, AfterViewInit {
       this.equipmentList.splice(index, 1);
     }
     this.selectedEquipList = [];
+    this.getSizingOptimumDraw();
   }
   moveAvailableEquipment() {
     for (let i = 0; i < Object.keys(this.selectedActiveEquip).length; i++) {
@@ -170,6 +189,7 @@ export class SizingComponent implements OnInit, AfterViewInit {
       this.activeEquipment.splice(index, 1);
     }
     this.selectedActiveEquip = [];
+    this.getSizingOptimumDraw();
   }
   loadEstimationAvailableChart() {
     const showLoaderChange = <HTMLElement>document.getElementById('showLoaderChange');
@@ -217,7 +237,7 @@ export class SizingComponent implements OnInit, AfterViewInit {
               title: {
                 text: this.translate.instant('Flow rate') + ' ' + this.symbol.productFlowSymbol,
               }
-            }, 
+            },
             {
             title: {
               text: this.translate.instant('Conso') + ' ' + this.symbol.consumSymbol + '/' + this.symbol.perUnitOfMassSymbol
@@ -389,129 +409,74 @@ export class SizingComponent implements OnInit, AfterViewInit {
     }
     showLoaderChange.style.display = 'none';
   }
-  changeEstimationTrGraph(value) {
-    this.trGraph = value;
-    const showLoaderChange = <HTMLElement>document.getElementById('showLoaderChange');
-    showLoaderChange.style.display = 'block';
-    const dataGraphChart = this.activeEquipment;
-    const dataGrapChartLength = Object.keys(dataGraphChart).length;
-    if (dataGrapChartLength > 0) {
-      const labelGrap = [];
-      const dataCustomFlowRate = [];
-      const dataDhp = [];
-      const dataDhpMax = [];
-      const dataConso = [];
-      const dataConsoMax = [];
-      for (let j = 0; j < Object.keys(dataGraphChart).length; j++) {
-        labelGrap.push( dataGraphChart[j].equipName);
-        const objDataGraph = dataGraphChart[j].data;
-        for (let i = 0; i < Object.keys(objDataGraph).length; i++) {
-          if (i == this.trGraph) {
-            dataCustomFlowRate.push(this.productFlowRate);
-            dataDhp.push(objDataGraph[i].dhp);
-            dataDhpMax.push(objDataGraph[i].dhpMax);
-            dataConso.push(objDataGraph[i].conso);
-            dataConsoMax.push(objDataGraph[i].consoMax);
-          }
-        }
-        this.estimationEquipBarChart = new Chart({
-          chart: {
-            type: 'column'
-          },
-          title: {
-            text: ''
-          },
-          xAxis: {
-            categories: labelGrap
-          },
-          yAxis: [
-            {
-              min: 1,
-              type: 'logarithmic',
-              plotLines: [{
-                color: '#F00',
-                width: 2,
-                value: this.productFlowRate
-              }],
-              title: {
-                text: this.translate.instant('Flow rate') + ' ' + this.symbol.productFlowSymbol,
-              }
-            },
-            {
-            title: {
-              text: this.translate.instant('Conso') + ' ' + this.symbol.consumSymbol + '/' + this.symbol.perUnitOfMassSymbol
-            },
-            opposite: true
-          }],
-          tooltip: {
-            formatter: function () {
-              return '<b>' + this.x + '</b><br/>' +
-                this.series.name + ': ' + this.y;
+  getSizingOptimumDraw() {
+    if (this.study.CALCULATION_MODE == 1) {
+      if (this.activeEquipment.length > 0) {
+        const params:  Array<any> = [];
+        const trNumber = this.trGraph;
+        this.activeEquipment.forEach(function (value) {
+          params.push({
+              id: value.id,
+              equipName: value.equipName,
+              dhp: value.data[trNumber].dhp,
+              conso: value.data[trNumber].conso,
+              dhpMax: value.data[trNumber].dhpMax,
+              consoMax: value.data[trNumber].consoMax
             }
-          },
-          plotOptions: {
-            column: {
-              events: {
-                legendItemClick: function () {
-                    return false;
-                }
-              }
-            },
-            spline: {
-              events: {
-                legendItemClick: function () {
-                    return false;
-                }
-              },
-              lineWidth: 0
-            }
-          },
-          series: [{
-            name: this.translate.instant('Product flowrate'),
-            color: 'rgba(0, 0, 255, 1)',
-            data: JSON.parse(JSON.stringify(dataDhp)),
-            stack: 'male',
-          }, {
-            name: this.translate.instant('Maximum product flowrate'),
-            color: 'rgba(153, 204, 255, .9)',
-            data: JSON.parse(JSON.stringify(dataDhpMax)),
-            stack: 'male'
-          }, {
-            name: this.translate.instant('Cryogen consumption (product + equipment heat losses)'),
-            color: 'rgba(51, 204, 51, 1)',
-            data: JSON.parse(JSON.stringify(dataConso)),
-            stack: 'female',
-            yAxis: 1
-          }, {
-            name: this.translate.instant('Maximum cryogen consumption (product + equipment heat losses)'),
-            color: 'rgba(102, 255, 153, .9)',
-            data: JSON.parse(JSON.stringify(dataConsoMax)),
-            stack: 'female',
-            yAxis: 1
-          }, {
-            name: this.translate.instant('Custom flow rate'),
-            type: 'spline',
-            color: '#f00',
-            data: JSON.parse(JSON.stringify(dataCustomFlowRate)),
-          }]
+          );
         });
+        this.api.sizingOptimumDraw({
+          idStudy: this.study.ID_STUDY,
+          body: params
+        }).subscribe(
+          data => {
+            this.estimationEquipBarImage.src = '' + data + '';
+          }
+        );
+      } else {
+        this.estimationEquipBarImage.src = '';
       }
     } else {
-      this.estimationEquipBarChart = '';
+      if (this.activeEquipment.length > 0) {
+        const params:  Array<any> = [];
+        this.activeEquipment.forEach(function (value) {
+          params.push({
+              id: value.id,
+              equipName: value.equipName,
+              dhp: value.dhp,
+              conso: value.conso,
+              dhpMax: value.dhpMax,
+              consoMax: value.consoMax
+            }
+          );
+        });
+        this.api.sizingOptimumDraw({
+          idStudy: this.study.ID_STUDY,
+          body: params
+        }).subscribe(
+          data => {
+            this.sizingOptimumImage.src = '' + data + '';
+          }
+        );
+      } else {
+        this.sizingOptimumImage.src = '';
+      }
     }
-    showLoaderChange.style.display = 'none';
+  }
+  changeEstimationTrGraph(value) {
+    this.trGraph = value;
+    this.getSizingOptimumDraw();
   }
   openSize() {
     this.activePage = 'result';
-    const size = <HTMLElement>document.getElementById('sizing');
-    const tem = <HTMLElement>document.getElementById('temPer');
-    size.style.display = 'block';
-    tem.style.display = 'none';
+    this.displayResult = true;
+    this.displayTemprature = false;
   }
   openTem() {
     this.activePage = 'profile';
-    const size = <HTMLElement>document.getElementById('sizing');
-    const tem = <HTMLElement>document.getElementById('temPer');
+    this.displayResult = false;
+    this.displayTemprature = true;
+    this.loadTempData = true;
     this.api.getSymbol(this.study.ID_STUDY).subscribe(
       dataSymbol => {
         this.symbol = dataSymbol;
@@ -520,268 +485,23 @@ export class SizingComponent implements OnInit, AfterViewInit {
             this.studyEquipments = data;
             this.api.temperatureProfile(this.studyEquipments[0]['ID_STUDY_EQUIPMENTS']).subscribe(
               dataTempFirst => {
-                const tempChartDataObj =  dataTempFirst.tempChartData;
-                const convChartDataObj =  dataTempFirst.convChartData;
-                const chartTempData = [
-                  {data: JSON.parse(JSON.stringify(tempChartDataObj.top)), label: this.translate.instant('Top'),
-                  type: 'line', radius: 0, fill: false, borderColor: 'rgb(0,0,255)', backgroundColor: 'rgb(0,0,255)', borderWidth: 2},
-                  {data: JSON.parse(JSON.stringify(tempChartDataObj.bottom)), label: this.translate.instant('Bottom'),
-                  type: 'line', radius: 0, fill: false, borderColor: 'rgb(0,192,192)', backgroundColor: 'rgb(0,192,192)', borderWidth: 2},
-                  {data: JSON.parse(JSON.stringify(tempChartDataObj.left)), label: this.translate.instant('Left'),
-                  type: 'line', radius: 0, fill: false, borderColor: 'rgb(0,255,255)', backgroundColor: 'rgb(0,255,255)', borderWidth: 2},
-                  {data: JSON.parse(JSON.stringify(tempChartDataObj.right)), label: this.translate.instant('Right'),
-                  type: 'line', radius: 0, fill: false, borderColor: 'rgb(0,255,0)', backgroundColor: 'rgb(0,255,0)', borderWidth: 2},
-                  {data: JSON.parse(JSON.stringify(tempChartDataObj.front)), label: this.translate.instant('Front'),
-                  type: 'line', radius: 0, fill: false, borderColor: 'rgb(255,0,0)', backgroundColor: 'rgb(255,0,0)', borderWidth: 2},
-                  {data: JSON.parse(JSON.stringify(tempChartDataObj.rear)), label: this.translate.instant('Rear'),
-                  type: 'line', radius: 0, fill: false, borderColor: 'rgb(255,0,255)', backgroundColor: 'rgb(255,0,255)', borderWidth: 2}
-                ];
-                const chartConvData = [
-                  {data: JSON.parse(JSON.stringify(convChartDataObj.top)), label: this.translate.instant('Top'),
-                  type: 'line', radius: 0, fill: false, borderColor: 'rgb(0,0,255)', backgroundColor: 'rgb(0,0,255)', borderWidth: 2},
-                  {data: JSON.parse(JSON.stringify(convChartDataObj.bottom)), label: this.translate.instant('Bottom'),
-                  type: 'line', radius: 0, fill: false, borderColor: 'rgb(0,192,192)', backgroundColor: 'rgb(0,192,192)', borderWidth: 2},
-                  {data: JSON.parse(JSON.stringify(convChartDataObj.left)), label: this.translate.instant('Left'),
-                  type: 'line', radius: 0, fill: false, borderColor: 'rgb(0,255,255)', backgroundColor: 'rgb(0,255,255)', borderWidth: 2},
-                  {data: JSON.parse(JSON.stringify(convChartDataObj.right)), label: this.translate.instant('Right'),
-                  type: 'line', radius: 0, fill: false, borderColor: 'rgb(0,255,0)', backgroundColor: 'rgb(0,255,0)', borderWidth: 2},
-                  {data: JSON.parse(JSON.stringify(convChartDataObj.front)), label: this.translate.instant('Front'),
-                  type: 'line', radius: 0, fill: false, borderColor: 'rgb(255,0,0)', backgroundColor: 'rgb(255,0,0)', borderWidth: 2},
-                  {data: JSON.parse(JSON.stringify(convChartDataObj.rear)), label: this.translate.instant('Rear'),
-                  type: 'line', radius: 0, fill: false, borderColor: 'rgb(255,0,255)', backgroundColor: 'rgb(255,0,255)', borderWidth: 2}
-                ];
-                this.tempChartData =  chartTempData;
-                this.convChartData =  chartConvData;
-                this.tempChartOptions = {
-                  animation: false,
-                  responsive: false,
-                  legend: {
-                    onClick: (e) => e.stopPropagation(),
-                    position: 'right',
-                    labels: {
-                      padding: 20
-                    }
-                  },
-                  hoverMode: 'index',
-                  stacked: false,
-                  title: {
-                      display: false,
-                      text: 'Chart 1',
-                      fontColor: '#000',
-                      fontSize: 20
-                  },
-                  scales: {
-                      xAxes: [{
-                          type: 'linear',
-                          display: true,
-                          scaleLabel: {
-                              display: true,
-                              labelString: this.translate.instant(this.symbol.timePositionSymbol),
-                              fontColor: '#f00',
-                              fontSize: 20
-                          },
-                      }],
-                      yAxes: [{
-                          type: 'linear',
-                          display: true,
-                          id: 'y-axis-1',
-                          scaleLabel: {
-                              display: true,
-                              labelString: this.translate.instant(this.symbol.temperatureSymbol),
-                              fontColor: '#f00',
-                              fontSize: 20
-                          },
-                          ticks: {
-                              stepSize : 10
-                          }
-                      }],
-                  }
-                };
-                this.convChartOptions = {
-                  animation: false,
-                  responsive: false,
-                  legend: {
-                    onClick: (e) => e.stopPropagation(),
-                    position: 'right',
-                    labels: {
-                      padding: 20
-                    }
-                  },
-                  hoverMode: 'index',
-                  stacked: false,
-                  title: {
-                    display: false,
-                    text: 'Chart 1',
-                    fontColor: '#000',
-                    fontSize: 20
-                  },
-                  scales: {
-                    xAxes: [{
-                        type: 'linear',
-                        display: true,
-                        scaleLabel: {
-                            display: true,
-                            labelString: this.translate.instant(this.symbol.timePositionSymbol),
-                            fontColor: '#f00',
-                            fontSize: 20
-                        },
-                    }],
-                    yAxes: [{
-                      type: 'linear',
-                      display: true,
-                      id: 'y-axis-1',
-                      scaleLabel: {
-                          display: true,
-                          labelString: this.translate.instant(this.symbol.convectionCoeffSymbol),
-                          fontColor: '#f00',
-                          fontSize: 20
-                      },
-                      ticks: {
-                          min: dataTempFirst.minScaleConv,
-                          max: dataTempFirst.maxScaleConv,
-                      }
-                    }],
-                  }
-                };
+                this.imageTemp = dataTempFirst.imageTemp;
+                this.imageConv = dataTempFirst.imageConv;
+                this.loadTempData = false;
               }
             );
           }
         );
-        size.style.display = 'none';
-        tem.style.display = 'block';
       }
     );
   }
   loadTempChart(element) {
-    const showLoaderTermChange = <HTMLElement>document.getElementById('showLoaderTermChange');
-    showLoaderTermChange.style.display = 'block';
+    this.loadTempData = true;
     this.api.temperatureProfile(element).subscribe(
       data => {
-        showLoaderTermChange.style.display = 'none';
-        const tempChartDataObj =  data.tempChartData;
-        const convChartDataObj =  data.convChartData;
-        const chartTempData = [
-          {data: JSON.parse(JSON.stringify(tempChartDataObj.top)), label: this.translate.instant('Top'),
-          type: 'line', radius: 0, fill: false, borderColor: 'rgb(0,0,255)', backgroundColor: 'rgb(0,0,255)', borderWidth: 2},
-          {data: JSON.parse(JSON.stringify(tempChartDataObj.bottom)), label: this.translate.instant('Bottom'),
-          type: 'line', radius: 0, fill: false, borderColor: 'rgb(0,192,192)', backgroundColor: 'rgb(0,192,192)', borderWidth: 2},
-          {data: JSON.parse(JSON.stringify(tempChartDataObj.left)), label: this.translate.instant('Left'),
-          type: 'line', radius: 0, fill: false, borderColor: 'rgb(0,255,255)', backgroundColor: 'rgb(0,255,255)', borderWidth: 2},
-          {data: JSON.parse(JSON.stringify(tempChartDataObj.right)), label: this.translate.instant('Right'),
-          type: 'line', radius: 0, fill: false, borderColor: 'rgb(0,255,0)', backgroundColor: 'rgb(0,255,0)', borderWidth: 2},
-          {data: JSON.parse(JSON.stringify(tempChartDataObj.front)), label: this.translate.instant('Front'),
-          type: 'line', radius: 0, fill: false, borderColor: 'rgb(255,0,0)', backgroundColor: 'rgb(255,0,0)', borderWidth: 2},
-          {data: JSON.parse(JSON.stringify(tempChartDataObj.rear)), label: this.translate.instant('Rear'),
-          type: 'line', radius: 0, fill: false, borderColor: 'rgb(255,0,255)', backgroundColor: 'rgb(255,0,255)', borderWidth: 2}
-        ];
-        const chartConvData = [
-          {data: JSON.parse(JSON.stringify(convChartDataObj.top)), label: this.translate.instant('Top'),
-          type: 'line', radius: 0, fill: false, borderColor: 'rgb(0,0,255)', backgroundColor: 'rgb(0,0,255)', borderWidth: 2},
-          {data: JSON.parse(JSON.stringify(convChartDataObj.bottom)), label: this.translate.instant('Bottom'),
-          type: 'line', radius: 0, fill: false, borderColor: 'rgb(0,192,192)', backgroundColor: 'rgb(0,192,192)', borderWidth: 2},
-          {data: JSON.parse(JSON.stringify(convChartDataObj.left)), label: this.translate.instant('Left'),
-          type: 'line', radius: 0, fill: false, borderColor: 'rgb(0,255,255)', backgroundColor: 'rgb(0,255,255)', borderWidth: 2},
-          {data: JSON.parse(JSON.stringify(convChartDataObj.right)), label: this.translate.instant('Right'),
-          type: 'line', radius: 0, fill: false, borderColor: 'rgb(0,255,0)', backgroundColor: 'rgb(0,255,0)', borderWidth: 2},
-          {data: JSON.parse(JSON.stringify(convChartDataObj.front)), label: this.translate.instant('Front'),
-          type: 'line', radius: 0, fill: false, borderColor: 'rgb(255,0,0)', backgroundColor: 'rgb(255,0,0)', borderWidth: 2},
-          {data: JSON.parse(JSON.stringify(convChartDataObj.rear)), label: this.translate.instant('Rear'),
-          type: 'line', radius: 0, fill: false, borderColor: 'rgb(255,0,255)', backgroundColor: 'rgb(255,0,255)', borderWidth: 2}
-        ];
-        this.tempChartData =  chartTempData;
-        this.convChartData =  chartConvData;
-
-        this.tempChartOptions = {
-          animation: false,
-          responsive: false,
-          legend: {
-            onClick: (e) => e.stopPropagation(),
-            position: 'right',
-            labels: {
-              padding: 20
-            }
-          },
-          hoverMode: 'index',
-          stacked: false,
-          title: {
-              display: false,
-              text: 'Chart 1',
-              fontColor: '#000',
-              fontSize: 20
-          },
-          scales: {
-              xAxes: [{
-                  type: 'linear',
-                  display: true,
-                  scaleLabel: {
-                      display: true,
-                      labelString: this.translate.instant(this.symbol.timePositionSymbol),
-                      fontColor: '#f00',
-                      fontSize: 20
-                  },
-              }],
-              yAxes: [{
-                  type: 'linear',
-                  display: true,
-                  id: 'y-axis-1',
-                  scaleLabel: {
-                      display: true,
-                      labelString: this.translate.instant(this.symbol.temperatureSymbol),
-                      fontColor: '#f00',
-                      fontSize: 20
-                  },
-                  ticks: {
-                      stepSize : 10
-                  }
-              }],
-          }
-        };
-        this.convChartOptions = {
-          animation: false,
-          responsive: false,
-          legend: {
-            onClick: (e) => e.stopPropagation(),
-            position: 'right',
-            labels: {
-              padding: 20
-            }
-          },
-          hoverMode: 'index',
-          stacked: false,
-          title: {
-            display: false,
-            text: 'Chart 1',
-            fontColor: '#000',
-            fontSize: 20
-          },
-          scales: {
-            xAxes: [{
-                type: 'linear',
-                display: true,
-                scaleLabel: {
-                    display: true,
-                    labelString: this.translate.instant(this.symbol.timePositionSymbol),
-                    fontColor: '#f00',
-                    fontSize: 20
-                },
-            }],
-            yAxes: [{
-              type: 'linear',
-              display: true,
-              id: 'y-axis-1',
-              scaleLabel: {
-                  display: true,
-                  labelString: this.translate.instant(this.symbol.convectionCoeffSymbol),
-                  fontColor: '#f00',
-                  fontSize: 20
-              },
-              ticks: {
-                  min: data.minScaleConv,
-                  max: data.maxScaleConv,
-              }
-            }],
-          }
-        };
+        this.imageTemp = data.imageTemp;
+        this.imageConv = data.imageConv;
+        this.loadTempData = false;
       }
     );
   }
@@ -800,120 +520,54 @@ export class SizingComponent implements OnInit, AfterViewInit {
     );
   }
   loadEquipmentEstimationChart() {
-    console.log(this.selectedEquip);
-    const showLoaderChange = <HTMLElement>document.getElementById('showLoaderChange');
-    showLoaderChange.style.display = 'block';
-    const element = this.selectedEquip;
-    const params: ApiService.SizingEstimationResultParams = {
-      idStudy: this.study.ID_STUDY
-    };
-    this.api.sizingEstimationResult(params).subscribe(
-      data => {
-        showLoaderChange.style.display = 'none';
-        this.dataGraphChart = data.dataGraphChart;
-        const dataCustomFlowRate = [];
-        const dataDhp = [];
-        const dataDhpMax = [];
-        const dataConso = [];
-        const dataConsoMax = [];
-        for (let j = 0; j < Object.keys(data.dataGraphChart).length; j++) {
-          if (data.dataGraphChart[j].id == element) {
-            const objDataGraph = data.dataGraphChart[j].data;
-            const dataGrapChartLength = Object.keys(objDataGraph).length;
-            for (let i = dataGrapChartLength - 1; i >= 0; i--) {
-              dataCustomFlowRate.push(this.productFlowRate);
-              dataDhp.push(objDataGraph[i].dhp);
-              dataDhpMax.push(objDataGraph[i].dhpMax);
-              dataConso.push(objDataGraph[i].conso);
-              dataConsoMax.push(objDataGraph[i].consoMax);
-            }
-            this.estimationBarChart = new Chart({
-              chart: {
-                type: 'column'
-              },
-              title: {
-                text: ''
-              },
-              xAxis: {
-                categories: this.graphEstimationLabels
-              },
-              yAxis: [
-                {
-                  min: 1,
-                  type: 'logarithmic',
-                  plotLines: [{
-                    color: '#F00',
-                    width: 2,
-                    value: this.productFlowRate
-                  }],
-                  title: {
-                    text: this.translate.instant('Flow rate') + ' ' + this.symbol.productFlowSymbol,
-                  }
-                },
-                {
-                title: {
-                  text: this.translate.instant('Conso') + ' ' + this.symbol.consumSymbol + '/' + this.symbol.perUnitOfMassSymbol
-                },
-                opposite: true
-              }],
-              tooltip: {
-                formatter: function () {
-                  return '<b>' + this.x + '</b><br/>' +
-                      this.series.name + ': ' + this.y;
-                }
-              },
-              plotOptions: {
-                column: {
-                  events: {
-                    legendItemClick: function () {
-                        return false;
-                    }
-                  }
-                },
-                spline: {
-                  events: {
-                    legendItemClick: function () {
-                        return false;
-                    }
-                  },
-                  lineWidth: 0
-                }
-              },
-              series: [{
-                  name: this.translate.instant('Product flowrate'),
-                  color: 'rgba(0, 0, 255, .9)',
-                  data: JSON.parse(JSON.stringify(dataDhp)),
-                  stack: 'male',
-              }, {
-                name: this.translate.instant('Maximum product flowrate'),
-                color: 'rgba(153, 204, 255, 1)',
-                data: JSON.parse(JSON.stringify(dataDhpMax)),
-                stack: 'male'
-              }, {
-                name: this.translate.instant('Cryogen consumption (product + equipment heat losses)'),
-                color: 'rgba(51, 204, 51, 1)',
-                data: JSON.parse(JSON.stringify(dataConso)),
-                stack: 'female',
-                yAxis: 1
-              }, {
-                name: this.translate.instant('Maximum cryogen consumption (product + equipment heat losses)'),
-                color: 'rgba(102, 255, 153, .9)',
-                data: JSON.parse(JSON.stringify(dataConsoMax)),
-                stack: 'female',
-                yAxis: 1
-              }, {
-                name: this.translate.instant('Custom flow rate'),
-                type: 'spline',
-                color: '#f00',
-                data: JSON.parse(JSON.stringify(dataCustomFlowRate)),
-              }]
-            });
-          }
-        }
+    for (let i = 0; i < this.dataGraphChart.length; i++) {
+      if (this.dataGraphChart[i].id == this.selectedEquip) {
+        this.sizingEstimationImage.src = this.dataGraphChart[i].image;
       }
-    );
+    }
+  }
+  viewEquipTr(element) {
+    this.viewEquipTrData = element;
+    this.viewEquipTrModal.show();
   }
   isNumberic(number) {
     return Number.isInteger(Math.floor(number));
+  }
+  viewAddEquipModal(element) {
+    this.api.getSpecialLength(element).subscribe(
+      data => {
+        this.nbModule = 1;
+        this.equipDuplicateId = element;
+        this.specialLength = data;
+        this.addEquipModal.show();
+      }
+    );
+  }
+  changeNbModuleValue(value) {
+    this.nbModule = value;
+  }
+  applyAddEquip() {
+    this.laddaAddEquip = true;
+    const params: Models.DuplicateEltNewSizeParam = {
+      nbModule: this.nbModule
+    };
+    this.api.duplicateEltNewSize({
+      id: this.equipDuplicateId,
+      body: params
+    }).subscribe(
+      data => {
+        this.refreshSizingEstimationResult();
+        this.laddaAddEquip = false;
+        this.addEquipModal.hide();
+      }
+    );
+  }
+  getCapability(capabilities, capMask) {
+    /* tslint:disable */
+    if ((Number(capabilities) & Number(capMask)) !== 0) {
+        return true;
+    } else {
+        return false;
+    }
   }
 }

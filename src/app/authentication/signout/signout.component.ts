@@ -1,6 +1,7 @@
 import { AuthenticationService } from './../authentication.service';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { ApiService } from '../../api/services/api.service';
 
 @Component({
   selector: 'app-signout',
@@ -9,11 +10,10 @@ import { Router } from '@angular/router';
 })
 export class SignoutComponent implements OnInit {
 
-  constructor(private auth: AuthenticationService, private router: Router) { }
+  constructor(private auth: AuthenticationService, private router: Router, private api: ApiService) { }
 
   ngOnInit() {
     this.auth.logout();
     this.router.navigate(['/home']);
   }
-
 }

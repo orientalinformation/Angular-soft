@@ -1,77 +1,98 @@
-
 <div class="subnav-container text-center pt-3 mb-3">
   <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
     <button type="button" class="btn btn-outline-secondary" [class.active]="activePage == 'interface'" (click)="openPageInterface()">{{ 'User Interface Labels'|translate }}</button>
     <button type="button" class="btn btn-outline-secondary" [class.active]="activePage == 'datalabel'" (click)="openPageDataLabel()">{{ 'Data Labels'|translate }}</button>
   </div>
 </div>
-
-<div class="container-fluid">
+<app-spinner *ngIf="isLoading"></app-spinner>
+<div class="container-fluid" *ngIf="!isLoading">
   <div class="container">
     <div class="card-header">
-        <strong>{{ 'Translation: ' | translate }}</strong>
-      <button type="button" class="btn btn-sm btn-success float-right">
-        <i class="fa fa-floppy-o"></i> {{'Save'|translate}}
+      <strong>{{ 'Translation: '| translate }}</strong>
+      <button type="button" class="btn btn-sm btn-success float-right" (click)="updateLabel()" *ngIf="activePage=='datalabel'">
+        <i class="fa fa-floppy-o"></i> {{ 'Save'|translate }}
+      </button>
+      <button type="button" class="btn btn-sm btn-success float-right" (click)="updateTran(changeLange)" *ngIf="activePage=='interface'">
+          <i class="fa fa-floppy-o"></i> {{ 'Save'|translate }}
       </button>
     </div>
     <div class="card product-container">
       <div class="card-body">
+        <!-- tab interface -->
         <div style="margin-top:10px;" *ngIf="activePage=='interface'">
           <table class="table table-bordered table-sm mb-0">
             <thead>
               <tr>
-                <th class="text-center">Reference language </th>
+                <th class="text-center">{{ 'Reference language'|translate }}</th>
                 <th>
-                  <select class="form-control form-control-sm" [(ngModel)]="reflangue.langId">
-                    <option *ngFor="let lang of listLang" [value]="lang.ID_TRANSLATION">{{ lang.LABEL }}</option>
+                  <select class="form-control form-control-sm" (change)="loadJsonFile(chooseTrans)" [(ngModel)]="chooseRef" [disabled]="true">
+                    <option *ngFor="let langName of langNames let i = index" [value]="(i + 1)">{{ langName.LABEL }}</option>
                   </select>
                 </th>
-                <th class="text-center">To</th>
-                <th class="text-center">Translation language </th>
+                <th class="text-center">{{ 'To'|translate }}</th>
+                <th class="text-center">{{ 'Translation language'|translate }} </th>
                 <th>
-                  <select class="form-control form-control-sm" [(ngModel)]="translangue.langId">
-                    <option *ngFor="let lang of listLang" [value]="lang.ID_TRANSLATION">{{ lang.LABEL }}</option>
+                  <select class="form-control form-control-sm" (change)="loadJsonFile(chooseTrans)" [(ngModel)]="chooseTrans">
+                    <option *ngFor="let langName of langNames let i = index" [value]="(i + 1)">{{ langName.LABEL }}</option>
                   </select>
                 </th>
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td colspan="2">Interface Label</td>
-                <td > </td>
-                <td colspan="2"><input class="form-control" type="text" name="changeLabel"></td>
+              <tr *ngIf="adminTran">
+                <td colspan="2">
+                    <input class="form-control" *ngFor="let tran of adminTran" type="text" [(ngModel)]="tran.key" [disabled]="true">
+                </td>
+                <td >
+                  <div *ngFor="let tran of adminTran" class="form-control tran-text">
+                    <span class="tran-text">.......</span>
+                  </div>
+                </td>
+                <td colspan="2">
+                  <input class="form-control" *ngFor="let tran of adminTran" type="text" [(ngModel)]="tran.value">
+                </td>
               </tr>
             </tbody>
           </table>
         </div>
+        <!-- End tab interface -->
+        <!-- Tab data label -->
         <div style="margin-top:10px;" *ngIf="activePage=='datalabel'">
-          <table class="table table-bordered table-sm mb-0">
-            <thead>
-              <tr>
-                <th class="text-center">Reference language </th>
-                <th>
-                  <select class="form-control form-control-sm" [(ngModel)]="reflangue.langId">
-                    <option *ngFor="let lang of listLang" [value]="lang.ID_TRANSLATION">{{ lang.LABEL }}</option>
-                  </select>
-                </th>
-                <th class="text-center">To</th>
-                <th class="text-center">Translation language </th>
-                <th>
-                  <select class="form-control form-control-sm" [(ngModel)]="translangue.langId">
-                    <option *ngFor="let lang of listLang1" [value]="lang.ID_TRANSLATION">{{ lang.LABEL }}</option>
-                  </select>
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td colspan="2">Data Label</td>
-                <td > </td>
-                <td colspan="2"><input class="form-control" type="text" name="changeLabel"></td>
-              </tr>
-            </tbody>
-          </table>
+          <div class="row">
+            <div class="col-md-3">{{ 'Reference language'|translate }}</div>
+            <div class="col-md-2">
+              <select class="form-control form-control-sm" (change)="changeTrans()" [(ngModel)]="chooseRef" [disabled]="true">
+                <option *ngFor="let langName of langNames let i = index" [value]="(i +1)">{{ langName.LABEL }}</option>
+              </select>
+            </div>
+            <div class="col-md-2 text-center">To</div>
+            <div class="col-md-3">{{ 'Translation language'|translate }} </div>
+            <div class="col-md-2">
+              <select class="form-control form-control-sm" (change)="changeTrans()" [(ngModel)]="chooseTrans" [disabled]="true">
+                <option *ngFor="let langName of langNames let i = index" [value]="(i+1)">{{ langName.LABEL }}</option>
+              </select>
+            </div>
+          </div>
+          <p></p>
+          <div class="row">
+            <div class="col-md-5">
+              <div class="row" *ngFor="let label of showLabelRef" style="height:29px">
+                <div class="col-md-12 text-right">
+                  <span style="font-size:10px;"><strong>{{ label.LABEL }}</strong></span>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-2"></div>
+            <div class="col-md-5">
+              <div class="row" *ngFor="let label of showLabelTrans"  style="height:29px">
+                <div class="col-md-12">
+                  <input class="form-control" [(ngModel)]="label.LABEL" style="font-size:10px;">
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
+        <!-- End tab data label -->
       </div>
     </div>
   </div>

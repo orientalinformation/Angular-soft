@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container" *ngIf="!isLoading">
   <div class="row">
     <div class="col-md-6">
       <div class="card" id="study-list-card">
@@ -17,7 +17,7 @@
           <div class="list-group" *ngIf="studies">
             <!-- mine -->
             <h6 class="dropdown-header" *ngIf="studies.mine">{{'MINE'|translate}}</h6>
-            <a *ngFor="let study of (studies.mine | filter: filterString)" class="list-group-item list-group-item-action" [ngClass]="study == selectedStudy? 'active' : ''" (click)="onSelect(study)">
+            <a *ngFor="let study of (studies.mine | filter: filterString)" class="list-group-item list-group-item-action mineElement" [ngClass]="study == selectedStudy? 'active' : ''" (click)="onSelect(study)">
               <div class="d-flex w-100 justify-content-between">
                 {{study.STUDY_NAME}}
                 <span>
@@ -27,7 +27,7 @@
             </a>
             <!-- others -->
             <h6 class="dropdown-header" *ngIf="studies.mine && studies.others">{{'OTHER'|translate}}</h6>
-            <a *ngFor="let study of (studies.others | filter: filterString)" class="list-group-item list-group-item-action" [ngClass]="study == selectedStudy? 'active' : ''"
+            <a *ngFor="let study of (studies.others | filter: filterString)" class="list-group-item list-group-item-action userElement" [ngClass]="study == selectedStudy? 'active' : ''"
               (click)="onSelect(study)">
               <div class="d-flex w-100 justify-content-between">
                 {{study.STUDY_NAME}}
@@ -80,7 +80,7 @@
               {{'Component list'|translate}}
               <select class="form-control" *ngIf="components" [(ngModel)]="componentSelected" (change)="selectComponent()">
                 <option [value]="0">{{ 'Select a component'|translate }}</option>
-                <option *ngFor="let component of components.active" [value]="component.ID_COMP">
+                <option *ngFor="let component of components.active" [value]="component.ID_COMP" class="{{component.class}}">
                   {{ component.displayName }}
                 </option>
               </select>
@@ -114,23 +114,22 @@
               <tr>
                 <td colspan="2" [innerHTML]="selectedStudy.COMMENT_TXT | nl2br"></td>
               </tr>
-
             </table>
           </div>
         </div>
 
         <div class="card-footer text-center" *ngIf="selectedStudy">
-          <button type="button" class="btn btn-danger" (click)="deleteStudy()" [ladda]="laddaDeletingStudy"><i class="fa fa-trash-o"></i> {{'Delete'|translate}}</button>
-            <button type="button" class="btn btn-secondary" (click)="modalSaveAs.show()"><i class="fa fa-copy"></i> {{'Save As'|translate}}</button>
-            <button type="button" class="btn btn-primary" (click)="openStudy()" [ladda]="laddaOpeningStudy"><i class="fa fa-folder-open-o"></i> {{'Open'|translate}}</button>
+          <button type="button" class="btn btn-danger" (click)="deleteStudy()" [ladda]="laddaDeletingStudy" [disabled]="disabledField()"><i class="fa fa-trash-o"></i> {{'Delete'|translate}}</button>
+          <button type="button" class="btn btn-secondary" (click)="modalSaveAs.show()"><i class="fa fa-copy"></i> {{'Save As'|translate}}</button>
+          <button type="button" class="btn btn-primary" (click)="openStudy()" [ladda]="laddaOpeningStudy"><i class="fa fa-folder-open-o"></i> {{'Open'|translate}}</button>
         </div>
       </div>
     </div>
   </div>
 </div>
-
+<!-- Start model save as -->
 <div bsModal class="modal fade" #modalSaveAs="bs-modal" role="dialog" aria-hidden="true">
-  <div class="modal-dialog modal-sm" role="document">
+  <div class="modal-dialog modal-primary modal-sm" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <strong>{{'SAVE AS'|translate}}</strong>
@@ -140,7 +139,7 @@
       </div>
       <div class="modal-body">
         <div align="left" class="labelSaveAs">{{'Enter a new name'|translate}}</div>
-              <input class="form-control" type="text" [(ngModel)]="name" placeholder="Study Name">
+        <input class="form-control" type="text" [(ngModel)]="name" placeholder="Study Name">
       </div><!-- modal-body -->
       <div class="modal-footer">
         <button class="btn btn-secondary" data-dismiss="modal" (click)="modalSaveAs.hide()">{{'Cancel'|translate}}</button>
@@ -149,3 +148,5 @@
     </div>
   </div>
 </div>
+<!-- End model save as -->
+<app-spinner *ngIf="isLoading"></app-spinner>

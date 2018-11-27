@@ -3,6 +3,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { AuthLayoutComponent } from './layouts/auth-layout/auth-layout.component';
 import { MembersLayoutComponent } from './layouts/members-layout/members-layout.component';
 import { AuthGuard } from './guards/auth.guard';
+import { AdminGuard } from './guards/admin.guard';
 import { StudyRequiredGuard } from './guards/study-required.guard';
 import { DashboardLayoutComponent } from './layouts/dashboard-layout/dashboard-layout.component';
 import { NoStudyGuard } from './guards/no-study.guard';
@@ -95,6 +96,7 @@ const routes: Routes = [
   {
     path: '',
     component: AdminLayoutComponent,
+    canActivate: [AdminGuard],
     children: [
       {
         path: 'admin',

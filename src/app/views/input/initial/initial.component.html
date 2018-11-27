@@ -4,7 +4,6 @@
       <div class="card">
         <div class="card-header">
           <strong>{{'PRODUCT MESH'|translate}}</strong>
-
         </div>
         <div class="card-body" *ngIf="meshView.meshGeneration">
           <div class="row">
@@ -14,44 +13,84 @@
                   <th colspan="4" class="text-center">{{'Mesh Parameters'|translate}}</th>
                 </tr>
                 <tr>
-                  <th>{{'Mesh type'}}</th>
-                  <th>1</th>
-                  <th>2</th>
-                  <th>3</th>
+                  <th>{{'Mesh type'|translate}}</th>
+                  <th>{{'Size'|translate}} 1</th>
+                  <th>{{'Size'|translate}} 2</th>
+                  <th>{{'Size'|translate}} 3</th>
                 </tr>
                 <tr>
                   <td>
-                    <div *ngIf="meshView.meshGeneration.MESH_1_FIXED==1">{{'Regular'|translate}}</div>
-                    <div *ngIf="meshView.meshGeneration.MESH_1_FIXED==0">{{'Irregular'|translate}}</div>
+                    <div *ngIf="meshView.meshGeneration.MESH_1_FIXED == 1">{{'Regular'|translate}}</div>
+                    <div *ngIf="meshView.meshGeneration.MESH_1_FIXED == 0">{{'Irregular'|translate}}</div>
                   </td>
                   <td>
-                    <span *ngIf="meshView.meshGeneration.MESH_1_FIXED==1">
+                    <span *ngIf="meshView.meshGeneration.MESH_1_FIXED == 1">
                       {{meshView.meshGeneration.MESH_1_SIZE}}
                     </span>
-                    <span *ngIf="meshView.meshGeneration.MESH_1_FIXED==0">
+                    <span *ngIf="meshView.meshGeneration.MESH_1_FIXED == 0">
                       {{meshView.meshGeneration.MESH_1_INT}}
                     </span>
                   </td>
                   <td>
-                    <span *ngIf="meshView.meshGeneration.MESH_1_FIXED==1">
+                    <span *ngIf="meshView.meshGeneration.MESH_1_FIXED == 1">
                       {{meshView.meshGeneration.MESH_2_SIZE}}
                     </span>
-                    <span *ngIf="meshView.meshGeneration.MESH_1_FIXED==0">
+                    <span *ngIf="meshView.meshGeneration.MESH_1_FIXED == 0">
                       {{meshView.meshGeneration.MESH_2_INT}}
                     </span>
                   </td>
                   <td>
-                    <span *ngIf="meshView.meshGeneration.MESH_1_FIXED==1">
+                    <span *ngIf="meshView.meshGeneration.MESH_1_FIXED == 1">
                       {{meshView.meshGeneration.MESH_3_SIZE}}
                     </span>
-                    <span *ngIf="meshView.meshGeneration.MESH_1_FIXED==0">
+                    <span *ngIf="meshView.meshGeneration.MESH_1_FIXED == 0">
                       {{meshView.meshGeneration.MESH_3_INT}}
                     </span>
                   </td>
                 </tr>
               </table>
             </div>
-            <div class="col">
+            <!-- 3d shape >= 10 -->
+            <div class="col" *ngIf="productShape >= 10">
+              <table class="table-bordered table table-sm" *ngIf="mesh3dinfo; else noMeshResult">
+                <tr>
+                  <th colspan="4" class="text-center">{{'Mesh Result'|translate}}</th>
+                </tr>
+                <tr>
+                  <th>{{ 'Points'|translate }}</th>
+                  <th>{{ 'Cells'|translate }}</th>
+                  <th>{{ 'Faces'|translate }}</th>
+                  <th>{{ 'Boundaries'|translate }}</th>
+                </tr>
+                <tr>
+                  <td>{{ mesh3dinfo.nb_points }}</td>
+                  <td>{{ mesh3dinfo.nb_cells }}</td>
+                  <td>{{ mesh3dinfo.nb_faces }}</td>
+                  <td>{{ mesh3dinfo.nb_boundaries }}</td>
+                </tr>
+              </table>
+              <ng-template #noMeshResult>
+                <table class="table-bordered table table-sm">
+                  <tr>
+                    <th colspan="4" class="text-center">{{'Mesh Result'|translate}}</th>
+                  </tr>
+                  <tr>
+                    <th>{{ 'Points'|translate }}</th>
+                    <th>{{ 'Cells'|translate }}</th>
+                    <th>{{ 'Faces'|translate }}</th>
+                    <th>{{ 'Boundaries'|translate }}</th>
+                  </tr>
+                  <tr>
+                    <td>***</td>
+                    <td>***</td>
+                    <td>***</td>
+                    <td>***</td>
+                  </tr>
+                </table>
+              </ng-template>
+            </div>
+            <!-- End 3d shape >= 10 -->
+            <div class="col" *ngIf="productShape < 10">
               <table class="table-bordered table table-sm">
                 <tr>
                   <th colspan="4" class="text-center">{{'Mesh Result'|translate}}</th>
@@ -78,18 +117,18 @@
         <!-- /.card-body -->
         <div class="card-footer text-center">
           <button type="button" class="btn btn-sm btn-primary"
-            [disabled]="study.CHAINING_CONTROLS && (study.HAS_CHILD || study.PARENT_ID !=0)"
-            (click)="generateMesh()" [ladda]="laddaGeneratingMesh">{{'(RE)GENERATE MESH'|translate}}</button>
+            [disabled]="study.CHAINING_CONTROLS && (study.HAS_CHILD || study.PARENT_ID != 0)"
+            (click)="generateMesh()" [ladda]="laddaGeneratingMesh">{{'(RE)GENERATE MESH'|translate}}
+          </button>
           <button type="button" class="btn btn-sm btn-success"
-            [disabled]="study.CHAINING_CONTROLS && (study.HAS_CHILD || study.PARENT_ID !=0) || disabledField()"
-            (click)="resetDefaultMesh()" [ladda]="laddaGeneratingMesh">{{'DEFAULT MESH'|translate}}</button>
+            [disabled]="study.CHAINING_CONTROLS && (study.HAS_CHILD || study.PARENT_ID != 0) || disabledField()"
+            (click)="resetDefaultMesh()" [ladda]="laddaGeneratingMesh">{{'DEFAULT MESH'|translate}}
+          </button>
         </div>
       </div>
-
       <div class="card product-container">
         <div class="card-header">
           <strong>{{'PRODUCT INITIAL TEMPERATURE'|translate}}</strong>
-
         </div>
         <div class="card-body">
           <div class="row">
@@ -107,7 +146,12 @@
           <div class="row">
             <label class="col-sm-8 col-form-label" *ngIf="symbol">{{'Initial temperature'|translate}} ({{symbol.temperatureSymbol}})</label>
             <div class="col-sm-4 col-form-label" *ngIf="productView.product.PROD_ISO == 0">
+              <div *ngIf="meshView.averageProductTemp == null;else averageProductTemp">
                 {{'Non-isothermal'|translate}}
+              </div>
+              <ng-template #averageProductTemp>
+                {{ meshView.averageProductTemp }}
+              </ng-template>
             </div>
             <div class="col-sm-4 col-form-label" *ngIf="productView.product.PROD_ISO == 1 && meshView.productIsoTemp == null">
               {{'Undefined'|translate}}
@@ -116,17 +160,18 @@
               {{ this.meshView.productIsoTemp }}
             </div>
           </div>
-
         </div>
         <!-- /.card-body -->
         <div class="card-footer text-center">
           <button type="button" class="btn btn-sm btn-primary"
-            [disabled]="study.HAS_CHILD || study.PARENT_ID != 0 || disabledField()"
+            [disabled]="study.CHAINING_CONTROLS && (study.HAS_CHILD || study.PARENT_ID != 0) || disabledField()"
             (click)="editProductTemp()">
             {{'CHANGE'|translate}}
           </button>
           <button type="button" class="btn btn-sm btn-success"
-            (click)="initTemperature()" [disabled]="disabledField()" [ladda]="laddaInitializingTemp">
+            (click)="initTemperature()" 
+            [disabled]="disabledChaining()|| disabledField()" 
+            [ladda]="laddaInitializingTemp">
             {{'INITIALIZE TEMPERATURE'|translate}}
           </button>
         </div>
@@ -148,7 +193,7 @@
         </tr>
         <ng-template ngFor let-element [ngForOf]="productView.elements" let-i="index">
           <tr>
-            <td>{{'components.'+element.ID_COMP|translate}}</td>
+            <td>{{element.componentName}}</td>
             <td class="text-center">
               {{ element.PROD_ELMT_NAME }}
               <div *ngIf="study.CHAINING_CONTROLS && study.PARENT_ID != 0 && element.INSERT_LINE_ORDER != study.ID_STUDY">
@@ -196,7 +241,7 @@
     </div>
   </div>
 </div>
-
+<!-- End Initializing temperature waiting modal -->
 <!-- Edit Element Initial Temp Modal -->
 <div class="modal fade" role="dialog" aria-hidden="true" bsModal #editElmtInitTempModal="bs-modal">
   <div class="modal-dialog modal-primary" *ngIf="elmtEditForm.elmt" [ngClass]="!elmtEditForm.isoThermal?'modal-lg':''">
@@ -249,7 +294,10 @@
               <span class="input-group-addon" *ngIf="symbol">{{'Temperature'|translate}} ({{symbol.temperatureSymbol}})</span>
             </div>
             <div *ngFor="let tempPoint of tempPointNewForm.tempPoints; let i = index">
-              <input type="number" id="tempPoint{{i}}" name="tempPoint{{i}}" class="form-control-sm" [(ngModel)]="tempPoint.value" (change)="updateTempPoint($event, i)" style="width:80%">
+              <div class="input-group">
+                  <input type="number" id="tempPoint{{i}}" name="tempPoint{{i}}" class="form-control-sm" 
+                  [(ngModel)]="tempPoint.value" (change)="updateTempPoint($event, i)" style="width:80%">
+              </div>
             </div>
           </div>
           <div class="col-sm-7">
@@ -277,9 +325,9 @@
     </div>
   </div>
 </div>
-
+<!-- End Edit Element Initial Temp Modal -->
 <!-- Edit Product Iso Initial Temp Modal -->
-<div class="modal fade" role="dialog" aria-hidden="true" bsModal #isoTempEditModal="bs-modal" *ngIf="productShape != 0 && productView.elements && productView.elements.length>0">
+<div class="modal fade" role="dialog" aria-hidden="true" bsModal #isoTempEditModal="bs-modal" *ngIf="productShape != 0 && productView.elements && productView.elements.length > 0">
   <div class="modal-dialog modal-primary">
     <div class="modal-content">
       <div class="modal-header">
@@ -318,7 +366,7 @@
     </div>
   </div>
 </div>
-
+<!-- End Edit Product Iso Initial Temp Modal -->
 <!-- Edit Mesh Generate Parameters Modal -->
 <div class="modal fade" role="dialog" aria-hidden="true" bsModal #meshParametersModal="bs-modal" *ngIf="meshParamsForm">
   <div class="modal-dialog modal-primary">
@@ -336,12 +384,12 @@
           </label>
           <div class="col-md-7">
             <label class="custom-control custom-radio">
-              <input id="radio1" name="radio" type="radio" [(ngModel)]="meshParamsForm.mesh_type" class="custom-control-input" value="1" [disabled]="disabledField()">
+              <input id="radio1" name="radio" type="radio" [(ngModel)]="meshParamsForm.mesh_type" class="custom-control-input" [value]="1" [disabled]="disabledField()">
               <span class="custom-control-indicator"></span>
               <span class="custom-control-description">{{'Regular'|translate}}</span>
             </label>
             <label class="custom-control custom-radio">
-              <input id="radio2" name="radio" type="radio" [(ngModel)]="meshParamsForm.mesh_type" class="custom-control-input" value="0" [disabled]="disabledField()">
+              <input id="radio2" name="radio" type="radio" [(ngModel)]="meshParamsForm.mesh_type" class="custom-control-input" [value]="0" [disabled]="disabledField()">
               <span class="custom-control-indicator"></span>
               <span class="custom-control-description">{{'Irregular'|translate}}</span>
             </label>
@@ -355,7 +403,7 @@
             <div class="input-group">
               <input type="text" class="form-control" id="mesh1param"
                 [(ngModel)]="meshParamsForm.size1"
-                [disabled]="productShape == text.shapeNames.SLAB || productShape == text.shapeNames.SPHERE || disabledField()">
+                [disabled]="meshSize1Disable || disabledField()">
               <span class="input-group-addon" *ngIf="symbol">{{symbol.meshesSymbol}}</span>
             </div>
           </div>
@@ -379,7 +427,7 @@
             <div class="input-group">
               <input type="text" class="form-control" id="mesh3param"
                 [(ngModel)]="meshParamsForm.size3"
-                [disabled]="!(productShape == text.shapeNames.REC_STAND || productShape == text.shapeNames.REC_LAY || productShape == text.shapeNames.BREAD) || disabledField()">
+                [disabled]="meshSize3Disable || disabledField()">
               <span class="input-group-addon" *ngIf="symbol">{{symbol.meshesSymbol}}</span>
             </div>
           </div>
@@ -392,5 +440,6 @@
     </div>
   </div>
 </div>
+<!-- End Edit Mesh Generate Parameters Modal -->
 
 <app-spinner *ngIf="isLoadingView"></app-spinner>

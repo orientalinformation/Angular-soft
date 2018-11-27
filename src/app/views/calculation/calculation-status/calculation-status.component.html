@@ -1,9 +1,9 @@
 <div class="container" *ngIf="!isLoading">
   <div class="card product-container">
     <div class="card-header">
-      <strong>{{'Status Of Users Studies' | translate}}</strong>
+      <strong>{{'Status Of Users Studies'|translate}}</strong>
       <div class="float-right">
-        <button class="btn btn-sm btn-primary" (click)="refreshCalculateStatus();"><i class="fa fa-refresh"></i>{{' Refresh'|translate}}</button>
+        <button class="btn btn-sm btn-primary" (click)="refreshCalculateStatus();"><i class="fa fa-refresh"></i>{{ '  Refresh'|translate}}</button>
       </div>
     </div>
     <table class="table table-bordered table-sm mb-0 table-study" *ngIf="studies">

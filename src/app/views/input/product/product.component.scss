@@ -5,7 +5,7 @@
 }
 
 table {
-    td {        
+    td {
         a {
             cursor: pointer !important;
         }
@@ -39,3 +39,52 @@ table {
     background: linear-gradient(to bottom, rgba(212,228,239,1) 0%, rgba(134,174,204,1) 100%);
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#d4e4ef', endColorstr='#86aecc', GradientType=0 );
 }
+
+.threejs-container {
+  position: relative;
+}
+
+app-threedview {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+}
+
+.btn-default {
+    color: #333;
+    background-color: #fff;
+    border-color: #ccc;
+}
+
+.btn-default:hover, .btn-defaultt:focus {
+    color: #333;
+    background-color: #d4d4d4;
+    border-color: #8c8c8c;
+}
+
+.btn-default:not([disabled]):not(.disabled):active, .btn-default:not([disabled]):not(.disabled).active, .show > .btn-default.dropdown-toggle {
+    color: #333;
+    background-color: #d4d4d4;
+    border-color: #8c8c8c;
+}
+
+colorbox, .colorbox {
+    display: inline-block;
+    height: 14px;
+    width: 14px;
+    margin-right: 4px;
+    border: 1px solid #000;
+}
+.open>.dropdown-menu {
+    display: block;
+}
+.compLocked { color: #C0C0C0!important;}
+.packLocked { color: #C0C0C0!important;}
+.eqpLocked { color: #C0C0C0!important;}
+.lineLocked { color: #C0C0C0!important;}
+.mineElement { color: #4682B4!important; }
+.userElement { color: #808080!important;}
+.obsoleteElement { color: #FF0000!important;}
+.disabledElement { color: #FF8C00!important;}

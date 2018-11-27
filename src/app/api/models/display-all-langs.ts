@@ -1,9 +1,10 @@
 /* tslint:disable */
-import { VariableLangs } from './variable-langs';
+import { Translation } from './translation';
 
 /**
  */
 export class DisplayAllLangs {
-    referenceLangs?: VariableLangs;
-    translationLangs?: VariableLangs;
+    langName?: Translation[][];
+    referenceLangs?: Translation[][];
+    translationLangs?: Translation[][];
 }

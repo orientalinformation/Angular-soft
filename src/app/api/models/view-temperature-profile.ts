@@ -10,4 +10,6 @@ export class ViewTemperatureProfile {
     maxScaleConv?: number;
     tempChartData?: TemperatureProfileData;
     convChartData?: TemperatureProfileData;
+    imageTemp?: string;
+    imageConv?: string;
 }

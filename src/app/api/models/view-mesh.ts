@@ -10,6 +10,7 @@ export class ViewMesh {
     elements?: ProductElmt[];
     elmtMeshPositions?: MeshPosition[];
     productIsoTemp?: number;
+    averageProductTemp?: number;
     nbMeshPointElmt?: number[];
     productElmtInitTemp?: number[][];
     initTempPositions?: number[][];

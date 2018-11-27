@@ -18,7 +18,10 @@
       <tr>
         <td style="vertical-align: middle; text-align: center" [attr.rowspan]="numberOfChildren">
           <div *ngIf="model.parent">
-            <a href="javascript:void(0);" (click)="closeAndOpenStudy(model.parent.id)"><span style="white-space: nowrap">{{model.parent.name}}</span></a><br>
+            <a href="javascript:void(0);" (click)="closeAndOpenStudy(model.parent.id)">
+              <span style="white-space: nowrap">{{model.parent.name}}</span>
+            </a>
+            <br>
             {{model.parent.equipName}}
           </div>
         </td>
@@ -35,7 +38,9 @@
           <i class="fa fa-play" *ngIf="model.children"></i>
         </td>
         <td style="vertical-align: middle; text-align:center">
-          <a href="javascript:void(0);" (click)="closeAndOpenStudy(model.children[0].id)"><span *ngIf="model.children">{{model.children[0].name}}</span></a>
+          <a href="javascript:void(0);" (click)="closeAndOpenStudy(model.children[0].id)">
+            <span *ngIf="model.children">{{model.children[0].name}}</span>
+          </a>
         </td>
       </tr>
       <tr *ngFor="let child of model.children | slice:1">
@@ -94,9 +99,9 @@
   </div>
 </div>
 
-
+<!-- Model CREATE CHILD STUDY -->
 <div class="modal fade" bsModal #chainingModal="bs-modal" role="dialog" aria-labelledby="chainingModal" aria-hidden="true">
-  <div class="modal-dialog">
+  <div class="modal-dialog modal-primary">
     <div class="modal-content">
       <div class="modal-header">
         <strong>{{'CREATE CHILD STUDY'|translate}}</strong>
@@ -131,3 +136,4 @@
     </div>
   </div>
 </div>
+<!-- End CREATE CHILD STUDY -->

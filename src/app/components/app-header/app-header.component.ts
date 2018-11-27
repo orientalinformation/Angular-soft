@@ -107,4 +107,8 @@ export class AppHeaderComponent implements AfterViewInit, OnInit {
         }
     });
   }
+
+  disabledField() {
+    return !(Number(this.study.ID_USER) === Number(this.user.ID_USER));
+  }
 }

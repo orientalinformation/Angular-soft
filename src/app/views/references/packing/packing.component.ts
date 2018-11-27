@@ -4,6 +4,7 @@ import { ModalDirective } from 'ngx-bootstrap/modal/modal.directive';
 import { ReferencedataService } from '../../../api/services/referencedata.service';
 import { PackingElmt, ViewPackingElmt, User, Units } from '../../../api/models';
 import { Router } from '@angular/router';
+import { TranslateService } from '@ngx-translate/core';
 
 import { ToastrService } from 'ngx-toastr';
 import swal from 'sweetalert2';
@@ -56,7 +57,8 @@ export class PackingComponent implements OnInit, AfterViewInit {
   public listUnits: Array<Units>;
   public conductivitySymbol = '';
 
-  constructor(private referencedata: ReferencedataService, private toastr: ToastrService, private router: Router) {
+  constructor(private referencedata: ReferencedataService, private toastr: ToastrService,
+    private router: Router, private translate: TranslateService) {
     this.newPackingElmt = new PackingElmt();
     this.updatePackingElmt = new PackingElmt();
     this.userLogon = JSON.parse(localStorage.getItem('user'));
@@ -105,7 +107,7 @@ export class PackingComponent implements OnInit, AfterViewInit {
         this.isLoading = false;
       },
       err => {
-        console.log(err);
+        // console.log(err);
       },
       () => {
         if (localStorage.getItem('packingCurr') !== '') {
@@ -128,18 +130,18 @@ export class PackingComponent implements OnInit, AfterViewInit {
         }
 
         if (response === 0) {
-          this.toastr.error('Name and version already in use', 'Error');
+          this.toastr.error(this.translate.instant('Name and version already in use'), 'Error');
         } else {
           if (success) {
             localStorage.setItem('packingCurr', JSON.stringify(response));
             this.checkHideInfo = false;
             this.modalAddPackingElmt.hide();
-            this.toastr.success('Create user', 'successfully');
+            this.toastr.success(this.translate.instant('Create user'), 'successfully');
             this.router.navigate(['/references/packing']);
             this.refrestListPackingElmt();
             this.newPackingElmt = new PackingElmt();
           } else {
-            this.toastr.error('Create packing error', 'Error');
+            this.toastr.error(this.translate.instant('Create packing error'), 'Error');
           }
         }
 
@@ -157,36 +159,36 @@ export class PackingComponent implements OnInit, AfterViewInit {
   deletePacking(packing) {
     this.isDeletePacking = true;
     swal({
-      title: 'Are you sure?',
-      text: 'You won`t be able to revert this!',
+      title: this.translate.instant('Are you sure?'),
+      text: this.translate.instant('You won`t be able to revert this!'),
       type: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, delete it!'
+      confirmButtonText: this.translate.instant('Yes, delete it!')
     }).then((result) => {
       if (result.value) {
         swal(
-          'Deleted!',
-          'Your file has been deleted.',
+          this.translate.instant('Deleted!'),
+          this.translate.instant('Your file has been deleted.'),
           'success'
         );
         this.referencedata.deletePacking(packing.ID_PACKING_ELMT)
         .subscribe(
         data => {
           if (data === 1) {
-            this.toastr.success('Delete packing', 'successfully');
+            this.toastr.success(this.translate.instant('Delete packing'), 'successfully');
             this.refrestListPackingElmt();
             this.updatePackingElmt = new PackingElmt();
             this.selectPackingElmt = new PackingElmt();
             this.checkHideInfo = true;
           } else {
-            swal('Oops..', 'Delete packing error!', 'error');
+            this.toastr.success(this.translate.instant('Delete packing'), 'Error');
           }
           this.isDeletePacking = false;
         },
         err => {
-          console.log(err);
+          // console.log(err);
           this.isDeletePacking = false;
         },
         () => {
@@ -215,17 +217,17 @@ export class PackingComponent implements OnInit, AfterViewInit {
         }
 
         if (response === -1) {
-          this.toastr.error('Not found packaging!', 'Error');
+          this.toastr.error(this.translate.instant('Not found packaging!'), 'Error');
         } else if (response === 0) {
-          this.toastr.error('Name and version already in use!', 'Error');
+          this.toastr.error(this.translate.instant('Name and version already in use!'), 'Error');
         } else {
           if (success) {
             localStorage.setItem('packingCurr', JSON.stringify(response));
             this.refrestListPackingElmt();
-            this.toastr.success('Update packaging', 'successfully');
+            this.toastr.success(this.translate.instant('Update packaging'), 'successfully');
             this.router.navigate(['/references/packing']);
           } else {
-            this.toastr.error('Update packaging error !', 'Error');
+            this.toastr.error(this.translate.instant('Update packaging error !'), 'Error');
           }
         }
         this.isUpdatePacking = false;
@@ -241,19 +243,19 @@ export class PackingComponent implements OnInit, AfterViewInit {
 
   saveAsPacking (oldPacking) {
     if (!this.packingSaveAs.newName || this.packingSaveAs.newName === undefined) {
-      this.toastr.error('Please specify name!', 'Error');
+      this.toastr.error(this.translate.instant('Please specify name!'), 'Error');
       return;
     }
     if (typeof this.packingSaveAs.newName === 'number') {
-      this.toastr.error('Not a valid string in Name', 'Error');
+      this.toastr.error(this.translate.instant('Not a valid string in Name'), 'Error');
       return;
     }
     if (String(this.packingSaveAs.newVersion) === '') {
-      this.toastr.error('Please specify version', 'Error');
+      this.toastr.error(this.translate.instant('Please specify version'), 'Error');
       return;
     }
     if (isNaN(this.packingSaveAs.newVersion)) {
-      this.toastr.error('Not a valid number in Version', 'Error');
+      this.toastr.error(this.translate.instant('Not a valid number in Version'), 'Error');
       return;
     }
     this.isSaveAs = true;
@@ -271,13 +273,13 @@ export class PackingComponent implements OnInit, AfterViewInit {
           }
 
           if (response === 0) {
-            this.toastr.error('Name and version already in use', 'Error');
+            this.toastr.error(this.translate.instant('Name and version already in use'), 'Error');
           } else {
             if (success) {
               localStorage.setItem('packingCurr', JSON.stringify(response));
               this.modalSaveAs.hide();
               this.refrestListPackingElmt();
-              this.toastr.success('Save as success !', 'successfully');
+              this.toastr.success(this.translate.instant('Save as success !'), 'successfully');
               this.router.navigate(['/references/packing']);
               this.updatePackingElmt = new PackingElmt();
               this.packingSaveAs = {
@@ -285,13 +287,13 @@ export class PackingComponent implements OnInit, AfterViewInit {
                 newVersion: 0
               };
             } else {
-              this.toastr.error('Save as packaging error', 'Error');
+              this.toastr.error(this.translate.instant('Save as packaging error'), 'Error');
             }
           }
           this.isSaveAs = false;
         },
         err => {
-          console.log(err);
+          // console.log(err);
           this.isSaveAs = false;
         },
         () => {
@@ -304,24 +306,24 @@ export class PackingComponent implements OnInit, AfterViewInit {
 
     if (isNullOrUndefined(packing.LABEL) || String(packing.LABEL) === ''
     || isNumber(packing.LABEL)) {
-      this.toastr.error('Please specify Name	', 'Error');
+      this.toastr.error(this.translate.instant('Please specify Name	'), 'Error');
       return;
     }
 
     if (isNullOrUndefined(packing.PACKING_VERSION) || String(packing.PACKING_VERSION) === ''
     || isNaN(packing.PACKING_VERSION)) {
-      this.toastr.error('Please specify Version	', 'Error');
+      this.toastr.error(this.translate.instant('Please specify Version	'), 'Error');
       return;
     }
 
     if (isNullOrUndefined(packing.PACKINGCOND) || String(packing.PACKINGCOND) === ''
     || isNaN(packing.PACKINGCOND) || !packing.PACKINGCOND) {
-      this.toastr.error('Please specify Lambda thermal conductivity 	', 'Error');
+      this.toastr.error(this.translate.instant('Please specify Lambda thermal conductivity 	'), 'Error');
       return;
     }
 
     if (!packing.PACKING_RELEASE) {
-      this.toastr.error('Please choose status', 'Error');
+      this.toastr.error(this.translate.instant('Please choose status'), 'Error');
       return;
     }
     if (!packing.PACKING_COMMENT) {
@@ -344,11 +346,11 @@ export class PackingComponent implements OnInit, AfterViewInit {
             this.updatePacking();
           }
         } else {
-          this.toastr.error(res.Message, 'Error');
+          this.toastr.error(this.translate.instant(res.Message), 'Error');
         }
       },
       err => {
-        console.log(err);
+        // console.log(err);
       },
       () => {
       }

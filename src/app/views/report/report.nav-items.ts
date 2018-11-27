@@ -9,9 +9,4 @@ export const ReportNavItems = [
        url: '/report/reportview',
        icon: ''
    },
-    // {
-    //     name: 'Generate',
-    //     url: 'report/downLoadPDF',
-    //     icon: ''
-    // }
 ];

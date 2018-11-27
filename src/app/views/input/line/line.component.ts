@@ -120,19 +120,19 @@ export class LineComponent implements OnInit, AfterContentChecked, AfterViewInit
   }
   ngAfterContentChecked() {
     if (!this.study.OPTION_CRYOPIPELINE) {
-      swal('Oops..', 'This study does not have enabled CryoPipeline calculation option', 'error');
+      swal('Warning', this.translate.instant('This study does not have enabled CryoPipeline calculation option'), 'error');
       this.router.navigate(['/input/objectives']);
     }
 
     this.productShape = Number(localStorage.getItem('productShape'));
     this.productView = JSON.parse(localStorage.getItem('productView'));
     if (this.productShape == 0 || !this.productView.elements || this.productView.elements.length == 0) {
-      swal('Oops..', 'Please define product along with elements first', 'error');
+      swal('Warning', this.translate.instant('Please define product along with elements first'), 'error');
       this.router.navigate(['/input/product']);
     }
     this.checkequip = localStorage.getItem('equip');
     if (this.checkequip == '') {
-      swal('Oops..', 'Please define equipment along with elements first', 'error');
+      swal('Warning', this.translate.instant('Please define equipment along with elements first'), 'error');
       this.router.navigate(['/input/equipment']);
     }
 
@@ -184,9 +184,9 @@ export class LineComponent implements OnInit, AfterContentChecked, AfterViewInit
                   this.dataResultExist.elbowval = 0;
                   this.elbowsnumber = 0;
               }
-              if (this.storageTankValue != this.dataResultExist.storageTank) {
-                this.storageTankSelected = this.dataResultExist.storageTank = 0;
-              }
+              // if (this.storageTankValue != this.dataResultExist.storageTank) {
+              //   this.storageTankSelected = this.dataResultExist.storageTank = 0;
+              // }
           }
             for (let ii = 0; ii < this.idPipeLineEmlt.length; ii++) {
               if (this.idPipeLineEmlt[ii] == this.dataResultExist.insulval) {
@@ -205,37 +205,12 @@ export class LineComponent implements OnInit, AfterContentChecked, AfterViewInit
               this.storageTankSelected = this.dataResultExist.storageTank;
             }
           }
-          if (this.dataResultExist.insulatedline == null) {
             this.insulatedLine = this.dataResultExist.insulationLineSub;
-          } else {
-            this.insulatedLine = this.dataResultExist.insulatedline;
-          }
-          if (this.dataResultExist.insulatedlineval == null) {
             this.insulatedval = this.dataResultExist.insulatedlinevalSub;
-          } else {
-            this.insulatedval = this.dataResultExist.insulatedlineval;
-          }
-          if (this.dataResultExist.non_insulated_valves == null) {
             this.noninsulatedvalves = this.dataResultExist.non_insulated_valveSub;
-          } else {
-            this.noninsulatedvalves = this.dataResultExist.non_insulated_valves;
-          }
-          if (this.dataResultExist.non_insulated_line == null) {
             this.noninsulatedline = this.dataResultExist.non_insulated_lineSub;
-          } else {
-            this.noninsulatedline = this.dataResultExist.non_insulated_line;
-          }
-          if (this.dataResultExist.tee == null) {
             this.tee = this.dataResultExist.teeSub;
-          } else {
-            this.tee = this.dataResultExist.tee;
-          }
-          if (this.dataResultExist.elbows == null) {
             this.elbows = this.dataResultExist.elbowsSub;
-          } else {
-            this.elbows = this.dataResultExist.elbows;
-          }
-
           for (let i = 0; i < this.insulationParam.length; i++) {
             if (i == 0) {
               this.insulationName = this.translate.instant('Not Insulated');
@@ -244,7 +219,7 @@ export class LineComponent implements OnInit, AfterContentChecked, AfterViewInit
             } else if (i == 2) {
               this.insulationName = this.translate.instant('Super Insulation');
             } else if (i == 3) {
-              if (this.dataResultExist.insulationType == 3 && this.dataResultExist.idcooling == 3) {
+              if (this.dataResultExist.idcooling == 3) {
                 this.insulationName = this.translate.instant('Armaflex');
               }
             }
@@ -307,7 +282,7 @@ export class LineComponent implements OnInit, AfterContentChecked, AfterViewInit
             } else if (i == 2) {
               this.insulationName = this.translate.instant('Super Insulation');
             } else if (i == 3) {
-              if (this.dataResult[i][i].insulationType == 3 && this.dataResult[i][i].idcooling == 3) {
+              if (this.dataResult[i][i].idcooling == 3) {
                 this.insulationName = this.translate.instant('Armaflex');
               }
             }
@@ -322,7 +297,7 @@ export class LineComponent implements OnInit, AfterContentChecked, AfterViewInit
     );
     this.api.getSymbol(this.study.ID_STUDY).subscribe(
       data => {
-        console.log(data);
+        // console.log(data);
         this.symbol = data;
       }
     );
@@ -356,7 +331,7 @@ export class LineComponent implements OnInit, AfterContentChecked, AfterViewInit
       );
     }
     this.diameterParamShow = this.diameterParams;
-    console.log(this.diameterParamShow);
+    // console.log(this.diameterParamShow);
   }
   loadDiameter() {
     this.storageTankValue = [];
@@ -462,7 +437,7 @@ export class LineComponent implements OnInit, AfterContentChecked, AfterViewInit
   }
 
   changeTee() {
-    console.log(this.dataResultExist.teeval + '---' + this.teeSelect);
+    // console.log(this.dataResultExist.teeval + '---' + this.teeSelect);
     if (this.teeSelect != 0) {
       this.statusTee = false;
     } else {
@@ -551,12 +526,12 @@ export class LineComponent implements OnInit, AfterContentChecked, AfterViewInit
         }
         this.insulationParamShow = [];
         this.refeshView();
-        this.toastr.success('Save line completed!', 'Success');
+        this.toastr.success(this.translate.instant('Save line completed!'), 'Success');
       },
       (err) => {
         this.laddaSavingLine = false;
-        this.toastr.error(err.error, 'error');
-        console.log(err);
+        this.toastr.error(this.translate.instant(err.error), 'error');
+        // console.log(err);
       },
       () => {
         this.laddaSavingLine = false;

@@ -12,10 +12,17 @@ import { LaddaModule } from 'angular2-ladda';
 import { AppSpinnerComponent, HighchartsChartComponent } from '../components';
 import { TempProfileEditorComponent } from '../components';
 import { CommentComponent } from './comment/comment.component';
+import { TranslateModule } from '@ngx-translate/core';
+import { OverviewComponent } from './overview/overview.component';
+import { NewchainingComponent } from './newchaining/newchaining.component';
+
+// import { CodemirrorModule } from 'codemirror';
 
 @NgModule({
   entryComponents: [
-    CommentComponent
+    CommentComponent,
+    OverviewComponent,
+    NewchainingComponent
   ],
   imports: [
     CommonModule,
@@ -26,13 +33,17 @@ import { CommentComponent } from './comment/comment.component';
     AuthenticationModule,
     FormsModule,
     ReactiveFormsModule,
-    NgxLocalizedNumbers.forRoot()
+    NgxLocalizedNumbers.forRoot(),
+    TranslateModule.forChild(),
+    // CodemirrorModule
   ],
   declarations: [
     AppSpinnerComponent,
     CommentComponent,
     HighchartsChartComponent,
-    TempProfileEditorComponent
+    TempProfileEditorComponent,
+    OverviewComponent,
+    NewchainingComponent
   ],
   providers: [
     StatusService,
@@ -52,7 +63,9 @@ import { CommentComponent } from './comment/comment.component';
     AppSpinnerComponent,
     TempProfileEditorComponent,
     CommentComponent,
-    HighchartsChartComponent
+    HighchartsChartComponent,
+    OverviewComponent,
+    NewchainingComponent
   ]
 })
 export class SharedModule {

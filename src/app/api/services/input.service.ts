@@ -12,6 +12,7 @@ import { filter } from 'rxjs/operators/filter';
 import { SVGChart } from '../models/svgchart';
 import { TemperatureDrawing } from '../models/temperature-drawing';
 import { ElmtEditForm } from '../models/elmt-edit-form';
+import { PlotPoints } from '../models/plot-points';
 
 
 @Injectable()
@@ -59,6 +60,90 @@ export class InputService extends BaseService {
    */
   initTempRecordPts(idStudy: number): Observable<void> {
     return this.initTempRecordPtsResponse(idStudy).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * select id study equipment
+   * @param id - studyequipment
+   * @param run_calcuate - run_calcuate
+   */
+  selectCalculateResponse(params: InputService.SelectCalculateParams): Observable<HttpResponse<void>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    
+    if (params.runCalcuate != null) __params = __params.set("run_calcuate", params.runCalcuate.toString());
+    let req = new HttpRequest<any>(
+      "PUT",
+      this.rootUrl + `/input/studyequipment/${params.id}`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'text'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: void = null;
+        
+        return _resp.clone({body: _body}) as HttpResponse<void>;
+      })
+    );
+  }
+
+  /**
+   * select id study equipment
+   * @param id - studyequipment
+   * @param run_calcuate - run_calcuate
+   */
+  selectCalculate(params: InputService.SelectCalculateParams): Observable<void> {
+    return this.selectCalculateResponse(params).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * Update study
+   * @param idStudy - study id
+   * @param COMMENT_TXT - study comment
+   */
+  updateStudyResponse(params: InputService.UpdateStudyParams): Observable<HttpResponse<number>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    
+    if (params.COMMENTTXT != null) __params = __params.set("COMMENT_TXT", params.COMMENTTXT.toString());
+    let req = new HttpRequest<any>(
+      "PUT",
+      this.rootUrl + `/input/update/${params.idStudy}`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'text'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: number = null;
+        _body = parseFloat(_resp.body as string)
+        return _resp.clone({body: _body}) as HttpResponse<number>;
+      })
+    );
+  }
+
+  /**
+   * Update study
+   * @param idStudy - study id
+   * @param COMMENT_TXT - study comment
+   */
+  updateStudy(params: InputService.UpdateStudyParams): Observable<number> {
+    return this.updateStudyResponse(params).pipe(
       map(_r => _r.body)
     );
   }
@@ -175,9 +260,56 @@ export class InputService extends BaseService {
     return this.getDataTempointResponse(params).pipe(
       map(_r => _r.body)
     );
+  }
+  /**
+   * get data plot point
+   * @param body - body get plot point
+   */
+  getPlotPointsResponse(body: ElmtEditForm): Observable<HttpResponse<PlotPoints[]>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    __body = body;
+    let req = new HttpRequest<any>(
+      "POST",
+      this.rootUrl + `/input/profile/generate`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: PlotPoints[] = null;
+        _body = _resp.body as PlotPoints[]
+        return _resp.clone({body: _body}) as HttpResponse<PlotPoints[]>;
+      })
+    );
+  }
+
+  /**
+   * get data plot point
+   * @param body - body get plot point
+   */
+  getPlotPoints(body: ElmtEditForm): Observable<PlotPoints[]> {
+    return this.getPlotPointsResponse(body).pipe(
+      map(_r => _r.body)
+    );
   }}
 
 export module InputService {
+  export interface SelectCalculateParams {
+    id: number;
+    runCalcuate?: number;
+  }
+  export interface UpdateStudyParams {
+    idStudy: number;
+    COMMENTTXT?: string;
+  }
   export interface GetDataTempointParams {
     INDEXTEMP: number;
     IDPROD: number;

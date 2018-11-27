@@ -12,6 +12,7 @@ import { filter } from 'rxjs/operators/filter';
 import { ViewUsers } from '../models/view-users';
 import { NewUser } from '../models/new-user';
 import { Connection } from '../models/connection';
+import { ViewAdminTran } from '../models/view-admin-tran';
 
 
 @Injectable()
@@ -251,6 +252,45 @@ export class AdminService extends BaseService {
    */
   loadConnections(record: number): Observable<Connection[]> {
     return this.loadConnectionsResponse(record).pipe(
+      map(_r => _r.body)
+    );
+  }
+  /**
+   * save file translate
+   * @param body - save translate
+   */
+  saveFileTranslateResponse(body: ViewAdminTran): Observable<HttpResponse<void>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    __body = body;
+    let req = new HttpRequest<any>(
+      "PUT",
+      this.rootUrl + `/admin/stranslate`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'text'
+      });
+
+    return this.http.request<any>(req).pipe(
+      filter(_r => _r instanceof HttpResponse),
+      map(_r => {
+        let _resp = _r as HttpResponse<any>;
+        let _body: void = null;
+        
+        return _resp.clone({body: _body}) as HttpResponse<void>;
+      })
+    );
+  }
+
+  /**
+   * save file translate
+   * @param body - save translate
+   */
+  saveFileTranslate(body: ViewAdminTran): Observable<void> {
+    return this.saveFileTranslateResponse(body).pipe(
       map(_r => _r.body)
     );
   }}
